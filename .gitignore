@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Virtualenvs
+.venv/
+venv/
+env/
+
+# Local state / generated
+*.db
+*.sqlite
+*.sqlite3
+cylinder_index.db
+
+# Secrets / local config
+.env
+.env.*
+*.key
+*.pem
+
+# OS / editor
+.DS_Store
+*.swp
+.idea/
+.vscode/

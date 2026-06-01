@@ -1,0 +1,36 @@
+{
+  "demo": "multi_mandate_handoff",
+  "book_chapter": "B10C7",
+  "timestamp": "2026-05-26T19:26:16.455422+00:00",
+  "mandates": [
+    {
+      "mandate_id": "quadroof-cfo-2026",
+      "principal_id": "quadroof-cfo-2026",
+      "chain_head": "c7a28609a3f3e07064447a1e66d4b958d389c9ce3a51901e07e5bfc22210d85f",
+      "action_count": 1
+    },
+    {
+      "mandate_id": "fractional-cfo-2026",
+      "principal_id": "fractional-cfo-2026",
+      "chain_head": "8d1c3292a12ddc3083770dc5ed0f59c3e8923e537c1d0f76d809cc53266d9967",
+      "action_count": 2
+    },
+    {
+      "mandate_id": "family-cfo-2026",
+      "principal_id": "family-cfo-2026",
+      "chain_head": "b392180397f6a6f28beaa30ac5922fa54d7204944302205bbce776b51d769a65",
+      "action_count": 2
+    }
+  ],
+  "joint_attestation": {
+    "joint_attestation_id": "cross-mandate-001",
+    "linked_heads": {
+      "family-cfo-2026": "b392180397f6a6f28beaa30ac5922fa54d7204944302205bbce776b51d769a65",
+      "fractional-cfo-2026": "8d1c3292a12ddc3083770dc5ed0f59c3e8923e537c1d0f76d809cc53266d9967"
+    },
+    "purpose": "personal_tax_planning_2026",
+    "breath_gate_token": "KM-1176-witnessed",
+    "principals_remain_isolated": true,
+    "timestamp": "2026-05-26T19:26:16.455414+00:00"
+  }
+}

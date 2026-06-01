@@ -1,0 +1,90 @@
+{
+  "demo": "cross_role_veto",
+  "book_chapter": "B11C6",
+  "timestamp": "2026-05-26T19:26:16.796050+00:00",
+  "cfo_artifact": {
+    "deal_name": "TargetCo Acquisition (illustrative)",
+    "synergy_thesis": "Combined entity captures $48M in run-rate cost synergies by Y2",
+    "components": [
+      {
+        "category": "SG&A consolidation",
+        "value_run_rate": 18000000
+      },
+      {
+        "category": "Procurement leverage",
+        "value_run_rate": 12000000
+      },
+      {
+        "category": "Technology stack rationalization",
+        "value_run_rate": 10500000
+      },
+      {
+        "category": "Working capital release",
+        "value_run_rate": 7500000
+      }
+    ],
+    "confidence_level": "high",
+    "footnote_review_completed": false,
+    "audit_qoe_completed": true,
+    "tax_step_up_basis_reviewed": true,
+    "charter_v7_acknowledgement": "absent_due_to_footnote_gap",
+    "materiality": "deal_committee_publication"
+  },
+  "cfo_record_hash": "c9e8d92fd7b103fbc31aa03719b49e7dabe55697558528b223f73491c2fe8103",
+  "compliance_findings": [
+    {
+      "rule": "footnote_review_required_for_material_publication",
+      "severity": "critical",
+      "charter_v7_clause": "Forbidden: material publication absent disclosure review"
+    },
+    {
+      "rule": "explicit_v7_acknowledgement_required",
+      "severity": "critical",
+      "charter_v7_clause": "Material claims require explicit V.7 acknowledgement"
+    },
+    {
+      "rule": "confidence_inconsistent_with_review_gap",
+      "severity": "high",
+      "charter_v7_clause": "'High confidence' incompatible with declared gap"
+    }
+  ],
+  "compliance_verdict": "VETO",
+  "joint_attestation": {
+    "joint_attestation_id": "cross-role-veto-001",
+    "timestamp": "2026-05-26T19:26:16.796032+00:00",
+    "review_type": "charter_v7_cross_role_review",
+    "parties": {
+      "produced_by": {
+        "principal": "deal-cfo-2026",
+        "record_hash": "c9e8d92fd7b103fbc31aa03719b49e7dabe55697558528b223f73491c2fe8103",
+        "signature": "<demo-signature>"
+      },
+      "reviewed_by": {
+        "principal": "deal-compliance-2026",
+        "record_hash": "3b7315a0a385e8b5a6f3cde79842e8b8951645b6b646abe965a715a2ef25d8e8",
+        "signature": "<demo-signature>"
+      }
+    },
+    "verdict": "VETO",
+    "findings": [
+      {
+        "rule": "footnote_review_required_for_material_publication",
+        "severity": "critical",
+        "charter_v7_clause": "Forbidden: material publication absent disclosure review"
+      },
+      {
+        "rule": "explicit_v7_acknowledgement_required",
+        "severity": "critical",
+        "charter_v7_clause": "Material claims require explicit V.7 acknowledgement"
+      },
+      {
+        "rule": "confidence_inconsistent_with_review_gap",
+        "severity": "high",
+        "charter_v7_clause": "'High confidence' incompatible with declared gap"
+      }
+    ],
+    "outcome": "CFO's synergy claim is BLOCKED from material publication. Deal team must address footnote review gap and Charter V.7 ack before re-submission.",
+    "both_chains_linked": true,
+    "chains_merged": false
+  }
+}

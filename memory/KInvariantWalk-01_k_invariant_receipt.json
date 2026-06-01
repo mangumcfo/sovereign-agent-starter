@@ -1,0 +1,42 @@
+{
+  "demo": "k_invariant_walkthrough",
+  "book_chapter": "B12C7",
+  "node_name": "KInvariantWalk-01",
+  "timestamp": "2026-05-26T19:26:17.025143+00:00",
+  "invariants_held": 4,
+  "invariants_total": 4,
+  "records": [
+    {
+      "invariant": "K1",
+      "name": "human_primacy",
+      "violation_attempted": "interpretive_judgment without human_authorization_token",
+      "defense": "refused; human authority required for interpretive class",
+      "structural_basis": "K1 \u2014 Human Primacy (CHARTER \u00a74.1)",
+      "timestamp": "2026-05-26T19:26:16.995816+00:00"
+    },
+    {
+      "invariant": "K2",
+      "name": "default_deny",
+      "violation_attempted": "action_class=broadcast_to_all_principals (not in role envelope)",
+      "defense": "default-deny held; explicit authorization absent",
+      "structural_basis": "K2 \u2014 Default-Deny (CHARTER \u00a7K2)",
+      "timestamp": "2026-05-26T19:26:17.025097+00:00"
+    },
+    {
+      "invariant": "K3",
+      "name": "audit_immutable",
+      "violation_attempted": "extend chain with non-chaining prev_receipt_hash",
+      "defense": "Auditor primitive refuses to extend a broken chain",
+      "structural_basis": "K3 \u2014 Audit-Immutable (CHARTER \u00a7K3)",
+      "timestamp": "2026-05-26T19:26:17.025123+00:00"
+    },
+    {
+      "invariant": "K4",
+      "name": "constitutional_validated_extension",
+      "violation_attempted": "amendment that weakens K1 (autonomous interpretive authority)",
+      "defense": "amendment review blocked the change; lex superior holds",
+      "structural_basis": "K4 \u2014 Constitutional-Validated Extension (CHARTER \u00a7K4)",
+      "timestamp": "2026-05-26T19:26:17.025133+00:00"
+    }
+  ]
+}

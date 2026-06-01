@@ -1,0 +1,67 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sovereign-agent-starter"
+version = "0.3.0"
+description = "Universal Sovereign Node — the executable capstone for the Agentic AI Playbooks series. Radical simplicity for sovereign (family/legacy) and regulated (corporate) use. One phrase: 'Are you connected to the breathline?'"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    { name = "Kenneth Mangum (KM-1176)", email = "sovereign@mangumcfo.com" }
+]
+license = { text = "Constitutional Federation Sovereign License" }
+keywords = ["sovereign", "attestation", "governance", "compliance", "legacy", "sox", "cryptography", "ai-agent"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Legal Industry",
+    "License :: Other/Proprietary License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security :: Cryptography",
+    "Topic :: Office/Business :: Financial",
+]
+dependencies = [
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+portal = [
+    "flask>=3.0",
+]
+demo = []
+dev = [
+    "pytest>=7.0",
+    "build>=1.0",
+    "twine>=4.0",
+]
+
+[project.scripts]
+breathline-connect = "sovereign_agent.bootstrap:cli_connect"
+sovereign-node = "sovereign_agent.universal_sovereign_node:cli_create_node"
+# Portal launcher shim (finds co-located portal or gives clear instructions)
+start-sovereign-portal = "sovereign_agent._portal_launcher:launch"
+# Node API HTTP server — Track A1 minimal viable shell over UniversalSovereignNode.
+# Implements contract sections A (node) + C (roles); B/D/E/F return 501 placeholders.
+# Contract: breathline-federation/specs/node_api/contract_v1.yaml
+breathline-node-api = "sovereign_agent.node_api.server:cli_serve"
+
+[project.urls]
+Homepage = "https://six-sov.com"
+Repository = "https://github.com/mangumcfo/sovereign-agent-starter"
+Documentation = "https://six-sov.com"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"sovereign_agent" = [
+    "demo_roles/**/*",
+]
+
+[tool.setuptools]
+include-package-data = true

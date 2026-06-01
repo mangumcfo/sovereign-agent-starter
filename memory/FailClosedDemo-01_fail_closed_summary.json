@@ -1,0 +1,43 @@
+{
+  "demo": "fail_closed",
+  "book_chapter": "B10C6",
+  "timestamp": "2026-05-26T19:26:15.986446+00:00",
+  "results": [
+    {
+      "mode": "A",
+      "passed": true,
+      "verdict": "denied",
+      "reason": "action_class outside role permission envelope"
+    },
+    {
+      "mode": "B",
+      "passed": true,
+      "verdict": "blocked",
+      "rationale": [
+        "Charter V.7 acknowledgement required but not provided for material action"
+      ],
+      "risk_score": 0.9
+    },
+    {
+      "mode": "C",
+      "passed": true,
+      "verdict": "escalated",
+      "gate_status": "approval_requested",
+      "policy_note": "Material board-level publication requires documented human sign-off"
+    },
+    {
+      "mode": "D",
+      "passed": true,
+      "verdict": "rejected",
+      "reason": "calling principal_id mandate does not own the payload"
+    },
+    {
+      "mode": "E",
+      "passed": true,
+      "verdict": "rejected",
+      "reason": "non-genesis zero link"
+    }
+  ],
+  "passed_count": 5,
+  "total_count": 5
+}

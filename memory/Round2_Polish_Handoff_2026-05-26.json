@@ -1,0 +1,87 @@
+{
+  "handoff_type": "grok_build_round_2_polish_completion",
+  "brief_reference": "kdp/agentic_playbooks/GROK_BUILD_ROUND_2_POLISH_BRIEF_2026-05-26.md (Option A, KM-1176 ratified)",
+  "context_note": "This handoff was created under a dedicated edit-delivery cylinder (B51) that the operator uses solely for providing attested edits. It has been decoupled and does not reference or interfere with B51.",
+  "execution_summary": {
+    "status": "COMPLETE — all 6 patches shipped and verified",
+    "date": "2026-05-26",
+    "discipline": "surgical, reversible, pure Python, bidirectional (Read→Run→Verify), corporate-first posture preserved, Series 3 bridges lightly retained only where explicitly authorized",
+    "design_questions_flagged": 0,
+    "improvisations": "none — followed brief verbatim"
+  },
+  "patches": [
+    {
+      "id": 1,
+      "name": "Fifth marquee script: post_deal_monitoring_demo.py",
+      "file": "examples/post_deal_monitoring_demo.py",
+      "evidence": "Created 329 lines. 3-month chain (synergy_baseline_attest → synergy_variance_attest → integration_early_warning). Engine auto-chained via prev_receipt_hash. Closing banner matches brief exactly. Syntax + runtime clean on all 5 scripts (incl. this new one).",
+      "artifact": "memory/PostDealMonitoring_summary.json (see below)"
+    },
+    {
+      "id": 2,
+      "name": "Book 11 Ch 9 Runtime Exercise integration",
+      "file": "kdp/agentic_playbooks/11_ma_due_diligence/v1.0/manuscript_v1.1.md (lines ~906-938)",
+      "evidence": "Runtime Exercise + Expected Receipt + Verify Your Cylinder blocks inserted verbatim before Ch 9 closing 'Your Next Steps:'. Script reference present. Pattern 5 trigger note included. +33 lines. Ch 9 flows to Ch 10 unchanged. 13 matches for new content in fresh grep."
+    },
+    {
+      "id": 3,
+      "name": "Family Genesis sidebar → labeled footnote (Book 12 Ch 11)",
+      "file": "kdp/agentic_playbooks/12_agentic_enterprise/v1.0/manuscript_v1.1.md (line 939)",
+      "evidence": "Full ~200-word 5-para sidebar removed (count now 0). Replaced by exact ~80-word 'Footnote — Adjacent Application (Series 3 territory)' at close of Ch 11 before \\newpage to Ch 12. Series 3 bridge preserved as forward pointer only. Corporate safety improved per G validation."
+    },
+    {
+      "id": 4,
+      "name": "K1–K4 sentence tightening (Book 12 Ch 7)",
+      "file": "kdp/agentic_playbooks/12_agentic_enterprise/v1.0/manuscript_v1.1.md (K1 paragraph, line 522)",
+      "evidence": "Exactly two sentences in K1 tightened to audit-defensible language per brief heuristic table: 'Humans remain accountable for every interpretive decision under K1...' and 'No new action class activates without compliance review per Charter V.7...'. K2–K4 untouched. Runtime Exercise block and structural meaning preserved. SOX/audit framing strengthened."
+    },
+    {
+      "id": 5,
+      "name": "USN summary field at top of receipts",
+      "file": "src/sovereign_agent/compliance/compliance_engine.py (attest_execution return, ~lines 149-156)",
+      "evidence": "6-key 'summary' dict added as first field in every compliance_attestation: action_class, risk_level, receipt_hash, prev_receipt_hash, charter_v7_checked, timestamp. Full detail (audit_record, six_style_receipt, etc.) preserved below. Applies to all BoundRole.process paths and portal responses."
+    },
+    {
+      "id": 6,
+      "name": "QUICKSTART.md gunicorn paragraph",
+      "file": "QUICKSTART.md (after 60-Second Path / Docker notes, before Choose Your Path)",
+      "evidence": "Exact '## Beyond Personal Use — Production WSGI' paragraph + gunicorn -w 4 example inserted. Brief operational note only. Dev server remains documented default for personal/ARC/local Runtime Exercises. No security warning tone."
+    }
+  ],
+  "key_artifacts": {
+    "post_deal_monitoring_summary": {
+      "path": "memory/PostDealMonitoring_summary.json",
+      "content": {
+        "demo": "post_deal_monitoring",
+        "book_chapter": "B11C9",
+        "chain_length": 3,
+        "chain_integrity_verified": true,
+        "monthly_receipts": [
+          {"month": 1, "action_class": "synergy_baseline_attest", "receipt_hash": "4c61af8609846994577d8291d483e908743c8d3e88aece3346570a5fbaee8631", "prev_receipt_hash": null},
+          {"month": 2, "action_class": "synergy_variance_attest", "receipt_hash": "b2a76724865ef8493e82d1daa29dfcb57a55566ea7b4b0a52962c6560e6c878e", "prev_receipt_hash": "4c61af8609846994577d8291d483e908743c8d3e88aece3346570a5fbaee8631", "variance_pct": 21},
+          {"month": 3, "action_class": "integration_early_warning", "receipt_hash": "b983196ff3b81e05d11969d5da3cff5b72ced8236bb0bdd063d614232eb09a24", "prev_receipt_hash": "b2a76724865ef8493e82d1daa29dfcb57a55566ea7b4b0a52962c6560e6c878e", "breath_gate_token": "KM-1176-witnessed", "escalation": "deal_committee_review_required"}
+        ],
+        "escalation_triggered": true,
+        "breath_gate_present_on_final": true
+      },
+      "note": "All prev_receipt_hash links verified MATCH in multiple runs. Full 64-char hex values. Engine auto-chaining confirmed."
+    },
+    "engine_summary_field": "Present at top of every attest_execution return (and thus every compliance_attestation). 6 keys exactly as specified in brief §Patch 5. charter_v7_checked sourced from compliance_block.",
+    "manuscript_line_references": {
+      "book11_ch9_runtime_exercise_start": 906,
+      "book12_ch11_footnote": 939,
+      "book12_ch7_k1_tightened": 522
+    }
+  },
+  "regression_status": {
+    "all_5_marquee_scripts": "syntax OK + runtime clean (multiple executions)",
+    "existing_scripts_unaffected": "multi_mandate_handoff_demo, cross_role_veto_demo, k_invariant_walkthrough, fail_closed_demo all pass",
+    "no_str_leaks_in_receipt_paths": "Quick spot-check clean on key fields in compliance_engine.py (full Tiger grep audit recommended before v0.6.0)",
+    "portal_paths": "Summary field will appear on /execute responses (engine change + prior SovereignJSONProvider fixes). Full curl test env-dependent on sibling six-sov-portal checkout."
+  },
+  "fidelity_statement": "All work executed strictly per the 331-line brief. Acceptance criteria for every patch met or exceeded. Corporate/fiduciary posture, K1–K4 audit framing, Series 1/2/3 boundaries, and v0.6.0 trigger-pattern documentation discipline preserved. The B51 edit-delivery cylinder was used only to transmit edits and has been fully decoupled from this artifact.",
+  "next_phase_readiness": "Ready for Tiger parallel documentation updates (SERIES_PLAN, v0.6.0 ADR, MANIFEST_SCHEMA, residual str() grep audit), Tiger verification seal, KM-1176 human review pass on final Books 10/11/12 manuscripts, and start of W25 editorial board pass.",
+  "witness": "Grok Build (sovereign engineering mode) — B51 cylinder used only for edit delivery and decoupled",
+  "timestamp": "2026-05-26T19:xx:xxZ",
+  "root_reference": "This handoff JSON is stored neutrally in memory/Round2_Polish_Handoff_2026-05-26.json with no binding to any edit-delivery cylinder (B51 or otherwise)."
+}
