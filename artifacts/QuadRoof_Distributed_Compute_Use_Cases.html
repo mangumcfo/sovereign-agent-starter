@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuadRoof • Distributed Compute Use Cases</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+    
+    :root {
+      --accent: #0ea5e9;
+    }
+    
+    body {
+      font-family: 'Inter', system_ui, sans-serif;
+    }
+    
+    .font-display {
+      font-family: 'Space Grotesk', 'Inter', sans-serif;
+      font-weight: 600;
+    }
+
+    .quad-card {
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+                  box-shadow 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+    }
+    
+    .quad-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    }
+
+    .scale-header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e2937 100%);
+    }
+
+    .roof-diagram {
+      transition: all 0.3s ease;
+    }
+
+    .section-header {
+      letter-spacing: -0.025em;
+    }
+
+    .yield-number {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .metric {
+      transition: all 0.2s ease;
+    }
+
+    .nav-active {
+      border-bottom: 2px solid #0ea5e9;
+      color: #0ea5e9;
+    }
+
+    .stream {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.375rem 0.75rem;
+      background: #0f172a;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      white-space: nowrap;
+    }
+
+    .compute-stream {
+      background: linear-gradient(90deg, #0ea5e9, #22c7b1);
+      color: white;
+      font-weight: 600;
+    }
+
+    .lgp-badge {
+      background: #052e16;
+      color: #4ade80;
+      font-size: 0.65rem;
+      padding: 1px 8px;
+      border-radius: 9999px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-200">
+  <!-- Top nav -->
+  <nav class="border-b border-slate-800 bg-slate-950/80 backdrop-blur-lg sticky top-0 z-50">
+    <div class="max-w-screen-2xl mx-auto px-8 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-x-3">
+        <div class="flex items-center gap-x-2">
+          <div class="w-9 h-9 bg-sky-500 rounded-2xl flex items-center justify-center">
+            <i class="fa-solid fa-infinity text-white text-2xl"></i>
+          </div>
+          <div>
+            <span class="font-display text-2xl tracking-tighter font-semibold">QuadRoof</span>
+            <span class="text-xs text-slate-500 block -mt-1">Solarislate</span>
+          </div>
+        </div>
+        <div class="px-3 py-1 bg-slate-900 rounded-full text-xs font-medium text-slate-400 border border-slate-800 flex items-center gap-x-1.5">
+          <div class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></div>
+          <span>v1.1 Investor Framework</span>
+        </div>
+      </div>
+      
+      <div class="flex items-center gap-x-6 text-sm">
+        <a href="#scales" class="hover:text-sky-400 transition-colors">Use Cases by Scale</a>
+        <a href="#loop" class="hover:text-sky-400 transition-colors">Sovereign Loop Integration</a>
+        <a href="#breaths" class="hover:text-sky-400 transition-colors">Breath Lineage</a>
+        <div class="h-3 w-px bg-slate-800"></div>
+        <div class="text-xs text-slate-500">For KM-1176 • 2026-06-01</div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <div class="max-w-screen-2xl mx-auto px-8 pt-12 pb-8">
+    <div class="max-w-4xl">
+      <div class="inline-flex items-center gap-x-2 bg-slate-900 border border-slate-800 rounded-3xl px-4 py-1.5 mb-6 text-sm">
+        <span class="lgp-badge">LGP</span>
+        <span class="text-slate-400">Lasting Generational Prosperity through distributed yield</span>
+      </div>
+      
+      <h1 class="font-display text-6xl tracking-tighter leading-none mb-4">
+        Distributed Compute<br>on Every Roof
+      </h1>
+      <p class="text-2xl text-slate-400 max-w-2xl">
+        QuadRoof turns residential and commercial rooftops into sovereign, multi-stream yield engines — 
+        with on-site compute as the highest-value optional layer.
+      </p>
+      
+      <div class="flex items-center gap-x-4 mt-8">
+        <div onclick="document.getElementById('scales').scrollIntoView({behavior:'smooth'})" 
+             class="cursor-pointer inline-flex items-center gap-x-3 bg-white text-slate-950 hover:bg-amber-50 transition-colors font-semibold px-8 h-14 rounded-3xl text-lg">
+          <span>Explore the Four Scales</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </div>
+        <a href="https://github.com/kmangum/work-repos/sovereign-agent-starter" target="_blank"
+           class="inline-flex items-center gap-x-2 px-6 h-14 text-slate-400 hover:text-slate-200 transition-colors text-sm font-medium">
+          <i class="fa-brands fa-github"></i>
+          <span>View in Sovereign Agent Starter</span>
+        </a>
+      </div>
+      
+      <div class="mt-4 text-xs text-slate-500 flex items-center gap-x-2">
+        <div>Grounded in <span class="font-medium text-slate-400">Investing in QuadRoof v1.1</span> (Breathline Books)</div>
+        <div class="h-px flex-1 bg-slate-800"></div>
+        <div>Integrated with Continuous Governed Book-to-Code Loop</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Core Thesis -->
+  <div class="max-w-screen-2xl mx-auto px-8 pb-12">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <div class="lg:col-span-7">
+          <h3 class="font-semibold text-sky-400 mb-3 text-sm tracking-[1px]">THE ARCHITECTURE (Investor Book v1.1)</h3>
+          <p class="text-lg leading-snug text-slate-300">
+            A QuadRoof system is a residential- or commercial-scale rooftop that combines <span class="font-semibold text-white">solar generation + battery storage + (optional) small on-site compute module</span>. 
+            The system is owned by an AssetCo SPV. The roof owner grants an easement and buys power under a long-dated PPA. 
+            Up to <span class="font-semibold">four contracted cash flows</span> are produced.
+          </p>
+        </div>
+        <div class="lg:col-span-5">
+          <div class="grid grid-cols-2 gap-3">
+            <div class="stream"><i class="fa-solid fa-bolt w-4 text-amber-400"></i> <span>Homeowner PPA</span></div>
+            <div class="stream"><i class="fa-solid fa-battery-full w-4 text-emerald-400"></i> <span>Utility Capacity</span></div>
+            <div class="stream compute-stream"><i class="fa-solid fa-microchip w-4"></i> <span>Compute Off-Take (Premium)</span></div>
+            <div class="stream"><i class="fa-solid fa-handshake w-4 text-violet-400"></i> <span>Tax-Equity Monetization</span></div>
+          </div>
+          <div class="mt-3 text-xs text-slate-400">
+            Compute is the conditional 4th stream: surplus generation powers on-prem inference for privacy-sensitive / regulated buyers who pay a premium for data that never leaves the controlled environment.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scales Section -->
+  <div id="scales" class="max-w-screen-2xl mx-auto px-8 pb-8">
+    <div class="flex items-end justify-between mb-6">
+      <div>
+        <h2 class="font-display text-4xl tracking-tighter">Use Cases by Scale</h2>
+        <p class="text-slate-400 mt-1">How distributed sovereign compute manifests differently across family, SMB, mid-market, and enterprise deployments</p>
+      </div>
+      <div class="text-xs px-4 py-2 bg-slate-900 border border-slate-700 rounded-2xl text-slate-400 hidden lg:block">
+        All numbers illustrative • based on v1.1 financing model patterns
+      </div>
+    </div>
+
+    <!-- Four Scale Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+      
+      <!-- FAMILY -->
+      <div class="quad-card bg-slate-900 border border-slate-700 rounded-3xl overflow-hidden flex flex-col">
+        <div class="scale-header px-5 py-4 flex items-center justify-between">
+          <div class="flex items-center gap-x-3">
+            <i class="fa-solid fa-home text-2xl text-amber-300"></i>
+            <div>
+              <div class="font-semibold text-lg">Family</div>
+              <div class="text-[10px] text-slate-400 -mt-0.5">1–4 Roofs • Hearth Scale</div>
+            </div>
+          </div>
+          <div class="lgp-badge">CORE LGP</div>
+        </div>
+        
+        <div class="p-5 flex-1 flex flex-col">
+          <div class="roof-diagram mb-4 bg-slate-950 border border-slate-800 rounded-2xl p-4 text-center">
+            <div class="text-[10px] text-slate-500 mb-1">TYPICAL DEPLOYMENT</div>
+            <div class="flex justify-center items-end gap-x-1 text-4xl mb-1">
+              <i class="fa-solid fa-home text-amber-200"></i>
+              <i class="fa-solid fa-solar-panel text-yellow-300 text-3xl"></i>
+              <i class="fa-solid fa-microchip text-sky-400 text-xl"></i>
+            </div>
+            <div class="text-xs text-slate-400">Single-family + ADU or small cluster</div>
+          </div>
+          
+          <div class="space-y-3 text-sm flex-1">
+            <div>
+              <div class="text-slate-400 text-xs mb-1">COMPUTE PROFILE</div>
+              <div class="font-medium">1–2 small sovereign nodes (Jetson / mini-PC class)</div>
+              <div class="text-xs text-slate-400 mt-0.5">Surplus solar → local inference, family AI agents, private model serving</div>
+            </div>
+            
+            <div>
+              <div class="text-slate-400 text-xs mb-1">YIELD MECHANICS</div>
+              <div class="text-xs leading-snug">PPA savings + capacity payments + modest compute leasing (Vast.ai-style or direct to family network) + tax equity on energy property.</div>
+            </div>
+          </div>
+          
+          <!-- Mini Calculator -->
+          <div class="mt-4 pt-4 border-t border-slate-800">
+            <div class="text-xs text-slate-400 mb-2 flex items-center justify-between">
+              <span>DEPLOYMENT SIZE</span>
+              <span id="family-roofs-val" class="font-mono text-sky-400">2 roofs</span>
+            </div>
+            <input type="range" id="family-roofs" min="1" max="4" step="1" value="2" 
+                   class="w-full accent-sky-400" oninput="updateCalculator('family')">
+            
+            <div class="grid grid-cols-2 gap-2 mt-3 text-xs">
+              <div class="bg-slate-950 border border-slate-800 rounded-2xl p-2.5">
+                <div class="text-emerald-400 text-[10px]">EST. MONTHLY COMPUTE YIELD</div>
+                <div id="family-compute" class="yield-number text-xl font-semibold text-emerald-300">$180</div>
+              </div>
+              <div class="bg-slate-950 border border-slate-800 rounded-2xl p-2.5">
+                <div class="text-violet-400 text-[10px]">4-STREAM TOTAL (ILLUS.)</div>
+                <div id="family-total" class="yield-number text-xl font-semibold">$1,240</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-3 text-[10px] text-emerald-300/70 font-medium">Sovereign fit: Family cashflow + agents that stay on-prem. Physical root of generational yield (B27).</div>
+        </div>
+      </div>
+
+      <!-- SMB -->
+      <div class="quad-card bg-slate-900 border border-slate-700 rounded-3xl overflow-hidden flex flex-col">
+        <div class="scale-header px-5 py-4 flex items-center justify-between">
+          <div class="flex items-center gap-x-3">
+            <i class="fa-solid fa-store text-2xl text-orange-300"></i>
+            <div>
+              <div class="font-semibold text-lg">SMB</div>
+              <div class="text-[10px] text-slate-400 -mt-0.5">5–25 Roofs • Neighborhood / Small Portfolio</div>
+            </div>
+          </div>
+          <div class="lgp-badge">HIGH VELOCITY</div>
+        </div>
+        
+        <div class="p-5 flex-1 flex flex-col">
+          <div class="roof-diagram mb-4 bg-slate-950 border border-slate-800 rounded-2xl p-4 text-center">
+            <div class="text-[10px] text-slate-500 mb-1">TYPICAL DEPLOYMENT</div>
+            <div class="flex justify-center items-end gap-x-1 text-4xl mb-1">
+              <i class="fa-solid fa-building text-orange-200"></i>
+              <i class="fa-solid fa-solar-panel text-yellow-300 text-3xl"></i>
+              <i class="fa-solid fa-server text-sky-400"></i>
+            </div>
+            <div class="text-xs text-slate-400">Strip mall, small office park, or 8–20 home cluster</div>
+          </div>
+          
+          <div class="space-y-3 text-sm flex-1">
+            <div>
+              <div class="text-slate-400 text-xs mb-1">COMPUTE PROFILE</div>
+              <div class="font-medium">Small rack or 4–8 edge nodes (sovereign inference cluster)</div>
+              <div class="text-xs text-slate-400 mt-0.5">Local RAG for the business + resale of spare cycles to nearby regulated tenants</div>
+            </div>
+            
+            <div>
+              <div class="text-slate-400 text-xs mb-1">YIELD MECHANICS</div>
+              <div class="text-xs leading-snug">Stronger capacity aggregation + compute off-take to local law firms, medical practices, or fintechs that require data residency.</div>
+            </div>
+          </div>
+          
+          <div class="mt-4 pt-4 border-t border-slate-800">
+            <div class="text-xs text-slate-400 mb-2 flex items-center justify-between">
+              <span>DEPLOYMENT SIZE</span>
+              <span id="smb-roofs-val" class="font-mono text-sky-400">12 roofs</span>
+            </div>
+            <input type="range" id="smb-roofs" min="5" max="25" step="1" value="12" 
+                   class="w-full accent-orange-400" oninput="updateCalculator('smb')">
+            
+            <div class="grid grid-cols-2 gap-2 mt-3 text-xs">
+              <div class="bg-slate-950 border border-slate-800 rounded-2xl p-2.5">
+                <div class="text-emerald-400 text-[10px]">EST. MONTHLY COMPUTE YIELD</div>
+                <div id="smb-compute" class="yield-number text-xl font-semibold text-emerald-300">$1,150</div>
+              </div>
+              <div class="bg-slate-950 border border-slate-800 rounded-2xl p-2.5">
+                <div class="text-violet-400 text-[10px]">4-STREAM TOTAL (ILLUS.)</div>
+                <div id="smb-total" class="yield-number text-xl font-semibold">$7,800</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-3 text-[10px] text-emerald-300/70 font-medium">Sovereign fit: Edge AI without sending customer data to hyperscalers. Natural first "organism" deployment.</div>
+        </div>
+      </div>
+
+      <!-- MID-SIZE -->
+      <div class="quad-card bg-slate-900 border border-slate-700 rounded-3xl overflow-hidden flex flex-col">
+        <div class="scale-header px-5 py-4 flex items-center justify-between">
+          <div class="flex items-center gap-x-3">
+            <i class="fa-solid fa-building text-2xl text-rose-300"></i>
+            <div>
+              <div class="font-semibold text-lg">Mid-Size Business</div>
+              <div class="text-[10px] text-slate-400 -mt-0.5">25–150 Roofs • Regional Portfolio</div>
+            </div>
+          </div>
+          <div class="lgp-badge">SERIES 3 ERP</div>
+        </div>
+        
+        <div class="p-5 flex-1 flex flex-col">
+          <div class="roof-diagram mb-4 bg-slate-950 border border-slate-800 rounded-2xl p-4 text-center">
+            <div class="text-[10px] text-slate-500 mb-1">TYPICAL DEPLOYMENT</div>
+            <div class="flex justify-center items-end gap-x-1 text-4xl mb-1">
+              <i class="fa-solid fa-city text-rose-200"></i>
+              <i class="fa-solid fa-solar-panel text-yellow-300 text-3xl"></i>
+              <i class="fa-solid fa-network-wired text-sky-400"></i>
+            </div>
+            <div class="text-xs text-slate-400">Regional retail chain, light industrial, or multi-site campus</div>
+          </div>
+          
+          <div class="space-y-3 text-sm flex-1">
+            <div>
+              <div class="text-slate-400 text-xs mb-1">COMPUTE PROFILE</div>
+              <div class="font-medium">Distributed sovereign cluster (20–80 nodes) with central orchestration</div>
+              <div class="text-xs text-slate-400 mt-0.5">Private model training + inference marketplace for the enterprise + partners</div>
+            </div>
+            
+            <div>
+              <div class="text-slate-400 text-xs mb-1">YIELD MECHANICS</div>
+              <div class="text-xs leading-snug">Material compute revenue. Portfolio-level capacity contracts. Full tax-equity structuring across tranches. Programmable via Series 3 ERP primitives.</div>
+            </div>
+          </div>
+          
+          <div class="mt-4 pt-4 border-t border-slate-800">
+            <div class="text-xs text-slate-400 mb-2 flex items-center justify-between">
+              <span>DEPLOYMENT SIZE</span>
+              <span id="mid-roofs-val" class="font-mono text-sky-400">60 roofs</span>
+            </div>
+            <input type="range" id="mid-roofs" min="25" max="150" step="5" value="60" 
+                   class="w-full accent-rose-400" oninput="updateCalculator('mid')">
+            
+            <div class="grid grid-cols-2 gap-2 mt-3 text-xs">
+              <div class="bg-slate-950 border border-slate-800 rounded-2xl p-2.5">
+                <div class="text-emerald-400 text-[10px]">EST. MONTHLY COMPUTE YIELD</div>
+                <div id="mid-compute" class="yield-number text-xl font-semibold text-emerald-300">$6,800</div>
+              </div>
+              <div class="bg-slate-950 border border-slate-800 rounded-2xl p-2.5">
+                <div class="text-violet-400 text-[10px]">4-STREAM TOTAL (ILLUS.)</div>
+                <div id="mid-total" class="yield-number text-xl font-semibold">$42k</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-3 text-[10px] text-emerald-300/70 font-medium">Sovereign fit: Becomes a live node in the federation. Full B32 obligation tracking on tranche performance.</div>
+        </div>
+      </div>
+
+      <!-- LARGE / ENTERPRISE -->
+      <div class="quad-card bg-slate-900 border border-slate-700 rounded-3xl overflow-hidden flex flex-col">
+        <div class="scale-header px-5 py-4 flex items-center justify-between">
+          <div class="flex items-center gap-x-3">
+            <i class="fa-solid fa-globe text-2xl text-violet-300"></i>
+            <div>
+              <div class="font-semibold text-lg">Large / Enterprise</div>
+              <div class="text-[10px] text-slate-400 -mt-0.5">150+ Roofs • National or Multi-Region</div>
+            </div>
+          </div>
+          <div class="lgp-badge">SERIES 4</div>
+        </div>
+        
+        <div class="p-5 flex-1 flex flex-col">
+          <div class="roof-diagram mb-4 bg-slate-950 border border-slate-800 rounded-2xl p-4 text-center">
+            <div class="text-[10px] text-slate-500 mb-1">TYPICAL DEPLOYMENT</div>
+            <div class="flex justify-center items-end gap-x-1 text-4xl mb-1">
+              <i class="fa-solid fa-building-user text-violet-200"></i>
+              <i class="fa-solid fa-solar-panel text-yellow-300 text-3xl"></i>
+              <i class="fa-solid fa-cloud text-sky-400"></i>
+            </div>
+            <div class="text-xs text-slate-400">National retail, REIT portfolio, or sovereign cloud operator backbone</div>
+          </div>
+          
+          <div class="space-y-3 text-sm flex-1">
+            <div>
+              <div class="text-slate-400 text-xs mb-1">COMPUTE PROFILE</div>
+              <div class="font-medium">Hundreds of nodes → sovereign distributed cloud fabric. Full SIX-verified receipting.</div>
+              <div class="text-xs text-slate-400 mt-0.5">Becomes the physical + economic substrate for large-scale private AI + regulated industry workloads</div>
+            </div>
+            
+            <div>
+              <div class="text-slate-400 text-xs mb-1">YIELD MECHANICS</div>
+              <div class="text-xs leading-snug">Major compute revenue line. Portfolio-level tax equity funds. Programmable prosperity at scale. Direct feed into Series 4 yield organisms.</div>
+            </div>
+          </div>
+          
+          <div class="mt-4 pt-4 border-t border-slate-800">
+            <div class="text-xs text-slate-400 mb-2 flex items-center justify-between">
+              <span>DEPLOYMENT SIZE</span>
+              <span id="large-roofs-val" class="font-mono text-sky-400">320 roofs</span>
+            </div>
+            <input type="range" id="large-roofs" min="150" max="800" step="10" value="320" 
+                   class="w-full accent-violet-400" oninput="updateCalculator('large')">
+            
+            <div class="grid grid-cols-2 gap-2 mt-3 text-xs">
+              <div class="bg-slate-950 border border-slate-800 rounded-2xl p-2.5">
+                <div class="text-emerald-400 text-[10px]">EST. MONTHLY COMPUTE YIELD</div>
+                <div id="large-compute" class="yield-number text-xl font-semibold text-emerald-300">$38k</div>
+              </div>
+              <div class="bg-slate-950 border border-slate-800 rounded-2xl p-2.5">
+                <div class="text-violet-400 text-[10px]">4-STREAM TOTAL (ILLUS.)</div>
+                <div id="large-total" class="yield-number text-xl font-semibold">$210k</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-3 text-[10px] text-emerald-300/70 font-medium">Sovereign fit: The physical roots of a true alternative to centralized hyperscale. Full packetized governance via the agent loop.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sovereign Loop Integration -->
+  <div id="loop" class="max-w-screen-2xl mx-auto px-8 py-8">
+    <div class="bg-slate-900 border border-slate-700 rounded-3xl p-8">
+      <div class="flex items-center gap-x-3 mb-4">
+        <i class="fa-solid fa-sync text-sky-400 text-xl"></i>
+        <h3 class="font-display text-2xl tracking-tight">How the Continuous Governed Book-to-Code Loop Absorbs This</h3>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+        <div class="space-y-3">
+          <div class="font-semibold text-sky-400">Real-World Source of Truth</div>
+          <div class="text-slate-300">Every QuadRoof deployment (family roof or enterprise portfolio) is a living economic primitive. The investor book + actual tranche data become the unambiguous input for the book engine.</div>
+          <div class="text-xs bg-slate-950 border border-slate-800 p-3 rounded-2xl">
+            B26 (Yield Organisms &amp; XRPL) is the conceptual origination. B27 (Net-Meter Enclosure) is the physical root.
+          </div>
+        </div>
+        
+        <div class="space-y-3">
+          <div class="font-semibold text-sky-400">Packet Generation Targets</div>
+          <ul class="space-y-1.5 text-slate-300 text-sm">
+            <li class="flex gap-x-2"><span class="text-emerald-400 mt-1">•</span> Revenue lane specs + organism lifecycle (B26)</li>
+            <li class="flex gap-x-2"><span class="text-emerald-400 mt-1">•</span> B32 obligation cylinders for tranche performance &amp; tax-equity waterfalls</li>
+            <li class="flex gap-x-2"><span class="text-emerald-400 mt-1">•</span> SIX-verified compute receipt schemas (B31)</li>
+            <li class="flex gap-x-2"><span class="text-emerald-400 mt-1">•</span> Helix-rendered investor dashboards &amp; ERP surfaces (B35)</li>
+            <li class="flex gap-x-2"><span class="text-emerald-400 mt-1">•</span> Crypto-anchored immutability for all four cash flows (B39)</li>
+          </ul>
+        </div>
+        
+        <div class="space-y-3">
+          <div class="font-semibold text-sky-400">Atrium Kanban Surface</div>
+          <div class="text-slate-300">A real deployment (e.g. “Silvercreek Reno – 2-roof tranche with compute off-take”) becomes a governed card: Ideation → Charter → Validation → Implementation. Human (KM) stays in natural language. Agents handle the mechanics under constitutional controls.</div>
+          <div class="text-xs p-3 bg-emerald-950/30 border border-emerald-900 rounded-2xl">
+            The loop turns “I want more family-scale QuadRoof compute deployments” into well-formed, receipted, reviewable packets — without the human ever touching git or YAML.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Breath Lineage -->
+  <div id="breaths" class="max-w-screen-2xl mx-auto px-8 pb-12">
+    <div class="text-xs uppercase tracking-[1.5px] text-slate-500 mb-2">Direct Lineage from Current Breath Inventory</div>
+    <div class="flex flex-wrap gap-2">
+      <div class="px-4 py-2 bg-slate-900 border border-slate-700 rounded-2xl text-sm flex items-center gap-x-2">
+        <span class="font-mono text-amber-300">B26</span> 
+        <span>Yield Organisms &amp; XRPL Economic Seeds — <span class="text-slate-400">Origination point</span></span>
+      </div>
+      <div class="px-4 py-2 bg-slate-900 border border-slate-700 rounded-2xl text-sm flex items-center gap-x-2">
+        <span class="font-mono text-amber-300">B27</span> 
+        <span>Sovereign Net-Meter Enclosure — Physical LGP Yield Hardware</span>
+      </div>
+      <div class="px-4 py-2 bg-slate-900 border border-slate-700 rounded-2xl text-sm flex items-center gap-x-2">
+        <span class="font-mono text-amber-300">B31</span> 
+        <span>SIX — Live Sovereign Inference Exchange &amp; Verifier (six-sov.com)</span>
+      </div>
+      <div class="px-4 py-2 bg-slate-900 border border-slate-700 rounded-2xl text-sm flex items-center gap-x-2">
+        <span class="font-mono text-amber-300">B32</span> 
+        <span>B32 Obligation Cylinder — dr/cr State Layer for Tranches</span>
+      </div>
+      <div class="px-4 py-2 bg-slate-900 border border-slate-700 rounded-2xl text-sm flex items-center gap-x-2">
+        <span class="font-mono text-amber-300">B35</span> 
+        <span>Helix — Deterministic Book-to-Backend Rendering</span>
+      </div>
+      <div class="px-4 py-2 bg-slate-900 border border-slate-700 rounded-2xl text-sm flex items-center gap-x-2">
+        <span class="font-mono text-amber-300">B39</span> 
+        <span>Crypto Primitive Wiring — Anchoring All Packets</span>
+      </div>
+    </div>
+  </div>
+
+  <footer class="border-t border-slate-800 bg-slate-950 py-6">
+    <div class="max-w-screen-2xl mx-auto px-8 text-xs text-slate-500 flex flex-col md:flex-row md:items-center gap-y-2 justify-between">
+      <div>
+        Produced for KM-1176 • One-shot HTML view • 2026-06-01<br>
+        <span class="text-slate-600">Grounded in Investing in QuadRoof v1.1 (Breathline Books) + sovereign-agent-starter Breath Inventory (B26–B39 focus)</span>
+      </div>
+      <div class="text-right">
+        All figures illustrative and for exploration only.<br>
+        Not financial, legal, tax, or investment advice.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Tailwind script
+    function initializeTailwind() {
+      document.documentElement.style.setProperty('--accent', '#0ea5e9');
+    }
+
+    // Realistic base numbers (illustrative, derived from v1.1 patterns)
+    const BASES = {
+      family: { perRoofCompute: 90, baseTotal: 620 },
+      smb:    { perRoofCompute: 96,  baseTotal: 650 },
+      mid:    { perRoofCompute: 113, baseTotal: 700 },
+      large:  { perRoofCompute: 119, baseTotal: 656 }
+    };
+
+    function updateCalculator(scale) {
+      const slider = document.getElementById(`${scale}-roofs`);
+      const valEl = document.getElementById(`${scale}-roofs-val`);
+      const computeEl = document.getElementById(`${scale}-compute`);
+      const totalEl = document.getElementById(`${scale}-total`);
+
+      if (!slider || !valEl || !computeEl || !totalEl) return;
+
+      const roofs = parseInt(slider.value);
+      const base = BASES[scale];
+
+      // Compute yield (slightly non-linear at larger scales due to aggregation efficiency)
+      let computeMonthly = Math.round(roofs * base.perRoofCompute);
+      if (scale === 'mid' || scale === 'large') {
+        computeMonthly = Math.round(computeMonthly * 1.05); // small aggregation premium
+      }
+
+      // Total 4-stream (very rough illustrative scaling)
+      let total = Math.round(roofs * base.baseTotal);
+      if (scale === 'large') total = Math.round(total * 0.92); // portfolio efficiencies
+
+      // Update DOM
+      valEl.textContent = roofs.toLocaleString() + (scale === 'family' ? ' roofs' : ' roofs');
+      
+      computeEl.textContent = '$' + computeMonthly.toLocaleString();
+      totalEl.textContent = '$' + total.toLocaleString();
+
+      // Subtle emphasis animation
+      computeEl.style.transition = 'none';
+      computeEl.style.transform = 'scale(1.04)';
+      setTimeout(() => {
+        computeEl.style.transition = 'all 0.2s ease';
+        computeEl.style.transform = 'scale(1)';
+      }, 10);
+    }
+
+    // Initialize all calculators
+    function initCalculators() {
+      const scales = ['family', 'smb', 'mid', 'large'];
+      
+      scales.forEach(scale => {
+        const slider = document.getElementById(`${scale}-roofs`);
+        if (slider) {
+          // Set initial values
+          updateCalculator(scale);
+          
+          // Add nice label updates on drag
+          slider.addEventListener('input', () => {
+            updateCalculator(scale);
+          });
+        }
+      });
+    }
+
+    // Keyboard support for fun
+    function addKeyboardSupport() {
+      document.addEventListener('keydown', function(e) {
+        if (e.key === '?') {
+          const scales = document.getElementById('scales');
+          if (scales) scales.scrollIntoView({behavior: 'smooth'});
+          e.preventDefault();
+        }
+      });
+    }
+
+    // Boot
+    function boot() {
+      initializeTailwind();
+      initCalculators();
+      addKeyboardSupport();
+      
+      // Gentle hint in console for the builder
+      console.log('%c[QuadRoof HTML] Self-contained use-case explorer ready. All calculations client-side and illustrative.', 'color:#64748b');
+    }
+
+    window.onload = boot;
+  </script>
+</body>
+</html>

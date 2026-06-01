@@ -49,6 +49,27 @@ def get_approval_gate() -> HumanApprovalGate:
     return _APPROVAL_GATE
 
 
+_LEDGER = None
+
+
+def get_obligation_ledger():
+    """Return the process-wide ObligationLedger (R-23), wired to this node's breath-gate +
+    ComplianceEngine. Node-local storage root (boundary guard applies); never the live seal chain.
+
+    Dev note: wired with simulate_gate=True — a material obligation's approval is a simulated human
+    disposition. Production routes approval to an external workflow (honest, labeled)."""
+    global _LEDGER
+    if _LEDGER is None:
+        from ..obligations.node_integration import wire_node_ledger
+        _LEDGER = wire_node_ledger(
+            root=os.environ.get("OBLIGATION_LEDGER_ROOT"),  # None -> ledger default (node-local)
+            node=get_node(),
+            mode=os.environ.get("BREATHLINE_NODE_MODE", "sovereign"),
+            simulate_gate=True,
+        )
+    return _LEDGER
+
+
 def set_node(node: UniversalSovereignNode) -> None:
     """Override the singleton (tests / dev)."""
     global _NODE
@@ -57,6 +78,7 @@ def set_node(node: UniversalSovereignNode) -> None:
 
 def reset_node() -> None:
     """Drop the singletons (tests)."""
-    global _NODE, _APPROVAL_GATE
+    global _NODE, _APPROVAL_GATE, _LEDGER
     _NODE = None
     _APPROVAL_GATE = None
+    _LEDGER = None

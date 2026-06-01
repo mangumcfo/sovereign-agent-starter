@@ -32,6 +32,7 @@ from flask import Flask, jsonify
 from .errors import build_error
 from .json_provider import install as install_json_provider
 from .routes import node as node_routes
+from .routes import obligations as obligations_routes
 from .routes import placeholders as placeholder_routes
 from .routes import roles as roles_routes
 
@@ -55,6 +56,7 @@ def create_app() -> Flask:
     # Register blueprints (A + C real, B/D/E/F placeholders).
     app.register_blueprint(node_routes.bp)
     app.register_blueprint(roles_routes.bp)
+    app.register_blueprint(obligations_routes.bp)
     app.register_blueprint(placeholder_routes.bp)
 
     # --- CORS — minimal viable for Atrium local development ---
