@@ -98,11 +98,23 @@ class ObligationLedger:
     """Append-only, hash-chained dr/cr obligation ledger on a node-local root."""
 
     def __init__(self, root: Optional[os.PathLike | str] = None,
-                 principal_id: str = "node"):
+                 principal_id: str = "node",
+                 gate=None, attestor=None):
+        """gate / attestor are OPTIONAL duck-typed callables (thin-waist injection):
+          gate(action: str, obligation: dict) -> {"status": "approved"|"denied", ...}
+              — the node's breath-gate / human-approval disposition (Phase 2).
+          attestor(action_class: str, principal_id: str, payload: dict, result_summary: str)
+              -> {"receipt_hash": str, ...}   — mints a real node receipt/attestation.
+        Both default None → fully standalone (Phase-1 behavior; tests stay green).
+        `node_integration.wire_node_ledger` adapts the node's real HumanApprovalGate +
+        ComplianceEngine into these contracts.
+        """
         self.root = _resolve_root(root)
         self.root.mkdir(parents=True, exist_ok=True)
         self.path = self.root / "obligations.ndjson"
         self.principal_id = principal_id
+        self.gate = gate
+        self.attestor = attestor
 
     # ── chain primitives ──────────────────────────────────────────────
     def _entries(self) -> list[dict]:
@@ -126,8 +138,11 @@ class ObligationLedger:
     # ── lifecycle ─────────────────────────────────────────────────────
     def open(self, title: str, owner: Optional[str] = None,
              classification: str = "C2", intent: Optional[str] = None,
-             ref: Optional[str] = None) -> dict:
-        """Open an obligation = a DRAFT action-proposal (debit). CYL-006: starts draft."""
+             ref: Optional[str] = None, material: bool = False) -> dict:
+        """Open an obligation = a DRAFT action-proposal (debit). CYL-006: starts draft.
+
+        material=True ⇒ a gated ledger requires human approval (breath-gate) before close.
+        """
         entry = {
             "type": "debit",
             "id": _entry_id(),
@@ -137,6 +152,7 @@ class ObligationLedger:
             "classification": classification,
             "intent": intent,
             "ref": ref,
+            "material": bool(material),
             "draft": True,            # CYL-006
             "approved": False,
             "approved_by": None,
@@ -145,17 +161,45 @@ class ObligationLedger:
         }
         return self._append(entry)
 
-    def approve(self, obligation_id: str, approved_by: str) -> dict:
-        """Approve a draft (the approval gate). Phase 2 routes this through the node breath-gate."""
+    # ── lookups ───────────────────────────────────────────────────────
+    def _get(self, obligation_id: str) -> Optional[dict]:
+        for e in self._entries():
+            if e.get("type") == "debit" and e.get("id") == obligation_id:
+                return e
+        return None
+
+    def _is_approved(self, obligation_id: str) -> bool:
+        return any(e.get("type") == "approval" and e.get("approves") == obligation_id
+                   and e.get("disposition", "approved") == "approved"
+                   for e in self._entries())
+
+    def approve(self, obligation_id: str, approved_by: str,
+                rationale: str = "") -> dict:
+        """Approve a draft via the breath-gate. If a `gate` is injected, the disposition
+        is the gate's verdict (human primacy); a DENY raises and is recorded."""
+        disposition, gate_meta = "approved", None
+        if self.gate is not None:
+            verdict = self.gate("approve", {"id": obligation_id, "approved_by": approved_by,
+                                            "rationale": rationale}) or {}
+            disposition = verdict.get("status", "approved")
+            gate_meta = verdict
         entry = {
             "type": "approval",
             "id": _entry_id(),
             "approves": obligation_id,
             "approved_by": approved_by,
+            "disposition": disposition,
+            "gate": gate_meta,
             "principal_id": self.principal_id,
             "timestamp": _now(),
         }
-        return self._append(entry)
+        self._append(entry)
+        if disposition != "approved":
+            raise PermissionError(
+                f"Breath-gate DENIED approval of '{obligation_id}' (recorded). "
+                f"Obligation stays open."
+            )
+        return entry
 
     def close(self, obligation_id: str, evidence: str,
               evidence_tier: Optional[str] = None, require_e1: bool = True,
@@ -170,6 +214,14 @@ class ObligationLedger:
                 f"Evidence tier E0 (claim-only) insufficient to close '{obligation_id}'. "
                 f"Provide an artifact pointer / hash / receipt (E1+)."
             )
+        # Human primacy (CYL-006): a MATERIAL obligation cannot close until it has cleared
+        # the breath-gate. Only enforced when a gate is wired (standalone stays unchanged).
+        ob = self._get(obligation_id)
+        if self.gate is not None and ob and ob.get("material") and not self._is_approved(obligation_id):
+            raise PermissionError(
+                f"'{obligation_id}' is material and has not cleared the breath-gate; "
+                f"call approve() (human disposition) before close."
+            )
         receipt = {
             "receipt_id": _receipt_id(),
             "obligation_id": obligation_id,
@@ -180,6 +232,16 @@ class ObligationLedger:
             "principal_id": closed_by or self.principal_id,
             "timestamp": _now(),
         }
+        # Mint a real NODE receipt (USN Merkle attestation / SOX-style chain-of-custody) when a
+        # node attestor is wired — the close then carries a node-attested, E2-grade receipt.
+        if self.attestor is not None:
+            node_receipt = self.attestor(
+                "obligation_close", closed_by or self.principal_id,
+                {"obligation_id": obligation_id, "evidence": evidence},
+                f"closed obligation {obligation_id} (tier {tier.value})",
+            ) or {}
+            receipt["node_receipt"] = node_receipt
+            receipt["node_receipt_hash"] = node_receipt.get("receipt_hash")
         entry = {
             "type": "credit",
             "id": _entry_id(),
