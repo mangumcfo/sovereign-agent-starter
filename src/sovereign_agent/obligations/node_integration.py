@@ -14,11 +14,12 @@ from typing import Any, Callable, Dict, Optional
 from .ledger import ObligationLedger
 
 
-def make_gate(approval_gate: Any, *, simulate: bool = True,
+def make_gate(approval_gate: Any, *, simulate: bool = True, simulate_deny: bool = False,
               approver: str = "Compliance Officer (simulated)") -> Callable:
     """Adapt a node HumanApprovalGate into the ledger's gate-callable.
 
     simulate=True (dev): routes request → simulate_approval (a stand-in for the human).
+      simulate_deny=True forces the simulated human to DENY (for testing the deny path).
     simulate=False (prod): returns 'pending' — real disposition arrives via an external workflow;
     the caller must not treat a material obligation as closeable until that disposition lands.
     """
@@ -37,7 +38,10 @@ def make_gate(approval_gate: Any, *, simulate: bool = True,
         if not simulate:
             return {"status": "pending", "req_id": req_id,
                     "note": "awaiting external human disposition"}
-        res = approval_gate.simulate_approval(req_id, approver=approver)
+        if simulate_deny:
+            res = approval_gate.simulate_denial(req_id, approver=approver, reason="human denied (test)")
+        else:
+            res = approval_gate.simulate_approval(req_id, approver=approver)
         return {
             "status": "approved" if res.get("status") == "approved" else "denied",
             "req_id": req_id, "approver": approver,
@@ -89,7 +93,8 @@ def make_attestor(compliance_engine: Any, role_id: str = "obligation_ledger") ->
 
 def wire_node_ledger(root: Optional[str], node: Any, *, mode: str = "sovereign",
                      role_id: str = "obligation_ledger", policy: Optional[Dict] = None,
-                     principal_id: str = "node", simulate_gate: bool = True) -> ObligationLedger:
+                     principal_id: str = "node", simulate_gate: bool = True,
+                     simulate_deny: bool = False) -> ObligationLedger:
     """Return an ObligationLedger wired to the node's real gate + compliance attestation.
 
     Honest seam: the ledger's storage root is still node-local (boundary guard applies);
@@ -103,6 +108,6 @@ def wire_node_ledger(root: Optional[str], node: Any, *, mode: str = "sovereign",
     ag = HumanApprovalGate(policy=policy or {})
     return ObligationLedger(
         root=root, principal_id=principal_id,
-        gate=make_gate(ag, simulate=simulate_gate),
+        gate=make_gate(ag, simulate=simulate_gate, simulate_deny=simulate_deny),
         attestor=make_attestor(ce, role_id),
     )

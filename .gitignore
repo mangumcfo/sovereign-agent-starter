@@ -31,3 +31,7 @@ cylinder_index.db
 
 # attachment bundles (redundant with the artifacts themselves)
 *.tgz
+
+# throwaway gate-demo ledgers (regenerated each run)
+memory/obligations/bg_demo/
+memory/obligations/bg_deny_demo/
