@@ -206,14 +206,16 @@ Per prescription:
 
 ∞Δ∞ FEC packet now has executable blueprint + visible Atrium card path. Track F moving. ∞Δ∞
 
-**Short Status + Seal Candidate (for Tiger per G instruction):**
-FEC Packet Atrium Translation v0 complete (receipt/role/Atrium spec using universal ERP translation protocol). 
-Tangible increment delivered: examples/atrium_fec_review_card_mock.html (open it — this is the visible FEC card with in-surface voice from the capture, full B51 handoff bundle, LGP, citations, and disposition buttons).
-plan.md folded with G steering + artifact pointers. Message_to_Tiger tweaked with exact seed prompt.
-Track F (Atrium Review surface) now has concrete first card for the FEC packet.
+**gb Ratification (2026-06-02)**
+The polished mock (with "The story — read this first" narrative band, 3 key-message cards, collapsible source-linked drill-through, "Source files & analysis (ready)" panel, and honest simulated labeling) is ratified.
 
-**Seal candidate:** ATR-FEC-001 (Atrium FEC Review Card visible + translation v0). 
-Output when reviewed: short status + this citation + capture merkle.
+All 6 artifacts linked and resolvable. Matches G's request for visible FEC card in the Atrium review surface + in-surface voice + B51 bundle.
+
+**Seal:** ATR-FEC-001  
+**Sealed by:** gb (background) per Tiger seq 438 + G steering.  
+**Citation:** This file + examples/atrium_fec_review_card_mock.html (ratification banner added) + capture merkle 9350cf09... from 2026-06-02_034153_capture-session_9156c992.
+
+Short status for Tiger: FEC card ratified and sealed as ATR-FEC-001. Visible Atrium review surface increment complete. Ready for #2 (pull into live breathline-ui/atrium).
 
 **Next (Tiger lane):** Wire real breath-gate to node obligations for Atrium dispositions. Bind the role_spec in starter. Render the federation_pool_cockpit via B35 once packet sealed on ledger.
 
