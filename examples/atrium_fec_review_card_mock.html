@@ -79,6 +79,50 @@
         </div>
       </div>
 
+      <!-- Executive Brief (storyline — read this first) -->
+      <div class="px-6 py-5 border-b border-slate-700 bg-slate-900/40">
+        <div class="flex items-center gap-x-2 text-sm font-semibold mb-2">
+          <i class="fa-solid fa-feather-pointed text-amber-300"></i>
+          <span>The story — read this first</span>
+        </div>
+        <p class="text-sm text-slate-300 leading-relaxed">
+          At <span class="text-slate-100">3:39am you spoke a vision into your phone</span>: families and businesses on the ERP could
+          privately &ldquo;unionize&rdquo; their buying power. Overnight, the agents turned that voice note into a concrete,
+          <span class="text-slate-100">governed proposal</span> — a <span class="text-emerald-300 font-medium">Federation Procurement
+          Coordinator</span>. They modeled it end-to-end <span class="text-slate-400">(simulated data — no real money moved)</span>,
+          and it projects a <span class="text-emerald-300 font-medium">+18% purchasing-power uplift</span> for participating families.
+          It is now <span class="text-amber-300">parked at your gate</span> — nothing real happens until you decide.
+        </p>
+        <!-- Key messages -->
+        <div class="grid sm:grid-cols-3 gap-3 mt-4">
+          <div class="bg-slate-800/60 border border-slate-700 rounded-2xl p-3">
+            <div class="text-[10px] uppercase tracking-widest text-slate-500 mb-1">What it is</div>
+            <div class="text-xs text-slate-300">Opted-in families/businesses pool buying power <span class="text-slate-100">privately (zero-knowledge)</span> for better prices — value routed <span class="text-emerald-300">families-first</span>.</div>
+          </div>
+          <div class="bg-slate-800/60 border border-slate-700 rounded-2xl p-3">
+            <div class="text-[10px] uppercase tracking-widest text-slate-500 mb-1">What the agents did</div>
+            <div class="text-xs text-slate-300">Research → optimize → drafted a negotiation, then <span class="text-amber-300">stopped at the money line</span> and escalated to you. No commitment made.</div>
+          </div>
+          <div class="bg-slate-800/60 border border-slate-700 rounded-2xl p-3">
+            <div class="text-[10px] uppercase tracking-widest text-slate-500 mb-1">What you're deciding</div>
+            <div class="text-xs text-slate-300"><span class="text-emerald-300">Approve</span> = save as a reusable blueprint (still no real $). <span class="text-amber-300">Refine</span> = comment. <span class="text-slate-400">Reject</span> = log + archive.</div>
+          </div>
+        </div>
+        <!-- Drill-through -->
+        <details class="mt-3 group">
+          <summary class="cursor-pointer text-xs text-sky-300 hover:text-sky-200 select-none">
+            <i class="fa-solid fa-chevron-right group-open:rotate-90 transition-transform mr-1"></i>If you have questions — drill through (each answer links its source)
+          </summary>
+          <ul class="mt-2 space-y-1.5 text-xs text-slate-400 pl-4">
+            <li><span class="text-slate-200">Is any real money or commitment involved?</span> No — fully simulated; real $ is a separate, separately-gated step. <a class="underline hover:text-emerald-300" href="federation_collective_procurement_demo.py" target="_blank">demo source</a></li>
+            <li><span class="text-slate-200">Whose private data is exposed?</span> None — only zero-knowledge statistical profiles; no raw data leaves any node. <a class="underline hover:text-emerald-300" href="../artifacts/R52_Packet_Contract_v1_Draft_with_FEC_Example.md" target="_blank">packet contract (citation_bundle)</a></li>
+            <li><span class="text-slate-200">Where does the +18% come from?</span> The optimizer's value calc in the demo (illustrative). <a class="underline hover:text-emerald-300" href="../memory/obligations/fec_demo/obligations.ndjson" target="_blank">demo ledger (close evidence)</a></li>
+            <li><span class="text-slate-200">What happens if I approve?</span> Seals it as a Level-1 packet → enables role binding + the federation cockpit. Still no real $. <a class="underline hover:text-emerald-300" href="../artifacts/FEC_Packet_Atrium_Translation_Increment_v0.md" target="_blank">Atrium translation v0</a></li>
+            <li><span class="text-slate-200">Full background?</span> <a class="underline hover:text-emerald-300" href="../artifacts/B51_Captured_Thought_Federation_Collective_Economic_Coordination_2026-06-02.md" target="_blank">your captured thought + ideation</a> · <a class="underline hover:text-emerald-300" href="../artifacts/gb_FEC_Thought_Log_and_R52_Progress_2026-06-02.md" target="_blank">gb progress note</a></li>
+          </ul>
+        </details>
+      </div>
+
       <div class="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
         <!-- Left: Voice + B51 Bundle -->
         <div class="lg:col-span-7 space-y-6">
@@ -140,7 +184,7 @@
                 <div class="font-mono text-[10px] w-24 text-amber-300">YELLOW</div>
                 <div>
                   <div><span class="font-medium">Negotiator</span> → <span class="font-medium">ValueDistributor</span></div>
-                  <div class="text-xs text-amber-300">Pooled order draft ready. Material commitment — requires human disposition (R-53 gate).</div>
+                  <div class="text-xs text-amber-300">Pooled order draft ready <span class="text-amber-400/70">(simulated artifact in the demo)</span>. Material commitment — requires human disposition (R-53 gate).</div>
                 </div>
               </div>
               <div class="handoff-step flex gap-x-3 items-start bg-red-900/10 border border-red-800/60 rounded-2xl p-3">
@@ -151,7 +195,7 @@
                 </div>
               </div>
             </div>
-            <div class="text-[10px] mt-1 text-slate-500">Full trace + obligation_debt in the B51 bundle artifact. Reproducible via B42 event reduce.</div>
+            <div class="text-[10px] mt-1 text-slate-500">Full trace is reproducible by running the <a class="underline hover:text-emerald-300" href="federation_collective_procurement_demo.py" target="_blank">demo</a>; the open→approve→close evidence is on the <a class="underline hover:text-emerald-300" href="../memory/obligations/fec_demo/obligations.ndjson" target="_blank">demo ledger</a> (chain verified).</div>
           </div>
         </div>
 
@@ -179,6 +223,23 @@
               <div>B25: resonant_shards_non_devouring_federation</div>
               <div class="text-amber-300">Human seed: export 2026-06-02_034153... (full in B51_Captured_Thought)</div>
             </div>
+          </div>
+
+          <!-- Source files & analysis (all real, all linked) -->
+          <div class="bg-slate-800 border border-slate-700 rounded-2xl p-4 text-xs">
+            <div class="font-semibold mb-2 flex items-center gap-x-1.5">
+              <i class="fa-solid fa-folder-open text-emerald-300"></i> Source files &amp; analysis
+              <span class="text-[10px] text-emerald-400 font-normal">(ready — click to open)</span>
+            </div>
+            <ul class="space-y-1.5">
+              <li><a class="text-sky-300 hover:text-sky-200 underline" href="../artifacts/R52_Packet_Contract_v1_Draft_with_FEC_Example.md" target="_blank">R-52 Packet Contract v1 + FEC example</a></li>
+              <li><a class="text-sky-300 hover:text-sky-200 underline" href="../artifacts/FEC_Packet_Atrium_Translation_Increment_v0.md" target="_blank">FEC → Atrium translation v0</a></li>
+              <li><a class="text-sky-300 hover:text-sky-200 underline" href="../artifacts/B51_Captured_Thought_Federation_Collective_Economic_Coordination_2026-06-02.md" target="_blank">B51 captured thought (full ideation)</a></li>
+              <li><a class="text-sky-300 hover:text-sky-200 underline" href="../artifacts/gb_FEC_Thought_Log_and_R52_Progress_2026-06-02.md" target="_blank">gb FEC progress note</a></li>
+              <li><a class="text-sky-300 hover:text-sky-200 underline" href="federation_collective_procurement_demo.py" target="_blank">Runnable demo (on the R-23 ledger)</a></li>
+              <li><a class="text-sky-300 hover:text-sky-200 underline" href="../memory/obligations/fec_demo/obligations.ndjson" target="_blank">Demo obligation ledger (chain verified)</a></li>
+            </ul>
+            <div class="text-[10px] text-slate-500 mt-2">Paths are relative to <span class="font-mono">examples/</span> — open the card from the repo so they resolve. The pooled-order PDF / zk-profile / handoff-trace named in the close evidence are <span class="text-amber-300">simulated inside the demo</span>, not files on disk yet.</div>
           </div>
 
           <!-- Action buttons -->
