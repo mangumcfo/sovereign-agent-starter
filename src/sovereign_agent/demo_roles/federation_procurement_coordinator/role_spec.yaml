@@ -1,0 +1,83 @@
+# federation_procurement_coordinator — FEC role (FEC-T1: real role translation of ATR-FEC-001)
+# Source: KM 2026-06-02 voice seed (export 2026-06-02_034153_capture-session_9156c992, merkle 9350cf09…)
+#         + R-52 packet contract + artifacts/FEC_Packet_Atrium_Translation_Increment_v0.md.
+# STATUS: spec-complete (FEC-T1). Action-class HANDLERS (role.py) = FEC-T2; binding + bind demo = FEC-T3.
+#         No live $ moves; agents PROPOSE, the human (KM via Atrium NLP) DISPOSES. Demo/mock-backed today.
+
+role:
+  id: federation_procurement_coordinator
+  name: "Federation Procurement Coordinator (FEC)"
+  description: "Agent-orchestrated ZK-pooled buying power and guild value optimization for families (C2F) and businesses (B2F) inside the sovereign federation. Agents propose; the human disposes; everything is receipted."
+  framework: "federation-procurement"
+  version: "v1 (from KM 2026-06-02 voice seed + R-52)"
+
+# Source of truth for BoundRole.process (the loader reads this list).
+allowed_action_classes:
+  - pool_procurement_requests
+  - generate_zk_statistical_profile
+  - match_to_guild_or_pool
+  - run_optimization_coordination
+  - propose_pooled_order
+  - execute_value_distribution
+  - attest_receipts_to_SIX
+  - escalate_material_commitment
+
+# Full governance detail per action (scope + breath-gate). Each action is a typed B32 obligation.
+action_classes:
+  - id: pool_procurement_requests
+    scope: "C1"
+    breath_gate: "YELLOW for profile aggregation; RED for commitment > threshold"
+    description: "Aggregate opt-in ZK statistical profiles into a pool (no raw data)."
+  - id: generate_zk_statistical_profile
+    scope: "C1"
+    breath_gate: "GREEN"
+    description: "Privacy-preserving proof of aggregate spend / procurement / hedging intent from ERP data."
+  - id: match_to_guild_or_pool
+    scope: "C2"
+    breath_gate: "GREEN"
+    description: "Helix attribute-matching of profiles into opt-in guilds/pools (B35 structures)."
+  - id: run_optimization_coordination
+    scope: "C1"
+    breath_gate: "GREEN for analysis; YELLOW for recommendation surfacing"
+    description: "Aligned intelligences (B51 handoff swarm + B42 deterministic reduce) search for contract manufacturers, bulk terms, hedging."
+  - id: propose_pooled_order
+    scope: "C1"
+    breath_gate: "RED (material)"
+    description: "Draft supplier agreement + value-distribution plan. Requires Atrium human disposition (K1)."
+  - id: execute_value_distribution
+    scope: "C1"
+    breath_gate: "YELLOW"
+    description: "Fulfill to edge participants — families get lower costs first (LGP)."
+  - id: attest_receipts_to_SIX
+    scope: "C2"
+    breath_gate: "GREEN"
+    description: "Close the obligation with E2 + node receipt + B31 SIX attestation."
+  - id: escalate_material_commitment
+    scope: "C1"
+    breath_gate: "RED"
+    description: "Any real $ or long-term guild obligation hits RED → immediate Atrium NLP + human token (K1)."
+
+principles:
+  - K1: "Human (KM via Atrium NLP) disposes all material pool commitments + entity formations. RED goal-state always escalates."
+  - LGP: "Value optimized reaches families first. Opt-in only. Privacy via ZK / resonant shards (B25)."
+  - receipt_everything: "Every profile contribution, optimization, and distribution is a B32 obligation with a B31 citation."
+
+citation_bundle:
+  B26: "collective_procurement_guilds (merkle 9350cf09…)"
+  B25: "resonant_shards_non_devouring_federation"
+  B51: "A4 — agent-to-agent handoffs for economic swarms"
+  B35: "Helix — deterministic guild/pool structures"
+  human_seed: "export 2026-06-02_034153_capture-session_9156c992 · cyl_9156c99236ea"
+
+compliance:
+  - "B28 lex-mercatoria overlay for guild contracts (exit portability, shadow-bind)."
+  - "Federation portable — this spec runs on any sovereign node; personal data loads as personal cylinders."
+
+invocation_envelope:
+  focus: "families_first_procurement"
+  default_horizon: 1
+  risk_classification: "material_gated"
+  demo: true
+  note: "Spec-complete (FEC-T1). Live handlers (role.py) are FEC-T2; binding + runnable bind demo are FEC-T3. Until then this role PROPOSES only — no autonomous material action; the human gate is hard on every RED."
+
+# ∞Δ∞ SEAL: FEC role spec — agents propose, human disposes, families first, all receipted ∞Δ∞
