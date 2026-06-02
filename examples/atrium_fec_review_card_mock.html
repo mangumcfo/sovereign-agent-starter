@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atrium • FEC Packet Review Card (Track F Increment v0)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+    :root { --font-sans: 'Inter', system_ui, sans-serif; --font-display: 'Space Grotesk', 'Inter', sans-serif; }
+    body { font-family: var(--font-sans); }
+    .font-display { font-family: var(--font-display); }
+    .atrium-card { box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
+    .handoff-step { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+    .handoff-step:hover { transform: translateX(2px); }
+    .voice-block { background: linear-gradient(145deg, #0f172a, #1e2937); }
+    .metric { font-variant-numeric: tabular-nums; }
+    .packet-badge { background: #166534; color: #86efac; }
+    .section-header { letter-spacing: -.025em; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-200">
+  <div class="max-w-5xl mx-auto p-6">
+    <!-- Top bar -->
+    <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center gap-x-3">
+        <div class="w-9 h-9 rounded-2xl bg-emerald-500/10 flex items-center justify-center ring-1 ring-emerald-500/30">
+          <i class="fa-solid fa-infinity text-emerald-400"></i>
+        </div>
+        <div>
+          <div class="font-display text-2xl font-semibold tracking-tighter">Atrium</div>
+          <div class="text-[10px] text-slate-500 -mt-1">Sovereign Node Console • R&amp;D Kanban</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-x-4 text-sm">
+        <div class="flex items-center gap-x-2 px-3 py-1.5 bg-slate-900 rounded-3xl border border-slate-800">
+          <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+          <span class="text-emerald-400 text-xs font-medium">Track F • Review Surface Increment</span>
+        </div>
+        <div class="text-xs text-slate-400">Seal candidate: <span class="font-mono text-emerald-300">ATR-FEC-001</span></div>
+        <div class="px-3 py-1 bg-slate-900 rounded-3xl border border-slate-800 text-xs">KM-1176 • NLP Gate</div>
+      </div>
+    </div>
+
+    <!-- Card -->
+    <div class="atrium-card bg-slate-900 border border-slate-700 rounded-3xl overflow-hidden">
+      <!-- Card Header -->
+      <div class="px-6 pt-6 pb-4 border-b border-slate-700 bg-slate-950/50">
+        <div class="flex items-start justify-between">
+          <div>
+            <div class="flex items-center gap-x-2">
+              <span class="packet-badge text-xs font-semibold px-2.5 py-px rounded-full">LEVEL 1 • ROLE</span>
+              <span class="text-emerald-400 text-xs font-medium">R-52 Tier-1 Example #3</span>
+            </div>
+            <h1 class="font-display text-2xl font-semibold tracking-tighter mt-1">Federation Procurement Coordinator</h1>
+            <p class="text-slate-400 text-sm mt-0.5">ZK-Pooled Buying Power, Guild Value Optimization &amp; C2F/B2F Coordination</p>
+          </div>
+          <div class="text-right">
+            <div class="text-[10px] uppercase tracking-widest text-slate-500">Source</div>
+            <div class="font-mono text-xs text-amber-300">2026-06-02_034153_capture-session_9156c992</div>
+            <div class="text-[10px] text-slate-500">cyl_9156c99236ea • merkle 9350cf09...</div>
+          </div>
+        </div>
+        
+        <div class="mt-4 flex items-center gap-x-2 text-xs">
+          <div class="px-2.5 py-1 bg-slate-800 rounded-2xl flex items-center gap-x-1.5">
+            <i class="fa-solid fa-book text-emerald-300"></i>
+            <span>Citation: <span class="font-medium">B26 + B25 + B51 + B35</span></span>
+          </div>
+          <div class="px-2.5 py-1 bg-slate-800 rounded-2xl flex items-center gap-x-1.5">
+            <i class="fa-solid fa-fingerprint text-emerald-300"></i>
+            <span class="font-medium">LGP: Families-first (C2F)</span>
+          </div>
+          <div class="px-2.5 py-1 bg-slate-800 rounded-2xl text-amber-300 flex items-center gap-x-1.5">
+            <i class="fa-solid fa-exclamation-triangle"></i>
+            <span class="font-medium">RED on material commitments</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Left: Voice + B51 Bundle -->
+        <div class="lg:col-span-7 space-y-6">
+          <!-- Voice Note (in-surface) -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-x-2 text-sm font-semibold">
+                <i class="fa-solid fa-microphone text-rose-300"></i>
+                <span>KM Voice Seed (in-surface)</span>
+              </div>
+              <div class="text-[10px] px-2 py-0.5 bg-rose-900/30 text-rose-300 rounded">2026-06-02 03:39–03:41 UTC</div>
+            </div>
+            <div class="voice-block border border-slate-700 rounded-2xl p-4 text-sm">
+              <div class="italic text-slate-300">
+                "Imagine that we used zero-knowledge proofs for these companies who are on the ERP... self-select and opt-in... share through their chains zero-knowledge proofs on things like customer statistical profiles or procurement activities... align or essentially kind of unionize through that federation and attain higher buying power..."
+              </div>
+              <div class="mt-3 text-[11px] text-slate-400">
+                Full: "food purchases... bulk purchasing... send those bulk purchases through contract Manufacturers... if they use the Federation... the agents could think about all the different ways that they could Optimize the value That reaches the families... B to F or C to F... standard financial planning ERP full business management as well as cross coordinating Purchases and the supply chain... like in guilds..."
+              </div>
+              <div class="mt-3 flex items-center gap-x-2">
+                <button onclick="simulateVoicePlay()" 
+                        class="text-xs px-3 py-1 bg-slate-800 hover:bg-slate-700 rounded-2xl flex items-center gap-x-1.5 transition-colors">
+                  <i class="fa-solid fa-play text-emerald-300"></i>
+                  <span>Play voice note</span>
+                </button>
+                <a href="../artifacts/B51_Captured_Thought_Federation_Collective_Economic_Coordination_2026-06-02.md" target="_blank"
+                   class="text-xs px-3 py-1 bg-slate-800 hover:bg-slate-700 rounded-2xl flex items-center gap-x-1.5 transition-colors">
+                  <i class="fa-solid fa-file-lines"></i>
+                  <span>Read full in artifact</span>
+                </a>
+              </div>
+            </div>
+            <div class="text-[10px] text-slate-500 mt-1">NLP feedback enabled here • KM can speak or type directly on this card</div>
+          </div>
+
+          <!-- B51 Handoff Bundle -->
+          <div>
+            <div class="flex items-center gap-x-2 text-sm font-semibold mb-2">
+              <i class="fa-solid fa-link text-sky-300"></i>
+              <span>B51 Handoff Bundle (visible trace)</span>
+              <span class="text-[10px] px-1.5 py-px bg-sky-900/40 text-sky-300 rounded">AgentBus + goal_state</span>
+            </div>
+            <div class="space-y-2 text-sm">
+              <div class="handoff-step flex gap-x-3 items-start bg-slate-800/60 border border-slate-700 rounded-2xl p-3">
+                <div class="font-mono text-[10px] w-24 text-emerald-300">GREEN</div>
+                <div>
+                  <div><span class="font-medium">ResearchAgent</span> → <span class="font-medium">OptimizerSwarm</span></div>
+                  <div class="text-xs text-slate-400">ZK statistical profiles for 12 families + 3 businesses generated (no raw data leaked). Matched to B26 yield primitives.</div>
+                </div>
+              </div>
+              <div class="handoff-step flex gap-x-3 items-start bg-slate-800/60 border border-slate-700 rounded-2xl p-3">
+                <div class="font-mono text-[10px] w-24 text-emerald-300">GREEN</div>
+                <div>
+                  <div><span class="font-medium">OptimizerSwarm</span> → <span class="font-medium">Negotiator</span></div>
+                  <div class="text-xs text-slate-400">Helix match + value calc. Projected +18% effective purchasing power to families. 2 contract manufacturers + Amazon bulk terms surfaced.</div>
+                </div>
+              </div>
+              <div class="handoff-step flex gap-x-3 items-start bg-amber-900/10 border border-amber-800/60 rounded-2xl p-3">
+                <div class="font-mono text-[10px] w-24 text-amber-300">YELLOW</div>
+                <div>
+                  <div><span class="font-medium">Negotiator</span> → <span class="font-medium">ValueDistributor</span></div>
+                  <div class="text-xs text-amber-300">Pooled order draft ready. Material commitment — requires human disposition (R-53 gate).</div>
+                </div>
+              </div>
+              <div class="handoff-step flex gap-x-3 items-start bg-red-900/10 border border-red-800/60 rounded-2xl p-3">
+                <div class="font-mono text-[10px] w-24 text-red-300">RED</div>
+                <div>
+                  <div class="font-medium">Escalated to Atrium NLP + human token (K1)</div>
+                  <div class="text-xs text-red-300">Any real $ or guild commitment must clear this card.</div>
+                </div>
+              </div>
+            </div>
+            <div class="text-[10px] mt-1 text-slate-500">Full trace + obligation_debt in the B51 bundle artifact. Reproducible via B42 event reduce.</div>
+          </div>
+        </div>
+
+        <!-- Right: Metrics + Actions -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="bg-slate-800 border border-slate-700 rounded-2xl p-4">
+            <div class="text-xs uppercase tracking-widest text-slate-400 mb-2">LGP Score (families first)</div>
+            <div class="flex items-baseline gap-x-2">
+              <span class="text-4xl font-semibold tabular-nums metric">+18</span>
+              <span class="text-emerald-300">%</span>
+            </div>
+            <div class="text-xs text-emerald-400">Effective purchasing power uplift to participating families (C2F). Parallel for businesses.</div>
+            <div class="mt-3 text-[10px] flex gap-1 flex-wrap">
+              <span class="px-1.5 py-0.5 bg-emerald-900/30 rounded text-emerald-300">Guild re-coordination</span>
+              <span class="px-1.5 py-0.5 bg-emerald-900/30 rounded text-emerald-300">Opt-in only</span>
+              <span class="px-1.5 py-0.5 bg-emerald-900/30 rounded text-emerald-300">ZK privacy preserved</span>
+            </div>
+          </div>
+
+          <div class="bg-slate-800 border border-slate-700 rounded-2xl p-4 text-xs">
+            <div class="font-semibold mb-2">Citation Bundle (B31 Merkle pattern)</div>
+            <div class="font-mono text-[10px] space-y-1 text-slate-400">
+              <div>B26: collective_procurement_guilds (merkle 9350cf09...)</div>
+              <div>B51: A4 for economic swarms</div>
+              <div>B25: resonant_shards_non_devouring_federation</div>
+              <div class="text-amber-300">Human seed: export 2026-06-02_034153... (full in B51_Captured_Thought)</div>
+            </div>
+          </div>
+
+          <!-- Action buttons -->
+          <div>
+            <div class="text-xs uppercase tracking-widest text-slate-400 mb-2">KM Disposition (Atrium NLP gate)</div>
+            <div class="flex flex-col gap-2">
+              <button onclick="disposition('approve')" 
+                      class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 transition-colors rounded-2xl text-sm font-semibold flex items-center justify-center gap-x-2">
+                <i class="fa-solid fa-check"></i>
+                <span>APPROVE — Seal as Level 1 packet (R-53 gate)</span>
+              </button>
+              <button onclick="disposition('refine')" 
+                      class="w-full py-2.5 bg-amber-600 hover:bg-amber-500 active:bg-amber-700 transition-colors rounded-2xl text-sm font-semibold flex items-center justify-center gap-x-2">
+                <i class="fa-solid fa-edit"></i>
+                <span>REFINE — Add NLP comment (e.g. add commodity hedging action)</span>
+              </button>
+              <button onclick="disposition('reject')" 
+                      class="w-full py-2.5 bg-slate-700 hover:bg-slate-600 active:bg-slate-800 transition-colors rounded-2xl text-sm font-semibold flex items-center justify-center gap-x-2">
+                <i class="fa-solid fa-ban"></i>
+                <span>REJECT — Log rationale (no obligation close)</span>
+              </button>
+            </div>
+            <div id="disposition-result" class="hidden mt-3 text-xs p-2 rounded-2xl border"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer / Witness -->
+      <div class="px-6 py-3 bg-slate-950 border-t border-slate-700 text-[10px] flex items-center justify-between text-slate-400">
+        <div>
+          Packet obligation: <span class="font-mono">obl_20260602_034153_fec_001</span> (material • draft → approved → credit E2)
+        </div>
+        <div class="flex items-center gap-x-3">
+          <span>Demo state from: <span class="font-mono">federation_collective_procurement_demo.py</span></span>
+          <a href="federation_collective_procurement_demo.py" class="underline hover:text-emerald-300" target="_blank">run demo</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-4 text-[10px] text-center text-slate-500">
+      This is a self-contained honest mock of the FEC packet as visible Atrium Review card (Track F). 
+      Voice + B51 bundle + LGP + citations + disposition buttons all present. 
+      Real version will read live /api/v1/obligations + node receipts when breath-gate is wired.
+      <br>
+      Per G: "The FEC packet should surface there as a visible card." • "Output short status + seals when Review surface increment lands."
+    </div>
+  </div>
+
+  <script>
+    function simulateVoicePlay() {
+      const btns = document.querySelectorAll('button');
+      const orig = event.currentTarget;
+      const note = "Playing captured voice note (simulated). In real Atrium this would stream the cylinder audio with B32 receipt.";
+      alert(note);
+    }
+
+    function disposition(action) {
+      const result = document.getElementById('disposition-result');
+      result.classList.remove('hidden');
+      result.classList.add('block');
+      
+      if (action === 'approve') {
+        result.innerHTML = `
+          <div class="flex items-center gap-x-2 text-emerald-300">
+            <i class="fa-solid fa-check-circle"></i> 
+            <span class="font-semibold">APPROVED</span> — NLP disposition recorded. Breath-gate cleared. 
+            Packet now eligible for R-53 human-gated re-seat on live R-23 ledger (KM-1176 attribution).
+          </div>
+          <div class="text-[10px] mt-1">New receipt minted. Card moves to Sealed column. FEC packet ready for role binding + Helix render of federation_pool_cockpit.</div>
+        `;
+        result.style.borderColor = '#166534';
+        result.style.background = 'rgba(16, 185, 129, 0.08)';
+      } else if (action === 'refine') {
+        const comment = prompt("Enter NLP refinement comment (will be attached to packet citation):", "Add explicit action for commodity hedging and raw material pooling per original voice note.");
+        result.innerHTML = `
+          <div class="flex items-center gap-x-2 text-amber-300">
+            <i class="fa-solid fa-edit"></i> 
+            <span class="font-semibold">REFINED</span>
+          </div>
+          <div class="text-xs mt-1">Comment logged: "${comment || 'Refinement noted.'}". Packet returned to Ideation with updated payload. New version will be proposed as debit.</div>
+        `;
+        result.style.borderColor = '#854d0e';
+        result.style.background = 'rgba(245, 158, 11, 0.08)';
+      } else {
+        result.innerHTML = `
+          <div class="flex items-center gap-x-2 text-slate-300">
+            <i class="fa-solid fa-ban"></i> 
+            <span class="font-semibold">REJECTED</span> — Rationale logged on ledger. No credit. Packet archived with full voice + handoff provenance for future reference.
+          </div>
+        `;
+        result.style.borderColor = '#334155';
+        result.style.background = 'rgba(51, 65, 85, 0.3)';
+      }
+      
+      // Fake ledger update
+      setTimeout(() => {
+        const footer = document.querySelector('.bg-slate-950.border-t');
+        if (footer) footer.innerHTML = footer.innerHTML.replace('draft → approved → credit E2', 'SEALED • ' + action.toUpperCase() + ' • receipt rcpt_20260602_...');
+      }, 800);
+    }
+
+    // Tailwind script run
+    console.log('%c[Atrium Mock] FEC Review Card ready. Per G steering: visible card + in-surface voice + B51 bundle + disposition.', 'color:#64748b');
+  </script>
+</body>
+</html>

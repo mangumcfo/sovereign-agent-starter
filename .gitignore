@@ -28,3 +28,6 @@ cylinder_index.db
 *.swp
 .idea/
 .vscode/
+
+# attachment bundles (redundant with the artifacts themselves)
+*.tgz
