@@ -297,6 +297,37 @@ class ObligationLedger:
                 out[o["owner"]]["closed"] += 1
         return out
 
+    def full_log(self) -> list[dict]:
+        """
+        Per-obligation materialized record incl. approval + close evidence/receipt — for
+        read-only drilldowns (the Atrium book↔code / review lens). Newest first.
+        """
+        entries = self._entries()
+        obs = {e["id"]: dict(e) for e in entries if e.get("type") == "debit"}
+        for e in entries:
+            t = e.get("type")
+            if t == "approval" and e.get("approves") in obs:
+                d = obs[e["approves"]]
+                d["approved"] = True
+                d["draft"] = False
+                d["approved_by"] = e.get("approved_by")
+                d["approval_rationale"] = e.get("rationale")
+            elif t == "credit" and e.get("closes") in obs:
+                d = obs[e["closes"]]
+                d["status"] = "closed"
+                d["evidence"] = e.get("evidence")
+                d["evidence_tier"] = e.get("evidence_tier")
+                d["closed_by"] = e.get("closed_by")
+                rcpt = e.get("receipt") or {}
+                d["receipt_id"] = rcpt.get("receipt_id")
+                d["node_receipt_hash"] = rcpt.get("node_receipt_hash")
+        out = []
+        for _oid, d in obs.items():
+            d.setdefault("status", "approved" if d.get("approved") else "draft")
+            out.append(d)
+        out.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
+        return out
+
     def verify_chain(self) -> bool:
         """Recompute the hash chain; True iff every prev_hash + hash is intact."""
         prev = "genesis"

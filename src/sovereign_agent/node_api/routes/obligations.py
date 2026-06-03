@@ -35,6 +35,22 @@ def obligations_list():
     })
 
 
+@bp.get("/obligations/log")
+@require_principal
+def obligations_log():
+    """obligations.log — full materialized ledger (open + closed w/ evidence + receipts), read-only.
+
+    Powers the Atrium review / book↔code drilldown: lets the cockpit show a closed obligation
+    with the seal evidence it produced — the feedback→edits→seal trace, live.
+    """
+    led = get_obligation_ledger()
+    return jsonify({
+        "log": led.full_log(),
+        "status": led.by_status(),
+        "chain_ok": led.verify_chain(),
+    })
+
+
 @bp.post("/obligations")
 @require_principal
 def obligations_open():
