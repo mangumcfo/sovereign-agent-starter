@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atrium — Review &amp; Packet Console (light)</title>
+<style>
+  :root{--bg:#0d1117;--panel:#161b22;--panel2:#1c2230;--line:#30363d;--ink:#e6edf3;--dim:#8b949e;--accent:#58a6ff;--green:#3fb950;--yellow:#d29922;--red:#f85149}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;font-size:14px;line-height:1.4}
+  a{color:var(--accent);text-decoration:none}
+  header{display:flex;align-items:center;gap:10px;padding:6px 12px;border-bottom:1px solid var(--line);background:var(--panel);font-size:13px}
+  header .title{font-weight:600}
+  header .status{margin-left:auto;font-size:11px;color:var(--dim);padding:1px 6px;border:1px solid var(--line);border-radius:999px}
+  .tabs{display:flex;gap:4px;padding:6px 12px;border-bottom:1px solid var(--line);background:var(--panel)}
+  .tabs button{background:transparent;color:var(--dim);border:1px solid transparent;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:13px}
+  .tabs button.active{color:var(--ink);background:var(--panel2);border-color:var(--line)}
+  .main{padding:12px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:10px}
+  .card h3{margin:0 0 6px;font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:.04em}
+  .note{background:var(--panel2);border-left:3px solid var(--accent);padding:6px 8px;border-radius:0 5px 5px 0;margin:6px 0;font-size:12px}
+  .note.warn{border-left-color:var(--yellow)}
+  .item{padding:6px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px;font-size:13px}
+  .item:last-child{border-bottom:none}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;color:var(--dim)}
+  .chip{display:inline-block;padding:0 6px;border-radius:999px;font-size:10px;font-weight:700;border:1px solid}
+  .GREEN{color:var(--green);border-color:var(--green)}
+  .YELLOW{color:var(--yellow);border-color:var(--yellow)}
+  .RED{color:var(--red);border-color:var(--red)}
+  .btn{background:var(--panel2);color:var(--ink);border:1px solid var(--line);padding:5px 10px;border-radius:6px;cursor:pointer;font-size:12px}
+  .btn.approve{border-color:var(--green);color:var(--green)}
+  .btn.deny{border-color:var(--red);color:var(--red)}
+  .btn.small{padding:3px 7px;font-size:11px}
+  .row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:6px 0}
+  .kv{display:flex;justify-content:space-between;font-size:12px;padding:2px 0}
+  .kv span:first-child{color:var(--dim)}
+  .list .item{padding:4px 0}
+  .drawer-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;z-index:10}
+  .drawer{position:fixed;top:0;right:0;height:100%;width:min(480px,92vw);background:var(--panel);border-left:1px solid var(--line);padding:12px;overflow:auto;display:none;box-shadow:-6px 0 20px rgba(0,0,0,.5);z-index:11}
+  .drawer.open,.drawer-bg.open{display:block}
+  .drawer h2{margin:0 0 4px;font-size:15px}
+  .drawer .close{float:right;cursor:pointer;color:var(--dim);font-size:18px}
+  .viewer{border:1px solid var(--line);border-radius:6px;background:#0b1220;height:380px;overflow:auto;padding:8px;font-size:13px;line-height:1.5}
+  .page{border-bottom:1px dashed #263551;padding:4px 0;cursor:pointer}
+  .page.active{background:#10243b}
+  .composer textarea{width:100%;background:#0b1220;color:#e4eaf3;border:1px solid #263551;border-radius:6px;padding:8px;font:inherit;font-size:13px;min-height:70px}
+  .pill{padding:1px 6px;border-radius:999px;font-size:10px;border:1px solid var(--line);color:var(--dim)}
+  .footer{font-size:11px;color:var(--dim);padding:8px 12px;border-top:1px solid var(--line);margin-top:12px}
+  .honest{font-size:11px;color:var(--yellow);background:#22251c;padding:2px 6px;border-radius:4px}
+</style>
+</head>
+<body>
+<header>
+  <span class="title">Atrium — Review &amp; Packet Console</span>
+  <span class="status">KM-1176 • sovereign node • <span id="nodeStatus">mock (light)</span></span>
+  <button class="btn small" onclick="showDemoControls()">⚙ demo</button>
+</header>
+
+<div class="tabs">
+  <button id="tab-review" class="active" onclick="switchTab('review')">Review (Human Handoff)</button>
+  <button id="tab-pipeline" onclick="switchTab('pipeline')">Series Pipeline</button>
+  <button id="tab-decide" onclick="switchTab('decide')">Decide (Gates &amp; Packets)</button>
+</div>
+
+<div id="surface" class="main"></div>
+
+<div class="footer">
+  Lightweight sovereign artifact. Core loop: read (with context) → feedback → packet (B32 + LGP + citations) → human breath-gate → receipted close. 
+  <span class="honest">All decisions local mock. Real node uses same surfaces via thin api.js seam + real ComplianceEngine + HumanApprovalGate.</span>
+  <span style="float:right">Book Review surface = the "Human Handoff" stage of the pipeline (WORKFLOW.md canonical).</span>
+</div>
+
+<div id="drawerBg" class="drawer-bg" onclick="closeDrawer()"></div>
+<div id="drawer" class="drawer">
+  <span class="close" onclick="closeDrawer()">✕</span>
+  <div id="drawerBody"></div>
+</div>
+
+<script>
+/* Minimal embedded data — derived from series_roadmap.yaml v2 + WORKFLOW.md + recent L1/FEC work.
+   Trimmed for the lightweight artifact. */
+const DEMO = {
+  series: [
+    {
+      num: 2, name: "Building the Agentic Harness", status: "Phase −1 signed; 5 vols in human handoff",
+      titles: [
+        { id: "vol_05_yield_organism_and_generational_prosperity", title: "The Sovereign Yield Engine", stage: "awaiting_human_review", lgp: "+18% families-first (FEC voice seed 2026-06-02 under B26; ZK opt-in guilds)", next_gate: "Human handoff (Atrium Review + chapter+page ref)", packets: ["series_lock_packet", "handoff_disposition_packet_with_chapter_page_ref", "living_spec_mapping_to_role_lattice (FEC guild)"] },
+        { id: "vol_02_the_primacy_cockpit", title: "The Primacy Cockpit", stage: "awaiting_human_review", lgp: "high (Atrium as the sovereign decision surface / thin lens)", next_gate: "Human handoff + Review surface ratification", packets: ["series_lock_packet", "board_pass_packet", "handoff_disposition_packet_with_chapter_page_ref"] },
+        { id: "vol_03_governed_dev_loop_and_self_building_harness", title: "The Harness That Builds Itself — Under Human Witness", stage: "awaiting_human_review", lgp: "high (constitutional drift safeguard supports multi-gen LGP)", next_gate: "Human handoff + ARC guardrail", packets: ["series_lock_packet", "board_pass_packet", "living_spec_mapping_to_role_lattice (drift_safeguard)"] }
+      ]
+    }
+  ],
+  lifecycle: ["Phase −1 series-lock", "Phase 1 draft + boards", "Phase 2 Human Handoff (this surface)", "Phase 3 living-spec mapping"],
+  principles: ["Series-level locking (titles upfront)", "Books are living specs", "Human handoff is first time KM sees it", "L1 packets default (closeable one evidence / sitting)"],
+
+  packets: [], // populated live by capture + seeded examples
+  gates: []    // populated from packets that are material
+};
+
+function seedDemoData() {
+  DEMO.packets = [
+    { id: "pkt_fec_001", loc: "review:05 · p42", txt: "Tie the ZK pooled procurement directly to the yield organism chapter as L1 example.", scope: "YELLOW", lgp: "+18% families (FEC voice 2026-06-02_034153...)", citations: "B26 + B51 capture cyl_9156c99236ea + series_roadmap v2", trace: "direct human (no B51 handoff)", material: true, status: "open" },
+    { id: "pkt_atr5_002", loc: "review:02 · p17", txt: "The chapter+page ref now travels with every feedback packet (ATR-5).", scope: "GREEN", lgp: "foundational for agent context", citations: "WORKFLOW.md Phase 2 + ATR-5 sealed", trace: "B51 cylinder (voice→text→ingest)", material: false, status: "open" }
+  ];
+  DEMO.gates = DEMO.packets.filter(p => p.material || p.scope !== "GREEN").map(p => ({...p, title: "Book feedback packet", action_class: "book.feedback.handoff", impact: "Creates portable B32 obligation that surfaces in pipeline and obligations lens. Human root decides material changes."}));
+}
+
+/* Core renderers — focused on the human loop */
+function switchTab(tab) {
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  const s = document.getElementById('surface');
+  if (tab === 'review') s.innerHTML = renderReview();
+  else if (tab === 'pipeline') s.innerHTML = renderPipeline();
+  else if (tab === 'decide') s.innerHTML = renderDecide();
+  bindCommon();
+}
+
+function renderReview() {
+  return `
+    <div class="card" style="border-left:3px solid var(--yellow)">
+      <h3>⚠ Real vs forward (ATR-5 / ATR-5b)</h3>
+      <div class="note"><b>Real:</b> in-surface viewer + chapter + page travel with your feedback so the agent knows exactly what you are looking at. Feedback becomes a draft B32 packet immediately (portable, surfaces in Decide + Pipeline). Voice via B51 cylinder (or browser dictation on supported browsers). Honest: Firefox has no Web Speech — use B51.</div>
+      <div class="note" style="margin-top:6px"><b>Forward (ATR-5b):</b> automatic page from the viewer requires in-app pdf.js renderer (browser sandbox prevents native PDF scroll read). Vendor bundle = bigger offline standalone; CDN = smaller but needs network. KM decision pending.</div>
+    </div>
+
+    <div class="card">
+      <h3>Manuscript viewer (ATR-3 + context for ATR-5)</h3>
+      <div id="pdfViewer" class="viewer" style="height:260px">
+        <div class="page" data-ch="05" data-pg="42" onclick="setContext(this)">Ch 05 — The Sovereign Yield Engine (p42) ... yield organisms, ZK opt-in guilds, families-first LGP from the 3:39am voice seed...</div>
+        <div class="page" data-ch="02" data-pg="17" onclick="setContext(this)">Ch 02 — The Primacy Cockpit (p17) ... Atrium as the sovereign decision surface / thin lens over the node...</div>
+        <div class="page" data-ch="03" data-pg="8" onclick="setContext(this)">Ch 03 — The Harness That Builds Itself (p8) ... constitutional drift safeguard + human root for generational handovers...</div>
+      </div>
+      <div class="note" style="margin-top:6px">Click a "page" above (or type in the fields below) to set context. In real pdf.js (ATR-5b) this would be read from viewer scroll state.</div>
+    </div>
+
+    <div class="card" style="border-left:3px solid var(--accent)">
+      <h3>Speak / write feedback (becomes packet)</h3>
+      <div class="row">
+        <label>Chapter <select id="fb_ch"><option>05</option><option>02</option><option>03</option></select></label>
+        <label>Page <input id="fb_pg" type="number" value="42" style="width:70px"></label>
+      </div>
+      <textarea id="fb_txt" placeholder="Your change request or observation... (LGP, citations, scope will be attached automatically)"></textarea>
+      <div class="row" style="margin-top:6px">
+        <button class="btn" onclick="simulateVoice()">🎤 Speak (use B51 cylinder on FF)</button>
+        <button class="btn approve" onclick="captureFeedback()">Capture feedback → packet</button>
+      </div>
+      <div class="note" style="margin-top:4px">The loc (chapter · page) + your words + LGP alignment + citations + trace become a portable B32 packet. It appears instantly in "Decide" and can advance the Pipeline stage on approval.</div>
+      <div id="captureList" class="list" style="margin-top:8px"></div>
+    </div>
+  `;
+}
+
+function setContext(el) {
+  document.getElementById('fb_ch').value = el.dataset.ch;
+  document.getElementById('fb_pg').value = el.dataset.pg;
+  // highlight
+  document.querySelectorAll('#pdfViewer .page').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function simulateVoice() {
+  const ta = document.getElementById('fb_txt');
+  ta.value = (ta.value ? ta.value + ' ' : '') + 'Voice note via B51 cylinder: this directly supports the families-first LGP north-star (see 2026-06-02 capture).';
+  alert('Simulated B51 cylinder capture (voice→text→ingest). On real FF use your actual B51 cylinder — it lands in the identical packet shape.');
+}
+
+function captureFeedback() {
+  const ch = document.getElementById('fb_ch').value || 'general';
+  const pg = document.getElementById('fb_pg').value || '';
+  const txt = (document.getElementById('fb_txt').value || '').trim();
+  if (!txt) { alert('Add feedback first.'); return; }
+  const loc = ch + (pg ? ' · p' + pg : '');
+  const pkt = {
+    id: 'pkt_' + Date.now().toString(36),
+    loc,
+    txt,
+    scope: 'YELLOW',
+    lgp: '+18% families-first (FEC / yield organism tie)',
+    citations: 'WORKFLOW.md + series_roadmap.yaml v2 + B51 capture',
+    trace: 'direct human (or B51 cylinder)',
+    material: true,
+    status: 'open',
+    created: new Date().toISOString()
+  };
+  DEMO.packets.unshift(pkt);
+  if (pkt.material || pkt.scope !== 'GREEN') {
+    DEMO.gates.unshift({...pkt, title: 'Book feedback packet', action_class: 'book.feedback.handoff', impact: 'Creates portable B32 obligation (L1 handoff_disposition_packet_with_chapter_page_ref). Human root decides.'});
+  }
+  // live update the little list in this view
+  const list = document.getElementById('captureList');
+  if (list) {
+    const row = document.createElement('div');
+    row.className = 'item';
+    row.innerHTML = `<span><span class="mono" style="color:var(--accent)">${loc}</span> ${txt.slice(0,60)}${txt.length>60?'…':''}</span><span class="mono">${pkt.id}</span>`;
+    list.prepend(row);
+  }
+  document.getElementById('fb_txt').value = '';
+  // cross-update other tabs if they are visible
+  if (document.getElementById('tab-decide').classList.contains('active')) {
+    switchTab('decide');
+  }
+  if (document.getElementById('tab-pipeline').classList.contains('active')) {
+    // no structural change but user can see the new packet count conceptually
+  }
+  alert('Packet captured (draft B32). It is now visible in Decide. Approve at the gate to advance the pipeline stage.');
+}
+
+function renderPipeline() {
+  const s = DEMO.series[0];
+  let html = `<div class="card" style="border-left:3px solid var(--yellow)"><h3>⚠ Real today (ATR-7)</h3>
+    <div class="note"><b>Real:</b> whole book lifecycle visible — every series + title + stage + LGP + next gate + the L1 packets each stage produces. Read-only projection of series_roadmap.yaml v2 (sourced from WORKFLOW.md). The Book Review surface is the Human Handoff stage.</div></div>`;
+  html += `<div class="card"><h3>Multi-series roadmap</h3><div class="note">Lifecycle: ${DEMO.lifecycle.join(' → ')}</div>`;
+  DEMO.principles.forEach(p => { html += `<div class="item"><span>${p}</span></div>`; });
+  html += `</div>`;
+
+  const titlesHtml = s.titles.map(t => {
+    const pk = t.packets && t.packets.length ? `<div class="note" style="margin:2px 0 0 6px">packets at this stage: ${t.packets.map(x=>`<span class="mono">${x}</span>`).join(' · ')}</div>` : '';
+    return `<div class="item" style="display:block">
+      <div><span class="mono" style="color:var(--accent)">${t.id}</span> ${t.title} &nbsp;<span class="chip ${t.stage.includes('human')?'GREEN':'YELLOW'}">${t.stage}</span></div>
+      <div class="note" style="margin:2px 0 0 6px">LGP: ${t.lgp}</div>
+      <div class="note" style="margin:2px 0 0 6px">next gate: ${t.next_gate}</div>
+      ${pk}
+      <div style="margin-top:4px"><button class="btn small" onclick="openInReview('${t.id}')">Review this title (with context)</button></div>
+    </div>`;
+  }).join('');
+  html += `<div class="card"><h3>${s.name} <span class="mono" style="color:var(--dim)">(${s.status})</span></h3><div class="list">${titlesHtml}</div></div>`;
+  return html;
+}
+
+function openInReview(titleId) {
+  switchTab('review');
+  // pre-fill a sensible context for demo
+  setTimeout(() => {
+    const ch = document.getElementById('fb_ch');
+    const pg = document.getElementById('fb_pg');
+    if (titleId.includes('05')) { if (ch) ch.value='05'; if (pg) pg.value='42'; }
+    else if (titleId.includes('02')) { if (ch) ch.value='02'; if (pg) pg.value='17'; }
+    else { if (ch) ch.value='03'; if (pg) pg.value='8'; }
+  }, 50);
+}
+
+function renderDecide() {
+  let html = `<div class="card" style="border-left:3px solid var(--yellow)"><h3>Pending gates &amp; packets</h3>
+    <div class="note">These are draft B32 obligations (L1 where possible). Material ones require your breath (hard human gate). Approve = seal receipt + advance pipeline stage where applicable. All provenance travels.</div></div>`;
+  if (!DEMO.gates.length && !DEMO.packets.length) {
+    html += `<div class="card">No open items. Capture feedback in the Review tab to create one.</div>`;
+    return html;
+  }
+  const all = [...DEMO.gates, ...DEMO.packets.filter(p => !DEMO.gates.find(g=>g.id===p.id))];
+  all.forEach(p => {
+    const isGate = !!p.action_class;
+    html += `<div class="item" onclick="openGate('${p.id}')">
+      <span><span class="chip ${p.scope}">${p.scope}</span> ${p.title || 'Book feedback packet'} <span class="mono">${p.loc || ''}</span></span>
+      <span class="mono">${p.lgp || ''} · ${isGate ? 'gate' : 'packet'}</span>
+    </div>`;
+  });
+  return html;
+}
+
+function openGate(id) {
+  let item = DEMO.gates.find(g=>g.id===id) || DEMO.packets.find(p=>p.id===id);
+  if (!item) return;
+  const body = `
+    <h2><span class="chip ${item.scope}">${item.scope}</span> ${item.title || 'Book feedback packet'}</h2>
+    <div class="mono">${item.loc || ''} · ${item.action_class || 'book.feedback.handoff'}</div>
+    <div class="kv"><span>LGP alignment</span><span>${item.lgp}</span></div>
+    <div class="kv"><span>Citations / provenance</span><span class="mono">${item.citations}</span></div>
+    <div class="kv"><span>Trace</span><span class="mono">${item.trace}</span></div>
+    <p><b>Impact.</b> ${item.impact || 'Creates portable B32 obligation that surfaces in the Series Pipeline and obligations lens. Human root decides material changes to governed artifacts.'}</p>
+    <div class="note"><b>If denied:</b> Packet stays open (draft). Fully recoverable. No implementation proceeds.</div>
+    <div class="row" style="margin-top:12px">
+      <button class="btn approve" onclick="decideGate('${id}', 'approve')">Approve (breathe) — seal receipt + advance stage</button>
+      <button class="btn deny" onclick="decideGate('${id}', 'deny')">Deny — keep open</button>
+    </div>
+    <div class="mono" style="margin-top:8px;color:var(--yellow)">${item.material ? 'MATERIAL — requires human breath.' : 'Non-material (GREEN-eligible in real ARC)'} • local mock only</div>
+  `;
+  showDrawer(body);
+}
+
+function decideGate(id, verb) {
+  const pkt = DEMO.packets.find(p=>p.id===id);
+  const gate = DEMO.gates.find(g=>g.id===id);
+  if (verb === 'approve') {
+    if (pkt) pkt.status = 'sealed';
+    if (gate) {
+      // remove from gates
+      DEMO.gates = DEMO.gates.filter(g=>g.id !== id);
+    }
+    // advance a matching pipeline stage (demo)
+    const s = DEMO.series[0];
+    const t = s.titles.find(tt => tt.id.includes('05') || id.includes('fec'));
+    if (t && t.stage === 'awaiting_human_review') {
+      t.stage = 'sealed / living-spec';
+      t.next_gate = 'living-spec mapping complete';
+    }
+    closeDrawer();
+    // re-render current tab
+    const active = document.querySelector('.tabs button.active');
+    if (active) {
+      if (active.id.includes('decide')) switchTab('decide');
+      else if (active.id.includes('pipeline')) switchTab('pipeline');
+    }
+    alert('Sealed with receipt (E2). Pipeline stage advanced where applicable. Packet is now portable.');
+  } else {
+    closeDrawer();
+    alert('Denied — packet remains open (draft).');
+  }
+}
+
+function showDrawer(html) {
+  document.getElementById('drawerBody').innerHTML = html;
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawerBg').classList.add('open');
+}
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawerBg').classList.remove('open');
+}
+
+function bindCommon() {
+  // nothing heavy needed; clicks are inline
+}
+
+function switchTabAndRender(tab) {
+  switchTab(tab);
+}
+
+function showDemoControls() {
+  const d = prompt('Demo controls (type): reset | show-hashes | pdf-note | export-all');
+  if (!d) return;
+  if (d === 'reset') { seedDemoData(); location.reload(); }
+  if (d === 'show-hashes') alert('All packets carry B31 merkle + human_seed + cylinder id (see series_roadmap.yaml v2 and capture).');
+  if (d === 'pdf-note') alert('ATR-5b pending KM decision: vendor pdf.js (offline standalone, bigger) vs CDN (smaller, network required). Current viewer is simulated for lightweight artifact.');
+  if (d === 'export-all') {
+    const data = JSON.stringify({packets: DEMO.packets, series: DEMO.series}, null, 2);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([data], {type:'application/json'}));
+    a.download = 'atrium-packets-export.json';
+    a.click();
+  }
+}
+
+function init() {
+  seedDemoData();
+  // initial render
+  document.getElementById('surface').innerHTML = renderReview();
+  // make the simulated pages set context on click (already in HTML)
+  // seed one visible captured item for demo
+  const list = document.getElementById('captureList');
+  if (list && DEMO.packets.length) {
+    const p = DEMO.packets[0];
+    list.innerHTML = `<div class="item"><span><span class="mono" style="color:var(--accent)">${p.loc}</span> ${p.txt.slice(0,50)}…</span><span class="mono">${p.id}</span></div>`;
+  }
+  // keyboard niceties
+  document.addEventListener('keydown', function(e){
+    if (e.key === '/' && document.activeElement.tagName === 'BODY') {
+      e.preventDefault();
+      const ta = document.getElementById('fb_txt'); if (ta) ta.focus();
+    }
+    if (e.key.toLowerCase() === 'd' && document.getElementById('tab-decide').classList.contains('active')) {
+      // open first gate if any
+      if (DEMO.gates.length) openGate(DEMO.gates[0].id);
+    }
+  });
+  // initial tab state
+  document.getElementById('tab-review').classList.add('active');
+}
+
+// expose for console / demo
+window.AtriumLight = { switchTab, openGate: (id) => { switchTab('decide'); setTimeout(()=>openGate(id),30); }, seed: seedDemoData };
+window.onload = init;
+</script>
+</body>
+</html>

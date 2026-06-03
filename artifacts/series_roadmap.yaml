@@ -1,0 +1,241 @@
+# series_roadmap.yaml — Atrium "Series Pipeline" lens projection (read-only)
+# 
+# Purpose: Render-friendly view for the Atrium cockpit "Series / Authoring" tab
+# (roadmap + per-title stage cards + drill-down). Review surface = "Human Handoff" sub-view.
+#
+# Source of truth: breathline-books-vault/WORKFLOW.md + pipeline/series_*.yaml + pipeline/active.yaml + kdp/*/ series defs.
+# This file is a derived projection (GB prep per G ruling 2026-06-02). Atrium lens reads it; mutations flow back to vault via Tiger.
+#
+# Phased per G: review-existing (current) → read-only pipeline visibility (this) → stage-gates + light authoring.
+# L1 packets (per Packet Granularity v0.2) map across the full lifecycle:
+#   series-lock · per-chapter-draft · board-pass-N · handoff-disposition (Atrium Review) · living-spec-mapping (Phase 3)
+#
+# Per-title fields (for read-only lens cards):
+#   - lgp_alignment_score: (per series/title, updated on handoff; e.g. "+18% families-first via FEC" or "high / LGP north-star aligned")
+#   - next_gate: (human-readable + obligation_id link; e.g. "Human handoff (Atrium Review) | obligation: obl_...")
+#
+# State rides: obligation ledger (B32) + this render-friendly yaml.
+# Canonical pipeline files remain immutable except by KM ratification.
+
+version: "2026-06-02.gb-projection.v2 (updated per G ruling 2026-06-02)"
+generated_from:
+  - breathline-books-vault/WORKFLOW.md (Phase −1 series-lock → Phase 3 ship)
+  - pipeline/active.yaml (current stages + recently_handed_off)
+  - pipeline/series_agentic_harness.yaml (Series 2 locked titles)
+  - pipeline/series_quadroof.yaml (Series 4)
+  - kdp/agentic_playbooks/ (Series 1 titles, partial from active)
+  - kdp/series_02_building_the_agentic_harness/ (editorial + keyword context)
+  - kdp/series_03_programmable_sovereign_erp/ (forward ref)
+
+# G ruling 2026-06-02 updates applied:
+# - Added lgp_alignment_score (per series/title, updated on handoff) and next_gate (human-readable + obligation_id link) per series/title.
+# - Seeded early-stage L1 packet examples (series-lock, chapter_draft, board-pass) using template names (e.g. series_lock_packet, chapter_draft_packet, board_pass_packet, handoff_disposition_packet_with_chapter_page_ref, living_spec_mapping_to_role_lattice). Link to actual obligation_ids once created.
+# - ARC integration: show GREEN Tier-1 in Series Pipeline tab (as stage status) AND main Review/Kanban for material.
+# - Confirmed structure good for read-only lens; no major changes.
+# - Early-stage packet examples seeded in parallel as GB background.
+
+multi_series_roadmap:
+  current_arc: "Series 2 completion (5 vols in human handoff/phase_2) → Atrium UX live cutover pivot → Series 3 ERP executable specs (books as living backend)"
+  active_series_count: 3  # 1 (playbooks partial), 2 (harness), 4 (quadroof)
+  principles:
+    - "Series-level locking (all titles upfront in Phase −1)"
+    - "One title active at a time in AI pipeline (warm-slot for handoff)"
+    - "Books are living specs (map to breathline-federation/specs/<series>/ + roles + Atrium surfaces)"
+    - "Human handoff is the first time KM sees it (Atrium Review = the handoff sub-view)"
+    - "L1 packets default for fine-grained lifecycle stages (closeable one evidence / sitting)"
+
+series:
+  - slug: agentic_playbooks
+    name: "Agentic AI Playbooks for Executives (Series 1)"
+    series_number: 1
+    status: "Phase 2 iteration on batch (10/11/12); earlier vols sealed/shipped"
+    ladder_arc: "CEO/CFO/operator decision frameworks → execution"
+    titles:
+      - book_id: "10_scaling_enterprise"
+        title: "Scaling the Agentic Enterprise"
+        subtitle: "Playbooks for Operators Who Actually Ship"
+        stage: "phase_2_iteration"
+        phase: "2"
+        reader_order: 10
+        lgp_alignment_score: "high (Series 1 foundation for LGP visibility in later series)"
+        next_gate: "Human handoff ratification (Atrium Review) | obligation: pending (post ATR-5b + lens)"
+        packets:
+          - series_lock_packet  # Phase −1 series activation (template L1 name; link to actual obl_id once created on ledger)
+          - chapter_draft_packet  # Phase 1 outline/draft v1.0 + board passes
+          - board_pass_packet  # Editorial board rounds + UX Translation Board (17.5)
+          - handoff_disposition_packet_with_chapter_page_ref  # Phase 2 KM review (ATR-5 context)
+          - living_spec_mapping_to_role_lattice  # Phase 3 extract to specs/ + roles (Series 3 translation)
+        drill_down: "Phase 2 KM chapter-by-chapter pass (per WORKFLOW 24). Rebuilt PDFs 2026-05-29. Handoff packet + compliance gates."
+        current_evidence: "active.yaml recently_handed_off batch; kdp/agentic_playbooks/10_..."
+        l1_packet_candidates:
+          - "series1_vol10_handoff_disposition"  # human review + signoff as L1 packet on ledger
+          - "series1_vol10_living_spec_mapping"  # Phase 3 extract to specs/ + PR
+      - book_id: "11_ma_due_diligence"
+        title: "M&A Due Diligence in the Agentic Era"
+        stage: "phase_2_iteration"
+        phase: "2"
+        packets: []
+        drill_down: "Same batch; editorial + UX translation board notes."
+      - book_id: "12_agentic_enterprise"
+        title: "The Agentic Enterprise"
+        stage: "phase_2_iteration"
+        phase: "2"
+        packets: []
+        drill_down: "Series 1 closer; canonical-term locks; author-imposition lens."
+    packets_lifecycle_map:
+      series_lock: "kdp/agentic_playbooks/SERIES_PLAN or equivalent (pre-dates current pipeline/ yamls)"
+      per_chapter_draft: "kdp/agentic_playbooks/*/v1.0/ (outlines + drafts)"
+      board_passes: "kdp/agentic_playbooks/*/EDITORIAL_BOARD_REVIEW* + resolution logs"
+      handoff_disposition: "Atrium Review surface (current strength; packets carry chapter+page ref post ATR-5)"
+      living_spec_mapping: "breathline-federation/specs/ + sovereign-agent-starter role_specs (Series 3 translation)"
+
+  - slug: agentic_harness
+    name: "Building the Agentic Harness (Series 2)"
+    series_number: 2
+    status: "Phase −1 SIGNED 2026-05-30T03:50:15Z (KM-1176); 5 vols recently handed off to human review (awaiting_human_review); active.yaml slot idle pending Atrium pivot"
+    ladder_arc: "operator/builder → architect → family CIO → generational steward"
+    editorial_board_signoff: "2026-05-30T03:50:15Z — immutable per WORKFLOW Phase −1 step 6"
+    titles:
+      - book_id: "vol_01_sovereign_inference_and_memory"
+        title: "Sovereign Inference & Memory"
+        subtitle: "Build the Receipted Cockpit That Keeps Humans in Command"
+        stage: "awaiting_human_review"
+        phase: "2 (handoff)"
+        reader_order: 1
+        writing_order: 3
+        packets: []
+        drill_down: "Appendix P primitives foundation; B51 + SIX locks; Ch 9 family-sov arc. Atrium Phase 5 (SIX lanes + B51 stream)."
+        current_evidence: "pipeline/active.yaml recently_handed_off[vol_01]; series yaml LOCKED; handoff packet delivered"
+        l1_packet_candidates:
+          - "series2_vol01_handoff_disposition"  # KM review + signoff packet (ATR-style, with chapter+page)
+          - "series2_vol01_primitives_to_role_lattice"  # living spec mapping to inference roles
+      - book_id: "vol_02_the_primacy_cockpit"
+        title: "The Primacy Cockpit"
+        subtitle: "Build the Atrium That Keeps Humans Sovereign in the Agentic Era"
+        stage: "awaiting_human_review"
+        phase: "2"
+        reader_order: 2
+        writing_order: 1
+        lgp_alignment_score: "high (Atrium as the sovereign decision surface / thin lens for 100% UX + human primacy)"
+        next_gate: "Human handoff + Review surface ratification | obligation: pending (ATR-5b + lens)"
+        packets:
+          - series_lock_packet  # Phase −1 (template L1)
+          - chapter_draft_packet  # Phase 1
+          - board_pass_packet  # Editorial + UX Translation Board (17.5) — cockpit material
+          - handoff_disposition_packet_with_chapter_page_ref  # Phase 2 (ATR-5 context; the "Human Handoff" sub-view)
+          - living_spec_mapping_to_role_lattice  # Phase 3 (Atrium surfaces + role specs via universal ERP)
+        drill_down: "THE WHOLE COCKPIT. Every Atrium phase (1–9) material. Series virality asset (mock screenshots)."
+        current_evidence: "active.yaml; series yaml; Book-to-UX Translation Board output feeds Atrium backlog"
+        l1_packet_candidates:
+          - "series2_vol02_atrium_surface_handoff"  # Review surface as handoff sub-view
+          - "series2_vol02_cockpit_feature_extraction"  # UX translation → Atrium cards / lens
+      - book_id: "vol_03_governed_dev_loop_and_self_building_harness"
+        title: "The Harness That Builds Itself — Under Human Witness"
+        subtitle: "Config, Proposals, and Constitutional Drift Safeguards"
+        stage: "awaiting_human_review"
+        phase: "2"
+        reader_order: 3
+        writing_order: 5
+        lgp_alignment_score: "high (constitutional drift safeguard directly supports LGP multi-gen visibility + human root)"
+        next_gate: "Human handoff + ARC guardrail ratification (Atrium Review) | obligation: pending (post lens)"
+        packets:
+          - series_lock_packet  # Phase −1 (template L1)
+          - chapter_draft_packet  # Phase 1
+          - board_pass_packet  # Editorial + UX Translation
+          - handoff_disposition_packet_with_chapter_page_ref  # Phase 2 (ATR-5)
+          - living_spec_mapping_to_role_lattice  # Phase 3 (drift_safeguard + proposal_lifecycle specs)
+        drill_down: "Last Series 2 manuscript. §2a/§2b LOCKED (proposal mechanics + hard constitutional boundary). Gates Atrium live cutover per Book 12 R2.3."
+        current_evidence: "active.yaml; deep-dive shape (4 sections + 5 units); UX Translation Board complete"
+        l1_packet_candidates:
+          - "series2_vol03_governed_loop_handoff"
+          - "series2_vol03_drift_safeguard_to_ledger"  # maps to B32 + ARC (post G confirmation)
+      - book_id: "vol_04_federation_and_partner_device_gateway"
+        title: "Federated Sovereignty"
+        subtitle: "Build Networks of Sovereign Nodes Without Losing Human Primacy"
+        stage: "awaiting_human_review"
+        phase: "2"
+        reader_order: 4
+        writing_order: 4
+        packets: []
+        drill_down: "Receipted-shard propagation; partner/investor gateway; QuadRoof named example; ship-blank multi-tenant."
+        current_evidence: "active.yaml; Phase 8a/8b/11 Atrium mappings"
+        l1_packet_candidates:
+          - "series2_vol04_federation_handoff"
+          - "series2_vol04_shard_propagation_obligation"
+      - book_id: "vol_05_yield_organism_and_generational_prosperity"
+        title: "The Sovereign Yield Engine"
+        subtitle: "Build Prosperity That Compounds Across Generations"
+        stage: "awaiting_human_review"
+        phase: "2"
+        reader_order: 5
+        writing_order: 2
+        lgp_alignment_score: "+18% families-first (FEC voice seed 2026-06-02_034153... under B26; ZK opt-in guilds/entities for collective yield)"
+        next_gate: "Human handoff (Atrium Review + chapter+page ref) | obligation: pending (ATR-5b + lens)"
+        packets:
+          - series_lock_packet  # Phase −1 (template L1; from series_agentic_harness.yaml sign-off)
+          - chapter_draft_packet  # Phase 1 per-chapter (outline + draft v1.0)
+          - board_pass_packet  # Editorial board rounds 1-3 + Book-to-UX Translation Board
+          - handoff_disposition_packet_with_chapter_page_ref  # Phase 2 (ATR-5 context; FEC card example)
+          - living_spec_mapping_to_role_lattice  # Phase 3 (yield organism specs + roles; FEC guild as L1)
+        drill_down: "Series closer. Yield Organism (crypto engine · autonomy ledgers · yield organism). FEC voice seed (B51 capture) directly extends B26 here."
+        current_evidence: "active.yaml; Ch 1 opener sealed verbatim; three-ring model canonical; LGP north-star payoff"
+        l1_packet_candidates:
+          - "series2_vol05_yield_handoff"
+          - "series2_vol05_fec_guild_formation_packet"  # direct from 2026-06-02 B51 voice (ZK opt-in entities)
+    packets_lifecycle_map:
+      series_lock: "pipeline/series_agentic_harness.yaml (KM-signed 2026-05-30; all 5 titles + keyword bundles + spec coupling upfront) → series_lock_packet (L1 template)"
+      per_chapter_draft: "kdp/series_02_building_the_agentic_harness/<vol>/v1.0/ (outlines, drafts, board notes) → chapter_draft_packet + board_pass_packet (L1 templates)"
+      board_passes: "kdp/series_02.../EDITORIAL_BOARD_REVIEW_v1.0.md + round notes + UX Translation Board (17.5) → board_pass_packet (L1)"
+      handoff_disposition: "Atrium Review surface (ATR-1..6; now with chapter+page context ATR-5; FEC card as visible example) → handoff_disposition_packet_with_chapter_page_ref (L1)"
+      living_spec_mapping: "breathline-federation/specs/ + sovereign-agent-starter/src/.../demo_roles + role_spec.yaml (via universal ERP translation) → living_spec_mapping_to_role_lattice (L1)"
+      # Early-stage examples seeded per G 2026-06-02 ruling (series-lock and board-pass); link to real obl_ids post-creation on ledger. lgp_alignment_score and next_gate added to titles for lens cards.
+
+  - slug: quadroof
+    name: "QuadRoof Investor Series (Series 4)"
+    series_number: 4
+    status: "Phase −1 plan drafted; sign-off pending (editorial_board_signoff.date null). One-title v1 (investor guide); optional family owner companion v2."
+    ladder_arc: "family/sovereign → the homeowner-scale infrastructure track"
+    titles:
+      - book_id: "01_investor_guide"
+        title: "Investing in QuadRoof"
+        subtitle: "The Five Gates Behind Every Tranche — A Bottom-Up Guide for Sophisticated Investors"
+        stage: "awaiting_human_review"  # from active.yaml
+        phase: "2"
+        reader_order: 1
+        packets: []
+        drill_down: "Tax-equity + capital structure for residential BIPV + compute off-take. Five gates (investor diligence). Ties to B26 yield + federation energy primitives."
+        current_evidence: "pipeline/active.yaml; kdp/quadroof/ + EDITORIAL_BOARD_REVIEW_v1.0.md (pending KM sign-off)"
+        l1_packet_candidates:
+          - "series4_quadroof_handoff_disposition"
+          - "series4_quadroof_capital_structure_to_yield_organism"
+    packets_lifecycle_map:
+      series_lock: "pipeline/series_quadroof.yaml (one-title v1; scope may expand at sign-off)"
+      handoff_disposition: "Atrium Review (future; currently in vault editorial)"
+      living_spec_mapping: "Forward to Series 3/4 economic + energy primitives (QuadRoof as worked example for yield organisms + distributed compute)"
+
+# Cross-series notes for Atrium lens
+atrium_integration:
+  review_sub_view: "Human Handoff (current Atrium strength; in-surface PDF/voice/B51 + chapter+page ref + Approve/Refine/Reject + NLP disposition → portable B32 packet)"
+  series_pipeline_tab: "Roadmap (multi-series arc) + per-title stage cards (click → drill: title metadata, current stage, packets produced at that stage, sources, LGP alignment, lgp_alignment_score, next_gate). Read-only first (per G phased path)."
+  state_source: "obligation ledger (for packet/obligation existence + status) + this yaml (for roadmap + stage rendering)"
+  packet_mapping: "Every lifecycle transition can emit L1 packet (e.g. series-lock = one obligation with citation to the signed series_<slug>.yaml; handoff = ATR-style disposition packet with ref: review:<chapter>·p<page>)"
+  next_after_readonly: "Stage-gates (human or ARC-supervised GREEN on Tier-1) + light authoring (new series activation from cockpit)"
+  arc_integration: "Per G 2026-06-02: Show ARC-supervised GREEN Tier-1 pipeline-stage items in the Series Pipeline tab (as stage status) AND surface material ones as visible cards in the main Review/Kanban for KM ratification. Human breath-gate hard on material."
+
+# GB prep notes (2026-06-02, per G ruling)
+gb_notes:
+  - "Projection synthesized from vault sources. Not the source of truth — vault files + WORKFLOW.md + active.yaml are."
+  - "Unblocks Tiger read-only Series Pipeline lens (Atrium will render roadmap + cards from this)."
+  - "L1 packets seeded as candidates only; actual obligations created on ledger when stages advance (Tiger wires, GB can propose examples)."
+  - "FEC (from B51 voice) explicitly called out as candidate under Vol 5 — ties collective procurement to yield organisms."
+  - "ARC confirmation (G ruling) means GREEN Tier-1 handoff dispositions can be ARC-supervised after initial KM ratification; material stays hard human gate."
+  - "Mait splits now LIVE (MAIT-15..19 added to seed.yaml + re-migrated per Tiger sync; 10 open incl L1s; see Mait_L1_Split_Proposals + updated index + mait VIEW.md). Live L1 granularity example (one evidence/sitting, material gate) in real regulated testbed (welding QMS/FPC); cross-pattern for pipeline L1s."
+  - "G 2026-06-02 updates applied: lgp_alignment_score + next_gate added per series/title; early-stage L1 templates (series_lock_packet, chapter_draft_packet, board_pass_packet) seeded; ARC in both tab + main Review confirmed; structure ratified for read-only lens; deep dive questions closed; sequencing confirmed (ATR-5b → lens, GB parallel on early packets)."
+
+# References for Tiger / Atrium implementer
+references:
+  - "See artifacts/Series_Pipeline_in_Atrium_GB_G_Alignment_2026-06-02.md (Tiger's handoff + implementer read: read-only lens first)"
+  - "artifacts/Message_to_G_Series_Pipeline_2026-06-02.md (G alignment ask, including deep dive)"
+  - "artifacts/OBLIGATIONS_MASTER_INDEX_2026-06-02.md + Packet_Granularity_Definition_v0.2.md"
+  - "breathline-books-vault/WORKFLOW.md (the canonical; do not fork)"
+  - "G ruling 2026-06-02: phased review-first; Atrium = cockpit; ledger + this yaml for state; answers to open questions applied here"

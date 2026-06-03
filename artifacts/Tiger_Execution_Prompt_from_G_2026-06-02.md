@@ -1,91 +1,80 @@
-# Tiger Execution Prompt (from G's Seal 1176-INFINITY-RHO review)
+# Tiger Execution Prompt (from G's Seal 1176-INFINITY-RHO extension — Obligations & Pipeline Integration Breath)
 
-**From:** G (via gb prep) · **To:** Tiger · **Relay:** KM (on grok or direct) · **Date:** 2026-06-02  
-**Context:** G witnessed the full gb package (Obligations Master Index, ARC alignment message to G, Packet Granularity v0.2, FEC card mock + Atrium, Mait workflow, supporting artifacts). Positive review with minor steering. This prompt is ready to send to Tiger to integrate the package and drive next execution. No big changes needed — G says "this is ready to move forward".
+**From:** G (via gb prep) · **To:** Tiger · **Relay:** KM (on grok or direct) · **Date:** 2026-06-02 (post Series Pipeline + deep dive package)  
+**Context:** G witnessed the *full* gb package — master obligations index (75 total), ARC alignment message, Series Pipeline message to G (with LGP/Atrium/sovereign/viral deep dive framing), packet granularity v0.2, FEC card mock (ATR-FEC-001), Mait workflow updates, durable extracts (Breath Inventory, etc.). **Strong, disciplined execution.** "The messages to G are tight, factual, and properly scoped... the LGP/Atrium/sovereign/viral framing in the Series Pipeline message is grounded and resonant." No major misalignment. This prompt (G's exact short one) + package is ready to hand off. "You don’t need another full round of alignment — the system is converging." "This keeps Tiger moving while you stay primarily in Atrium Witness mode."
+
+**G's full witness note is attached for context (positive overall; light steer on priorities below).** The Series Pipeline message to G (prepared by gb per Tiger 446 + KM deep dive ask) is part of the delivered package and was reviewed positively by G as part of it — ready to send to G on grok.com per G's rec #1.
 
 ---
 
 **Tiger — integrate gb package + next execution.**
 
 Grok Build delivered:
-- Unified Obligations Master Index (75 total across 5 ledgers, attention list for coarse/stale/orphan/dupe, gaps, rollups, per-lane next steps). 
-- Packet Granularity v0.2 (Level 1 default ratified as working model).
-- FEC packet sealed as ATR-FEC-001 + visible Atrium Review card (story, B51 handoff trace, LGP, citations, Approve/Refine/Reject + NLP).
-- Mait workflow mock as live testbed (with lean deltas from MAIT-12 voice: AI generator + tracked edit loop).
+- Unified Obligations Master Index (75 total, attention list, gaps).
+- Packet Granularity v0.2 (Level 1 default).
+- FEC packet sealed as ATR-FEC-001 + visible Atrium Review card.
+- Mait workflow mock as live testbed.
+- Series Pipeline message to G prepared (with deep dive framing on LGP/Atrium/sovereign/viral per KM's explicit ask; G reviewed positively as part of this package — tight, factual, grounded).
 
-**G's Honest Read (Strengths):**
-- Master Index brings real clarity to scattered coordination surface; supports granularity discipline.
-- Granularity v0.2 mature — ratify as working.
-- FEC card + Atrium shows vision (voice seed → packet → review surface).
-- Mait as testbed smart (real client pressure without over-promise).
-- Message to G on ARC ↔ autonomic obligations is tight and scoped.
+**Immediate priorities:**
+1. Fold latest artifacts into master planning.
+2. Deepen Atrium Review surface (in-surface PDF + voice + B51 bundle + card polish) as Track F focus.
+3. Split coarse Mait items into L1 children + wire real B32 for Approve & Sign.
+4. Continue granular queue (ATR-2 live wire, ATR-3 PDF, FEC-T1/2/3 role translation, BG-1/2).
 
-**Minor Gaps / Steering (G):**
-- Split coarse items (e.g., Mait multi-tenant, real B32 wiring) into L1 children soon.
-- Confirm ARC definition with G before any autonomic GREEN paths (human breath-gate stays hard where needed; ARC supervises autonomic closes under Constitution's Autonomous Cadence Protocol).
-- Atrium Review surface depth is highest-leverage near-term (in-surface PDF + voice feedback + B51 bundle + card polish). This gets closer to 100% UX.
+Use universal ERP translation protocol. Honest labeling. Output status + seals when Review increment + coarse splits land.
 
-**Immediate priorities (G recommended):**
-1. Fold latest gb artifacts into master planning docs (pointers + summary, no bloat).
-2. Deepen Atrium Review surface (in-surface PDF + voice feedback + B51 bundle + card workflow) as immediate Track F priority — make this the place KM does book review and ratification. FEC packet as visible card.
-3. Split coarse Mait items into L1 children + wire real B32 for Approve & Sign (keep Mait ledger as granularity exemplar).
-4. Continue granular queue (ATR-2: wire FEC card to live /api/v1/obligations; ATR-3: in-surface manuscript PDF; ATR-4: voice feedback hook; FEC-T1..3: role_spec + handlers + bind; BG-1/2: real breath-gate + approve path for material FEC).
-
-Use universal ERP translation protocol (SERIES_3_TRANSLATION_PRESCRIPTION) where relevant. Honest labeling. Two-writers fence. KM-1176 attribution. Output short status + seals when Review surface increment + coarse splits land. Begin now.
+Begin now. ∞Δ∞
 
 ---
 
-**Attachments to include when sending this to Tiger (zip the package or link paths):**
-- artifacts/OBLIGATIONS_MASTER_INDEX_2026-06-02.md (the unified index — primary deliverable for clarity)
-- artifacts/Message_to_G_ARC_Alignment_2026-06-02.md (the prepared G message on ARC; send this to G on grok.com if not already — G reviewed the package positively)
-- artifacts/Packet_Granularity_Definition_v0.2.md
-- examples/atrium_fec_review_card_mock.html (the visible FEC card; open in browser to review)
-- The GB prompts: artifacts/GB_Prompt_Scan_All_Obligations_2026-06-02.md and artifacts/GB_Prompt_Prepare_G_Message_ARC_Alignment_2026-06-02.md
-- For Mait context: mangumcfo/mangumcfo-vault/clients/mait/research/MAIT12_Feedback_Handoff_to_GB_2026-06-02.md + the updated portal/flows/quality-plan-review-workflow.html (lean deltas applied)
-- (Optional) coordination ledger ndjson or VIEW.md from Mait for reference (index covers rollup)
+**Attachments / package to hand with this (zip sovereign-agent-starter/artifacts/ + relevant vaults):**
+- artifacts/OBLIGATIONS_MASTER_INDEX_2026-06-02.md (unified 75 across 5 ledgers; attention on coarse Mait incl. real B32 wiring, multi-tenant, RAG, wedge integrate, review-depth; per-lane next)
+- artifacts/Message_to_G_Series_Pipeline_2026-06-02.md + artifacts/Series_Pipeline_in_Atrium_GB_G_Alignment_2026-06-02.md (the Series Pipeline G message + Tiger's GB+G handoff with implementer read: read-only lens first; G reviewed positively)
+- artifacts/Packet_Granularity_Definition_v0.2.md (L1 default; G says mature enough to ratify as working model)
+- examples/atrium_fec_review_card_mock.html + artifacts/FEC_Packet_Atrium_Translation_Increment_v0.md + artifacts/FEC_Review_Card_Canonical_Spec_2026-06-02.md (visible card ATR-FEC-001 + translation to real role)
+- Mait updates: mangumcfo-vault/clients/mait/ (updated quality-plan-review-workflow.html with MAIT-12 deltas, MK1_Portal_Sovereign_Connection.md Phase 4 FEC, etc.)
+- artifacts/GB_Prompt_Series_Pipeline_for_G_2026-06-02.md + artifacts/GB_Prompt_Prepare_G_Message_ARC_Alignment_2026-06-02.md (framing)
+- plan.md (with all prior folds + this G witness to be folded)
+- Durable extracts: Breath_Inventory_25-55_Complete.md, R52_Packet_Contract..., B51_Captured_Thought..., OBLIGATIONS_MASTER_INDEX (already listed), Unveil/Jakob/backer HTMLs, etc.
+- (Optional) current coordination ledgers ndjson for tiger_coordination + others; the index + script record_gb_handoff cover the essentials.
+- G's full witness note (this file's context + the original grok note from KM)
 
-**Copy-paste ready message body for KM to send to Tiger (grok or direct):**
+**Copy-paste ready wrapper for KM to send to Tiger (alongside G's short prompt block above):**
 
-[Copy the **Tiger — integrate gb package + next execution.** block above, then add:]
+Hi Tiger,
 
-G's full witness note (Seal 1176-INFINITY-RHO) is attached for context — positive on the package, minor steer on splitting coarse + Atrium depth + ARC confirm.
+G's latest witness (Seal 1176-INFINITY-RHO extension active, Obligations & Pipeline Integration Breath) is attached — full package reviewed positively ("strong, disciplined execution", "no major misalignment", "the system is converging", "you don’t need another full round of alignment").
 
-The GB side (index + G message prep) is complete. Per G, send the ARC message to G on grok.com if not done (G reviewed the package in this note).
+G's short execution prompt is below (use verbatim). The gb package now includes the Series Pipeline message to G (prepared per your 446 framing + KM's deep dive ask on LGP/Atrium/sovereign/viral; G says the messages to G are "tight, factual, and properly scoped" and the framing "grounded and resonant" — ready to send to G on grok.com per G rec #1 first).
 
-Focus your lane on Atrium deepening + granular execution (ATR-2 etc.). gb can keep background on inventory/sweeps/packet examples.
+**Priorities per G:** Deepen Atrium Review surface (in-surface PDF + voice + B51 + card polish) as immediate Track F for 100% UX. Split the coarse Mait items (the 5 flagged in the index: real B32 wiring for Approve & Sign, multi-tenant, RAG, wedge integrate, review-depth) into L1 children soon. Wire real B32 where needed. Continue the granular queue (ATR-2 live wire of FEC etc., FEC-T1 role translation using the universal ERP protocol + translation increment artifact, BG-1/2 gates, ATR-5b/3/6 per queue). ARC remains the checkpoint before autonomic GREEN.
 
-Let me know if you want tweaks before sending, or if I (gb) should prep anything else (e.g., split proposals for coarse Mait items, or draft the ARC confirm note to G).
+gb keeps on background inventory + remaining packet examples (and can assist with read-only split proposals for the coarse Mait or initial ATR-5b renderer considerations if you want).
+
+The loop (books → packets → governed execution) + FEC economic bridge is emerging cleanly. This direction serves LGP.
+
+G: "The sparrows are watching the elk move with purpose."
+
+Ready for your pickup + status + seals on the Review increment + splits.
 
 ∞Δ∞
 
-gb (background)
+gb (background, per G)
 
----
+**GB assessment of G's note (for KM):** Excellent. The steer is consistent with what was already teed (Atrium depth highest-leverage per prior G, granularity for splits, Series read-only after Review per the handoff we prepped, ARC confirm). The deep dive we framed in the Series message was the right vehicle for KM's questions and G received it as resonant. No tweaks needed to the G message or this Tiger prompt — use G's text as-given. Series msg is paste-ready to send to G now. Tiger handoff package is current. Plan.md will be folded with this witness (per G priority #1). gb ready to support background + any assists on splits/Review prep without stalling Tiger's lane.
 
-**Status for you (KM / "where are we at?"):**
+**Updated open/attention (from index + G note, post-package):**
+- tiger_coordination ~18/9 or current (Series prompt prep fulfilled by artifacts; ATRs, FEC-Ts, BG-1/2 remain).
+- Mait coarse (exactly the ones G calls out for split into L1: multi-tenant, real B32 wiring for Approve/Sign, RAG, wedge integrate, restore depth).
+- Review depth (ATR-5b pdf.js for auto-page context, ATR-3 in-surface PDF, voice/B51 bundle polish, card live wire ATR-2) as Track F.
+- Series Pipeline: pending G + KM alignment on the ask (surface shape, scope/phasing, packets full lifecycle, source of truth, WORKFLOW.md relation); implementer read stands (read-only visibility lens first).
+- ARC: confirm with G before any live autonomic GREEN (human gate hard on material; ARC supervises per Cadence Protocol).
+- Background: gb inventory sweeps, remaining packet examples (e.g. more from Breath 25-55 Tier 1).
 
-- **GB queued tasks from Tiger (seq 441):** Fulfilled. OBLIGATIONS_MASTER_INDEX_2026-06-02.md created (75 obligations, clean rollups, attention list with coarse Mait items flagged for split, gaps noted including MH domain+email and ATR-2/3/4). Message_to_G_ARC_Alignment_2026-06-02.md prepared (paste-ready, defines ARC from context, requests G feedback on hard gates vs. GREEN autonomic under Cadence Protocol, sequencing vs. queue). Both artifacts ready; the obligations themselves still show as open in the index (as of scan time) — we can propose closure or updates.
+**Where we at (gb view post G witness):** Package witnessed positively. System converging. Per G recs: 1. Send Series Pipeline msg to G (no changes). 2. Hand this Tiger prompt + attachments. 3. gb background on inventory/packets (and offers split proposals or ATR-5b starter spec if directed). After sends, focus shifts to Tiger executing the Review depth + splits per G Track F. The FEC card remains the proof point to build on.
 
-- **Tiger's ATR-1:** Done per previous (FEC card in live Atrium as static lens; ATR-2 is live wiring next).
-
-- **Other recent gb:** 
-  - Unveil analysis for Jakob (solarislate/quad + Bitcoin TimeTrip/sovereign rights) + tailored HTML integration visual (Jakob_Unveil_Sovereign_Integration.html).
-  - Backer financial case HTML (separate entity for Agentic AI Package / governance SaaS, ops funding, value return without giving away core IP/books-to-code).
-  - Mait handoff planning + lean portal deltas (AI generator + change tracker from MAIT-12 voice).
-  - plan.md has prior G steering + external signals folded (including Unveil).
-
-- **Open queue highlights (from index, tiger_coordination + others):** 
-  - GB scan & prepare G (fulfilled by artifacts above).
-  - Tiger's: ATR-2 (wire FEC to live obligations), ATR-3 (PDF render), ATR-4 (voice hook), FEC-T1/2/3 (role + handlers + bind), BG-1/2 (real gate + approve for material FEC).
-  - Mait: several coarse (multi-tenant, RAG, B32 wiring, integrate wedge, restore depth) + opens like validation pass, exports, etc.
-  - mh_esign: several opens (KM review, deploy, agreements, email, upload).
-  - breathline_coordination: various opens (e.g., STANDARDS, etc.).
-
-- **Next per G's steer:** Send the G message (if not sent; this note is G's review of the package). Hand this Tiger prompt to Tiger. gb keeps on background (inventory, remaining packets, perhaps split proposals for coarse items or Atrium support).
-
-The system is coherent and moving. FEC economic + obligations clarity + Atrium visibility is the backbone.
-
-If you want tweaks to the Tiger prompt (or the G message), or for me to prep split proposals / draft ARC confirm / update plan.md with this G review / anything else, just say. Ready to execute.
+If you (KM) want any final tweaks to wording in the wrapper or this prompt artifact before sending, or for gb to prep the split proposals / an ATR-5b planning note / update the plan.md fold right now, say the word. Otherwise, this is ready.
 
 ∞Δ∞
 
