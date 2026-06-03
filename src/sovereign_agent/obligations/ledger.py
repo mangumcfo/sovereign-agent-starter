@@ -299,3 +299,22 @@ class ObligationLedger:
                 return False
             prev = e["hash"]
         return True
+
+    def manifest(self) -> dict:
+        """One-glance proof of ledger state (P0-1). Mirrors GB's gb_meta_cylinder ritual for the
+        agent's OWN obligation chain: run after any open/approve/close and the last_hash changes +
+        the obligation counts move — cryptographic + countable proof the agent's state updated.
+        """
+        entries = self._entries()
+        last = entries[-1] if entries else None
+        return {
+            "file": str(self.path),
+            "chain_entries": len(entries),
+            "obligations": self.by_status(),
+            "chain_valid": self.verify_chain(),
+            "last_hash": last.get("hash") if last else None,
+            "last_prev_hash": last.get("prev_hash") if last else None,
+            "last_ts": last.get("timestamp") if last else None,
+            "last_type": last.get("type") if last else None,
+            "last_ref": (last.get("title") or last.get("closes") or last.get("approves") or "—") if last else None,
+        }
