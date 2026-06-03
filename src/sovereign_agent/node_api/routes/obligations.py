@@ -54,6 +54,8 @@ def obligations_open():
         intent=body.get("intent"),
         ref=body.get("ref"),
         material=bool(body.get("material", False)),
+        lgp=body.get("lgp"),            # P0-2: LGP travels through the HTTP layer too
+        next_gate=body.get("next_gate"),
     )
     return jsonify(entry), 201
 
