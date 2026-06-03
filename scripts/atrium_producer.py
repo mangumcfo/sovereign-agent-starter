@@ -168,7 +168,44 @@ def run_once() -> None:
     _save_state(st)
 
 
+def process_one(oid: str) -> None:
+    """On-demand: process a single session by id (the Atrium 'Process' button path)."""
+    try:
+        log = _get("/obligations/log").get("log", [])
+    except Exception as exc:
+        _log(f"ledger unreachable: {exc}")
+        return
+    o = next((x for x in log if x.get("id") == oid), None)
+    if not o:
+        _log(f"on-demand: session {oid} not found")
+        return
+    intent = o.get("intent", "")
+    book = _book_of(intent)
+    _log(f"on-demand processing {oid} ({book})")
+    result = _generate(intent, book)
+    groups = (result or {}).get("groups") or []
+    if groups:
+        try:
+            prop = _post("/proposals", {
+                "session_ref": (result or {}).get("session_ref", o.get("ref", "")),
+                "obligation_id": oid, "book": book,
+                "note": (result or {}).get("note", "Produced from your captured session."),
+                "groups": groups,
+            })
+            _log(f"  posted proposal {prop.get('id')} ({len(groups)} group(s))")
+        except Exception as exc:
+            _log(f"  post failed: {exc}")
+    else:
+        _log(f"  no book edit ({(result or {}).get('note','classified: not a book edit / generation empty')})")
+
+
 def main() -> int:
+    if "--session" in sys.argv:
+        i = sys.argv.index("--session")
+        oid = sys.argv[i + 1] if i + 1 < len(sys.argv) else ""
+        if oid:
+            process_one(oid)
+        return 0
     once = "--once" in sys.argv
     if once:
         run_once()

@@ -86,6 +86,35 @@ def proposals_create():
     return jsonify(prop), 201
 
 
+@bp.post("/produce")
+@require_principal
+def produce():
+    """produce — HUMAN-TRIGGERED (the Atrium 'Process' button). Spawns the producer for ONE session:
+    it reads the transcript + manuscript and posts grouped diffs to /proposals (proposals only; the
+    operator still accepts in the diff-review). Not an autonomous daemon — fires only on this request.
+    """
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    body = request.get_json(silent=True) or {}
+    oid = (body.get("obligation_id") or "").strip()
+    if not oid:
+        return jsonify({"error": "missing_obligation_id",
+                        "what": "Tell me which session to process.",
+                        "next_step": "POST /api/v1/produce with {\"obligation_id\":\"obl_...\"}."}), 400
+    repo = Path(__file__).resolve().parents[4]
+    script = repo / "scripts" / "atrium_producer.py"
+    if not script.exists():
+        return jsonify({"error": "producer_missing", "what": f"No producer at {script}."}), 500
+    env = dict(os.environ)
+    env["PYTHONPATH"] = str(repo / "src")
+    subprocess.Popen([sys.executable, str(script), "--session", oid], cwd=str(repo), env=env,
+                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+    return jsonify({"status": "processing", "obligation_id": oid,
+                    "next_step": "The diff(s) appear in the diff-review when ready (~1-3 min)."}), 202
+
+
 @bp.post("/proposals/<proposal_id>/decide")
 @require_principal
 def proposals_decide(proposal_id: str):
