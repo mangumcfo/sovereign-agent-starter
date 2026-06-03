@@ -115,6 +115,33 @@ def produce():
                     "next_step": "The diff(s) appear in the diff-review when ready (~1-3 min)."}), 202
 
 
+@bp.post("/recompile")
+@require_principal
+def recompile():
+    """recompile — HUMAN-TRIGGERED. Rebuild a book's PDF from the (just-edited) manuscript so KM can
+    re-load it in the viewer and see the applied changes. Spawns the book's build script."""
+    import re
+    import subprocess
+    import sys
+
+    body = request.get_json(silent=True) or {}
+    book = (body.get("book") or "").strip()
+    m = re.search(r"Book (\d+)", book)
+    sub = {"10": "10_scaling_enterprise", "11": "11_ma_due_diligence",
+           "12": "12_agentic_enterprise"}.get(m.group(1) if m else "")
+    if not sub:
+        return jsonify({"error": "unknown_book", "what": f"No build mapping for '{book}'."}), 400
+    vault = "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks"
+    cwd = os.path.join(vault, sub, "v1.0")
+    script = os.path.join(cwd, "build_v1.0.py")
+    if not os.path.isfile(script):
+        return jsonify({"error": "no_build_script", "what": f"No build_v1.0.py for {book}."}), 500
+    subprocess.Popen([sys.executable, script], cwd=cwd,
+                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+    return jsonify({"status": "recompiling", "book": book,
+                    "next_step": "~30-90s; then re-load the PDF (Browse…) in the viewer to see the changes."}), 202
+
+
 @bp.post("/proposals/<proposal_id>/apply")
 @require_principal
 def proposals_apply(proposal_id: str):

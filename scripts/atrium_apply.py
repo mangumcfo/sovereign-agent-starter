@@ -88,22 +88,29 @@ def _resolve(repo_key: str, rel: str):
 def _apply_group(g, dry_changes):
     file = g.get("file", "")
     repo_key, rel = _repo_of(file)
-    before = "\n".join(g.get("before", []))
-    after = "\n".join(g.get("after", []))
     path = _resolve(repo_key, rel)
     if path is None:
         return False, f"unresolvable/ambiguous path: {file}"
-    is_new = not g.get("before")
-    if is_new:
+    hunks = g.get("hunks") or [{"before": g.get("before", []), "after": g.get("after", [])}]
+    # new file = a single hunk with empty `before`
+    if len(hunks) == 1 and not hunks[0].get("before"):
         os.makedirs(os.path.dirname(path), exist_ok=True)
+        after = "\n".join(hunks[0].get("after", []))
         open(path, "w", encoding="utf-8").write(after + ("\n" if not after.endswith("\n") else ""))
-    else:
-        if not os.path.isfile(path):
-            return False, f"target missing for edit: {path}"
-        txt = open(path, encoding="utf-8").read()
+        dry_changes.setdefault(repo_key, []).append(path)
+        return True, repo_key
+    if not os.path.isfile(path):
+        return False, f"target missing for edit: {path}"
+    txt = open(path, encoding="utf-8").read()
+    for h in hunks:                      # apply every instance of the pattern
+        before = "\n".join(h.get("before", []))
+        after = "\n".join(h.get("after", []))
+        if not before:
+            continue
         if before not in txt:
-            return False, f"before-text not found exactly in {os.path.basename(path)} (cannot apply safely)"
-        open(path, "w", encoding="utf-8").write(txt.replace(before, after, 1))
+            return False, f"before-text not found exactly in {os.path.basename(path)} (one hunk)"
+        txt = txt.replace(before, after, 1)
+    open(path, "w", encoding="utf-8").write(txt)
     dry_changes.setdefault(repo_key, []).append(path)
     return True, repo_key
 

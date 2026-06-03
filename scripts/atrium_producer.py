@@ -34,9 +34,11 @@ CLAUDE = os.path.expanduser("~/.local/bin/claude")
 POLL_SECONDS = 45
 
 # Map a book tag → manuscript path the generator reads to ground exact before-text.
+_VAULT = "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks"
 BOOK_PATHS = {
-    "Book 11": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/11_ma_due_diligence/v1.0/manuscript_v1.5.md",
-    "Book 12": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/12_agentic_enterprise/v1.0",
+    "Book 10": f"{_VAULT}/10_scaling_enterprise/v1.0/manuscript_v1.5.md",
+    "Book 11": f"{_VAULT}/11_ma_due_diligence/v1.0/manuscript_v1.5.md",
+    "Book 12": f"{_VAULT}/12_agentic_enterprise/v1.0/manuscript_v1.5.md",
 }
 
 
@@ -79,18 +81,20 @@ def _book_of(intent: str) -> str:
     return m.group(1) if m else "Book 11"
 
 
-PROMPT = """You are the Atrium diff-review PRODUCER. A human (KM) recorded this book-review session as a page-tagged transcript. Decide whether it asks for a concrete BOOK edit, then output ONLY a JSON object (no prose, no markdown fences).
+PROMPT = """You are the Atrium diff-review PRODUCER. A human (KM) recorded this book-review session as a page-tagged transcript. Decide whether it asks for concrete BOOK edits, then output ONLY a JSON object (no prose, no markdown fences).
 
 TRANSCRIPT:
 {transcript}
 
-MANUSCRIPT FILE (read it to ground exact text): {manuscript}
+MANUSCRIPT FILE (read the WHOLE file to ground exact text): {manuscript}
 
 RULES:
-- If the transcript requests a concrete manuscript change: read the file, locate the EXACT current text, and produce minimal grouped diffs. `before` MUST be exact lines copied from the file; `after` is the minimal change. Prefer 1-3 groups; never invent edits not asked for.
-- If it is a question, an observation, a tooling/UI note, or not a book edit: return an empty groups list with a classifying note. Do NOT fabricate a book diff.
-- Output EXACTLY this JSON shape and nothing else:
-{{"session_ref":"<book + page>","book":"<book>","note":"<short classification or summary>","groups":[{{"id":"g1","title":"...","kind":"prose|code","scope":"GREEN","rationale":"...","file":"...","before":["exact line"],"after":["changed line"]}}]}}
+- If the transcript requests concrete manuscript change(s): read the file and produce grounded diffs. Every `before` MUST be exact text copied verbatim from the file.
+- COMPLETENESS — fix the whole ISSUE, not just the one spot named. If KM signals the issue RECURS ("throughout", "everywhere", "all the…", "same issue", "similar", "keep an eye out"), SWEEP THE ENTIRE MANUSCRIPT and find EVERY instance of that same issue. Group by PATTERN: one group per distinct issue, with a `hunks` array holding EVERY instance (each {{before, after}}). Do NOT make a separate group per instance, and do NOT stop at the first match. Fix the named issue completely in this book. Only the issue(s) KM actually raised — never invent unrelated edits.
+- CROSS-BOOK: if KM says the issue also applies to other books (e.g. "books 10-12", "same in 10 and 12"), set top-level "cross_book": ["Book 10","Book 12"]. Do NOT edit other books here; they are processed separately.
+- If it is a question / observation / tooling note / not a book edit: return empty groups with a classifying note. Do NOT fabricate.
+- Output EXACTLY this JSON (a group uses EITHER `hunks` for one-or-more instances OR a single `before`/`after`):
+{{"session_ref":"<book + page>","book":"<book>","note":"<summary; say how many instances per pattern>","cross_book":[],"groups":[{{"id":"g1","title":"<pattern> — N places","kind":"prose|code","scope":"GREEN","rationale":"...","file":"<exact path>","hunks":[{{"before":["exact text"],"after":["changed text"]}}]}}]}}
 """
 
 
@@ -184,19 +188,34 @@ def process_one(oid: str) -> None:
     _log(f"on-demand processing {oid} ({book})")
     result = _generate(intent, book)
     groups = (result or {}).get("groups") or []
+    cross = [b for b in ((result or {}).get("cross_book") or []) if b in BOOK_PATHS and b != book]
     if groups:
         try:
             prop = _post("/proposals", {
                 "session_ref": (result or {}).get("session_ref", o.get("ref", "")),
-                "obligation_id": oid, "book": book,
+                "obligation_id": oid, "book": book, "cross_book": cross,
                 "note": (result or {}).get("note", "Produced from your captured session."),
                 "groups": groups,
             })
-            _log(f"  posted proposal {prop.get('id')} ({len(groups)} group(s))")
+            _log(f"  posted proposal {prop.get('id')} ({len(groups)} group(s){', cross_book='+str(cross) if cross else ''})")
         except Exception as exc:
             _log(f"  post failed: {exc}")
     else:
         _log(f"  no book edit ({(result or {}).get('note','classified: not a book edit / generation empty')})")
+    # CROSS-BOOK: sweep the same issue in each named book → a separate proposal per book.
+    for cb in cross:
+        _log(f"  cross-book sweep → {cb}")
+        r2 = _generate(intent, cb)
+        g2 = (r2 or {}).get("groups") or []
+        if g2:
+            try:
+                p2 = _post("/proposals", {"session_ref": f"cross-book · {cb}", "obligation_id": oid,
+                                          "book": cb, "cross_book": [],
+                                          "note": f"Cross-book: same issue swept in {cb}. " + (r2 or {}).get("note", ""),
+                                          "groups": g2})
+                _log(f"    posted {cb} proposal {p2.get('id')} ({len(g2)} group(s))")
+            except Exception as exc:
+                _log(f"    {cb} post failed: {exc}")
 
 
 def main() -> int:
