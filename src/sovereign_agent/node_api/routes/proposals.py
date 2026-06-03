@@ -115,6 +115,32 @@ def produce():
                     "next_step": "The diff(s) appear in the diff-review when ready (~1-3 min)."}), 202
 
 
+@bp.post("/proposals/<proposal_id>/apply")
+@require_principal
+def proposals_apply(proposal_id: str):
+    """apply — HUMAN-TRIGGERED by KM's Accept. Spawns the apply agent: land accepted+tested diffs →
+    re-test code (abort on red) → commit (local) + seal + close. Execute-after-Approve; reversible."""
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    body = request.get_json(silent=True) or {}
+    gids = body.get("group_ids")
+    repo = Path(__file__).resolve().parents[4]
+    script = repo / "scripts" / "atrium_apply.py"
+    if not script.exists():
+        return jsonify({"error": "apply_agent_missing"}), 500
+    args = [sys.executable, str(script), proposal_id]
+    if gids:
+        args.append(",".join(gids))
+    env = dict(os.environ)
+    env["PYTHONPATH"] = str(repo / "src")
+    subprocess.Popen(args, cwd=str(repo), env=env,
+                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+    return jsonify({"status": "applying", "proposal_id": proposal_id,
+                    "next_step": "Re-tests, commits (local), seals, closes — then the proposal clears. ~10-30s."}), 202
+
+
 @bp.post("/proposals/<proposal_id>/decide")
 @require_principal
 def proposals_decide(proposal_id: str):
