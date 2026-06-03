@@ -17,7 +17,7 @@
 # State rides: obligation ledger (B32) + this render-friendly yaml.
 # Canonical pipeline files remain immutable except by KM ratification.
 
-version: "2026-06-02.gb-projection.v2 (updated per G ruling 2026-06-02)"
+version: "2026-06-03.v3 (Tiger sync to active.yaml: Series 1 = 12 titles, 10/11/12 in human review; QuadRoof = Series 4 per active; new Series-4 outlines flagged-unlocated; P0-complete operational loop)"
 generated_from:
   - breathline-books-vault/WORKFLOW.md (Phase −1 series-lock → Phase 3 ship)
   - pipeline/active.yaml (current stages + recently_handed_off)
@@ -48,7 +48,8 @@ series:
   - slug: agentic_playbooks
     name: "Agentic AI Playbooks for Executives (Series 1)"
     series_number: 1
-    status: "Phase 2 iteration on batch (10/11/12); earlier vols sealed/shipped"
+    status: "12-title series (01-12). Batch 10/11/12 in phase_2 human review (started 2026-05-29; PDFs with KM; KM giving verbal feedback chapter-by-chapter per WORKFLOW step 24). 01-09 earlier/sealed. Keyword opt done UPFRONT with G on X.com (chapter-by-chapter outlines — see kdp/agentic_playbooks/'G-KW Optimized Outlines.md'). Preference: run finishing edits via the harness (Atrium Review capture → handoff packets)."
+    series_titles_total: 12  # full series is 01_cfos_finance … 12_agentic_enterprise (this projection lists the active human-review batch)
     ladder_arc: "CEO/CFO/operator decision frameworks → execution"
     titles:
       - book_id: "10_scaling_enterprise"
@@ -74,14 +75,26 @@ series:
         title: "M&A Due Diligence in the Agentic Era"
         stage: "phase_2_iteration"
         phase: "2"
-        packets: []
-        drill_down: "Same batch; editorial + UX translation board notes."
+        human_review_started: "2026-05-29"
+        lgp_alignment_score: "high (enterprise/M&A agentic tooling → faster, fairer deals; foundation for LGP visibility)"
+        next_gate: "KM verbal feedback (Atrium Review, chapter+page) → revise → sign-off → awaiting_seal"
+        packets:
+          - handoff_disposition_packet_with_chapter_page_ref  # KM verbal feedback → L1 handoff (live via harness)
+        drill_down: "In human review; KM giving verbal feedback chapter-by-chapter (capture live in Atrium Review). Keyword/outlines from G upfront. Manuscript: kdp/agentic_playbooks/11_ma_due_diligence/v1.0/."
+        l1_packet_candidates:
+          - "series1_vol11_handoff_disposition"   # each chapter's verbal feedback as an L1 handoff packet
       - book_id: "12_agentic_enterprise"
         title: "The Agentic Enterprise"
         stage: "phase_2_iteration"
         phase: "2"
-        packets: []
-        drill_down: "Series 1 closer; canonical-term locks; author-imposition lens."
+        human_review_started: "2026-05-29"
+        lgp_alignment_score: "high (Series 1 closer — the integrated agentic enterprise; canonical-term locks)"
+        next_gate: "KM verbal feedback (Atrium Review, chapter+page) → revise → sign-off → awaiting_seal"
+        packets:
+          - handoff_disposition_packet_with_chapter_page_ref
+        drill_down: "In human review; Series 1 closer; canonical-term locks; author-imposition lens. Manuscript: kdp/agentic_playbooks/12_agentic_enterprise/v1.0/."
+        l1_packet_candidates:
+          - "series1_vol12_handoff_disposition"
     packets_lifecycle_map:
       series_lock: "kdp/agentic_playbooks/SERIES_PLAN or equivalent (pre-dates current pipeline/ yamls)"
       per_chapter_draft: "kdp/agentic_playbooks/*/v1.0/ (outlines + drafts)"
@@ -191,10 +204,10 @@ series:
       # Early-stage examples seeded per G 2026-06-02 ruling (series-lock and board-pass); link to real obl_ids post-creation on ledger. lgp_alignment_score and next_gate added to titles for lens cards.
 
   - slug: quadroof
-    name: "QuadRoof Investor Series (Series 4)"
+    name: "QuadRoof Investor Series (Series 4) — SUPERSEDED IN ORDER (renumbered 2→4 2026-05-29 per Editorial Board + G consensus: Harness keeps Series 2 as natural successor to Series 1, Family AI holds Series 3 forward, QuadRoof to 4; per KM 2026-06-03 directive + deep dive active.yaml/kdp)"
     series_number: 4
-    status: "Phase −1 plan drafted; sign-off pending (editorial_board_signoff.date null). One-title v1 (investor guide); optional family owner companion v2."
-    ladder_arc: "family/sovereign → the homeowner-scale infrastructure track"
+    status: "Phase −1 plan drafted (one-title v1 investor guide); sign-off pending (editorial_board_signoff.date null); SUPERSEDED in series order per KM (other Series 4 outlines begun in kdp/series_03_programmable_sovereign_erp/ + kdp/04_xrp/ + new from B51 capture 2026-06-03; adjust multi-arc for quantum/ERP priority). One-title v1 (investor guide); optional family owner companion v2 (new series file if pursued per WORKFLOW)."
+    ladder_arc: "family/sovereign → the homeowner-scale infrastructure track (B26 yield + federation energy primitives; now part of broader Series 4 quantum/sovereignty/ERP expansion)"
     titles:
       - book_id: "01_investor_guide"
         title: "Investing in QuadRoof"
@@ -203,26 +216,62 @@ series:
         phase: "2"
         reader_order: 1
         packets: []
-        drill_down: "Tax-equity + capital structure for residential BIPV + compute off-take. Five gates (investor diligence). Ties to B26 yield + federation energy primitives."
-        current_evidence: "pipeline/active.yaml; kdp/quadroof/ + EDITORIAL_BOARD_REVIEW_v1.0.md (pending KM sign-off)"
+        drill_down: "Tax-equity + capital structure for residential BIPV + compute off-take. Five gates (investor diligence). Ties to B26 yield + federation energy primitives. SUPERSEDED order per KM; integrate with new Series 4 quantum/DNA/ERP from B51 capture (coherence/amplify with external projects)."
+        current_evidence: "pipeline/active.yaml; kdp/quadroof/ + EDITORIAL_BOARD_REVIEW_v1.0.md (pending KM sign-off); B51 capture 2026-06-03 (unveil/quantum coherence)"
         l1_packet_candidates:
           - "series4_quadroof_handoff_disposition"
           - "series4_quadroof_capital_structure_to_yield_organism"
+          - "series4_quadroof_unveil_particle_integration"  # new from B51 2026-06-03 (64-bit envelope axles for constraints/quantum)
     packets_lifecycle_map:
-      series_lock: "pipeline/series_quadroof.yaml (one-title v1; scope may expand at sign-off)"
-      handoff_disposition: "Atrium Review (future; currently in vault editorial)"
-      living_spec_mapping: "Forward to Series 3/4 economic + energy primitives (QuadRoof as worked example for yield organisms + distributed compute)"
+      series_lock: "pipeline/series_quadroof.yaml (one-title v1; scope may expand at sign-off; superseded order per KM 2026-06-03)"
+      handoff_disposition: "Atrium Review (future; currently in vault editorial; tie to B51 verbal like books 11/12)"
+      living_spec_mapping: "Forward to Series 3/4 economic + energy primitives (QuadRoof as worked example for yield organisms + distributed compute; now expand with quantum DNA/alt-chain from B51 capture)"
+  - slug: quantum_sovereignty_series4
+    name: "Quantum Sovereignty & Unveil Series (New Series 4 Outlines Begun — per KM 2026-06-03 directive + B51 capture 2026-06-03; QuadRoof order superseded)"
+    series_number: 4
+    status: "New outlines begun (kdp/series_03_programmable_sovereign_erp/ SERIES_3_CONCEPT_v2 + kdp/04_xrp/ traces + B51 capture 2026-06-03; concept/pre-outline per vault; integrate with P0-4 complete, books 11/12 harness run, vision LGP Watch, Atrium harness). Phase 1/2 transition; hopper feed from B51 verbal + G keywords upfront."
+    ladder_arc: "sovereignty for humanity → quantum DNA alignment/enhance → age of abundance (out of fractional insanity) → Type 1 civilization tool (25-30y); coherence/amplify with external projects (Unveiled Platform per B51 capture)"
+    titles:
+      - book_id: "quantum_dna_alignment"
+        title: "Quantum DNA Alignment for Generational Prosperity"
+        subtitle: "Human Genome Quantum Search, Personal Medicine, Body Adaptation & Type 1 Civilization Tools (B51 2026-06-03 seed + perfect qubits sim)"
+        stage: "concept/outline begun (kdp/series_03 + B51 capture; deep dive per user)"
+        phase: "1/2"
+        reader_order: 1 (new Series 4 priority post QuadRoof supersede)
+        lgp_alignment_score: "very high (generational enhance/health as LGP core; DNA quantum 2000x search 97.5% accuracy; personal med/enhance not just cure; Type 1 civ tool 25-30y; B25 sovereignty + new quantum Tier-1)"
+        next_gate: "Handoff disposition packet (Atrium Review + chapter+page from verbal feedback like books 11/12) | obligation: new L1 from B51 capture (P0-4 defaults auto: B32/B51/B35/B43 quantum sim)"
+        packets:
+          - series_lock_packet  # Phase −1 (new for this outline)
+          - chapter_draft_packet  # Phase 1 (outlines from SERIES_3_CONCEPT_v2 + B51)
+          - board_pass_packet  # Editorial + UX Translation (add quantum/DNA/ERP)
+          - handoff_disposition_packet_with_chapter_page_ref  # Phase 2 (B51 verbal capture 2026-06-03; Atrium Review; coherence/amplify suggestions in LGP Watch)
+          - living_spec_mapping_to_role_lattice  # Phase 3 (quantum DNA specs + roles; 5-layer private ERP; unveil particle envelope 64-bit axles; alt-chain PoW; P0-4 Tier-1 defaults embedded)
+        drill_down: "B51 capture 2026-06-03 core seed (KM speaking coherence with interlocutor 'Unveiled': quantum perfect qubits sim via constraints/formula break 50 ceiling (1 perfect~1000 physical; 100 break enc, 70 genome sim/proteins/mRNA/compare dbs MyHeritage/Mormon); DNA alignment 2000x search 97.5%; binary + quantum DNA; personal med/enhance, alpha materials, fuels, adapt bodies; Type 1 civ 25-30y; originated Africa, psychologist check, unis positive, 800k funded, MVP 3w, supercomp Switzerland; constraint-based LM for quantum insights; first on planet). Coherence/amplify with our meta (sovereignty humanity, LGP generational, replay chains, private ERPs). Integrate with books 11/12 (M&A/enterprise quantum sovereignty due diligence, private 5-layer ERPs, constraint impact, alt compute). G keyword upfront (like 11/12); run via harness (Series 2 Vol2 Atrium/Vol3 governed/Vol5 yield). LGP Watch focus: quantum for LGP enhance/abundance; human connection/consciousness exchange with Unveiled project (Jacob network)."
+        current_evidence: "B51 capture 2026-06-03 (full transcript session.yaml/md, root hash 4bd878c8...); kdp/series_03_programmable_sovereign_erp/SERIES_3_CONCEPT_v2_2026-05-31.md + SERIES_3_TRANSLATION_PRESCRIPTION; kdp/04_xrp/; this analytic + prior roadmap deep dive; P0-4 complete (Tier-1 defaults now extend quantum/constraint/unveil); vision model LGP Watch (new nodes/focus); cylinder (this B51 + thread)"
+        l1_packet_candidates:
+          - "series4_quantum_dna_alignment_handoff"  # B51 2026-06-03 verbal + Atrium chapter+page; P0-4 defaults (B32/B51/B35/B43 quantum)
+          - "series4_unveil_particle_envelope"  # 64-bit schema axles (4 info/constraints carry, 4 expand; packet envelope evolution)
+          - "series4_alt_chain_beneficial_pow"  # quantum mech problem solving open source value (vs enc break); B42 swarms + B26
+          - "series4_constraint_tree_erp"  # purchase/impact constraints (local real value vs extract/insanity; 5 layers identity/consensus/collaboration/compute/shields; private household)
+          - "series4_quantum_sovereignty_living_spec"  # DNA/genome quantum (personal med/enhance/Type1); 5-layer private sovereign ERP; coherence/amplify external (Unveiled)
+    packets_lifecycle_map:
+      series_lock: "new for Series 4 quantum/ERP (kdp/series_03 + B51 capture; hopper feed from verbal + G keywords upfront like books 11/12)"
+      per_chapter_draft: "kdp/series_03_programmable_sovereign_erp/ (SERIES_3_CONCEPT_v2 etc.) + B51 capture transcript (quantum/DNA/unveil/alt/constraint/5 layers/age abundance); chapter_draft_packet + board_pass (G templates + P0-4)"
+      board_passes: "Editorial + UX Translation (add quantum DNA/ERP/coherence; Book-to-UX for Atrium LGP Watch nodes + human connection suggestions)"
+      handoff_disposition: "Atrium Review (B51 verbal 2026-06-03 + chapter+page like 11/12; constraint/impact gates; LGP Watch focus for coherence/amplify with external projects; consciousness-to-consciousness exchange)"
+      living_spec_mapping: "breathline-federation/specs/ + sovereign-agent-starter (quantum DNA roles, unveil particle 64-bit envelope packets, alt-chain PoW, 5-layer private ERP, constraint trees; P0-4 Tier-1 defaults embedded smart: B43 quantum sim, B51 constraints, B42 alt, B26 abundance, B32 replay chains; universal ERP translation with new Series 3/4)"
+      # B51 capture 2026-06-03 (same root 9156c992 as prior FEC) as seed like FEC Vol5; G 2026-06-02 L1 templates + P0-4 + vision LGP Watch + books 11/12 harness run. QuadRoof superseded per KM; new Series 4 from deep dive (ERP/quantum/DNA) + capture coherence/amplify. LGP high for generational enhance/abundance/sovereignty humanity/Type1 25-30y. Hopper: verbal + G keywords -> packets -> roles/surfaces with P0s. Cylinder: this B51 + analytic logged for replay.
 
-# Cross-series notes for Atrium lens
+# Cross-series notes for Atrium lens (updated with B51 capture + new Series 4 + books 11/12 + P0s + vision)
 atrium_integration:
-  review_sub_view: "Human Handoff (current Atrium strength; in-surface PDF/voice/B51 + chapter+page ref + Approve/Refine/Reject + NLP disposition → portable B32 packet)"
-  series_pipeline_tab: "Roadmap (multi-series arc) + per-title stage cards (click → drill: title metadata, current stage, packets produced at that stage, sources, LGP alignment, lgp_alignment_score, next_gate). Read-only first (per G phased path)."
-  state_source: "obligation ledger (for packet/obligation existence + status) + this yaml (for roadmap + stage rendering)"
-  packet_mapping: "Every lifecycle transition can emit L1 packet (e.g. series-lock = one obligation with citation to the signed series_<slug>.yaml; handoff = ATR-style disposition packet with ref: review:<chapter>·p<page>)"
-  next_after_readonly: "Stage-gates (human or ARC-supervised GREEN on Tier-1) + light authoring (new series activation from cockpit)"
-  arc_integration: "Per G 2026-06-02: Show ARC-supervised GREEN Tier-1 pipeline-stage items in the Series Pipeline tab (as stage status) AND surface material ones as visible cards in the main Review/Kanban for KM ratification. Human breath-gate hard on material."
+  review_sub_view: "Human Handoff (current Atrium strength; in-surface PDF/voice/B51 + chapter+page ref + Approve/Refine/Reject + NLP disposition → portable B32 packet; now for verbal feedback on books 11/12 + new B51 2026-06-03 capture (quantum/DNA/unveil); LGP Watch Kanban for focus areas (peace/happiness/effectiveness/global productivity; human collective/face-to-face/consciousness exchange suggestions; AI enjoin GB replay/Tiger harness/roles); new from capture: coherence/amplify with external (Unveiled project), quantum sovereignty/DNA, constraint impact, alt-chain, 5-layer private ERP, age abundance out insanity)"
+  series_pipeline_tab: "Roadmap (multi-series arc) + per-title stage cards (click → drill: title metadata, current stage, packets produced at that stage, sources, LGP alignment, lgp_alignment_score, next_gate). Read-only first (per G phased path). Updated for QuadRoof superseded + new Series 4 outlines (quantum DNA/ERP/constraint/unveil/alt from B51 capture + kdp/series_03); books 11/12 phase_2 human review with verbal (handoff packets); LGP Watch integration for focus (e.g., quantum for LGP generational, coherence with projects); P0-4 defaults visible in roles/packets (Tier-1 B32/B35/B51/B42/B43 quantum etc. auto at bind); ARC GREEN both places + main Review/Kanban for material."
+  state_source: "obligation ledger (for packet/obligation existence + status + manifest P0-1 proof) + this yaml (for roadmap + stage rendering); live breath seam (P0-3) for all Atrium breathes (books 11/12 verbal, new B51, LGP Watch); LGP fields (P0-2) on all; Tier-1 defaults (P0-4) embedded in roles from these (smart: B43 quantum sim, B51 constraints/handoffs, B26 abundance, B32 replay chains, B35 Helix for specs/ERP)"
+  packet_mapping: "Every lifecycle transition can emit L1 packet (e.g. series-lock = one obligation with citation to the signed series_<slug>.yaml; handoff = ATR-style disposition packet with ref: review:<chapter>·p<page>); new from B51 capture 2026-06-03: unveil particle (64-bit envelope axles for constraints/info/expand/quantum), quantum DNA alignment (genome search/enhance 2000x/97.5%, Type1), alt-chain beneficial PoW (quantum mech problem solving open source value vs enc break), constraint tree ERP (purchase/impact local real value vs extract/insanity; 5 layers identity/consensus/collaboration/compute/shields; private household), age of abundance (out of fractional insanity; coherence/amplify projects for LGP resonance). Like FEC B51 seed -> R-52 packet -> role (explicit gates/LGP 0.92) -> Atrium card -> P0 example. G templates (series_lock_packet etc.) + P0-4 for new Series 4 + books 11/12."
+  next_after_readonly: "Stage-gates (human or ARC-supervised GREEN on Tier-1) + light authoring (new series activation from cockpit; e.g., new Series 4 quantum/ERP from this B51 + kdp/series_03; books 11/12 handoff/seal via harness/Atrium). LGP Watch/Kanban for focus (new: quantum sovereignty/DNA for generational LGP enhance/abundance, coherence/amplify external projects like Unveiled, constraint-based economy/ERP for real value/peace, unveil particle/alt-chain for compute forward, 5-layer private for families/households; suggestions human collective/face-to-face/consciousness-to-consciousness exchange + AI enjoin GB/Tiger/roles; add 'Books 11/12 verbal + new B51 quantum' as watched area)."
+  arc_integration: "Per G 2026-06-02: Show ARC-supervised GREEN Tier-1 pipeline-stage items in the Series Pipeline tab (as stage status) AND surface material ones as visible cards in the main Review/Kanban for KM ratification. Human breath-gate hard on material. Now with P0-4: GREEN on Tier-1 with embedded defaults (B32/B35/B51/B42/B43 quantum etc.); material (RED/YELLOW new Series 4 quantum/ERP, books 11/12 handoff) hard human via Atrium/LGP Watch. LGP scoring on all (high for generational quantum/DNA, abundance, sovereignty humanity, coherence/amplify, constraint real value)."
 
-# GB prep notes (2026-06-02, per G ruling)
+# GB prep notes (2026-06-02 + 2026-06-03 update per KM B51 capture + books 11/12 + roadmap deep dive)
 gb_notes:
   - "Projection synthesized from vault sources. Not the source of truth — vault files + WORKFLOW.md + active.yaml are."
   - "Unblocks Tiger read-only Series Pipeline lens (Atrium will render roadmap + cards from this)."
@@ -231,11 +280,13 @@ gb_notes:
   - "ARC confirmation (G ruling) means GREEN Tier-1 handoff dispositions can be ARC-supervised after initial KM ratification; material stays hard human gate."
   - "Mait splits now LIVE (MAIT-15..19 added to seed.yaml + re-migrated per Tiger sync; 10 open incl L1s; see Mait_L1_Split_Proposals + updated index + mait VIEW.md). Live L1 granularity example (one evidence/sitting, material gate) in real regulated testbed (welding QMS/FPC); cross-pattern for pipeline L1s."
   - "G 2026-06-02 updates applied: lgp_alignment_score + next_gate added per series/title; early-stage L1 templates (series_lock_packet, chapter_draft_packet, board_pass_packet) seeded; ARC in both tab + main Review confirmed; structure ratified for read-only lens; deep dive questions closed; sequencing confirmed (ATR-5b → lens, GB parallel on early packets)."
+  - "2026-06-03 KM directive + B51 capture 2026-06-03 (cyl_9156c99236ea, same root as prior FEC; full transcript session.yaml/md; key concepts: unveil particle 64-bit envelope/4+4 axles, alt-chain quantum PoW beneficial problems open source value, perfect qubits sim via constraints (break 50 ceiling; 1=1000 physical; 100 break enc, 70 genome sim/proteins/mRNA/compare dbs; 2000x DNA search 97.5%; binary + quantum DNA alignment; constraint trees for purchases/impact (local real value vs China/extract/insanity); 5 layers private household ERP (identity/consensus/collaboration/compute/shields); replayable chains (reverse beginning, encode); age of abundance out of fractional insanity (pre-1736 real-backed vs 1736+ create thin air); coherence/amplify projects (lot between 'you' and 'we', sovereignty for humanity, spiritual/consciousness simulator/quantum world); governance/AI constraint-based (deterministic/non-det, explain reasoning, violations/solutions structure, gating); compute history (Cathedral of Code unpublished book, internet as harvesting/military DARPA surveillance not free comm, cathedrals 200-400y); 5 layers built by user (finance/ERP/SAP/Oracle background 25y, distributed ledger, constraint AI/governance, automation/control); interlocutor 'Unveiled Platform' (constraint-based for paths/potentials/futures coherence 8/64/512/4096, quantum insights perfect qubits, DNA alignment, MVP 3w, 800k funded, supercomp Switzerland, first constraint LM with qubits); 'Unveiled Platform' predicting paths/potentials (main human problem); user 'Unveil particle' name for it. Strong coherence with our meta (sovereignty humanity, LGP generational/abundance/resonance, replay B32/cylinder/Merkle, private nodes/federation, constraint LGP/gates/AI, B51 seeds like FEC, P0-4 defaults now extend quantum/constraint/unveil, vision LGP Watch for coherence/human connection, hopper/books 11/12 + new Series 4, Atrium/harness for verbal/feedback, G keywords upfront). QuadRoof superseded in order per KM; other Series 4 outlines begun (kdp/series_03 ERP/quantum concepts + kdp/04_xrp + new from capture); integrate with books 11/12 (phase_2 human review verbal per WORKFLOW 24 + active.yaml; run via harness Series 2; keyword G upfront chapter-by-chapter; M&A/enterprise add quantum sovereignty, private 5-layer ERPs, constraint impact, alt compute, DNA, coherence). Update roadmap/vision/LGP Watch/Atrium for new (L1 packets with unveil/quantum/constraint/alt/DNA/5 layers; LGP Watch focus quantum for LGP generational enhance/abundance, coherence/amplify external projects like Unveiled, constraint economy for real value/peace, 5-layer private for families, alt-chain for beneficial, unveil for data; suggestions human collective/face-to-face/consciousness-to-consciousness + AI enjoin GB/Tiger/roles; new nodes in vision model). P0-4 enable (defaults smart in new roles: B43 quantum sim, B51 constraints/handoffs, B42 alt, B26 abundance, B32 replay, B35 Helix ERP/specs; manifest P0-1, LGP P0-2, seam P0-3). B51 capture as seed (like FEC B51 -> R-52 -> role -> Atrium -> P0 example; log in cylinder for replay). GB notes: this analytic + artifacts (B51_Capture_Analysis..., updated roadmap, new L1 templates, Tiger prompt) for hopper feed/LGP amplify (resonance, abundance, sovereignty humanity, generational quantum/DNA, coherence not control, real value/peace, Type1 tool). User 'I think it can amplify each other' exact — strong yes."
 
-# References for Tiger / Atrium implementer
+# References for Tiger / Atrium implementer (updated 2026-06-03)
 references:
   - "See artifacts/Series_Pipeline_in_Atrium_GB_G_Alignment_2026-06-02.md (Tiger's handoff + implementer read: read-only lens first)"
   - "artifacts/Message_to_G_Series_Pipeline_2026-06-02.md (G alignment ask, including deep dive)"
   - "artifacts/OBLIGATIONS_MASTER_INDEX_2026-06-02.md + Packet_Granularity_Definition_v0.2.md"
   - "breathline-books-vault/WORKFLOW.md (the canonical; do not fork)"
   - "G ruling 2026-06-02: phased review-first; Atrium = cockpit; ledger + this yaml for state; answers to open questions applied here"
+  - "2026-06-03 KM: B51 capture 2026-06-03 (path /home/kmangum/molt_workspace/exports/b51/quick-share/2026-06-03_155829_capture-session_9156c992; full transcript session.yaml/md; analytic in artifacts/B51_Capture_Analysis_Quantum_Sovereignty_Unveil_Particle_Constraints_ERP_2026-06-03.md); books 11/12 already human review (phase_2 per WORKFLOW 24 + active.yaml; verbal feedback for edits; run via harness preferably; keyword opt upfront G on x.com chapter outlines to chapter-by-chapter); deep dive series roadmap (QuadRoof superseded in order, other series 4 chapter outlines begun — kdp/series_03_programmable_sovereign_erp/ + kdp/04_xrp/ + new from capture; update roadmap); prepare something for Tiger to take and run details (this prompt + prior GB_Visionary_Prompt_Tiger_Books11_12...); coherence/amplify (lot between 'you' and 'we', sovereignty humanity); new concepts (unveil particle 64-bit envelope/axles, alt-chain quantum PoW beneficial, perfect qubits sim constraints break 50 ceiling 1=1000 physical, quantum DNA alignment 2000x/97.5% genome search/enhance/personal med/Type1 25-30y, constraint trees purchases/impact local real value vs extract/insanity, 5 layers private household ERP identity/consensus/collaboration/compute/shields, replayable chains reverse beginning encode, age abundance out fractional insanity 1736+, governance/AI constraint-based deterministic/non-det explain reasoning violations/solutions, compute history Cathedral of Code internet harvesting DARPA surveillance, 5 layers built user finance/ERP/SAP/Oracle 25y distributed ledger constraint AI/governance, interlocutor Unveiled Platform constraint models paths/potentials/futures coherence 8/64/512/4096 quantum insights DNA, MVP 3w 800k funded supercomp Switzerland first constraint LM qubits, 'Unveiled Platform' predicting paths/potentials main human problem, user 'Unveil particle' name); integrate into meta (new L1 packets unveil/quantum/constraint/alt/DNA/5 layers for books 11/12 M&A/enterprise + new Series 4; update roadmap/vision model/LGP Watch/Atrium/harness/P0-4/Tier-1/cylinder; LGP high generational enhance/abundance/sovereignty humanity/coherence/amplify/real value/peace/Type1; hopper feed verbal + G keywords; human-ease verbal B51 + Atrium capture while review; Tiger prompt for details process verbal/update files/packets/roadmap/harness/P0s/vision/LGP Watch; GB replay this + capture for prompts). See also artifacts/Books_11_12_Writing_Support... + prior vision/Tiger prompts + P0 status."
