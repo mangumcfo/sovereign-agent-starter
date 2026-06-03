@@ -35,3 +35,4 @@ cylinder_index.db
 # throwaway gate-demo ledgers (regenerated each run)
 memory/obligations/bg_demo/
 memory/obligations/bg_deny_demo/
+memory/obligations/lgp_demo/

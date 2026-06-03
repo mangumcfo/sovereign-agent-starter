@@ -62,6 +62,14 @@ principles:
   - LGP: "Value optimized reaches families first. Opt-in only. Privacy via ZK / resonant shards (B25)."
   - receipt_everything: "Every profile contribution, optimization, and distribution is a B32 obligation with a B31 citation."
 
+# P0-2: LGP fields first-class — travel with the role, every action, obligation, and attestation.
+# LGP is the judgment rule; every sovereign action knows + surfaces its families-first contribution.
+lgp:
+  alignment_score: "0.92"
+  families_first_impact: "+18% effective purchasing power to families (C2F) via ZK-pooled procurement; value reaches families FIRST, opt-in only."
+  multi_generational: "compounding collective buying power for households across generations (B26 yield)"
+  next_gate: "Atrium human disposition on any material pooled order (RED) — propose_pooled_order / escalate_material_commitment"
+
 citation_bundle:
   B26: "collective_procurement_guilds (merkle 9350cf09…)"
   B25: "resonant_shards_non_devouring_federation"

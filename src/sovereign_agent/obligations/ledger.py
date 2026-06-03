@@ -138,10 +138,14 @@ class ObligationLedger:
     # ── lifecycle ─────────────────────────────────────────────────────
     def open(self, title: str, owner: Optional[str] = None,
              classification: str = "C2", intent: Optional[str] = None,
-             ref: Optional[str] = None, material: bool = False) -> dict:
+             ref: Optional[str] = None, material: bool = False,
+             lgp: Optional[dict] = None, next_gate: Optional[str] = None) -> dict:
         """Open an obligation = a DRAFT action-proposal (debit). CYL-006: starts draft.
 
         material=True ⇒ a gated ledger requires human approval (breath-gate) before close.
+        lgp (P0-2) ⇒ optional families-first contribution that travels WITH the obligation, e.g.
+          {"alignment_score": "0.92", "families_first_impact": "+18% effective purchasing power (C2F)"}.
+        next_gate ⇒ human-readable next human-disposition point (mirrors series_roadmap.yaml).
         """
         entry = {
             "type": "debit",
@@ -159,6 +163,10 @@ class ObligationLedger:
             "approved_at": None,
             "timestamp": _now(),
         }
+        if lgp:
+            entry["lgp"] = lgp          # P0-2: LGP travels with the obligation
+        if next_gate:
+            entry["next_gate"] = next_gate
         return self._append(entry)
 
     # ── lookups ───────────────────────────────────────────────────────

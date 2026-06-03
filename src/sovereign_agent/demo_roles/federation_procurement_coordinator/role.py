@@ -14,6 +14,12 @@ candidate (FederationProcurementCoordinatorAgent); it also exposes .process for 
 
 from typing import Any, Dict
 
+# P0-2: LGP travels with every action result (families-first is the judgment rule).
+LGP = {
+    "alignment_score": "0.92",
+    "families_first_impact": "+18% effective purchasing power to families (C2F) via ZK-pooled procurement",
+}
+
 # scope + constitutional breath-gate per action class (mirrors role_spec.yaml).
 GATES = {
     "generate_zk_statistical_profile": ("C1", "GREEN"),
@@ -48,6 +54,7 @@ class FederationProcurementCoordinatorAgent:
             "action_class": action_class,
             "scope": scope,
             "breath_gate": gate,
+            "lgp": dict(LGP),          # P0-2: LGP travels with every result
             "demo": True,
             "no_real_money": True,
         }
@@ -74,7 +81,7 @@ class FederationProcurementCoordinatorAgent:
     def _h_run_optimization_coordination(self, p):
         return {"optimization": {"contract_manufacturers": 2, "bulk_terms_found": True,
                                  "projected_uplift": "+18% (illustrative)", "swarm": "B51 handoff + B42 reduce"},
-                "lgp": "families-first", "message": "Optimization search (simulated). +18% is illustrative, not a quote."}
+                "message": "Optimization search (simulated). +18% is illustrative, not a quote. LGP carried in base."}
 
     def _h_attest_receipts_to_SIX(self, p):
         return {"attestation": {"evidence_tier": "E2", "node_receipt": "<node_rcpt_stub>", "six_candidate": "<b31_stub>"},
