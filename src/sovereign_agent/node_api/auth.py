@@ -83,6 +83,26 @@ def _is_dev_mode() -> bool:
     return os.environ.get("BREATHLINE_NODE_API_DEV", "").lower() in {"1", "true", "yes"}
 
 
+def _loopback_owner() -> str | None:
+    """
+    Loopback-trust (KM-1176 ratified 2026-06-03, personal-sovereign-node posture).
+
+    When the operator starts the node with BREATHLINE_NODE_LOOPBACK_OWNER=<principal_id>,
+    requests originating from this machine's loopback interface authenticate as that
+    principal WITHOUT a bearer token. This is NOT a hardcoded principal (CONSTITUTION §1):
+    the principal flows in explicitly from operator-set config at node start, and applies
+    ONLY to loopback (127.0.0.1 / ::1). Remote / federation peers are unaffected — they
+    still present a verified token. Rationale: on your own machine you ARE the sovereign
+    operator; requiring a token to talk to your own loopback node is burden, not sovereignty.
+    """
+    return (os.environ.get("BREATHLINE_NODE_LOOPBACK_OWNER", "") or "").strip() or None
+
+
+def _is_loopback() -> bool:
+    ra = request.remote_addr or ""
+    return ra in {"127.0.0.1", "::1", "::ffff:127.0.0.1", "localhost"}
+
+
 def require_principal(fn: Callable):
     """
     Decorator: enforce principal_id-bearer auth on a route.
@@ -112,6 +132,16 @@ def require_principal(fn: Callable):
                 return fn(*args, **kwargs)
             # Fall through to real verification if a non-dev token was sent
             # while in dev mode — production tokens still must verify.
+
+        # Loopback-trust: on this machine's own loopback, with no token presented,
+        # authenticate as the operator-configured node owner (if set). Remote peers and
+        # any request that DOES present a token fall through to real verification.
+        loop_owner = _loopback_owner()
+        if loop_owner and _is_loopback() and not token:
+            g.principal_id = loop_owner
+            g.auth_dev_mode = False
+            g.auth_loopback = True
+            return fn(*args, **kwargs)
 
         if not token:
             return jsonify(missing_bearer_token()), 401
