@@ -1,0 +1,46 @@
+{
+  "extrusions": [
+    {
+      "capability": "Data-Room Classifier",
+      "code_file": "src/sovereign_agent/demo_roles/ma_data_room/role.py",
+      "tests_file": "tests/test_ma_data_room.py",
+      "book": "AI Agents for M&A (Book 11)",
+      "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/11_ma_due_diligence/v1.0/manuscript_v1.5.md",
+      "chapter": "Ch 2 \u2014 Architecture",
+      "passage": "The deal team lead **defines clean-room separation and data classification for each deal.**",
+      "passage_hash": "986518496293",
+      "landed_seal": 481
+    }
+  ],
+  "reconciliation": {
+    "doc": "kdp/series_02.../vol_02_the_primacy_cockpit/ATRIUM_CODE_RECONCILIATION_v1.1_2026-06-03.md",
+    "book": "Series 2 Vol 2 \u2014 The Primacy Cockpit",
+    "rows": [
+      {
+        "feature": "Book Review surface (ATR-3/5b)",
+        "book_home": "NEW ch \u2014 Book Review Surface",
+        "status": "gap"
+      },
+      {
+        "feature": "Voice session recorder (ATR-4c, Dragon Whisper)",
+        "book_home": "NEW ch \u2014 Voice Capture",
+        "status": "gap"
+      },
+      {
+        "feature": "Diff-review + C-full producer/apply",
+        "book_home": "NEW ch \u2014 Governed Change Loop",
+        "status": "gap"
+      },
+      {
+        "feature": "Live node + loopback-trust + live ledger",
+        "book_home": "extend Ch 1 Stillpoint",
+        "status": "gap"
+      },
+      {
+        "feature": "Clickable links (ATR-7)",
+        "book_home": "extend Ch 3 Renderer",
+        "status": "gap"
+      }
+    ]
+  }
+}
