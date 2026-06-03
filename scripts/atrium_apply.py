@@ -58,6 +58,11 @@ def _git(repo_root, args):
 
 def _repo_of(file: str):
     f = file.split(" ")[0].strip()  # drop any trailing parenthetical
+    if f.startswith("/"):           # absolute path (the producer emits these) — match by repo root
+        for k, info in REPOS.items():
+            if f.startswith(info["root"]):
+                return k, f
+        return "books", f
     if f.startswith("src/") or f.startswith("tests/") or "sovereign-agent-starter" in f:
         return "starter", f.split("sovereign-agent-starter/")[-1]
     if "breathline-ui" in f or f.startswith("atrium/"):
@@ -67,6 +72,10 @@ def _repo_of(file: str):
 
 def _resolve(repo_key: str, rel: str):
     """Return an absolute path or None (None = unresolvable → caller aborts; never guess)."""
+    if rel.startswith("/"):                 # producer emitted an absolute path — use as-is
+        if os.path.isfile(rel):
+            return rel
+        return rel if not os.path.exists(rel) else None  # allowed for a new file
     root = REPOS[repo_key]["root"]
     rel = rel.lstrip("/").replace(".../", "")  # strip producer ellipsis if any
     cand = os.path.join(root, rel)
@@ -159,7 +168,7 @@ def main() -> int:
     commits = []
     for repo_key, files in changed.items():
         r = REPOS[repo_key]
-        rels = [os.path.relpath(f, r["root"]) for f in files]
+        rels = sorted({os.path.relpath(f, r["root"]) for f in files})   # dedup (a file edited by N groups)
         _git(r["root"], ["add"] + rels)
         msg = f"Atrium accepted apply: {title}\n\nproposal {pid}; accepted by KM in the diff-review."
         if r["trailer"]:
@@ -189,6 +198,20 @@ def main() -> int:
             _log(f"  closed obligation {oid}")
         except Exception as exc:
             _log(f"  close note: {exc}")
+    # AUTO-RECOMPILE the affected book PDFs (KM: recompile once the diffs are dispositioned)
+    import re as _re
+    build_dirs = set()
+    for f in changed.get("books", []):
+        m = _re.search(r"(.*/agentic_playbooks/\d+_[^/]+/v1\.0)/", f)
+        if m and os.path.isfile(os.path.join(m.group(1), "build_v1.0.py")):
+            build_dirs.add(m.group(1))
+    for bd in build_dirs:
+        try:
+            subprocess.Popen(["python3", os.path.join(bd, "build_v1.0.py")], cwd=bd,
+                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+            _log(f"  auto-recompiling PDF: {bd}")
+        except Exception as exc:
+            _log(f"  recompile note: {exc}")
     # remove the applied proposal from the store
     try:
         explicit = os.environ.get("PROPOSALS_STORE")
