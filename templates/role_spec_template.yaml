@@ -1,0 +1,46 @@
+# role_spec_template.yaml — skeleton for a new sovereign role (P0-4).
+# Copy this for any role extruded from a series-pipeline L1 packet. At bind time the loader runs
+# breath_inventory.enrich_role(), which AUTO-ATTACHES the Tier-1 'always approve on' defaults
+# (B32 receipt on every action; B51 handoff on material; crypto/B26/B28/B35/B31 by action type).
+# You declare the role + actions + gates + LGP; the Tier-1 primitives come for free.
+
+role:
+  id: <role_id>                       # snake_case; dir name = this id
+  name: "<Human Name>"
+  description: "<what this role does — agents PROPOSE, the human DISPOSES>"
+  framework: "<framework-label>"
+  version: "v1 (from <series/packet citation>)"
+
+allowed_action_classes:               # the loader's source of truth for BoundRole.process
+  - <action_id_1>
+  - <action_id_2>
+
+action_classes:                       # full per-action detail (scope + breath-gate)
+  - id: <action_id_1>
+    scope: "C2"                       # C2 routine (GREEN Tier-1) · C1 constitutional/material
+    breath_gate: "GREEN"              # GREEN auto-flows in policy · YELLOW surfaces · RED (material) hard human gate
+    description: "<what it does>"
+  - id: <action_id_2>
+    scope: "C1"
+    breath_gate: "RED (material)"
+    description: "<material action — requires Atrium human disposition (K1)>"
+
+# LGP is the judgment rule (P0-2) — score the role's families-first contribution; it travels with obligations.
+lgp:
+  alignment_score: "<0.0–1.0 or qualitative>"
+  families_first_impact: "<prose: how value reaches families first>"
+  next_gate: "<the human-disposition point>"
+
+principles:
+  - K1: "Human disposes all material commitments. RED always escalates."
+  - LGP: "Value reaches families first. Opt-in only."
+  - receipt_everything: "Every action is a B32 obligation with a citation."
+
+invocation_envelope:
+  focus: "<focus>"
+  risk_classification: "<internal | material_gated | ...>"
+  demo: true
+  note: "Spec-complete. Handlers in role.py; bind via the loader (Tier-1 defaults auto-attached)."
+
+# (No need to list Tier-1 here — breath_inventory.enrich_role() attaches `tier1_defaults` per action
+#  + a `breath_inventory` block at bind time. Run examples/breath_inventory_defaults_demo.py to see it.)

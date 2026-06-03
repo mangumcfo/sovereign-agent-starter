@@ -250,11 +250,20 @@ def _bind_demo_role(demo_role_dir: Path, spec_content: Dict[str, Any], node: Opt
         except Exception as e:
             print(f"[PlaybookLoader] Demo role bind warning for {demo_role_dir.name}: {e}")
 
+    # P0-4: embed Breath Inventory Tier-1 defaults (additive + safe — never breaks binding).
+    try:
+        from .breath_inventory import enrich_role
+        spec_content = enrich_role(spec_content)
+    except Exception:
+        pass
+
     # Build a minimal envelope the same way the normal path does
     env = {
         "allowed_action_classes": spec_content.get("allowed_action_classes", []),
         "invocation_envelope": spec_content.get("invocation_envelope", {}),
         "framework": spec_content.get("framework"),
+        "tier1_defaults": {a.get("id"): a.get("tier1_defaults", [])
+                           for a in (spec_content.get("action_classes") or [])},
     }
     # Inject envelope so BoundRole can read it
     spec_for_bound = dict(spec_content)
