@@ -20,6 +20,7 @@ No hardcoded principals (CONSTITUTION §1); the packet owner flows from the requ
 from __future__ import annotations
 
 import os
+import re
 from pathlib import Path
 
 from flask import Blueprint, jsonify, request
@@ -97,9 +98,60 @@ def _cards_from_session(path: Path):
     return cards, sid
 
 
+def _cards_from_feed(path: Path):
+    """Read GB's iron-clad structured-suggestion feed (artifacts/GB_Hopper_Feed.ndjson). GB is the
+    sole writer (fence); this only consumes. Each line is a curated suggestion already targeted to a
+    lane/series — so Send-to-Packet routes correctly (no more Book-11 mis-route). Skips the _genesis
+    schema line. Returns a list of cards carrying lane/series_ref/lgp_hint/priority/ref for traceability."""
+    import json as _json
+    cards = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            r = _json.loads(line)
+        except ValueError:
+            continue
+        if r.get("_genesis") or not r.get("one_line_intent"):
+            continue
+        cards.append({
+            "id": r.get("ref") or r.get("source_entry_hash") or f"feed_{len(cards)}",
+            "ts": r.get("ts", ""),
+            "source": r.get("series_ref") or r.get("lane") or "GB feed",
+            "preview": _preview(r.get("one_line_intent", "")),
+            "text": str(r.get("one_line_intent", ""))[:_TEXT_CAP],
+            "cyl": r.get("source_cyl", ""),
+            "lane": r.get("lane", ""),
+            "series_ref": r.get("series_ref", ""),
+            "lgp_hint": r.get("lgp_hint", ""),
+            "priority": r.get("priority", "normal"),
+            "ref": r.get("ref", ""),
+            "source_entry_hash": r.get("source_entry_hash", ""),
+        })
+        if len(cards) >= _MAX_CARDS * 2:  # curated feed → allow a few more than raw
+            break
+    # priority high first, then by recency (feed order)
+    cards.sort(key=lambda c: 0 if c.get("priority") == "high" else (1 if c.get("priority") == "normal" else 2))
+    return cards
+
+
 @bp.get("/hopper")
 @require_principal
 def hopper_list():
+    # PREFERRED: GB's iron-clad structured feed (clean, lane-targeted). Falls through to raw/mock.
+    feed = os.environ.get("HOPPER_FEED", "").strip()
+    if feed and Path(feed).is_file():
+        cards = _cards_from_feed(Path(feed))
+        return jsonify({
+            "meta": {"live": True, "iron_clad": True, "source": feed,
+                     "note": ("GB iron-clad feed — structured, lane-targeted suggestions distilled from your "
+                              "raw captures. Send to Packet routes to each card's lane/series.")
+                     if cards else
+                     ("GB iron-clad feed is wired but empty — GB seeds structured suggestions from your "
+                      "captures; they appear here.")},
+            "cards": cards,
+        })
     src = os.environ.get("HOPPER_SOURCE", "").strip()
     if src and Path(src).is_file():
         cards, sid = _cards_from_session(Path(src))
@@ -135,13 +187,36 @@ def hopper_to_packet():
             "what": "A packet needs the delta text to seed the obligation.",
             "next_step": "POST /api/v1/hopper/packet with {\"card_id\":\"…\",\"text\":\"…\"}.",
         }), 400
-    title = "Hopper packet — " + (_preview(text)[:90] or card_id or "captured delta")
+    # Lane routing (from the iron-clad feed): a card already knows where it belongs, so the packet
+    # lands in the right lane — book → processable Hopper packet; tooling → Tooling/Build (skips the
+    # book producer); private-learning → its own lane (no Book-N mis-route). Generic when unknown.
+    lane = str(body.get("lane") or "").strip()
+    series_ref = str(body.get("series_ref") or "").strip()
+    lgp_hint = str(body.get("lgp_hint") or "").strip()
+    src_ref = str(body.get("ref") or "").strip() or ("b51:" + card_id if card_id else None)
+    preview = _preview(text)[:90] or card_id or "captured delta"
+    intent = text[:_TEXT_CAP]
+    if series_ref:
+        intent += "\nTarget: " + series_ref
+        m = re.search(r"\bB(?:ook )?(\d+)\b", series_ref)
+        if m:
+            intent += "\nPage: Book " + m.group(1)   # so the producer grounds against the right manuscript
+    if lgp_hint:
+        intent += "\nLGP hint: " + lgp_hint
+    if lane == "tooling":
+        title, ref = "Tooling/Build · " + preview, "tooling:" + (series_ref or card_id or "hopper")
+    elif lane == "private-learning":
+        title, ref = "Private learning — " + preview, "private:" + (series_ref or card_id or "")
+    elif lane == "coordination":
+        title, ref = "Coordination — " + preview, src_ref
+    else:  # book:* or unknown → processable Hopper packet
+        title, ref = "Hopper packet — " + preview, src_ref
     entry = get_obligation_ledger().open(
         title=title,
         owner=current_principal(),
         classification="C2",
-        intent=text[:_TEXT_CAP],
-        ref="b51:" + card_id if card_id else None,
+        intent=intent,
+        ref=ref,
         material=False,
         next_gate="Human disposition (Atrium Review)",
     )

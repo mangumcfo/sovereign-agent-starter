@@ -114,3 +114,46 @@ def test_send_to_packet_opens_real_obligation(client):
 
 def test_packet_requires_text(client):
     assert client.post("/api/v1/hopper/packet", json={"card_id": "x"}).status_code == 400
+
+
+FEED = (
+    '{"_genesis": "schema line — skipped"}\n'
+    '{"ts":"2026-06-04T14:15:00","source_cyl":"cyl_x","source_entry_hash":"h1","lane":"book:11",'
+    '"series_ref":"S1 Agentic AI Playbooks / B11","one_line_intent":"Tighten the DataBridge example.",'
+    '"lgp_hint":"human-ease","priority":"normal","ref":"hmc:h1"}\n'
+    '{"ts":"2026-06-04T14:20:00","source_cyl":"cyl_x","source_entry_hash":"h2","lane":"tooling",'
+    '"series_ref":"tooling/Atrium","one_line_intent":"Add a dark mode toggle.","priority":"high","ref":"hmc:h2"}\n'
+)
+
+
+def test_iron_clad_feed_consumed(tmp_path, monkeypatch):
+    fp = tmp_path / "GB_Hopper_Feed.ndjson"
+    fp.write_text(FEED, encoding="utf-8")
+    monkeypatch.setenv("BREATHLINE_NODE_API_DEV", "1")
+    monkeypatch.setenv("HOPPER_FEED", str(fp))
+    from sovereign_agent.node_api.server import create_app
+    body = create_app().test_client().get("/api/v1/hopper").get_json()
+    assert body["meta"]["iron_clad"] is True
+    assert len(body["cards"]) == 2
+    # high priority first, _genesis skipped
+    assert body["cards"][0]["lane"] == "tooling"
+    assert body["cards"][0]["priority"] == "high"
+    assert all(c.get("series_ref") for c in body["cards"])
+
+
+def test_feed_packet_lane_routing(tmp_path, monkeypatch):
+    monkeypatch.setenv("BREATHLINE_NODE_API_DEV", "1")
+    monkeypatch.setenv("OBLIGATION_LEDGER_ROOT", str(tmp_path / "obl"))
+    from sovereign_agent.node_api import deps
+    deps.reset_node()
+    from sovereign_agent.node_api.server import create_app
+    c = create_app().test_client()
+    # tooling card → Tooling/Build title + tooling: ref (skips the book producer)
+    t = c.post("/api/v1/hopper/packet", json={"card_id": "h2", "text": "Add a dark mode toggle.",
+               "lane": "tooling", "series_ref": "tooling/Atrium", "ref": "hmc:h2"}).get_json()["obligation"]
+    assert t["title"].startswith("Tooling/Build ·") and t["ref"].startswith("tooling:")
+    # book card → processable Hopper packet + Page: Book 11 grounded in intent
+    bk = c.post("/api/v1/hopper/packet", json={"card_id": "h1", "text": "Tighten the DataBridge example.",
+                "lane": "book:11", "series_ref": "S1 Agentic AI Playbooks / B11", "ref": "hmc:h1"}).get_json()["obligation"]
+    assert bk["title"].startswith("Hopper packet —") and "Page: Book 11" in bk["intent"]
+    deps.reset_node()
