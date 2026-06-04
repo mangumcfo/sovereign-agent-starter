@@ -200,7 +200,30 @@ def recompile():
     subprocess.Popen([sys.executable, script], cwd=cwd,
                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
     return jsonify({"status": "recompiling", "book": book,
-                    "next_step": "~30-90s; then re-load the PDF (Browse…) in the viewer to see the changes."}), 202
+                    "next_step": "~30-90s; then the viewer auto-reloads (GET /book_pdf) or re-Browse."}), 202
+
+
+@bp.get("/book_pdf")
+@require_principal
+def book_pdf():
+    """Serve a book's freshly-recompiled PDF bytes so the in-app viewer can AUTO-RELOAD after Apply
+    (a browser can't re-read a File the operator picked). Read-only; newest PDF in the book's final/."""
+    import glob
+    import re
+    from flask import send_file
+
+    book = (request.args.get("book") or "").strip()
+    m = re.search(r"Book (\d+)", book)
+    sub = {"10": "10_scaling_enterprise", "11": "11_ma_due_diligence",
+           "12": "12_agentic_enterprise"}.get(m.group(1) if m else "")
+    if not sub:
+        return jsonify({"error": "unknown_book", "what": f"No mapping for '{book}'."}), 400
+    final = os.path.join("/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks",
+                         sub, "v1.0", "final")
+    pdfs = sorted(glob.glob(os.path.join(final, "*.pdf")), key=os.path.getmtime, reverse=True)
+    if not pdfs:
+        return jsonify({"error": "no_pdf", "what": f"No PDF in {final}."}), 404
+    return send_file(pdfs[0], mimetype="application/pdf", max_age=0)
 
 
 @bp.post("/proposals/<proposal_id>/apply")
