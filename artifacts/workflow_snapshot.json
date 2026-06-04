@@ -1,0 +1,21 @@
+{
+  "_meta": "Rendered SNAPSHOT of the Tiger<->GB Workflow Alignment Package (artifacts/Tiger_GB_Workflow_Alignment_Package_2026-06-04.md). The Atrium 'How it flows' lens embeds a mirror of this. Re-snapshot when the package changes. Practice, not canon.",
+  "title": "How it flows",
+  "source": "Tiger ↔ GB Workflow Alignment Package (2026-06-04) — rendered snapshot",
+  "one_gate": "Accept",
+  "status": "Practice, not canon — prove 1–2 full cycles before canonizing.",
+  "lanes": [
+    { "k": "KM",    "label": "KM-1176", "role": "ratifies", "plain": "You're the boss — nothing important happens until you say yes." },
+    { "k": "Tiger", "label": "Tiger",   "role": "builds",   "plain": "Tiger builds and wires the things." },
+    { "k": "GB",    "label": "GB",       "role": "proposes", "plain": "GB thinks ahead and suggests — it never edits directly." }
+  ],
+  "stages": [
+    { "id": "capture",   "label": "Capture",   "lane": "KM",    "plain": "You speak a thought or select text in the book.",            "tech": "B51 voice delta (Hopper) or a PDF text selection in Atrium." },
+    { "id": "packet",    "label": "Packet",    "lane": "Tiger", "plain": "Your thought becomes a little ticket.",                       "tech": "A B32 obligation (DRAFT debit) carrying human seed + page ref + LGP hint + next_gate." },
+    { "id": "process",   "label": "Process",   "lane": "Tiger", "plain": "A robot helper reads it and writes a suggested change.",      "tech": "Headless producer reads the intent + manuscript → grounded grouped diffs (a proposal). Tooling packets skip this." },
+    { "id": "accept",    "label": "Accept",    "lane": "KM",    "plain": "You look and say yes or no. THIS is the one button that matters.", "tech": "The single human gate — Accept/Reject in the diff-review. Nothing lands without it (K1)." },
+    { "id": "apply",     "label": "Apply",     "lane": "Tiger", "plain": "If you said yes, the helper makes the change safely.",         "tech": "Apply agent re-tests → commits (local) → seals → closes the obligation → recompiles the PDF." },
+    { "id": "seal",      "label": "Seal",      "lane": "Tiger", "plain": "It stamps a receipt so nothing is ever lost.",                "tech": "Cylinder seal (hash-chained) + obligation close with evidence." },
+    { "id": "coherence", "label": "Coherence", "lane": "GB",    "plain": "A check makes sure the book and the code still match.",       "tech": "Book↔code drift check. On drift: GB proposes the fix → Tiger surfaces it → KM ratifies." }
+  ]
+}
