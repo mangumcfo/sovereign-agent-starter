@@ -77,7 +77,10 @@ def _save_state(s: dict) -> None:
 
 
 def _book_of(intent: str) -> str:
-    m = re.search(r"\[(Book \d+)", intent or "")
+    # Page-tag forms: "[Book 11 · p14]" (review session) or "Page: Book 11 · p3" (pdf-edit / hopper
+    # packet). Anchored on '[' or 'Page:' so a "Book 12" mention inside the seed prose isn't mistaken
+    # for the target book.
+    m = re.search(r"\[(Book \d+)", intent or "") or re.search(r"Page:\s*(Book \d+)", intent or "")
     return m.group(1) if m else "Book 11"
 
 
