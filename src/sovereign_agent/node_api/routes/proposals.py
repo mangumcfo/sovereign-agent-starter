@@ -81,6 +81,9 @@ def proposals_create():
         "cross_book": body.get("cross_book") or [],
         "produced_by": body.get("produced_by") or current_principal(),
         "groups": groups,
+        "reflection_mode": body.get("reflection_mode"),   # B3: embodied_principle | direct_mechanics
+        "principle": body.get("principle"),               # the behavior/invariant when embodied_principle
+        "route": body.get("route"),                       # principle | tooling | observation (for info cards)
         "status": "proposed",
         "created_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
     }

@@ -99,7 +99,11 @@ RULES:
 - REFLECTION MODE (per group) — classify how each concept reflects into the work:
   * "direct_mechanics" = a concrete, literal change — the edit/extrusion IS the change (almost all manuscript edits, specific layouts, exact wording, formatting). Default to this.
   * "embodied_principle" = KM is expressing a governing PRINCIPLE / behavior / default / invariant that should shape how the system or agent behaves, not a one-spot literal edit (e.g. "the agent should always…", "this principle should govern…", "make this the default behavior"). Still produce the literal diff if one exists, but set the mode so it routes to GB fidelity validation + a drift flag rather than being treated as a finished mechanic. Add a short `principle` field naming the behavior/invariant when this mode is used.
-- If it is a question / observation / tooling note / not a book edit: return empty groups with a classifying note. Do NOT fabricate.
+- If it is NOT a literal manuscript edit, still CLASSIFY it (never a bare "no change") — return empty groups PLUS top-level fields:
+  * a PRINCIPLE / K-invariant / "must always" governing behavior → "reflection_mode":"embodied_principle", "principle":"<the behavior/invariant in one line>", "route":"principle". This is a REAL captured outcome routed to GB fidelity + drift watch — NOT a dead end.
+  * a TOOLING / feasibility / build / "hand this to Tiger" ask → "route":"tooling".
+  * a pure question / observation with no action → "route":"observation".
+  Always write a 1-line `note`. Do NOT fabricate a diff.
 - Output EXACTLY this JSON (a group uses EITHER `hunks` for one-or-more instances OR a single `before`/`after`):
 {{"session_ref":"<book + page>","book":"<book>","note":"<summary; say how many instances per pattern>","cross_book":[],"groups":[{{"id":"g1","title":"<pattern> — N places","kind":"prose|code","scope":"GREEN","reflection_mode":"direct_mechanics|embodied_principle","principle":"<only if embodied_principle: the behavior/invariant>","rationale":"...","file":"<exact path>","hunks":[{{"before":["exact text"],"after":["changed text"]}}]}}]}}
 """
@@ -230,10 +234,15 @@ def process_one(oid: str) -> None:
         note = (result or {}).get("note") or ("Couldn't auto-produce a diff. This usually means the request was too broad for one pass "
                 "(e.g. 'scan the whole book') and timed out, or it wasn't a concrete manuscript edit. Point at a specific spot, "
                 "or ask Tiger to run a full-book sweep.")
-        _log(f"  no diff → info card ({note[:60]})")
+        # CM1/CM3: carry the classification so the card isn't a dead "no change" — a principle becomes
+        # ◈ Principle captured (→ GB fidelity); a tooling ask offers Send-to-Tiger.
+        r = result or {}
+        _log(f"  no diff → info card (route={r.get('route','observation')}; {note[:50]})")
         try:
-            _post("/proposals", {"session_ref": (result or {}).get("session_ref", o.get("ref", "")),
-                                 "obligation_id": oid, "book": book, "info": True, "note": note, "groups": []})
+            _post("/proposals", {"session_ref": r.get("session_ref", o.get("ref", "")),
+                                 "obligation_id": oid, "book": book, "info": True, "note": note, "groups": [],
+                                 "reflection_mode": r.get("reflection_mode"), "principle": r.get("principle"),
+                                 "route": r.get("route", "observation")})
         except Exception as exc:
             _log(f"  info post failed: {exc}")
     # CROSS-BOOK: sweep the same issue in each named book → a separate proposal per book.
