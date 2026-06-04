@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import sys
 import urllib.request
@@ -103,6 +104,28 @@ def _resolve(repo_key: str, rel: str):
     return cand if not os.path.exists(cand) else None
 
 
+_QUOTES = "\"'‘’“”"   # straight + curly single/double
+_DASHES = "-–—"                 # hyphen + en-dash + em-dash
+
+
+def _tolerant_regex(before: str):
+    """Match `before` ignoring the 3 common producer-vs-source near-misses: whitespace runs
+    (wrapped lines / double spaces), straight-vs-curly quotes, and hyphen/en/em-dashes. Lets a
+    valid edit apply even when the proposed before-text was lightly normalized."""
+    parts = re.split(r"\s+", before.strip())
+    def esc(p):
+        out = []
+        for ch in p:
+            if ch in _QUOTES:
+                out.append("[" + re.escape(_QUOTES) + "]")
+            elif ch in _DASHES:
+                out.append("[" + re.escape(_DASHES) + "]")
+            else:
+                out.append(re.escape(ch))
+        return "".join(out)
+    return re.compile(r"\s+".join(esc(p) for p in parts if p))
+
+
 def _apply_group(g, dry_changes):
     file = g.get("file", "")
     repo_key, rel = _repo_of(file)
@@ -125,9 +148,14 @@ def _apply_group(g, dry_changes):
         after = "\n".join(h.get("after", []))
         if not before:
             continue
-        if before not in txt:
-            return False, f"before-text not found exactly in {os.path.basename(path)} (one hunk)"
-        txt = txt.replace(before, after, 1)
+        if before in txt:
+            txt = txt.replace(before, after, 1)
+        else:
+            # tolerant fallback: whitespace / quote / dash variants (common producer normalization)
+            m = _tolerant_regex(before).search(txt)
+            if not m:
+                return False, f"before-text not found in {os.path.basename(path)} (even whitespace/quote/dash-tolerant — the source may have changed; Refine or re-process)"
+            txt = txt[:m.start()] + after + txt[m.end():]
     open(path, "w", encoding="utf-8").write(txt)
     dry_changes.setdefault(repo_key, []).append(path)
     return True, repo_key
