@@ -104,7 +104,7 @@ def _generate(transcript: str, book: str) -> dict | None:
     cwd = os.path.dirname(manuscript) if os.path.isfile(manuscript) else manuscript
     try:
         out = subprocess.run([CLAUDE, "-p", prompt], cwd=cwd, capture_output=True,
-                             text=True, timeout=300).stdout
+                             text=True, timeout=600).stdout
     except (subprocess.TimeoutExpired, OSError) as exc:
         _log(f"  generation error: {exc}")
         return None
@@ -182,6 +182,9 @@ def process_one(oid: str) -> None:
     o = next((x for x in log if x.get("id") == oid), None)
     if not o:
         _log(f"on-demand: session {oid} not found")
+        return
+    if oid in _existing_proposal_obligations():
+        _log(f"on-demand: {oid} already has a proposal — skipping (no duplicate)")
         return
     intent = o.get("intent", "")
     book = _book_of(intent)
