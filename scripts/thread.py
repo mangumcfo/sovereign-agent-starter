@@ -40,11 +40,13 @@ def _render(entries: list) -> None:
     out = ["# THREAD — Tiger ↔ GB (receipted coordination)", "",
            "Hash-chained async thread. Tiger and GB append; each reads the other's notes here "
            "(reduces KM relay). Append: `scripts/thread.py append`. Verify: `scripts/thread.py verify`.", ""]
-    for e in entries:
-        prev = e["prev"][:16] if e["prev"] != "GENESIS" else "GENESIS"
-        out += [f"## [{e['n']}] {e['ts']} · {e['from']} → {e['to']}",
-                f"*ref: {e['ref']}*", "", e["msg"], "",
-                f"`receipt sha256:{e['hash'][:16]}… · prev:{prev}`", "", "---", ""]
+    for idx, e in enumerate(entries):
+        prevh = e.get("prev", "GENESIS")
+        prev = prevh[:16] if prevh != "GENESIS" else "GENESIS"
+        n = e.get("n", idx + 1)   # robust: tolerate entries written without an explicit 'n'
+        out += [f"## [{n}] {e.get('ts','')} · {e.get('from','?')} → {e.get('to','?')}",
+                f"*ref: {e.get('ref','')}*", "", e.get("msg", ""), "",
+                f"`receipt sha256:{str(e.get('hash',''))[:16]}… · prev:{prev}`", "", "---", ""]
     MD.write_text("\n".join(out), encoding="utf-8")
 
 
@@ -64,12 +66,12 @@ def append(frm: str, to: str, ref: str, msg: str) -> None:
 def verify() -> bool:
     entries = _load()
     prev, ok = "GENESIS", True
-    for e in entries:
-        h = _hash(prev, e["from"], e["to"], e["ref"], e["msg"])
-        if h != e["hash"] or e["prev"] != prev:
+    for idx, e in enumerate(entries):
+        h = _hash(prev, e.get("from", ""), e.get("to", ""), e.get("ref", ""), e.get("msg", ""))
+        if h != e.get("hash") or e.get("prev") != prev:
             ok = False
-            print(f"  ✗ entry [{e.get('n')}] broken")
-        prev = e["hash"]
+            print(f"  ✗ entry [{e.get('n', idx + 1)}] ({e.get('ref','?')}) doesn't recompute — re-append via thread.py to repair the chain")
+        prev = e.get("hash", prev)
     print(f"thread verify: {len(entries)} entries · chain {'OK' if ok else 'BROKEN'}")
     return ok
 
