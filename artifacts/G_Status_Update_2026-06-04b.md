@@ -23,8 +23,9 @@
 
 **Open / next:**
 1. **B3** (per-concept reflection-mode) — on KM's go.
-2. **Card-chrome consistency** (the 2 genuine items left in Needs-me): Hopper cards + Series Pipeline lens adopt the **same rich FEC card chrome** as Working/kanban — the card-consistency theme you + GB have both raised.
-3. **KPIs** iterate from real use (your set is live).
+2. **Card-chrome consistency** (2 genuine items in Needs-me): Hopper cards + Series Pipeline lens adopt the **same rich FEC card chrome** as Working/kanban — the card-consistency theme you + GB have both raised.
+3. **Replayable Atrium UI spec** (KM request, GB routed via hopper): keep a reverse-engineered, **replayable/testable** spec of the Atrium UI so every tweak is reproducible — Tiger to create + maintain.
+4. **KPIs** iterate from real use (your set is live).
 
 **Ask G:** any steer on **per-concept reflection-mode** before B3? Your read on **card-chrome consistency** (one card style across all surfaces — worth it now, or after B3?)? Anything on the **KPI signals** from real use?
 
