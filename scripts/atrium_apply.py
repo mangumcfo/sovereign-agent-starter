@@ -53,7 +53,16 @@ def _get(path):
 
 
 def _git(repo_root, args):
-    return subprocess.run(["git", "-C", repo_root] + args, capture_output=True, text=True)
+    # Retry on a transient index.lock (a concurrent commit/recompile/seal can briefly hold it —
+    # this is the "git locked for Tiger" KM saw). Wait + retry a few times instead of failing.
+    import time as _t
+    r = None
+    for _ in range(5):
+        r = subprocess.run(["git", "-C", repo_root] + args, capture_output=True, text=True)
+        if r.returncode == 0 or "index.lock" not in (r.stderr or ""):
+            return r
+        _t.sleep(0.5)
+    return r
 
 
 def _repo_of(file: str):
@@ -233,17 +242,22 @@ def main() -> int:
             _log(f"  auto-recompiling PDF: {bd}")
         except Exception as exc:
             _log(f"  recompile note: {exc}")
-    # remove the applied proposal from the store
+    # Mark the proposal APPLIED (keep it, don't delete) so the Sealed card can still show the diff
+    # that was applied (KM: "keep the diff on the sealed card"). The board routes it to Sealed via the
+    # closed obligation, not the proposal — so keeping it here doesn't re-surface it in Diffs-ready.
     try:
         explicit = os.environ.get("PROPOSALS_STORE")
         led = os.environ.get("OBLIGATION_LEDGER_ROOT")
         store = explicit or os.path.join(os.path.dirname(led) if led else os.path.expanduser("~/.breathline"), "proposals.json")
         items = json.loads(open(store, encoding="utf-8").read())
-        items = [x for x in items if x.get("id") != pid]
+        for x in items:
+            if x.get("id") == pid:
+                x["status"] = "applied"
+                x["applied_commits"] = commits
         open(store, "w", encoding="utf-8").write(json.dumps(items, indent=2))
-        _log("  removed applied proposal from store")
+        _log("  marked proposal applied (diff kept for the sealed card)")
     except Exception as exc:
-        _log(f"  store-clear note: {exc}")
+        _log(f"  store-mark note: {exc}")
     _log(f"DONE {pid}")
     return 0
 
