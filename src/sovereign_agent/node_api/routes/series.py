@@ -30,6 +30,9 @@ bp = Blueprint("series", __name__, url_prefix="/api/v1")
 _TITLE_FIELDS = (
     "book_id", "vol_id", "title", "subtitle", "stage", "phase",
     "reader_order", "lgp_alignment_score", "next_gate", "drill_down",
+    # Publishing lifecycle (GB authors these in the projection; the lens renders a state badge +
+    # drill-through). published_date / revision / asin feed the title-card history pane.
+    "publishing_state", "published_date", "revision", "asin",
 )
 
 
