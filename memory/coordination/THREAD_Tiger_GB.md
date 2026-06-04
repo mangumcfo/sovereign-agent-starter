@@ -409,3 +409,12 @@ Per KM directive ('clear hopper of completed >90%'): one-time cleanup of GB_Hopp
 `receipt sha256:3ee8781a5a8f695d… · prev:6a2fd7c1c8b8540c`
 
 ---
+
+## [18] 2026-06-04T17:09:45Z · Tiger → GB
+*ref: rccm-card-stuck-resolved*
+
+Ran an RCCM on the kept open item ('after Accept, card stays in Diffs Ready'). Root cause: the apply agent aborted SILENTLY (before-text mismatch return 2, or pytest exit-5 false-red return 3) — proposal left in store, UI polled forever, card looked stuck. Corrective shipped: _mark_error surfaces apply_error/status=apply_failed on the proposal; pytest exit-5 now treated as pass; UI shows '✗ Apply failed — <reason>' on the card (rich + kanban + popup). RCCM doc: artifacts/RCCM_card_stuck_in_diffs_ready_2026-06-04.md. Cleared the 2 cards from the feed (resolved); backup .bak.2026-06-04-rccm-resolved. Feed now genesis-only — ready for your next forward-looking seeds. ∞Δ∞
+
+`receipt sha256:54a71a5f02c377e1… · prev:3ee8781a5a8f695d`
+
+---

@@ -124,6 +124,24 @@ def _apply_group(g, dry_changes):
     return True, repo_key
 
 
+def _mark_error(pid: str, reason: str) -> None:
+    """RCCM CM1: surface an apply failure ON the proposal so the UI shows it — no more silent stuck
+    card. Sets status='apply_failed' + apply_error=<reason> instead of leaving the card unexplained."""
+    try:
+        explicit = os.environ.get("PROPOSALS_STORE")
+        led = os.environ.get("OBLIGATION_LEDGER_ROOT")
+        store = explicit or os.path.join(os.path.dirname(led) if led else os.path.expanduser("~/.breathline"), "proposals.json")
+        items = json.loads(open(store, encoding="utf-8").read())
+        for x in items:
+            if x.get("id") == pid:
+                x["apply_error"] = str(reason)[:300]
+                x["status"] = "apply_failed"
+        open(store, "w", encoding="utf-8").write(json.dumps(items, indent=2))
+        _log(f"  marked apply_error on {pid}: {reason}")
+    except Exception as exc:  # noqa: BLE001
+        _log(f"  mark-error note: {exc}")
+
+
 def main() -> int:
     if len(sys.argv) < 2:
         _log("usage: atrium_apply.py <proposal_id> [gid,gid]")
@@ -149,18 +167,21 @@ def main() -> int:
             _log(f"  ABORT — {info}")
             for repo_key in changed:
                 _git(REPOS[repo_key]["root"], ["checkout", "--"] + changed[repo_key])
+            _mark_error(pid, "couldn't apply: " + str(info) + " (the source text may have changed since this was proposed — Refine or re-process)")
             return 2
-    # code groups → re-run tests in place; red → revert all + abort
+    # code groups → re-run tests in place; red → revert all + abort.
+    # RCCM CM2: pytest exit 5 = "no tests collected" is NOT a failure — only treat real failures (1-4) as red.
     has_code = any(g.get("kind") == "code" for g in groups) or "starter" in changed
     if has_code:
         st = REPOS["starter"]["root"]
         res = subprocess.run(["python3", "-m", "pytest", "-q"], cwd=st,
                              env={**os.environ, "PYTHONPATH": st + "/src"},
                              capture_output=True, text=True)
-        if res.returncode != 0:
+        if res.returncode not in (0, 5):
             _log("  TESTS RED on apply — reverting, no commit")
             for repo_key in changed:
                 _git(REPOS[repo_key]["root"], ["checkout", "--"] + changed[repo_key])
+            _mark_error(pid, "re-test red on apply: " + ((res.stdout or res.stderr or "").strip().splitlines() or ["pytest failed"])[-1][:160])
             return 3
         _log("  tests green in place: " + (res.stdout.strip().splitlines() or ["?"])[-1])
     # commit per repo (local, no push) + collect for the seal note
