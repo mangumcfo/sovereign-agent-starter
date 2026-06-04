@@ -103,11 +103,22 @@ def _generate(transcript: str, book: str) -> dict | None:
     prompt = PROMPT.format(transcript=transcript, manuscript=manuscript)
     cwd = os.path.dirname(manuscript) if os.path.isfile(manuscript) else manuscript
     try:
+        kb = os.path.getsize(manuscript) // 1024 if os.path.isfile(manuscript) else 0
+        _log(f"  reading {book} manuscript ({kb} KB) + your note")
+    except OSError:
+        pass
+    _log("  asking Claude to find the exact text and ground the edit(s)… (a whole-book scan can take 1–5 min)")
+    started = time.time()
+    try:
         out = subprocess.run([CLAUDE, "-p", prompt], cwd=cwd, capture_output=True,
                              text=True, timeout=600).stdout
-    except (subprocess.TimeoutExpired, OSError) as exc:
+    except subprocess.TimeoutExpired:
+        _log(f"  Claude timed out after {int(time.time()-started)}s — the request was likely too broad for one pass")
+        return None
+    except OSError as exc:
         _log(f"  generation error: {exc}")
         return None
+    _log(f"  Claude returned in {int(time.time()-started)}s ({len(out)} chars) — parsing the diff JSON…")
     # Extract the last {...} JSON object from the output.
     matches = re.findall(r"\{.*\}", out, re.DOTALL)
     for cand in reversed(matches):

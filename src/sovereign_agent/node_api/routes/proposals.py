@@ -109,10 +109,68 @@ def produce():
         return jsonify({"error": "producer_missing", "what": f"No producer at {script}."}), 500
     env = dict(os.environ)
     env["PYTHONPATH"] = str(repo / "src")
-    subprocess.Popen([sys.executable, str(script), "--session", oid], cwd=str(repo), env=env,
-                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+    env["PYTHONUNBUFFERED"] = "1"   # so the agent's progress lines stream to the log live
+    # Capture the agent's output to a per-run log + write a run-status file so the cockpit can show
+    # 'is an agent working, on what, for how long, what is it doing' (KM: not a black box).
+    import json as _json
+    import time as _time
+    runs = Path(os.path.expanduser("~/.breathline/runs"))
+    runs.mkdir(parents=True, exist_ok=True)
+    logf = runs / f"{oid}.log"
+    proc = subprocess.Popen([sys.executable, str(script), "--session", oid], cwd=str(repo), env=env,
+                            stdout=open(logf, "w"), stderr=subprocess.STDOUT, start_new_session=True)
+    (runs / f"{oid}.json").write_text(_json.dumps(
+        {"session_id": oid, "started_at": _time.time(), "pid": proc.pid, "log": str(logf)}), encoding="utf-8")
     return jsonify({"status": "processing", "obligation_id": oid,
                     "next_step": "The diff(s) appear in the diff-review when ready (~1-3 min)."}), 202
+
+
+@bp.get("/processing")
+@require_principal
+def processing():
+    """processing — what agents are working on RIGHT NOW: session, elapsed time, live log tail.
+    Once a run produces a result (a proposal / info card), its entry drops here and shows in the diff-review."""
+    import json as _json
+    import time as _time
+    from pathlib import Path
+
+    runs = Path(os.path.expanduser("~/.breathline/runs"))
+    out = []
+    if runs.exists():
+        have = {p.get("obligation_id") for p in _read()}
+        for jf in sorted(runs.glob("*.json")):
+            try:
+                meta = _json.loads(jf.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                continue
+            oid = meta.get("session_id")
+            elapsed = int(_time.time() - meta.get("started_at", 0))
+            pid = meta.get("pid")
+            alive = False
+            if pid:
+                try:
+                    os.kill(int(pid), 0)
+                    alive = True
+                except (OSError, ValueError):
+                    alive = False
+            has_result = oid in have
+            if has_result or (not alive and elapsed > 150):   # result landed, or it died → hand off / clean
+                try:
+                    jf.unlink()
+                except OSError:
+                    pass
+                continue
+            tail = ""
+            lf = meta.get("log")
+            if lf and os.path.isfile(lf):
+                try:
+                    tail = "\n".join(open(lf, encoding="utf-8", errors="replace").read().splitlines()[-14:])
+                except OSError:
+                    pass
+            out.append({"session_id": oid, "elapsed_seconds": elapsed,
+                        "status": "processing" if alive else "finishing", "alive": alive, "log_tail": tail})
+    out.sort(key=lambda x: x["elapsed_seconds"], reverse=True)
+    return jsonify({"runs": out})
 
 
 @bp.post("/recompile")
