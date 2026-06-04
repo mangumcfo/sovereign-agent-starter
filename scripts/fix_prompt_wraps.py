@@ -14,9 +14,14 @@ def fix(text):
         if not infence or not out:
             out.append(l); continue
         prev = out[-1]
-        prev_open = bool(prev.strip()) and not re.search(r'[.!?:)\]]\s*$', prev) and not is_break(prev)
-        cont = bool(l.strip()) and not new_block(l) and (l[:1].islower() or l.lstrip()[:1].isalnum() or l.startswith(("  ","\t")))
-        if prev_open and cont:
+        # A wrapped continuation: next line is NOT a new bullet/number/header/blank, and begins with a
+        # lowercase letter, an opening quote/paren, or a bare digit ("20 customers as %"). Robust to
+        # abbreviation periods ("vs.", "e.g.") that fooled the prior end-punctuation check.
+        fc = l.lstrip()[:1]
+        cont = (bool(l.strip()) and not new_block(l)
+                and (fc.islower() or fc in "(\"'“‘" or fc.isdigit()))
+        prev_ok = bool(prev.strip()) and not is_break(prev)
+        if prev_ok and cont:
             out[-1] = prev.rstrip() + " " + l.strip(); joins += 1
         else:
             out.append(l)
