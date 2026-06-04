@@ -204,6 +204,11 @@ def process_one(oid: str) -> None:
     book = _book_of(intent)
     _log(f"on-demand processing {oid} ({book})")
     result = _generate(intent, book)
+    # Re-check AFTER the (slow) generate: a concurrent run (double-click / auto-process + manual) may
+    # have posted in the meantime. Closes the dedupe race so one packet → one card.
+    if oid in _existing_proposal_obligations():
+        _log(f"  {oid} got a proposal during generation — skipping duplicate post")
+        return
     groups = (result or {}).get("groups") or []
     cross = [b for b in ((result or {}).get("cross_book") or []) if b in BOOK_PATHS and b != book]
     if groups:

@@ -55,28 +55,39 @@ def _preview(text: str) -> str:
 
 
 def _cards_from_session(path: Path):
-    """Parse a B51 session.yaml into hopper cards. Returns (cards, session_id) or ([], None)."""
+    """Parse a B51 capture into hopper cards. Handles BOTH formats:
+      - export session.yaml  (export.session_id + entries[].source)
+      - live HMC json        (top-level id/name + entries[].source_guess + tombstone fields)
+    yaml.safe_load reads JSON too (JSON ⊂ YAML). Returns (cards, session_id) or ([], None)."""
     import yaml
     try:
         data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     except (OSError, yaml.YAMLError):
         return [], None
-    sid = ((data.get("export") or {}).get("session_id")) or path.parent.name
+    sid = ((data.get("export") or {}).get("session_id")) or data.get("id") or data.get("name") or path.stem
     entries = [e for e in (data.get("entries") or []) if isinstance(e, dict)]
-    # Voice-delta lane: prefer the operator's voice captures (a mixed session also carries Tiger/G/
-    # screenshot entries — those are not hopper deltas). Fall back to all entries if none are voice.
+    # Skip deleted/tombstoned entries (live HMC) — never surface a retracted thought.
+    entries = [e for e in entries if not e.get("tombstoned_at")]
+
+    def _src(e):
+        return e.get("source") or e.get("source_guess") or e.get("content_type") or "capture"
+
+    # Voice-delta lane: prefer the operator's voice captures (a mixed session/cylinder also carries
+    # Tiger/G/screenshot/text entries — not hopper deltas). Fall back to all entries if none are voice.
     def _is_voice(e):
         return (str(e.get("content_type", "")).lower() == "voice"
-                or str(e.get("source", "")).lower().startswith("voice"))
+                or str(_src(e)).lower().startswith("voice"))
     voiced = [e for e in entries if _is_voice(e)]
     use = voiced if voiced else entries
     cards = []
     for e in reversed(use):  # newest first
-        text = str(e.get("content") or "")
+        text = str(e.get("content") or e.get("preview") or "")
+        if not text.strip():
+            continue
         cards.append({
             "id": e.get("id") or f"entry_{len(cards)}",
             "ts": e.get("timestamp") or "",
-            "source": e.get("source") or e.get("content_type") or "capture",
+            "source": _src(e),
             "preview": _preview(text),
             "text": text[:_TEXT_CAP],
             "cyl": sid,
