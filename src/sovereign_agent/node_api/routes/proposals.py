@@ -63,11 +63,12 @@ def proposals_list():
 def proposals_create():
     body = request.get_json(silent=True) or {}
     groups = body.get("groups") or []
-    if not groups:
+    is_info = bool(body.get("info"))   # info card = a 'no diff produced, here's why' result (no groups)
+    if not groups and not is_info:
         return jsonify({
             "error": "missing_groups",
-            "what": "A proposal needs at least one grouped diff.",
-            "next_step": "POST /api/v1/proposals with {\"session_ref\":\"...\",\"groups\":[{title,kind,scope,rationale,file,before,after}]}.",
+            "what": "A proposal needs at least one grouped diff (or info:true for a no-diff feedback card).",
+            "next_step": "POST /api/v1/proposals with {\"session_ref\":\"...\",\"groups\":[…]} or {\"info\":true,\"note\":\"…\"}.",
         }), 400
     items = _read()
     prop = {
@@ -76,6 +77,8 @@ def proposals_create():
         "obligation_id": body.get("obligation_id"),
         "book": body.get("book", ""),
         "note": body.get("note", ""),
+        "info": is_info,
+        "cross_book": body.get("cross_book") or [],
         "produced_by": body.get("produced_by") or current_principal(),
         "groups": groups,
         "status": "proposed",
