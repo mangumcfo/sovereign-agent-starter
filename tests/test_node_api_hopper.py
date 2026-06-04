@@ -66,6 +66,39 @@ def test_real_session_parse(tmp_path, monkeypatch):
     assert body["cards"][1]["id"] == "cap_aaa"
 
 
+MIXED_SESSION = textwrap.dedent(
+    """
+    export:
+      session_id: cyl_mixed
+    entries:
+      - id: t1
+        source: Tiger
+        content_type: text
+        content: A Tiger status message, not a hopper delta.
+      - id: v1
+        source: Voice Note
+        content_type: voice
+        content: A real spoken thought worth turning into a packet.
+      - id: g1
+        source: G (Grok)
+        content_type: text
+        content: A G review note, not a hopper delta.
+    """
+)
+
+
+def test_voice_preference_filters_mixed_session(tmp_path, monkeypatch):
+    sp = tmp_path / "session.yaml"
+    sp.write_text(MIXED_SESSION, encoding="utf-8")
+    monkeypatch.setenv("BREATHLINE_NODE_API_DEV", "1")
+    monkeypatch.setenv("HOPPER_SOURCE", str(sp))
+    from sovereign_agent.node_api.server import create_app
+    body = create_app().test_client().get("/api/v1/hopper").get_json()
+    ids = [c["id"] for c in body["cards"]]
+    assert ids == ["v1"]          # only the voice capture surfaces; Tiger/G text dropped
+    assert body["meta"]["live"] is True
+
+
 def test_send_to_packet_opens_real_obligation(client):
     r = client.post("/api/v1/hopper/packet",
                     json={"card_id": "cap_xyz", "text": "Turn this delta into a governed packet."})

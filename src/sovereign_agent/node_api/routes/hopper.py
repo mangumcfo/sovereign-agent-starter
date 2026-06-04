@@ -62,11 +62,16 @@ def _cards_from_session(path: Path):
     except (OSError, yaml.YAMLError):
         return [], None
     sid = ((data.get("export") or {}).get("session_id")) or path.parent.name
-    entries = data.get("entries") or []
+    entries = [e for e in (data.get("entries") or []) if isinstance(e, dict)]
+    # Voice-delta lane: prefer the operator's voice captures (a mixed session also carries Tiger/G/
+    # screenshot entries — those are not hopper deltas). Fall back to all entries if none are voice.
+    def _is_voice(e):
+        return (str(e.get("content_type", "")).lower() == "voice"
+                or str(e.get("source", "")).lower().startswith("voice"))
+    voiced = [e for e in entries if _is_voice(e)]
+    use = voiced if voiced else entries
     cards = []
-    for e in reversed(entries):  # newest first
-        if not isinstance(e, dict):
-            continue
+    for e in reversed(use):  # newest first
         text = str(e.get("content") or "")
         cards.append({
             "id": e.get("id") or f"entry_{len(cards)}",
