@@ -168,6 +168,25 @@ def proposals_apply(proposal_id: str):
                     "next_step": "Re-tests, commits (local), seals, closes — then the proposal clears. ~10-30s."}), 202
 
 
+@bp.post("/proposals/<proposal_id>/dismiss")
+@require_principal
+def proposals_dismiss(proposal_id: str):
+    """dismiss — clear an info / no-diff proposal + close its session obligation (nothing to apply)."""
+    items = _read()
+    prop = next((x for x in items if x.get("id") == proposal_id), None)
+    _write([x for x in items if x.get("id") != proposal_id])
+    oid = (prop or {}).get("obligation_id")
+    if oid:
+        try:
+            from ..deps import get_obligation_ledger
+            get_obligation_ledger().close(
+                oid, evidence="E1: dismissed — " + str((prop or {}).get("note", "no diff produced"))[:120],
+                evidence_tier="E1", closed_by="tiger")
+        except Exception:  # noqa: BLE001 — dismissal must never error the UI
+            pass
+    return jsonify({"status": "dismissed", "proposal_id": proposal_id})
+
+
 @bp.post("/proposals/<proposal_id>/decide")
 @require_principal
 def proposals_decide(proposal_id: str):

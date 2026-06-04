@@ -204,7 +204,15 @@ def process_one(oid: str) -> None:
         except Exception as exc:
             _log(f"  post failed: {exc}")
     else:
-        _log(f"  no book edit ({(result or {}).get('note','classified: not a book edit / generation empty')})")
+        note = (result or {}).get("note") or ("Couldn't auto-produce a diff. This usually means the request was too broad for one pass "
+                "(e.g. 'scan the whole book') and timed out, or it wasn't a concrete manuscript edit. Point at a specific spot, "
+                "or ask Tiger to run a full-book sweep.")
+        _log(f"  no diff → info card ({note[:60]})")
+        try:
+            _post("/proposals", {"session_ref": (result or {}).get("session_ref", o.get("ref", "")),
+                                 "obligation_id": oid, "book": book, "info": True, "note": note, "groups": []})
+        except Exception as exc:
+            _log(f"  info post failed: {exc}")
     # CROSS-BOOK: sweep the same issue in each named book → a separate proposal per book.
     for cb in cross:
         _log(f"  cross-book sweep → {cb}")
