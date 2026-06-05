@@ -41,11 +41,19 @@ Questions on C: what's the minimal protocol spec (the canonical fields + how a m
 What's the smallest first slice (e.g. render existing THREAD entries as receipted Helix cards in one lens)?
 Where's the thin-Tiger-build vs substrate line? How does it compose with A (the popup) + the registry (#1)?
 
-## Ask G — the alignment (not a full build)
-1. **Sequence:** A → B → C, or interleave? Is the Cylinder-Renderer popup (A) the right first deeper increment?
-2. **Minimal slices:** the thinnest buildable version of each (esp. the protocol spec for C).
-3. **Thin-vs-substrate** split per piece.
-4. **Reuse map:** how each reuses the registry (#1), the linked-receipt lens, THREAD, B51, coherence — no new layers.
+## Sequence — KM-RATIFIED (2026-06-05): A → B → C
+KM has set the order: **A (Cylinder-Renderer popup) FIRST** — the smallest unlock for readable definitions
+from ⛓ links — **then B (per-card render receipts)**, with **C (Helix Comm Protocol) as the broader vision**
+(thin wrapper on THREAD/B51/hopper → one Atrium Dialogue lens). So this is a **quick confirmation**, not a
+re-sequencing.
+
+## Ask G — quick confirmation (not a full build)
+1. **Confirm the A→B→C sequence** (or flag any reason to interleave).
+2. **The minimal first slice of A** — the thinnest Cylinder-Renderer popup: given a ⛓ ref (cyl/seal/passage),
+   render a readable definition + its onward traversal links, reusing the existing renderer + registry. What's
+   the smallest version Tiger ships first?
+3. **Thin-vs-substrate** split for A (and a one-line read on B and C's first slices).
+4. **Reuse map:** how A reuses the registry (#1), the linked-receipt lens, THREAD, B51, coherence — no new layers.
 
 ## Constraints (hold)
 Lightweight · honest · thin-waist (wrap, don't replace) · K1 one Accept gate · 3-lane fence (GB curates/meta,
