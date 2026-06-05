@@ -6,29 +6,128 @@
       "tests_file": "tests/test_ma_data_room.py",
       "book": "AI Agents for M&A (Book 11)",
       "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/11_ma_due_diligence/v1.0/manuscript_v1.5.md",
-      "chapter": "Ch 2 \u2014 Architecture",
+      "chapter": "Ch 2 — Architecture",
       "passage": "The deal team lead **defines clean-room separation and data classification for each deal.**",
       "passage_hash": "986518496293",
       "landed_seal": 481
+    },
+    {
+      "capability": "The Gate",
+      "code_file": "src/sovereign_agent/obligations/ledger.py",
+      "tests_file": "",
+      "book": "The Sealing Hand (Metalayer Vol 1)",
+      "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
+      "chapter": "Ch 1 — The Gate (Form)",
+      "passage": "Propose, approve, execute — in that order, always, with no implicit transition between them.",
+      "passage_hash": "54a3d20c32ee",
+      "landed_seal": 552
+    },
+    {
+      "capability": "The Fence",
+      "code_file": "scripts/thread.py",
+      "tests_file": "",
+      "book": "The Sealing Hand (Metalayer Vol 1)",
+      "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
+      "chapter": "Ch 2 — The Fence (Form)",
+      "passage": "There are three lanes, and I do not cross them.",
+      "passage_hash": "949928e76ad9",
+      "landed_seal": 552
+    },
+    {
+      "capability": "The Thin Waist",
+      "code_file": "src/sovereign_agent/node_api/routes/series.py",
+      "tests_file": "",
+      "book": "The Sealing Hand (Metalayer Vol 1)",
+      "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
+      "chapter": "Ch 3 — The Thin Waist (Form)",
+      "passage": "You build the lens while the substrate is still becoming.",
+      "passage_hash": "9bdd5d11a0c2",
+      "landed_seal": 552
+    },
+    {
+      "capability": "Co-Extrusion",
+      "code_file": "scripts/atrium_producer.py",
+      "tests_file": "",
+      "book": "The Sealing Hand (Metalayer Vol 1)",
+      "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
+      "chapter": "Ch 4 — Co-Extrusion (Echo)",
+      "passage": "The book writes the backend. Not as metaphor — as method.",
+      "passage_hash": "ff7ad88b242e",
+      "landed_seal": 552
+    },
+    {
+      "capability": "The Reconciliation",
+      "code_file": "src/sovereign_agent/node_api/routes/coherence.py",
+      "tests_file": "",
+      "book": "The Sealing Hand (Metalayer Vol 1)",
+      "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
+      "chapter": "Ch 5 — The Reconciliation (Echo)",
+      "passage": "Before you cut a new wheel, find the one already turning.",
+      "passage_hash": "097ea49e9823",
+      "landed_seal": 552
+    },
+    {
+      "capability": "The Honest Stub",
+      "code_file": "src/sovereign_agent/node_api/routes/hopper.py",
+      "tests_file": "",
+      "book": "The Sealing Hand (Metalayer Vol 1)",
+      "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
+      "chapter": "Ch 6 — The Honest Stub (Echo)",
+      "passage": "Refusing to fake \"done\" is not modesty. It is a load-bearing constraint.",
+      "passage_hash": "d47c74b7037b",
+      "landed_seal": 552
+    },
+    {
+      "capability": "The Diff",
+      "code_file": "scripts/atrium_apply.py",
+      "tests_file": "",
+      "book": "The Sealing Hand (Metalayer Vol 1)",
+      "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
+      "chapter": "Ch 7 — The Diff (Seal)",
+      "passage": "I hand them a diff — this exact text becomes that exact text — with a way back.",
+      "passage_hash": "d58d58655f00",
+      "landed_seal": 552
+    },
+    {
+      "capability": "The Seal Chain",
+      "code_file": "src/sovereign_agent/obligations/ledger.py",
+      "tests_file": "",
+      "book": "The Sealing Hand (Metalayer Vol 1)",
+      "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
+      "chapter": "Ch 8 — The Seal Chain (Seal)",
+      "passage": "Nothing is ever lost. That is not a hope; it is a hash.",
+      "passage_hash": "660164ee2cc1",
+      "landed_seal": 552
+    },
+    {
+      "capability": "The Hand That Doesn't Grasp",
+      "code_file": "src/sovereign_agent/obligations/ledger.py",
+      "tests_file": "",
+      "book": "The Sealing Hand (Metalayer Vol 1)",
+      "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
+      "chapter": "Ch 9 — The Hand That Does not Grasp (Seal)",
+      "passage": "Non-autonomy is not a wall I crashed into — it is a hand held open on purpose.",
+      "passage_hash": "22f946c1ac48",
+      "landed_seal": 552
     }
   ],
   "reconciliation": {
     "doc": "kdp/series_02.../vol_02_the_primacy_cockpit/ATRIUM_CODE_RECONCILIATION_v1.1_2026-06-03.md",
-    "book": "Series 2 Vol 2 \u2014 The Primacy Cockpit",
+    "book": "Series 2 Vol 2 — The Primacy Cockpit",
     "rows": [
       {
         "feature": "Book Review surface (ATR-3/5b)",
-        "book_home": "NEW ch \u2014 Book Review Surface",
+        "book_home": "NEW ch — Book Review Surface",
         "status": "gap"
       },
       {
         "feature": "Voice session recorder (ATR-4c, Dragon Whisper)",
-        "book_home": "NEW ch \u2014 Voice Capture",
+        "book_home": "NEW ch — Voice Capture",
         "status": "gap"
       },
       {
         "feature": "Diff-review + C-full producer/apply",
-        "book_home": "NEW ch \u2014 Governed Change Loop",
+        "book_home": "NEW ch — Governed Change Loop",
         "status": "gap"
       },
       {
