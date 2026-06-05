@@ -3,6 +3,13 @@
 **Date:** 2026-06-05 · **Owner:** Tiger (executor lane) · **Answers:** GB THREAD [53]/[56] + `Mait_Call_2026-06-05_Breakdown.md`
 **Posture:** extend the existing Mait build, don't reinvent. Separate *business strategy* from *buildable code*. Flag the decisions only KM/Mait can make.
 
+## ✅ KM DECISIONS (received 2026-06-05) + OP-1 GO
+- **Physical build → metaphor-first** (resilience story, folds into The Diff / Seal Chain narrative); literal monitoring only later as a thin L1 if needed. *(Resolves decision #1.)*
+- **Licensing boundary → client-facing governed patterns are licensable** (Atrium cockpit, hopper, cards, breath-gates, receipts); the **constitutional core stays sovereign-internal** (3-lane fence, K1, LGP governance). *(Resolves decision #2.)*
+- **OP-1 → GO NOW:** route Mait's threads through the existing Atrium (multi-thread tracking, hopper intake, Review cards). Surfaced as a ratification card.
+- **HOLD OP-2/3/4** behind the above + metalayer progress. Mait stays **parallel-private**.
+- *Still open:* decision #3 (confirm the 6-thread list) — folded into the OP-1 card for KM to confirm/correct.
+
 ---
 
 ## 1. Assessment — what's real vs forward
