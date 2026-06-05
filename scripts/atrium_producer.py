@@ -59,7 +59,7 @@ def _manuscript_for(tag: str) -> str:
         import json as _j
         with open(_REG_PATH, encoding="utf-8") as f:
             books = _j.load(f).get("books", {})
-        bid = _TAG_TO_BID.get(tag)
+        bid = tag if tag in books else _TAG_TO_BID.get(tag)   # tag may BE a registry book_id (any title) or a "Book N"/title
         e = books.get(bid) if bid else None
         if e and e.get("manuscript"):
             p = os.path.join(_VAULT_ROOT, e["manuscript"])
@@ -109,13 +109,14 @@ def _book_of(intent: str) -> str:
     # packet). Anchored on '[' or 'Page:' so a "Book 12" mention inside the seed prose isn't mistaken
     # for the target book.
     it = intent or ""
-    m = re.search(r"\[(Book \d+)", it) or re.search(r"Page:\s*(Book \d+)", it)
+    # First bracket token OR Page:/Target: value — works for "[Book 11 · p14]", "[04_xrp]", "[The Sealing Hand]",
+    # "Page: Book 11", "Target: 04_xrp". Resolution (_manuscript_for) accepts a book_id, "Book N", or a title.
+    m = re.search(r"\[([^\]]+)\]", it)
     if m:
-        return m.group(1)
-    # Metalayer companion books (no "Book N") — tagged "[The Sealing Hand]" / "Target: The Sealing Hand".
-    for title in _META_TITLES:
-        if re.search(r"\[" + re.escape(title), it) or re.search(r"(?:Page|Target):\s*" + re.escape(title), it):
-            return title
+        return re.split(r"\s*[·|]\s*", m.group(1).strip())[0]
+    m = re.search(r"(?:Page|Target):\s*([^\n·|]+)", it)
+    if m:
+        return m.group(1).strip()
     return "Book 11"
 
 
