@@ -35,11 +35,16 @@ POLL_SECONDS = 45
 
 # Map a book tag → manuscript path the generator reads to ground exact before-text.
 _VAULT = "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks"
+_META = "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private"
 BOOK_PATHS = {
     "Book 10": f"{_VAULT}/10_scaling_enterprise/v1.0/manuscript_v1.5.md",
     "Book 11": f"{_VAULT}/11_ma_due_diligence/v1.0/manuscript_v1.5.md",
     "Book 12": f"{_VAULT}/12_agentic_enterprise/v1.0/manuscript_v1.5.md",
+    # Metalayer companion (private) — edit entry point from the Series Pipeline drill.
+    "The Sealing Hand": f"{_META}/the_sealing_hand/v1.0/manuscript_v1.0.md",
+    "Breath & Echo": f"{_META}/breath_and_echo/v1.0/manuscript_v1.0.md",
 }
+_META_TITLES = ("The Sealing Hand", "Breath & Echo")
 
 
 def _log(msg: str) -> None:
@@ -80,8 +85,15 @@ def _book_of(intent: str) -> str:
     # Page-tag forms: "[Book 11 · p14]" (review session) or "Page: Book 11 · p3" (pdf-edit / hopper
     # packet). Anchored on '[' or 'Page:' so a "Book 12" mention inside the seed prose isn't mistaken
     # for the target book.
-    m = re.search(r"\[(Book \d+)", intent or "") or re.search(r"Page:\s*(Book \d+)", intent or "")
-    return m.group(1) if m else "Book 11"
+    it = intent or ""
+    m = re.search(r"\[(Book \d+)", it) or re.search(r"Page:\s*(Book \d+)", it)
+    if m:
+        return m.group(1)
+    # Metalayer companion books (no "Book N") — tagged "[The Sealing Hand]" / "Target: The Sealing Hand".
+    for title in _META_TITLES:
+        if re.search(r"\[" + re.escape(title), it) or re.search(r"(?:Page|Target):\s*" + re.escape(title), it):
+            return title
+    return "Book 11"
 
 
 PROMPT = """You are the Atrium diff-review PRODUCER. A human (KM) recorded this book-review session as a page-tagged transcript. Decide whether it asks for concrete BOOK edits, then output ONLY a JSON object (no prose, no markdown fences).
