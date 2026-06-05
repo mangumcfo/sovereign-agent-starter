@@ -46,6 +46,29 @@ BOOK_PATHS = {
 }
 _META_TITLES = ("The Sealing Hand", "Breath & Echo")
 
+# Helix increment #1 — resolve manuscripts via the title→artifacts registry (source of truth), BOOK_PATHS fallback.
+_REG_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "memory", "book_artifacts_registry.json")
+_VAULT_ROOT = "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp"
+_TAG_TO_BID = {"Book 10": "10_scaling_enterprise", "Book 11": "11_ma_due_diligence",
+               "Book 12": "12_agentic_enterprise", "The Sealing Hand": "the_sealing_hand",
+               "Breath & Echo": "breath_and_echo"}
+
+
+def _manuscript_for(tag: str) -> str:
+    try:
+        import json as _j
+        with open(_REG_PATH, encoding="utf-8") as f:
+            books = _j.load(f).get("books", {})
+        bid = _TAG_TO_BID.get(tag)
+        e = books.get(bid) if bid else None
+        if e and e.get("manuscript"):
+            p = os.path.join(_VAULT_ROOT, e["manuscript"])
+            if os.path.isfile(p):
+                return p
+    except Exception:
+        pass
+    return BOOK_PATHS.get(tag, BOOK_PATHS["Book 11"])
+
 
 def _log(msg: str) -> None:
     line = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()) + "  " + msg
@@ -122,7 +145,7 @@ RULES:
 
 
 def _generate(transcript: str, book: str) -> dict | None:
-    manuscript = BOOK_PATHS.get(book, BOOK_PATHS["Book 11"])
+    manuscript = _manuscript_for(book)
     prompt = PROMPT.format(transcript=transcript, manuscript=manuscript)
     cwd = os.path.dirname(manuscript) if os.path.isfile(manuscript) else manuscript
     try:

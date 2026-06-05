@@ -206,31 +206,62 @@ def recompile():
                     "next_step": "~30-90s; then the viewer auto-reloads (GET /book_pdf) or re-Browse."}), 202
 
 
+_VAULT = "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp"
+
+
+def _book_registry() -> dict:
+    """Helix increment #1 — the deterministic title→artifacts registry (single source of truth)."""
+    p = Path(__file__).resolve().parents[4] / "memory" / "book_artifacts_registry.json"
+    try:
+        return json.loads(p.read_text(encoding="utf-8")).get("books", {})
+    except (OSError, ValueError):
+        return {}
+
+
+def _resolve_book_id(book: str) -> str:
+    """A request ("Book 10" / "the_sealing_hand" / "The Sealing Hand") → the registry book_id."""
+    import re
+    m = re.search(r"Book (\d+)", book)
+    if m:
+        return {"10": "10_scaling_enterprise", "11": "11_ma_due_diligence",
+                "12": "12_agentic_enterprise"}.get(m.group(1), "")
+    return {"the sealing hand": "the_sealing_hand", "breath & echo": "breath_and_echo"}.get(book.lower(), book)
+
+
+@bp.get("/book_artifacts")
+@require_principal
+def book_artifacts():
+    """The full title→artifacts registry (receipt + per-title present flags) — the pipeline/coherence read this."""
+    p = Path(__file__).resolve().parents[4] / "memory" / "book_artifacts_registry.json"
+    try:
+        return jsonify(json.loads(p.read_text(encoding="utf-8")))
+    except (OSError, ValueError):
+        return jsonify({"_meta": {"ok": False, "note": "registry not built — run scripts/build_book_registry.py"}, "books": {}})
+
+
 @bp.get("/book_pdf")
 @require_principal
 def book_pdf():
-    """Serve a book's freshly-recompiled PDF bytes so the in-app viewer can AUTO-RELOAD after Apply
-    (a browser can't re-read a File the operator picked). Read-only; newest PDF in the book's final/."""
+    """Serve a book's built interior PDF. Resolution reads the Helix file-management registry first
+    (memory/book_artifacts_registry.json); falls back to a vault glob if the registry is stale/absent."""
     import glob
-    import re
     from flask import send_file
 
     book = (request.args.get("book") or "").strip()
-    vault = "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp"
-    # Resolve the request to a book_id/slug. (UNIVERSAL: this is the bridge toward a Helix file-management
-    # spec — a deterministic title→artifacts registry. Until that lands, we resolve by locating the title's
-    # built interior PDF ANYWHERE under the kdp vault, so every Series-Pipeline title opens.)
-    m = re.search(r"Book (\d+)", book)
-    if m:
-        bid = {"10": "10_scaling_enterprise", "11": "11_ma_due_diligence",
-               "12": "12_agentic_enterprise"}.get(m.group(1), "")
-    else:
-        bid = {"the sealing hand": "the_sealing_hand", "breath & echo": "breath_and_echo"}.get(book.lower(), book)
+    vault = _VAULT
+    bid = _resolve_book_id(book)
     if not bid or "/" in bid or ".." in bid:
         return jsonify({"error": "unknown_book", "what": f"No id resolvable from '{book}'."}), 400
+    # 1) REGISTRY (source of truth)
+    e = _book_registry().get(bid)
+    if e and e.get("pdf"):
+        p = os.path.join(vault, e["pdf"])
+        if os.path.isfile(p):
+            return send_file(p, mimetype="application/pdf", max_age=0)
+    # 2) fallback glob (robustness)
     found = (glob.glob(os.path.join(vault, "**", bid, "v*", "final", "*.pdf"), recursive=True)
              + glob.glob(os.path.join(vault, bid, "v*", "final", "*.pdf")))
-    interiors = [p for p in found if "cover" not in os.path.basename(p).lower()]  # prefer interior over cover wraps
+    interiors = [p for p in found if "cover" not in os.path.basename(p).lower()]
     pdfs = sorted(interiors or found, key=os.path.getmtime, reverse=True)
     if not pdfs:
         return jsonify({"error": "no_pdf", "what": f"No built PDF found for '{bid}' under the kdp vault."}), 404

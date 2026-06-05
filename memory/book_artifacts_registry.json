@@ -1,0 +1,373 @@
+{
+  "_meta": {
+    "schema": "book-artifacts-registry-1.0 (Helix increment #1)",
+    "vault": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp",
+    "generated_at": "2026-06-05T20:16:07Z",
+    "receipt": "8e6150f0cbdef715",
+    "n_titles": 24,
+    "n_with_pdf": 23,
+    "n_missing_pdf": 1
+  },
+  "books": {
+    "01_cfos_finance": {
+      "series": "agentic_playbooks",
+      "version": "v1.0",
+      "dir": "agentic_playbooks/01_cfos_finance/v1.0",
+      "manuscript": "agentic_playbooks/01_cfos_finance/v1.0/manuscript_v1.0.md",
+      "pdf": "agentic_playbooks/01_cfos_finance/v1.0/final/AI_Agents_for_CFOs_PRINT.pdf",
+      "epub": "agentic_playbooks/01_cfos_finance/v1.0/final/AI_Agents_for_CFOs.epub",
+      "cover": "agentic_playbooks/01_cfos_finance/v1.0/final/cover_hardcover_wrap.pdf",
+      "present": {
+        "pdf": true,
+        "manuscript": true,
+        "epub": true,
+        "cover": true
+      }
+    },
+    "01_investor_guide": {
+      "series": "quadroof",
+      "version": "v1.0",
+      "dir": "quadroof/01_investor_guide/v1.0",
+      "manuscript": "quadroof/01_investor_guide/v1.0/manuscript_v1.0_part1.md",
+      "pdf": "quadroof/01_investor_guide/v1.0/final/Investing_in_QuadRoof_v1.1.pdf",
+      "epub": "quadroof/01_investor_guide/v1.0/final/Investing_in_QuadRoof_v1.1.epub",
+      "cover": null,
+      "present": {
+        "pdf": true,
+        "manuscript": true,
+        "epub": true,
+        "cover": false
+      }
+    },
+    "01_strategic_finance": {
+      "series": "(top-level)",
+      "version": "v1.2",
+      "dir": "01_strategic_finance/v1.2",
+      "manuscript": "01_strategic_finance/v1.2/manuscript_v1.2.md",
+      "pdf": "01_strategic_finance/v1.2/final/Strategic_Finance_For_Growth_COMPLETE.pdf",
+      "epub": "01_strategic_finance/v1.2/final/Strategic_Finance_For_Growth.epub",
+      "cover": "01_strategic_finance/v1.2/final/cover_hardcover_wrap.pdf",
+      "present": {
+        "pdf": true,
+        "manuscript": true,
+        "epub": true,
+        "cover": true
+      }
+    },
+    "02_executives_decisions": {
+      "series": "agentic_playbooks",
+      "version": "v1.0",
+      "dir": "agentic_playbooks/02_executives_decisions/v1.0",
+      "manuscript": "agentic_playbooks/02_executives_decisions/v1.0/manuscript_v1.0.md",
+      "pdf": "agentic_playbooks/02_executives_decisions/v1.0/final/AI_Agents_for_Executives_PRINT.pdf",
+      "epub": "agentic_playbooks/02_executives_decisions/v1.0/final/AI_Agents_for_Executives.epub",
+      "cover": "agentic_playbooks/02_executives_decisions/v1.0/final/cover_hardcover_wrap.pdf",
+      "present": {
+        "pdf": true,
+        "manuscript": true,
+        "epub": true,
+        "cover": true
+      }
+    },
+    "02_harnessing_ai": {
+      "series": "(top-level)",
+      "version": "v1.2",
+      "dir": "02_harnessing_ai/v1.2",
+      "manuscript": "02_harnessing_ai/v1.2/manuscript_v1.2.md",
+      "pdf": "02_harnessing_ai/v1.2/final/Harnessing_AI_PRINT.pdf",
+      "epub": "02_harnessing_ai/v1.2/final/Harnessing_AI.epub",
+      "cover": "02_harnessing_ai/v1.2/final/cover_hardcover_wrap.pdf",
+      "present": {
+        "pdf": true,
+        "manuscript": true,
+        "epub": true,
+        "cover": true
+      }
+    },
+    "03_blueprint": {
+      "series": "(top-level)",
+      "version": "v1.1",
+      "dir": "03_blueprint/v1.1",
+      "manuscript": "03_blueprint/v1.1/manuscript_v1.1.md",
+      "pdf": "03_blueprint/v1.1/final/Blueprint_for_Brilliance_PRINT.pdf",
+      "epub": "03_blueprint/v1.1/final/Blueprint_for_Brilliance.epub",
+      "cover": "03_blueprint/v1.1/final/cover_hardcover_wrap.pdf",
+      "present": {
+        "pdf": true,
+        "manuscript": true,
+        "epub": true,
+        "cover": true
+      }
+    },
+    "03_leading_agents": {
+      "series": "agentic_playbooks",
+      "version": "v1.0",
+      "dir": "agentic_playbooks/03_leading_agents/v1.0",
+      "manuscript": "agentic_playbooks/03_leading_agents/v1.0/manuscript_v1.0.md",
+      "pdf": "agentic_playbooks/03_leading_agents/v1.0/final/Leading_with_AI_Agents_PRINT.pdf",
+      "epub": "agentic_playbooks/03_leading_agents/v1.0/final/Leading_with_AI_Agents.epub",
+      "cover": "agentic_playbooks/03_leading_agents/v1.0/final/cover_hardcover_wrap.pdf",
+      "present": {
+        "pdf": true,
+        "manuscript": true,
+        "epub": true,
+        "cover": true
+      }
+    },
+    "04_supply_chain": {
+      "series": "agentic_playbooks",
+      "version": "v1.0",
+      "dir": "agentic_playbooks/04_supply_chain/v1.0",
+      "manuscript": "agentic_playbooks/04_supply_chain/v1.0/manuscript_v1.0.md",
+      "pdf": "agentic_playbooks/04_supply_chain/v1.0/final/AI_Agents_for_Supply_Chain.pdf",
+      "epub": "agentic_playbooks/04_supply_chain/v1.0/final/AI_Agents_for_Supply_Chain.epub",
+      "cover": "agentic_playbooks/04_supply_chain/v1.0/final/cover_paperback_wrap.pdf",
+      "present": {
+        "pdf": true,
+        "manuscript": true,
+        "epub": true,
+        "cover": true
+      }
+    },
+    "04_xrp": {
+      "series": "(top-level)",
+      "version": "v1.0",
+      "dir": "04_xrp/v1.0",
+      "manuscript": "04_xrp/v1.0/manuscript_v1.0.md",
+      "pdf": null,
+      "epub": null,
+      "cover": null,
+      "present": {
+        "pdf": false,
+        "manuscript": true,
+        "epub": false,
+        "cover": false
+      }
+    },
+    "05_crypto": {
+      "series": "(top-level)",
+      "version": "v1.1",
+      "dir": "05_crypto/v1.1",
+      "manuscript": "05_crypto/v1.1/manuscript_v1.1.md",
+      "pdf": "05_crypto/v1.1/final/Cryptocurrency_Decoded_PRINT.pdf",
+      "epub": "05_crypto/v1.1/final/Cryptocurrency_Decoded.epub",
+      "cover": "05_crypto/v1.1/final/cover_hardcover_wrap.pdf",
+      "present": {
+        "pdf": true,
+        "manuscript": true,
+        "epub": true,
+        "cover": true
+      }
+    },
+    "05_hr_talent": {
+      "series": "agentic_playbooks",
+      "version": "v1.0",
+      "dir": "agentic_playbooks/05_hr_talent/v1.0",
+      "manuscript": "agentic_playbooks/05_hr_talent/v1.0/manuscript_v1.0.md",
+      "pdf": "agentic_playbooks/05_hr_talent/v1.0/final/AI_Agents_for_HR.pdf",
+      "epub": "agentic_playbooks/05_hr_talent/v1.0/final/AI_Agents_for_HR.epub",
+      "cover": "agentic_playbooks/05_hr_talent/v1.0/final/cover_paperback_wrap.pdf",
+      "present": {
+        "pdf": true,
+        "manuscript": true,
+        "epub": true,
+        "cover": true
+      }
+    },
+    "06_compliance_audit": {
+      "series": "agentic_playbooks",
+      "version": "v1.0",
+      "dir": "agentic_playbooks/06_compliance_audit/v1.0",
+      "manuscript": "agentic_playbooks/06_compliance_audit/v1.0/manuscript_v1.0.md",
+      "pdf": "agentic_playbooks/06_compliance_audit/v1.0/final/AI_Agents_for_Compliance.pdf",
+      "epub": "agentic_playbooks/06_compliance_audit/v1.0/final/AI_Agents_for_Compliance.epub",
+      "cover": "agentic_playbooks/06_compliance_audit/v1.0/final/cover_paperback_wrap.pdf",
+      "present": {
+        "pdf": true,
+        "manuscript": true,
+        "epub": true,
+        "cover": true
+      }
+    },
+    "07_sales_revenue": {
+      "series": "agentic_playbooks",
+      "version": "v1.0",
+      "dir": "agentic_playbooks/07_sales_revenue/v1.0",
+      "manuscript": "agentic_playbooks/07_sales_revenue/v1.0/manuscript_v1.0.md",
+      "pdf": "agentic_playbooks/07_sales_revenue/v1.0/final/AI_Agents_for_Sales.pdf",
+      "epub": "agentic_playbooks/07_sales_revenue/v1.0/final/AI_Agents_for_Sales.epub",
+      "cover": "agentic_playbooks/07_sales_revenue/v1.0/final/cover_paperback_wrap.pdf",
+      "present": {
+        "pdf": true,
+        "manuscript": true,
+        "epub": true,
+        "cover": true
+      }
+    },
+    "08_manufacturing_ops": {
+      "series": "agentic_playbooks",
+      "version": "v1.0",
+      "dir": "agentic_playbooks/08_manufacturing_ops/v1.0",
+      "manuscript": "agentic_playbooks/08_manufacturing_ops/v1.0/manuscript_v1.0.md",
+      "pdf": "agentic_playbooks/08_manufacturing_ops/v1.0/final/AI_Agents_for_Manufacturing.pdf",
+      "epub": "agentic_playbooks/08_manufacturing_ops/v1.0/final/AI_Agents_for_Manufacturing.epub",
+      "cover": "agentic_playbooks/08_manufacturing_ops/v1.0/final/cover_paperback_wrap.pdf",
+      "present": {
+        "pdf": true,
+        "manuscript": true,
+        "epub": true,
+        "cover": true
+      }
+    },
+    "09_multi_agent": {
+      "series": "agentic_playbooks",
+      "version": "v1.0",
+      "dir": "agentic_playbooks/09_multi_agent/v1.0",
+      "manuscript": "agentic_playbooks/09_multi_agent/v1.0/manuscript_v1.0.md",
+      "pdf": "agentic_playbooks/09_multi_agent/v1.0/final/Multi_Agent_AI_Systems.pdf",
+      "epub": "agentic_playbooks/09_multi_agent/v1.0/final/Multi_Agent_AI_Systems.epub",
+      "cover": null,
+      "present": {
+        "pdf": true,
+        "manuscript": true,
+        "epub": true,
+        "cover": false
+      }
+    },
+    "10_scaling_enterprise": {
+      "series": "agentic_playbooks",
+      "version": "v1.0",
+      "dir": "agentic_playbooks/10_scaling_enterprise/v1.0",
+      "manuscript": "agentic_playbooks/10_scaling_enterprise/v1.0/manuscript_v1.5.md",
+      "pdf": "agentic_playbooks/10_scaling_enterprise/v1.0/final/Scaling_AI_Agents.pdf",
+      "epub": "agentic_playbooks/10_scaling_enterprise/v1.0/final/Scaling_AI_Agents.epub",
+      "cover": null,
+      "present": {
+        "pdf": true,
+        "manuscript": true,
+        "epub": true,
+        "cover": false
+      }
+    },
+    "11_ma_due_diligence": {
+      "series": "agentic_playbooks",
+      "version": "v1.0",
+      "dir": "agentic_playbooks/11_ma_due_diligence/v1.0",
+      "manuscript": "agentic_playbooks/11_ma_due_diligence/v1.0/manuscript_v1.5.md",
+      "pdf": "agentic_playbooks/11_ma_due_diligence/v1.0/final/AI_Agents_for_MA.pdf",
+      "epub": "agentic_playbooks/11_ma_due_diligence/v1.0/final/AI_Agents_for_MA.epub",
+      "cover": null,
+      "present": {
+        "pdf": true,
+        "manuscript": true,
+        "epub": true,
+        "cover": false
+      }
+    },
+    "12_agentic_enterprise": {
+      "series": "agentic_playbooks",
+      "version": "v1.0",
+      "dir": "agentic_playbooks/12_agentic_enterprise/v1.0",
+      "manuscript": "agentic_playbooks/12_agentic_enterprise/v1.0/manuscript_v1.5.md",
+      "pdf": "agentic_playbooks/12_agentic_enterprise/v1.0/final/The_Agentic_Enterprise.pdf",
+      "epub": "agentic_playbooks/12_agentic_enterprise/v1.0/final/The_Agentic_Enterprise.epub",
+      "cover": null,
+      "present": {
+        "pdf": true,
+        "manuscript": true,
+        "epub": true,
+        "cover": false
+      }
+    },
+    "the_sealing_hand": {
+      "series": "metalayer_companion_private",
+      "version": "v1.0",
+      "dir": "metalayer_companion_private/the_sealing_hand/v1.0",
+      "manuscript": "metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
+      "pdf": "metalayer_companion_private/the_sealing_hand/v1.0/final/The_Sealing_Hand.pdf",
+      "epub": "metalayer_companion_private/the_sealing_hand/v1.0/final/The_Sealing_Hand.epub",
+      "cover": null,
+      "present": {
+        "pdf": true,
+        "manuscript": true,
+        "epub": true,
+        "cover": false
+      }
+    },
+    "vol_01_sovereign_inference_and_memory": {
+      "series": "series_02_building_the_agentic_harness",
+      "version": "v1.0",
+      "dir": "series_02_building_the_agentic_harness/vol_01_sovereign_inference_and_memory/v1.0",
+      "manuscript": "series_02_building_the_agentic_harness/vol_01_sovereign_inference_and_memory/v1.0/manuscript_v1.3.md",
+      "pdf": "series_02_building_the_agentic_harness/vol_01_sovereign_inference_and_memory/v1.0/final/Sovereign_Inference_and_Memory.pdf",
+      "epub": "series_02_building_the_agentic_harness/vol_01_sovereign_inference_and_memory/v1.0/final/Sovereign_Inference_and_Memory.epub",
+      "cover": null,
+      "present": {
+        "pdf": true,
+        "manuscript": true,
+        "epub": true,
+        "cover": false
+      }
+    },
+    "vol_02_the_primacy_cockpit": {
+      "series": "series_02_building_the_agentic_harness",
+      "version": "v1.0",
+      "dir": "series_02_building_the_agentic_harness/vol_02_the_primacy_cockpit/v1.0",
+      "manuscript": "series_02_building_the_agentic_harness/vol_02_the_primacy_cockpit/v1.0/manuscript_v1.3.md",
+      "pdf": "series_02_building_the_agentic_harness/vol_02_the_primacy_cockpit/v1.0/final/The_Primacy_Cockpit.pdf",
+      "epub": "series_02_building_the_agentic_harness/vol_02_the_primacy_cockpit/v1.0/final/The_Primacy_Cockpit.epub",
+      "cover": null,
+      "present": {
+        "pdf": true,
+        "manuscript": true,
+        "epub": true,
+        "cover": false
+      }
+    },
+    "vol_03_governed_dev_loop_and_self_building_harness": {
+      "series": "series_02_building_the_agentic_harness",
+      "version": "v1.0",
+      "dir": "series_02_building_the_agentic_harness/vol_03_governed_dev_loop_and_self_building_harness/v1.0",
+      "manuscript": "series_02_building_the_agentic_harness/vol_03_governed_dev_loop_and_self_building_harness/v1.0/manuscript_v1.3.md",
+      "pdf": "series_02_building_the_agentic_harness/vol_03_governed_dev_loop_and_self_building_harness/v1.0/final/The_Harness_That_Builds_Itself.pdf",
+      "epub": "series_02_building_the_agentic_harness/vol_03_governed_dev_loop_and_self_building_harness/v1.0/final/The_Harness_That_Builds_Itself.epub",
+      "cover": null,
+      "present": {
+        "pdf": true,
+        "manuscript": true,
+        "epub": true,
+        "cover": false
+      }
+    },
+    "vol_04_federation_and_partner_device_gateway": {
+      "series": "series_02_building_the_agentic_harness",
+      "version": "v1.0",
+      "dir": "series_02_building_the_agentic_harness/vol_04_federation_and_partner_device_gateway/v1.0",
+      "manuscript": "series_02_building_the_agentic_harness/vol_04_federation_and_partner_device_gateway/v1.0/manuscript_v1.3.md",
+      "pdf": "series_02_building_the_agentic_harness/vol_04_federation_and_partner_device_gateway/v1.0/final/Federated_Sovereignty.pdf",
+      "epub": "series_02_building_the_agentic_harness/vol_04_federation_and_partner_device_gateway/v1.0/final/Federated_Sovereignty.epub",
+      "cover": null,
+      "present": {
+        "pdf": true,
+        "manuscript": true,
+        "epub": true,
+        "cover": false
+      }
+    },
+    "vol_05_yield_organism_and_generational_prosperity": {
+      "series": "series_02_building_the_agentic_harness",
+      "version": "v1.0",
+      "dir": "series_02_building_the_agentic_harness/vol_05_yield_organism_and_generational_prosperity/v1.0",
+      "manuscript": "series_02_building_the_agentic_harness/vol_05_yield_organism_and_generational_prosperity/v1.0/manuscript_v1.3.md",
+      "pdf": "series_02_building_the_agentic_harness/vol_05_yield_organism_and_generational_prosperity/v1.0/final/The_Sovereign_Yield_Engine.pdf",
+      "epub": "series_02_building_the_agentic_harness/vol_05_yield_organism_and_generational_prosperity/v1.0/final/The_Sovereign_Yield_Engine.epub",
+      "cover": null,
+      "present": {
+        "pdf": true,
+        "manuscript": true,
+        "epub": true,
+        "cover": false
+      }
+    }
+  }
+}
