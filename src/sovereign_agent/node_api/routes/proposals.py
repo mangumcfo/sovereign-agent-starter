@@ -216,27 +216,24 @@ def book_pdf():
     from flask import send_file
 
     book = (request.args.get("book") or "").strip()
-    bl = book.lower()
     vault = "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp"
-    # Metalayer companion (private) books — not "Book N"; keyed by slug/title.
-    metalayer = {"the_sealing_hand": "the_sealing_hand", "sealing hand": "the_sealing_hand",
-                 "breath_and_echo": "breath_and_echo", "breath & echo": "breath_and_echo"}
-    mkey = next((v for k, v in metalayer.items() if k in bl), None)
-    if mkey:
-        final = os.path.join(vault, "metalayer_companion_private", mkey, "v1.0", "final")
+    # Resolve the request to a book_id/slug. (UNIVERSAL: this is the bridge toward a Helix file-management
+    # spec — a deterministic title→artifacts registry. Until that lands, we resolve by locating the title's
+    # built interior PDF ANYWHERE under the kdp vault, so every Series-Pipeline title opens.)
+    m = re.search(r"Book (\d+)", book)
+    if m:
+        bid = {"10": "10_scaling_enterprise", "11": "11_ma_due_diligence",
+               "12": "12_agentic_enterprise"}.get(m.group(1), "")
     else:
-        # Accept BOTH "Book N" (e.g. "Book 10") AND the book_id slug the pipeline sends (e.g. "10_scaling_enterprise").
-        m = re.search(r"Book (\d+)", book)
-        sub = {"10": "10_scaling_enterprise", "11": "11_ma_due_diligence",
-               "12": "12_agentic_enterprise"}.get(m.group(1) if m else "")
-        if not sub and re.match(r"\d+_", book) and os.path.isdir(os.path.join(vault, "agentic_playbooks", book)):
-            sub = book   # book_id slug passed directly (works for every playbook title that has a local v1.0 build)
-        if not sub:
-            return jsonify({"error": "unknown_book", "what": f"No local-build PDF mapping for '{book}'."}), 400
-        final = os.path.join(vault, "agentic_playbooks", sub, "v1.0", "final")
-    pdfs = sorted(glob.glob(os.path.join(final, "*.pdf")), key=os.path.getmtime, reverse=True)
+        bid = {"the sealing hand": "the_sealing_hand", "breath & echo": "breath_and_echo"}.get(book.lower(), book)
+    if not bid or "/" in bid or ".." in bid:
+        return jsonify({"error": "unknown_book", "what": f"No id resolvable from '{book}'."}), 400
+    found = (glob.glob(os.path.join(vault, "**", bid, "v*", "final", "*.pdf"), recursive=True)
+             + glob.glob(os.path.join(vault, bid, "v*", "final", "*.pdf")))
+    interiors = [p for p in found if "cover" not in os.path.basename(p).lower()]  # prefer interior over cover wraps
+    pdfs = sorted(interiors or found, key=os.path.getmtime, reverse=True)
     if not pdfs:
-        return jsonify({"error": "no_pdf", "what": f"No PDF in {final}."}), 404
+        return jsonify({"error": "no_pdf", "what": f"No built PDF found for '{bid}' under the kdp vault."}), 404
     return send_file(pdfs[0], mimetype="application/pdf", max_age=0)
 
 
