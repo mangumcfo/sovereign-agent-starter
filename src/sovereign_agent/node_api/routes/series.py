@@ -44,21 +44,129 @@ def _roadmap_path() -> Path:
     return repo / "artifacts" / "series_roadmap.yaml"
 
 
+# --- In-memory read-repair (GB owns the file; we NEVER write it). A common GB gotcha is an unquoted
+# scalar value carrying an inner ": " (e.g.  drill_down: Published; KDP evidence: Live $19.99 ...) which
+# breaks strict YAML and can blank the whole lens. We quote ONLY such values, and ONLY when not inside a
+# multi-line quoted/block scalar (so a valid multi-line value is never corrupted). Verified to touch only
+# the offending lines on the live roadmap. ---
+_KV = re.compile(r"^(\s*(?:-\s+)?[A-Za-z_][\w./-]*:[ \t]+)(\S.*?)[ \t]*$")
+
+
+def _sq_open(s: str) -> bool:        # value starts with ' — still open at line end? ('' = escaped quote)
+    i = 1
+    while i < len(s):
+        if s[i] == "'":
+            if i + 1 < len(s) and s[i + 1] == "'":
+                i += 2; continue
+            return False
+        i += 1
+    return True
+
+
+def _sq_closes(line: str) -> bool:   # inside a '…' scalar — does it close on this line?
+    i = 0
+    while i < len(line):
+        if line[i] == "'":
+            if i + 1 < len(line) and line[i + 1] == "'":
+                i += 2; continue
+            return True
+        i += 1
+    return False
+
+
+def _dq_open(s: str) -> bool:
+    i = 1
+    while i < len(s):
+        if s[i] == "\\":
+            i += 2; continue
+        if s[i] == '"':
+            return False
+        i += 1
+    return True
+
+
+def _dq_closes(line: str) -> bool:
+    i = 0
+    while i < len(line):
+        if line[i] == "\\":
+            i += 2; continue
+        if line[i] == '"':
+            return True
+        i += 1
+    return False
+
+
+def _repair_unquoted_colons(text: str):
+    """Return (repaired_text, count). Quotes unquoted scalar values containing ': '; skips lines inside
+    multi-line single/double-quoted or block (|/>) scalars so valid multi-line values are never touched."""
+    out, n = [], 0
+    in_block = in_sq = in_dq = False
+    block_indent = 0
+    for line in text.split("\n"):
+        indent = len(line) - len(line.lstrip(" "))
+        if in_sq:
+            out.append(line)
+            if _sq_closes(line):
+                in_sq = False
+            continue
+        if in_dq:
+            out.append(line)
+            if _dq_closes(line):
+                in_dq = False
+            continue
+        if in_block:
+            if line.strip() == "" or indent > block_indent:
+                out.append(line); continue
+            in_block = False
+        m = _KV.match(line)
+        if m:
+            val = m.group(2); c0 = val[:1]
+            if c0 in ("|", ">"):
+                in_block = True; block_indent = indent; out.append(line); continue
+            if c0 in ("[", "{", "&", "*", "#"):
+                out.append(line); continue
+            if c0 == "'":
+                if _sq_open(val):
+                    in_sq = True
+                out.append(line); continue
+            if c0 == '"':
+                if _dq_open(val):
+                    in_dq = True
+                out.append(line); continue
+            if ": " in val:
+                qv = '"' + val.replace("\\", "\\\\").replace('"', '\\"') + '"'
+                out.append(m.group(1) + qv); n += 1; continue
+        out.append(line)
+    return "\n".join(out), n
+
+
 def _load(text: str):
-    """Parse the roadmap; fall back to the safe prefix if GB's tail notes break strict YAML.
-    Returns (data_dict, degraded_bool). data_dict is {} when even the prefix won't parse."""
+    """Parse the roadmap. On failure, attempt an in-memory quote-repair of unquoted ':'-bearing values
+    (GB's file is never modified); else fall back to the safe prefix. Returns (data, degraded, detail)."""
     import yaml  # system python ships PyYAML 6.x; lazy so an import gap degrades, never 500s
     try:
-        return yaml.safe_load(text) or {}, False
+        return yaml.safe_load(text) or {}, False, ""
     except yaml.YAMLError:
         pass
+    repaired, n = _repair_unquoted_colons(text)
+    if n:
+        try:
+            data = yaml.safe_load(repaired) or {}
+            if data.get("series"):
+                return data, True, (
+                    f"Auto-repaired {n} unquoted value(s) carrying an inner ': ' (e.g. 'KDP evidence: …') "
+                    "so the lens renders. GB's file is unchanged in place — flag GB to quote them at source.")
+        except yaml.YAMLError:
+            pass
     m = re.search(r"^(gb_notes|references):", text, re.M)
     if m:
         try:
-            return yaml.safe_load(text[: m.start()]) or {}, True
+            return (yaml.safe_load(text[: m.start()]) or {}, True,
+                    "Rendered from the safe prefix — GB's gb_notes/references tail is unparseable YAML "
+                    "(data above intact). Flag GB to fix the tail.")
         except yaml.YAMLError:
             pass
-    return {}, True
+    return {}, True, "Roadmap unparseable — even the safe prefix failed; GB must fix the YAML."
 
 
 def _title_card(t: dict) -> dict:
@@ -90,7 +198,7 @@ def series_list():
             "series": [],
         })
     text = path.read_text(encoding="utf-8")
-    data, degraded = _load(text)
+    data, degraded, detail = _load(text)
     msr = data.get("multi_series_roadmap", {}) if isinstance(data, dict) else {}
     series = [_series_card(s) for s in (data.get("series") or []) if isinstance(s, dict)]
     return jsonify({
@@ -98,9 +206,7 @@ def series_list():
             "source": str(path),
             "ok": bool(series),
             "degraded": degraded,
-            "note": ("Rendered from the safe prefix — GB's gb_notes/references tail was skipped "
-                     "(unparseable YAML). Roadmap data is intact; flag to GB to fix the tail.")
-            if degraded else "",
+            "note": detail if degraded else "",
             "version": data.get("version", "") if isinstance(data, dict) else "",
             "current_arc": msr.get("current_arc", ""),
             "active_series_count": msr.get("active_series_count"),
