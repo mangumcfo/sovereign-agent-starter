@@ -216,13 +216,21 @@ def book_pdf():
     from flask import send_file
 
     book = (request.args.get("book") or "").strip()
-    m = re.search(r"Book (\d+)", book)
-    sub = {"10": "10_scaling_enterprise", "11": "11_ma_due_diligence",
-           "12": "12_agentic_enterprise"}.get(m.group(1) if m else "")
-    if not sub:
-        return jsonify({"error": "unknown_book", "what": f"No mapping for '{book}'."}), 400
-    final = os.path.join("/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks",
-                         sub, "v1.0", "final")
+    bl = book.lower()
+    vault = "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp"
+    # Metalayer companion (private) books — not "Book N"; keyed by slug/title.
+    metalayer = {"the_sealing_hand": "the_sealing_hand", "sealing hand": "the_sealing_hand",
+                 "breath_and_echo": "breath_and_echo", "breath & echo": "breath_and_echo"}
+    mkey = next((v for k, v in metalayer.items() if k in bl), None)
+    if mkey:
+        final = os.path.join(vault, "metalayer_companion_private", mkey, "v1.0", "final")
+    else:
+        m = re.search(r"Book (\d+)", book)
+        sub = {"10": "10_scaling_enterprise", "11": "11_ma_due_diligence",
+               "12": "12_agentic_enterprise"}.get(m.group(1) if m else "")
+        if not sub:
+            return jsonify({"error": "unknown_book", "what": f"No mapping for '{book}'."}), 400
+        final = os.path.join(vault, "agentic_playbooks", sub, "v1.0", "final")
     pdfs = sorted(glob.glob(os.path.join(final, "*.pdf")), key=os.path.getmtime, reverse=True)
     if not pdfs:
         return jsonify({"error": "no_pdf", "what": f"No PDF in {final}."}), 404
