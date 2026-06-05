@@ -16,6 +16,7 @@ references key) and flag `meta.degraded=true` so the surface tells the truth abo
 """
 from __future__ import annotations
 
+import json
 import os
 import re
 from pathlib import Path
@@ -212,4 +213,39 @@ def series_list():
             "active_series_count": msr.get("active_series_count"),
         },
         "series": series,
+    })
+
+
+@bp.get("/dialogue")
+@require_principal
+def dialogue():
+    """Helix Comm Protocol (first slice) — the receipted Tiger↔GB THREAD as dialogue cards. The THREAD is
+    already hash-chained ({from,to,ref,msg,hash,prev}); each entry renders as a per-card-receipted Helix card.
+    Extends to B51 / hopper / G responses next. Read-only; one cockpit-native dialogue graph."""
+    p = Path(__file__).resolve().parents[4] / "memory" / "coordination" / "THREAD_Tiger_GB.ndjson"
+    entries, ok = [], True
+    if p.is_file():
+        prev_hash = None
+        for line in p.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                e = json.loads(line)
+            except ValueError:
+                continue
+            if prev_hash is not None and e.get("prev") and e.get("prev") != prev_hash:
+                ok = False
+            prev_hash = e.get("hash")
+            entries.append({
+                "n": e.get("n"), "ts": e.get("ts"), "from": e.get("from"), "to": e.get("to"),
+                "ref": e.get("ref", ""), "msg": e.get("msg", ""),
+                "receipt": (e.get("hash") or "")[:16], "prev": (e.get("prev") or "")[:12],
+            })
+    entries.reverse()  # newest first
+    return jsonify({
+        "meta": {"source": "THREAD_Tiger_GB", "count": len(entries), "chain_ok": ok,
+                 "note": "Helix Comm Protocol (first slice) — the coordination thread as receipted Helix "
+                         "cards. B51 captures / hopper / G responses extend the same lens next."},
+        "entries": entries,
     })
