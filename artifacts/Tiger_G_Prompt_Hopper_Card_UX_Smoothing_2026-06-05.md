@@ -73,3 +73,29 @@ the out-of-Atrium guided-handoff pattern + the dedup/full-span-breakdown discipl
 incrementally and KM can ratify. Note what's a thin Tiger build vs a deeper substrate change.
 
 Thank you, G. ∞Δ∞
+
+---
+
+## ADDENDUM (KM 2026-06-05) — attachments + Series-Pipeline as the unified book-edit entry point
+
+KM is now using the **Series Pipeline drill** as an edit entry point (📖 Open PDF + ✎ Make-a-change → auto-draft
+a diff → review/Accept). Two design questions to fold into your alignment:
+
+**8. Attachments on cards (elevated by KM).** KM wants to **attach a file** (screenshot, doc, marked-up image)
+to a working-card note / hopper card / an edit. Design: where the attach affordance lives (note box? edit box?),
+the upload→store→reference model (a blob store + a receipt/hash per attachment, Helix-lens friendly), inline
+display for images, and how an attachment travels with the obligation through the governed loop (capture →
+packet → diff → seal) so the agent can *use* it (e.g. "make the book match this screenshot"). Keep it
+lightweight; reuse the B51 blob/capture path where possible.
+
+**9. Series Pipeline = the unified book-edit front door (KM's "will it all roll into this?").** KM expects the
+**whole PDF-editing flow** (today split across the Working tab's page-tracked PDF review + capture-feedback +
+diff-review) to **converge into the Series Pipeline title drill**, and to be **state-aware per book**: the
+available actions adapt to where the title is in its lifecycle — **KDP-published** (revise / open on KDP / sync
+status), **in human-review** (open PDF + page-context capture + edit), **private**, **concept/future** (suggest
+to outline). Design: the state→actions matrix, how the Working-tab page-tracked PDF + capture flow embeds in the
+drill, and whether the Working tab becomes a *view* of the same flow rather than a separate surface. Goal: one
+front door (the title), every capability available conditioned on state — without bloating the card.
+
+**Deliver (for 8 & 9):** the attachment model + the state→actions matrix + the convergence plan (Series Pipeline
+as the front door, Working tab as a view), with the thin-Tiger-build vs substrate split, so KM ratifies scope.

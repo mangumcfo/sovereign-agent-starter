@@ -225,11 +225,14 @@ def book_pdf():
     if mkey:
         final = os.path.join(vault, "metalayer_companion_private", mkey, "v1.0", "final")
     else:
+        # Accept BOTH "Book N" (e.g. "Book 10") AND the book_id slug the pipeline sends (e.g. "10_scaling_enterprise").
         m = re.search(r"Book (\d+)", book)
         sub = {"10": "10_scaling_enterprise", "11": "11_ma_due_diligence",
                "12": "12_agentic_enterprise"}.get(m.group(1) if m else "")
+        if not sub and re.match(r"\d+_", book) and os.path.isdir(os.path.join(vault, "agentic_playbooks", book)):
+            sub = book   # book_id slug passed directly (works for every playbook title that has a local v1.0 build)
         if not sub:
-            return jsonify({"error": "unknown_book", "what": f"No mapping for '{book}'."}), 400
+            return jsonify({"error": "unknown_book", "what": f"No local-build PDF mapping for '{book}'."}), 400
         final = os.path.join(vault, "agentic_playbooks", sub, "v1.0", "final")
     pdfs = sorted(glob.glob(os.path.join(final, "*.pdf")), key=os.path.getmtime, reverse=True)
     if not pdfs:
