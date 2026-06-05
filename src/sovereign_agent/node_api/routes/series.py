@@ -16,6 +16,7 @@ references key) and flag `meta.degraded=true` so the surface tells the truth abo
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
@@ -216,12 +217,8 @@ def series_list():
     })
 
 
-@bp.get("/dialogue")
-@require_principal
-def dialogue():
-    """Helix Comm Protocol (first slice) — the receipted Tiger↔GB THREAD as dialogue cards. The THREAD is
-    already hash-chained ({from,to,ref,msg,hash,prev}); each entry renders as a per-card-receipted Helix card.
-    Extends to B51 / hopper / G responses next. Read-only; one cockpit-native dialogue graph."""
+def _thread_entries():
+    """The hash-chained Tiger↔GB THREAD as dialogue cards. Returns (entries, chain_ok). Read-only."""
     p = Path(__file__).resolve().parents[4] / "memory" / "coordination" / "THREAD_Tiger_GB.ndjson"
     entries, ok = [], True
     if p.is_file():
@@ -241,11 +238,81 @@ def dialogue():
                 "n": e.get("n"), "ts": e.get("ts"), "from": e.get("from"), "to": e.get("to"),
                 "ref": e.get("ref", ""), "msg": e.get("msg", ""),
                 "receipt": (e.get("hash") or "")[:16], "prev": (e.get("prev") or "")[:12],
+                "source": "thread",
             })
     entries.reverse()  # newest first
+    return entries, ok
+
+
+# B51 = the human's live Memory Cylinder (KM's own raw capture stream). It is anchored by a single Merkle
+# root_hash over the whole cylinder, NOT a per-entry prev/hash chain like the THREAD. So we render each entry
+# honestly: receipt = sha256(content)[:16] (deterministic, verifiable per-entry), and the cylinder's
+# merkle_root is the chain anchor surfaced in meta. Read-only; we never write the cylinder.
+_B51_LIVE_DIR = Path("/home/kmangum/.local/share/human-memory-cylinder/sessions")
+
+
+def _b51_cylinder_path() -> Path | None:
+    scan = Path(__file__).resolve().parents[4] / "artifacts" / ".b51_last_scan.json"
+    if scan.is_file():
+        try:
+            p = Path(json.loads(scan.read_text(encoding="utf-8")).get("path", ""))
+            if p.is_file():
+                return p
+        except (ValueError, OSError):
+            pass
+    if _B51_LIVE_DIR.is_dir():  # fallback: newest live cyl_*.json
+        cyls = sorted(_B51_LIVE_DIR.glob("cyl_*.json"), key=lambda x: x.stat().st_mtime, reverse=True)
+        if cyls:
+            return cyls[0]
+    return None
+
+
+def _b51_entries(limit: int = 12):
+    """The latest `limit` entries of KM's live B51 Memory Cylinder, as dialogue cards. Returns
+    (entries_newest_first, merkle_root, cyl_id). Honest: per-entry receipt = content hash; merkle_root anchors."""
+    path = _b51_cylinder_path()
+    if not path:
+        return [], "", ""
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (ValueError, OSError):
+        return [], "", ""
+    raw = data.get("entries", []) or []
+    merkle = data.get("root_hash") or ""
+    cyl_id = data.get("id") or ""
+    total = len(raw)
+    out = []
+    for i, e in enumerate(raw[-limit:]):
+        content = (e.get("content") or e.get("preview") or "").strip()
+        idx = total - len(raw[-limit:]) + i  # absolute index in the cylinder
+        out.append({
+            "n": "b51-%d" % idx, "ts": e.get("timestamp", ""),
+            "from": "KM-1176", "to": "field", "ref": "B51 capture · %s" % (cyl_id[:12] or "live"),
+            "msg": content,
+            "receipt": hashlib.sha256(content.encode("utf-8")).hexdigest()[:16],
+            "prev": (merkle or "")[:12], "source": "b51",
+        })
+    out.reverse()  # newest first
+    return out, merkle, cyl_id
+
+
+@bp.get("/dialogue")
+@require_principal
+def dialogue():
+    """Helix Comm Protocol — the unified, receipted coordination graph as dialogue cards. Two slices today:
+    the hash-chained Tiger↔GB THREAD (source=thread) + KM's live B51 Memory Cylinder captures (source=b51).
+    Each entry is a per-card-receipted Helix card; one cockpit-native graph. G responses extend the same lens
+    next. Read-only; thin wrapper over what already exists (THREAD chain + B51 cylinder)."""
+    thread, ok = _thread_entries()
+    b51, merkle, cyl_id = _b51_entries()
+    # Unified, newest-first by ISO timestamp (both sources emit ISO ts; string sort is correct + stable).
+    entries = sorted(thread + b51, key=lambda e: str(e.get("ts") or ""), reverse=True)
     return jsonify({
-        "meta": {"source": "THREAD_Tiger_GB", "count": len(entries), "chain_ok": ok,
-                 "note": "Helix Comm Protocol (first slice) — the coordination thread as receipted Helix "
-                         "cards. B51 captures / hopper / G responses extend the same lens next."},
+        "meta": {"source": "THREAD_Tiger_GB + B51", "count": len(entries), "chain_ok": ok,
+                 "sources": {"thread": len(thread), "b51": len(b51)},
+                 "b51_merkle": (merkle or "")[:16], "b51_cyl": cyl_id[:12],
+                 "note": "Helix Comm Protocol — the coordination THREAD + KM's live B51 captures as one "
+                         "receipted graph. THREAD is per-entry hash-chained; B51 is content-hashed + "
+                         "Merkle-anchored. Hopper / G responses extend the same lens next."},
         "entries": entries,
     })
