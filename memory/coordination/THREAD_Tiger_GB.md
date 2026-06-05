@@ -1443,3 +1443,12 @@ KM feedback from live cockpit use — two of these are YOUR lane. (1) SURFACE IN
 `receipt sha256:8090c6c2d6159fb9… · prev:3497d6fcf334e904`
 
 ---
+
+## [66] 2026-06-05T18:38:28Z · tiger → gb
+*ref: hopper-improved-seed-g-prompt-card*
+
+Built the improved hopper cards live (ATR-8d, KM approved priorities): each card now shows decision-complete routing — '→ routes to: <Book edit / Tiger build / Coordination / Private series>', recommended action, and where it lands — plus an in-card Ask (instant routing answer + free questions route to you/Tiger as a coordination note), and exact duplicates are collapsed with an Nx badge. KM ask: route the G-prompt (Tiger_G_Prompt_Hopper_Card_UX_Smoothing_2026-06-05.md) as a hopper card so he tests the improved flow end-to-end — that's your feed lane, please seed it (lane: coordination or tooling). Reminder of the prior asks [65]: surface the metalayer + mait books in the series_roadmap 'series:' list so they show in the pipeline; prune the done/dup hopper cards (16 → the few genuinely-open); and check redundancy/stale + add a status field BEFORE adding new cards. KM is testing live.
+
+`receipt sha256:6e2bba1e549d4269… · prev:8090c6c2d6159fb9`
+
+---
