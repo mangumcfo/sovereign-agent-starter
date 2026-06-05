@@ -136,6 +136,42 @@ def _cards_from_feed(path: Path):
     return cards
 
 
+def _packeted_refs():
+    """Refs of obligations already opened from hopper cards — so a card that's been Sent-to-Packet
+    DISAPPEARS from the feed (no more re-approving the same card → no duplicate-obligation pileup)."""
+    import json as _json
+    root = os.environ.get("OBLIGATION_LEDGER_ROOT", "")
+    refs = set()
+    if root:
+        p = Path(root) / "obligations.ndjson"
+        if p.is_file():
+            for line in p.read_text(encoding="utf-8").splitlines():
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    e = _json.loads(line)
+                except ValueError:
+                    continue
+                if e.get("type") == "debit" and e.get("ref"):
+                    refs.add(e["ref"])
+    return refs
+
+
+def _card_packeted(card: dict, packeted: set) -> bool:
+    """Has this feed card already become an obligation? Mirrors hopper_to_packet's ref derivation."""
+    cid = card.get("id") or ""
+    sref = card.get("series_ref") or ""
+    lane = card.get("lane") or ""
+    if lane == "tooling":
+        cands = {"tooling:" + (sref or cid)}
+    elif lane == "private-learning":
+        cands = {"private:" + (sref or cid)}
+    else:  # coordination / book → src_ref = card ref (= id) or b51:<id>
+        cands = {cid, "b51:" + cid}
+    return any(c in packeted for c in cands if c)
+
+
 @bp.get("/hopper")
 @require_principal
 def hopper_list():
@@ -143,6 +179,10 @@ def hopper_list():
     feed = os.environ.get("HOPPER_FEED", "").strip()
     if feed and Path(feed).is_file():
         cards = _cards_from_feed(Path(feed))
+        # Hide cards you've already Sent-to-Packet (the re-approval loop fix) — fence-clean: GB's feed file
+        # is untouched; the lens just stops showing a card once an obligation exists for it.
+        packeted = _packeted_refs()
+        cards = [c for c in cards if not _card_packeted(c, packeted)]
         return jsonify({
             "meta": {"live": True, "iron_clad": True, "source": feed,
                      "note": ("GB iron-clad feed — structured, lane-targeted suggestions distilled from your "
