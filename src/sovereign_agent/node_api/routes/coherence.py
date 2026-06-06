@@ -29,6 +29,7 @@ def _registry_path() -> Path:
 
 
 COVERAGE = Path(__file__).resolve().parents[4] / "memory" / "coherence_coverage.json"
+CAPABILITIES = Path(__file__).resolve().parents[4] / "memory" / "coherence_capabilities.json"
 
 
 def _compute(reg: dict, repo: Path):
@@ -114,11 +115,26 @@ def coherence_rollup():
     # distinct from ◌ awaiting-anchor. Read-only companion file (Tiger-authored via coherence_backfill.py).
     cov = json.loads(COVERAGE.read_text(encoding="utf-8")) if COVERAGE.is_file() else {}
     narrative = cov.get("narrative", {}) if isinstance(cov, dict) else {}
+    # Capability ledger (G's 2026-05-30 review harvest) — semantic Present/Partial/Missing per book,
+    # folded per book_id so the roadmap shows the true coverage (not just hash-pinned passages).
+    capdoc = json.loads(CAPABILITIES.read_text(encoding="utf-8")) if CAPABILITIES.is_file() else {}
+    caps = capdoc.get("capabilities", []) if isinstance(capdoc, dict) else []
+    cap_by_book, cap_tot = {}, {"present": 0, "partial": 0, "missing": 0}
+    for c in caps:
+        b = cap_by_book.setdefault(c.get("book_id", "?"), {"present": 0, "partial": 0, "missing": 0, "rows": []})
+        st = c.get("review_status", "missing")
+        if st in b:
+            b[st] += 1
+            cap_tot[st] = cap_tot.get(st, 0) + 1
+        b["rows"].append(c)
     return jsonify({
         "by_book": sorted(by.values(), key=lambda b: b["book"]),
         "narrative": narrative,
+        "capabilities": cap_by_book,
         "overall": {"coherent": coherent, "drift": drift, "total": coherent + drift,
-                    "books": len(by), "narrative": len(narrative)},
-        "note": "Per-book coherence rollup. ✅ pinned = book↔code verified live · 📖 narrative = no code spec "
-                "(honest) · ◌ absent = awaiting an anchor. Recomputed live; surfaced in the Series Roadmap.",
+                    "books": len(by), "narrative": len(narrative),
+                    "cap_present": cap_tot["present"], "cap_partial": cap_tot["partial"],
+                    "cap_missing": cap_tot["missing"], "cap_books": len(cap_by_book)},
+        "note": "Per-book coherence rollup. ✅ pinned = hash-verified passage↔code · ⚖ capability = G-review "
+                "Present/Partial/Missing · 📖 narrative = no code spec · ◌ absent = awaiting. Recomputed live.",
     })

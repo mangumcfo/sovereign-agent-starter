@@ -1,0 +1,429 @@
+{
+ "capabilities": [
+  {
+   "book_id": "01_cfos_finance",
+   "book": "AI Agents for CFOs (Book 1)",
+   "capability": "Compliance receipts + charter-checked attestations",
+   "review_status": "present",
+   "code_file": "src/sovereign_agent/compliance/compliance_engine.py",
+   "note": "Strong structural attestations: risk_level, charter_v7_checked, prev_receipt_hash, signatures, 6-key summaries.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "01_cfos_finance",
+   "book": "AI Agents for CFOs (Book 1)",
+   "capability": "Source-citation governance (every number cites its lineage)",
+   "review_status": "partial",
+   "code_file": "src/sovereign_agent/compliance/compliance_engine.py",
+   "note": "Receipts strong, but content lineage (GL lines, ERP txns, assumptions) is not first-class in the envelope nor queryable in Atrium.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "01_cfos_finance",
+   "book": "AI Agents for CFOs (Book 1)",
+   "capability": "Tiered approval gates by materiality/audience (board vs internal)",
+   "review_status": "partial",
+   "code_file": "src/sovereign_agent/compliance/compliance_engine.py",
+   "note": "HumanApprovalGate/breath_gate_token exist but binary — not tiered by materiality/audience as Ch 10 demands.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "01_cfos_finance",
+   "book": "AI Agents for CFOs (Book 1)",
+   "capability": "Deterministic methodology versioning (repeatable period-over-period)",
+   "review_status": "missing",
+   "code_file": "",
+   "note": "Not yet a first-class receipted primitive; strong on policy-as-code, light on versioned methodology artifacts.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "02_executives_decisions",
+   "book": "Executive Decisions (Book 2)",
+   "capability": "Receipts strong on K2/K3/K4",
+   "review_status": "present",
+   "code_file": "src/sovereign_agent/compliance/compliance_engine.py",
+   "note": "prev_receipt_hash + 6-key summary + charter_v7_checked in compliance_engine + node_api/server.py.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "02_executives_decisions",
+   "book": "Executive Decisions (Book 2)",
+   "capability": "Context-engineering 5-layer (provenance/freshness metadata)",
+   "review_status": "partial",
+   "code_file": "src/sovereign_agent/core.py",
+   "note": "Maps to ContextAdapter + operator-defined roles, but provenance/freshness/strategic-role metadata not visible in Atrium.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "02_executives_decisions",
+   "book": "Executive Decisions (Book 2)",
+   "capability": "5-level trust calibration + override-rate feedback",
+   "review_status": "missing",
+   "code_file": "",
+   "note": "Breath-gates exist but lack the book's visible 5-level calibration and override-rate feedback.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "02_executives_decisions",
+   "book": "Executive Decisions (Book 2)",
+   "capability": "override_log_entry / decision_handoff_protocol (with 'unknowns')",
+   "review_status": "missing",
+   "code_file": "",
+   "note": "Not first-class envelope/receipt sections.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "02_executives_decisions",
+   "book": "Executive Decisions (Book 2)",
+   "capability": "Shadow-mode + calibration-before-autonomy",
+   "review_status": "missing",
+   "code_file": "",
+   "note": "Not yet a first-class, receipted operation.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "03_leading_agents",
+   "book": "Leading Agents (Book 3)",
+   "capability": "Governed role binding + policy-as-code",
+   "review_status": "present",
+   "code_file": "src/sovereign_agent/demo_roles/family_cfo_demo/role_spec.yaml",
+   "note": "role_spec + BoundRole + ContextAdapter implement governed roles (allowed_action_classes, policy-as-code).",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "03_leading_agents",
+   "book": "Leading Agents (Book 3)",
+   "capability": "Role Definition Matrix (Human/Assisted/Led/Autonomous; accountability)",
+   "review_status": "partial",
+   "code_file": "src/sovereign_agent/demo_roles/family_cfo_demo/role_spec.yaml",
+   "note": "Implementation is technical; lacks task-level Human/Agent classification with accountability attribution.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "03_leading_agents",
+   "book": "Leading Agents (Book 3)",
+   "capability": "Per-person/per-agent trust level + promotion surface",
+   "review_status": "missing",
+   "code_file": "",
+   "note": "No first-class trust-level/promotion/team-matrix surface in Atrium or node_api.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "03_leading_agents",
+   "book": "Leading Agents (Book 3)",
+   "capability": "Structured Agent Brief (5-element delegation) as receipted artifact",
+   "review_status": "missing",
+   "code_file": "",
+   "note": "Excellent operationalization but not yet a native receipted artifact type.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "04_supply_chain",
+   "book": "Supply Chain (Book 4)",
+   "capability": "Breath-gates for override/rollback",
+   "review_status": "present",
+   "code_file": "src/sovereign_agent/compliance/compliance_engine.py",
+   "note": "Override/rollback + alignment to authority matrices supported via breath-gates.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "04_supply_chain",
+   "book": "Supply Chain (Book 4)",
+   "capability": "Four-layer human-role model (Perception/Forecasting/Orchestration/Action)",
+   "review_status": "partial",
+   "code_file": "src/sovereign_agent/demo_roles/family_cfo_demo/role_spec.yaml",
+   "note": "Strong extension of the Role Matrix, but role_spec + Atrium lack supply-chain layered visibility / Ops Cockpit.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "04_supply_chain",
+   "book": "Supply Chain (Book 4)",
+   "capability": "Continuous data-quality monitoring (companion + receipted gate)",
+   "review_status": "missing",
+   "code_file": "",
+   "note": "No first-class persistent monitoring agent/gate; receipts primarily reactive.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "04_supply_chain",
+   "book": "Supply Chain (Book 4)",
+   "capability": "Concentration limits / consensus / assumption-surfacing primitives",
+   "review_status": "missing",
+   "code_file": "",
+   "note": "Not yet native, reusable receipted governance patterns.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "05_hr_talent",
+   "book": "HR & Talent (Book 5)",
+   "capability": "Human gate before any employment action",
+   "review_status": "partial",
+   "code_file": "src/sovereign_agent/compliance/compliance_engine.py",
+   "note": "HumanApprovalGate exists but not configurable for HR thresholds / qualified-reviewer roles / 'reviewed before employment action' attribution.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "05_hr_talent",
+   "book": "HR & Talent (Book 5)",
+   "capability": "Configurable bias auditing (EEOC four-fifths rule)",
+   "review_status": "missing",
+   "code_file": "",
+   "note": "Strongest ethical language in the series, but no first-class bias-auditing primitive.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "05_hr_talent",
+   "book": "HR & Talent (Book 5)",
+   "capability": "Individual transparency (data-subject access to own data)",
+   "review_status": "missing",
+   "code_file": "",
+   "note": "Harness excels at operator/admin receipts; no native controlled access for data subjects (employees).",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "05_hr_talent",
+   "book": "HR & Talent (Book 5)",
+   "capability": "No-suppression enforcement on high-stakes findings",
+   "review_status": "missing",
+   "code_file": "",
+   "note": "No first-class 'uncomfortable truths reach decision-makers, no filtering' enforcement.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "06_compliance_audit",
+   "book": "Compliance & Audit (Book 6)",
+   "capability": "Hash-chained receipts + policy-as-code + human gates",
+   "review_status": "present",
+   "code_file": "src/sovereign_agent/compliance/compliance_engine.py",
+   "note": "Book describes almost exactly what exists: AuditRecord, prev_receipt_hash, 6-key summary, charter_v7_checked, Merkle receipts.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "06_compliance_audit",
+   "book": "Compliance & Audit (Book 6)",
+   "capability": "Auditor-friendly verification-packet export + public-ledger UX",
+   "review_status": "partial",
+   "code_file": "src/sovereign_agent/node_api/server.py",
+   "note": "Internal receipts strong; the external-proof verification-packet export + simple public-ledger verification UX not yet first-class/polished.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "06_compliance_audit",
+   "book": "Compliance & Audit (Book 6)",
+   "capability": "Qualified-reviewer gates (e.g. only BSA officer approves SARs) + attribution",
+   "review_status": "partial",
+   "code_file": "src/sovereign_agent/compliance/compliance_engine.py",
+   "note": "Gates exist but not easily role-configurable for high-stakes actions with explicit receipt attribution.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "06_compliance_audit",
+   "book": "Compliance & Audit (Book 6)",
+   "capability": "Continuous regulatory-intelligence ingestion → policy-as-code",
+   "review_status": "missing",
+   "code_file": "",
+   "note": "Ingestion layer that keeps policies updated from external sources is still thin.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "07_sales_revenue",
+   "book": "Sales & Revenue (Book 7)",
+   "capability": "K1 human judgment on pricing + customer-facing actions",
+   "review_status": "present",
+   "code_file": "src/sovereign_agent/compliance/compliance_engine.py",
+   "note": "Human-in-loop on high-stakes pricing/deal decisions central + non-delegable; operator-defined governance.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "07_sales_revenue",
+   "book": "Sales & Revenue (Book 7)",
+   "capability": "Progressive review gates + batch limits + suppression checks for outbound",
+   "review_status": "partial",
+   "code_file": "src/sovereign_agent/compliance/compliance_engine.py",
+   "note": "Only partially present/configurable in role_spec + breath-gates (test-batch gates, batch limits, opt-out checks).",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "07_sales_revenue",
+   "book": "Sales & Revenue (Book 7)",
+   "capability": "Pricing optimization-function config + approval chains",
+   "review_status": "missing",
+   "code_file": "",
+   "note": "Win-rate vs margin vs gross-profit optimization config with approval chains is not first-class.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "07_sales_revenue",
+   "book": "Sales & Revenue (Book 7)",
+   "capability": "Revenue Intelligence / Sales Cockpit surface",
+   "review_status": "missing",
+   "code_file": "",
+   "note": "No clean cockpit for behavioral forecasts, pricing chains, accuracy trends (CRO + CFO).",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "08_manufacturing_ops",
+   "book": "Manufacturing & Ops (Book 8)",
+   "capability": "K1 human judgment on safety-critical decisions",
+   "review_status": "present",
+   "code_file": "src/sovereign_agent/compliance/compliance_engine.py",
+   "note": "Human judgment central + operator-defined roles with hard constraints (safety as a governance requirement).",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "08_manufacturing_ops",
+   "book": "Manufacturing & Ops (Book 8)",
+   "capability": "Architecturally non-overridable safety limits (LOTO / E-stop / zones)",
+   "review_status": "partial",
+   "code_file": "src/sovereign_agent/demo_roles/family_cfo_demo/role_spec.yaml",
+   "note": "Hard constraints partially expressible; not yet architecturally non-overridable with receipt attribution.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "08_manufacturing_ops",
+   "book": "Manufacturing & Ops (Book 8)",
+   "capability": "Always-on Safety Monitoring companion + dedicated Atrium view",
+   "review_status": "missing",
+   "code_file": "",
+   "note": "No persistent always-on safety monitoring infra or non-dismissible Atrium view.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "08_manufacturing_ops",
+   "book": "Manufacturing & Ops (Book 8)",
+   "capability": "SQDC evaluation lens + progressive threshold tightening",
+   "review_status": "missing",
+   "code_file": "",
+   "note": "Not first-class configurable/auditable (SQDC dashboard; 'turn the screws' threshold history).",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "09_multi_agent",
+   "book": "Multi-Agent (Book 9)",
+   "capability": "ARET loop + SOURCE/TRUTH/INTEGRITY + Propose-Approve-Execute",
+   "review_status": "present",
+   "code_file": "src/sovereign_agent/compliance/compliance_engine.py",
+   "note": "Maps almost perfectly to receipting (AuditRecord + prev_receipt_hash + 6-key), breath-gates, and role binding.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "09_multi_agent",
+   "book": "Multi-Agent (Book 9)",
+   "capability": "Composable 4-agent ARET loop as a reusable, versionable template",
+   "review_status": "partial",
+   "code_file": "examples/multi_mandate_handoff_demo.py",
+   "note": "Pattern is proven but not yet a first-class reusable template with built-in propose-approve-execute + receipts.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "09_multi_agent",
+   "book": "Multi-Agent (Book 9)",
+   "capability": "Governor Dashboard / Multi-Agent Cockpit surface",
+   "review_status": "missing",
+   "code_file": "",
+   "note": "No first-class cross-agent state / pending-proposal / constitutional-compliance surface.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "09_multi_agent",
+   "book": "Multi-Agent (Book 9)",
+   "capability": "Component registry for reusable multi-agent patterns",
+   "review_status": "missing",
+   "code_file": "",
+   "note": "'Best use case is the reuse case' — no component registry yet.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "10_scaling_enterprise",
+   "book": "Scaling the Agentic Enterprise (Book 10)",
+   "capability": "Multi-mandate + joint_attestation pattern",
+   "review_status": "partial",
+   "code_file": "examples/multi_mandate_handoff_demo.py",
+   "note": "Visible in the demo + compliance joint-attestation logic; not yet a first-class principal-boundary primitive with Atrium mandate switching.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "10_scaling_enterprise",
+   "book": "Scaling the Agentic Enterprise (Book 10)",
+   "capability": "Runtime-Exercise verify vs real memory shape (Merkle, not .actions[])",
+   "review_status": "partial",
+   "code_file": "src/sovereign_agent/core.py",
+   "note": "Book v1.3 handed jq '.actions[-1].action_class' but memory is Merkle (core.py:292) + per-demo *_summary.json; v1.4 reconciled the language (was true DRIFT).",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "10_scaling_enterprise",
+   "book": "Scaling the Agentic Enterprise (Book 10)",
+   "capability": "First-class bind_role action class on node.load_role()",
+   "review_status": "missing",
+   "code_file": "",
+   "note": "Promotion candidate: binding emits no governance action class today.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "10_scaling_enterprise",
+   "book": "Scaling the Agentic Enterprise (Book 10)",
+   "capability": "Queryable .actions[] projection over Merkle leaves",
+   "review_status": "missing",
+   "code_file": "src/sovereign_agent/core.py",
+   "note": "Promotion candidate: one fix serves books + SDK + Atrium audit surfaces.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "11_ma_due_diligence",
+   "book": "AI Agents for M&A (Book 11)",
+   "capability": "Post-deal monitoring 3-receipt temporal chain",
+   "review_status": "present",
+   "code_file": "examples/post_deal_monitoring_demo.py",
+   "note": "Strongest direct starter↔book alignment (built for Ch 9; PostDealMonitoring_summary.json).",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "11_ma_due_diligence",
+   "book": "AI Agents for M&A (Book 11)",
+   "capability": "Cross-role review / veto as a first-class joint-receipt primitive",
+   "review_status": "partial",
+   "code_file": "src/sovereign_agent/compliance/compliance_engine.py",
+   "note": "Conceptually supported via compliance layer + role specs; not the clean first-class 'compliance vetoes CFO per Charter V.7' + joint receipts Book 11 describes.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "11_ma_due_diligence",
+   "book": "AI Agents for M&A (Book 11)",
+   "capability": "Clean-room / information-volume constraints enforced structurally",
+   "review_status": "missing",
+   "code_file": "",
+   "note": "Largely manual / policy-as-code rather than harness-enforced during diligence.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "12_agentic_enterprise",
+   "book": "The Agentic Enterprise (Book 12)",
+   "capability": "Thin-waist node_api + starter-first architecture (Atrium as replaceable lens)",
+   "review_status": "present",
+   "code_file": "src/sovereign_agent/node_api/server.py",
+   "note": "Aligns directly with Book 12's sovereignty chapter (Atrium as replaceable lens over the sovereign substrate).",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "12_agentic_enterprise",
+   "book": "The Agentic Enterprise (Book 12)",
+   "capability": "SOURCE/TRUTH/INTEGRITY → K1–K4 structural extension",
+   "review_status": "partial",
+   "code_file": "src/sovereign_agent/compliance/compliance_engine.py",
+   "note": "Conceptual mapping present; stronger explicit harness linkage (triad → K1-K4) is a candidate.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  },
+  {
+   "book_id": "12_agentic_enterprise",
+   "book": "The Agentic Enterprise (Book 12)",
+   "capability": "Cross-book canonical-term discipline (ARET correction Bk9→Bk12)",
+   "review_status": "partial",
+   "code_file": "",
+   "note": "Editorial + platform practice; first logged win is the ARET correction — not yet enforced tooling.",
+   "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)"
+  }
+ ],
+ "source": "G Grok Build 2026-05-30 (ALIGNMENT_AND_NEXT_EDITION_NOTES.md)",
+ "note": "Faithful harvest of G's 2026-05-30 review. present/partial cite a real code file; missing = platform-promotion candidate (gated dev loop)."
+}
