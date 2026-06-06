@@ -48,7 +48,8 @@ def _compute(reg: dict, repo: Path):
         coherent += status == "coherent"
         drift += status != "coherent"
         out.append({**e, "book_present": book_present, "code_present": code_present,
-                    "tests_present": tests_present, "hash_ok": hash_ok, "status": status})
+                    "tests_present": tests_present, "hash_ok": hash_ok, "status": status,
+                    "book_id": e.get("book_id") or _book_id_from_path(e.get("book_file", ""))})
     return out, coherent, drift
 
 
