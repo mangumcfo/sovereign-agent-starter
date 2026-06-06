@@ -1,0 +1,20 @@
+{
+ "narrative": {
+  "01_strategic_finance": "Strategic finance trade book — no harness code.",
+  "02_harnessing_ai": "Executive AI-strategy narrative — no harness code.",
+  "03_blueprint": "Leadership/strategy narrative — no harness code.",
+  "04_xrp": "Crypto/XRP market narrative — no harness code.",
+  "05_crypto": "Cryptocurrency primer — no harness code.",
+  "01_cfos_finance": "Executive domain playbook — teaches agent patterns; the harness code lives in Series 2 (no 1:1 code in this book).",
+  "02_executives_decisions": "Executive domain playbook — teaches agent patterns; the harness code lives in Series 2 (no 1:1 code in this book).",
+  "03_leading_agents": "Executive domain playbook — teaches agent patterns; the harness code lives in Series 2 (no 1:1 code in this book).",
+  "04_supply_chain": "Executive domain playbook — teaches agent patterns; the harness code lives in Series 2 (no 1:1 code in this book).",
+  "05_hr_talent": "Executive domain playbook — teaches agent patterns; the harness code lives in Series 2 (no 1:1 code in this book).",
+  "06_compliance_audit": "Executive domain playbook — teaches agent patterns; the harness code lives in Series 2 (no 1:1 code in this book).",
+  "07_sales_revenue": "Executive domain playbook — teaches agent patterns; the harness code lives in Series 2 (no 1:1 code in this book).",
+  "08_manufacturing_ops": "Executive domain playbook — teaches agent patterns; the harness code lives in Series 2 (no 1:1 code in this book).",
+  "09_multi_agent": "Executive domain playbook — teaches agent patterns; the harness code lives in Series 2 (no 1:1 code in this book).",
+  "10_scaling_enterprise": "Executive domain playbook — teaches agent patterns; the harness code lives in Series 2 (no 1:1 code in this book).",
+  "12_agentic_enterprise": "Executive domain playbook — teaches agent patterns; the harness code lives in Series 2 (no 1:1 code in this book)."
+ }
+}

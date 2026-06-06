@@ -28,6 +28,9 @@ def _registry_path() -> Path:
     return repo / "memory" / "coherence_registry.json"
 
 
+COVERAGE = Path(__file__).resolve().parents[4] / "memory" / "coherence_coverage.json"
+
+
 def _compute(reg: dict, repo: Path):
     """Live per-extrusion coherence: re-read each cited passage from the book + re-check the code/hash.
     Pure (no writes); shared by /coherence and /coherence/rollup so both tell the same truth."""
@@ -107,9 +110,15 @@ def coherence_rollup():
         b["drift"] += e["status"] != "coherent"
     for b in by.values():
         b["pct"] = round(100 * b["coherent"] / b["total"]) if b["total"] else 0
+    # Honest coverage: books classified as narrative (no code spec) so the roadmap shows 📖 narrative —
+    # distinct from ◌ awaiting-anchor. Read-only companion file (Tiger-authored via coherence_backfill.py).
+    cov = json.loads(COVERAGE.read_text(encoding="utf-8")) if COVERAGE.is_file() else {}
+    narrative = cov.get("narrative", {}) if isinstance(cov, dict) else {}
     return jsonify({
         "by_book": sorted(by.values(), key=lambda b: b["book"]),
-        "overall": {"coherent": coherent, "drift": drift, "total": coherent + drift, "books": len(by)},
-        "note": "Per-book coherence rollup. Titles absent here have no coherence anchor yet — coverage gap, "
-                "not drift. Recomputed live; persistent monitor surfaces this in the Series Roadmap.",
+        "narrative": narrative,
+        "overall": {"coherent": coherent, "drift": drift, "total": coherent + drift,
+                    "books": len(by), "narrative": len(narrative)},
+        "note": "Per-book coherence rollup. ✅ pinned = book↔code verified live · 📖 narrative = no code spec "
+                "(honest) · ◌ absent = awaiting an anchor. Recomputed live; surfaced in the Series Roadmap.",
     })

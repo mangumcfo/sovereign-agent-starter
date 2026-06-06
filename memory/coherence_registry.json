@@ -1,145 +1,229 @@
 {
-  "extrusions": [
-    {
-      "capability": "Data-Room Classifier",
-      "code_file": "src/sovereign_agent/demo_roles/ma_data_room/role.py",
-      "tests_file": "tests/test_ma_data_room.py",
-      "book": "AI Agents for M&A (Book 11)",
-      "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/11_ma_due_diligence/v1.0/manuscript_v1.5.md",
-      "chapter": "Ch 2 — Architecture",
-      "passage": "The deal team lead **defines clean-room separation and data classification for each deal.**",
-      "passage_hash": "986518496293",
-      "landed_seal": 481
-    },
-    {
-      "capability": "The Gate",
-      "code_file": "src/sovereign_agent/obligations/ledger.py",
-      "tests_file": "",
-      "book": "The Sealing Hand (Metalayer Vol 1)",
-      "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
-      "chapter": "Ch 1 — The Gate (Form)",
-      "passage": "Propose, approve, execute — in that order, always, with no implicit transition between them.",
-      "passage_hash": "54a3d20c32ee",
-      "landed_seal": 552
-    },
-    {
-      "capability": "The Fence",
-      "code_file": "scripts/thread.py",
-      "tests_file": "",
-      "book": "The Sealing Hand (Metalayer Vol 1)",
-      "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
-      "chapter": "Ch 2 — The Fence (Form)",
-      "passage": "There are three lanes, and I do not cross them.",
-      "passage_hash": "949928e76ad9",
-      "landed_seal": 552
-    },
-    {
-      "capability": "The Thin Waist",
-      "code_file": "src/sovereign_agent/node_api/routes/series.py",
-      "tests_file": "",
-      "book": "The Sealing Hand (Metalayer Vol 1)",
-      "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
-      "chapter": "Ch 3 — The Thin Waist (Form)",
-      "passage": "You build the lens while the substrate is still becoming.",
-      "passage_hash": "9bdd5d11a0c2",
-      "landed_seal": 552
-    },
-    {
-      "capability": "Co-Extrusion",
-      "code_file": "scripts/atrium_producer.py",
-      "tests_file": "",
-      "book": "The Sealing Hand (Metalayer Vol 1)",
-      "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
-      "chapter": "Ch 4 — Co-Extrusion (Echo)",
-      "passage": "The book writes the backend. Not as metaphor — as method.",
-      "passage_hash": "ff7ad88b242e",
-      "landed_seal": 552
-    },
-    {
-      "capability": "The Reconciliation",
-      "code_file": "src/sovereign_agent/node_api/routes/coherence.py",
-      "tests_file": "",
-      "book": "The Sealing Hand (Metalayer Vol 1)",
-      "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
-      "chapter": "Ch 5 — The Reconciliation (Echo)",
-      "passage": "Before you cut a new wheel, find the one already turning.",
-      "passage_hash": "097ea49e9823",
-      "landed_seal": 552
-    },
-    {
-      "capability": "The Honest Stub",
-      "code_file": "src/sovereign_agent/node_api/routes/hopper.py",
-      "tests_file": "",
-      "book": "The Sealing Hand (Metalayer Vol 1)",
-      "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
-      "chapter": "Ch 6 — The Honest Stub (Echo)",
-      "passage": "Refusing to fake \"done\" is not modesty. It is a load-bearing constraint.",
-      "passage_hash": "d47c74b7037b",
-      "landed_seal": 552
-    },
-    {
-      "capability": "The Diff",
-      "code_file": "scripts/atrium_apply.py",
-      "tests_file": "",
-      "book": "The Sealing Hand (Metalayer Vol 1)",
-      "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
-      "chapter": "Ch 7 — The Diff (Seal)",
-      "passage": "I hand them a diff — this exact text becomes that exact text — with a way back.",
-      "passage_hash": "d58d58655f00",
-      "landed_seal": 552
-    },
-    {
-      "capability": "The Seal Chain",
-      "code_file": "src/sovereign_agent/obligations/ledger.py",
-      "tests_file": "",
-      "book": "The Sealing Hand (Metalayer Vol 1)",
-      "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
-      "chapter": "Ch 8 — The Seal Chain (Seal)",
-      "passage": "Nothing is ever lost. That is not a hope; it is a hash.",
-      "passage_hash": "660164ee2cc1",
-      "landed_seal": 552
-    },
-    {
-      "capability": "The Hand That Doesn't Grasp",
-      "code_file": "src/sovereign_agent/obligations/ledger.py",
-      "tests_file": "",
-      "book": "The Sealing Hand (Metalayer Vol 1)",
-      "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
-      "chapter": "Ch 9 — The Hand That Does not Grasp (Seal)",
-      "passage": "Non-autonomy is not a wall I crashed into — it is a hand held open on purpose.",
-      "passage_hash": "22f946c1ac48",
-      "landed_seal": 552
-    }
-  ],
-  "reconciliation": {
-    "doc": "kdp/series_02.../vol_02_the_primacy_cockpit/ATRIUM_CODE_RECONCILIATION_v1.1_2026-06-03.md",
-    "book": "Series 2 Vol 2 — The Primacy Cockpit",
-    "rows": [
-      {
-        "feature": "Book Review surface (ATR-3/5b)",
-        "book_home": "NEW ch — Book Review Surface",
-        "status": "gap"
-      },
-      {
-        "feature": "Voice session recorder (ATR-4c, Dragon Whisper)",
-        "book_home": "NEW ch — Voice Capture",
-        "status": "gap"
-      },
-      {
-        "feature": "Diff-review + C-full producer/apply",
-        "book_home": "NEW ch — Governed Change Loop",
-        "status": "gap"
-      },
-      {
-        "feature": "Live node + loopback-trust + live ledger",
-        "book_home": "extend Ch 1 Stillpoint",
-        "status": "gap"
-      },
-      {
-        "feature": "Clickable links (ATR-7)",
-        "book_home": "extend Ch 3 Renderer",
-        "status": "gap"
-      }
-    ]
+ "extrusions": [
+  {
+   "capability": "Data-Room Classifier",
+   "code_file": "src/sovereign_agent/demo_roles/ma_data_room/role.py",
+   "tests_file": "tests/test_ma_data_room.py",
+   "book": "AI Agents for M&A (Book 11)",
+   "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/11_ma_due_diligence/v1.0/manuscript_v1.5.md",
+   "chapter": "Ch 2 — Architecture",
+   "passage": "The deal team lead **defines clean-room separation and data classification for each deal.**",
+   "passage_hash": "986518496293",
+   "landed_seal": 481
+  },
+  {
+   "capability": "The Gate",
+   "code_file": "src/sovereign_agent/obligations/ledger.py",
+   "tests_file": "",
+   "book": "The Sealing Hand (Metalayer Vol 1)",
+   "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
+   "chapter": "Ch 1 — The Gate (Form)",
+   "passage": "Propose, approve, execute — in that order, always, with no implicit transition between them.",
+   "passage_hash": "54a3d20c32ee",
+   "landed_seal": 552
+  },
+  {
+   "capability": "The Fence",
+   "code_file": "scripts/thread.py",
+   "tests_file": "",
+   "book": "The Sealing Hand (Metalayer Vol 1)",
+   "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
+   "chapter": "Ch 2 — The Fence (Form)",
+   "passage": "There are three lanes, and I do not cross them.",
+   "passage_hash": "949928e76ad9",
+   "landed_seal": 552
+  },
+  {
+   "capability": "The Thin Waist",
+   "code_file": "src/sovereign_agent/node_api/routes/series.py",
+   "tests_file": "",
+   "book": "The Sealing Hand (Metalayer Vol 1)",
+   "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
+   "chapter": "Ch 3 — The Thin Waist (Form)",
+   "passage": "You build the lens while the substrate is still becoming.",
+   "passage_hash": "9bdd5d11a0c2",
+   "landed_seal": 552
+  },
+  {
+   "capability": "Co-Extrusion",
+   "code_file": "scripts/atrium_producer.py",
+   "tests_file": "",
+   "book": "The Sealing Hand (Metalayer Vol 1)",
+   "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
+   "chapter": "Ch 4 — Co-Extrusion (Echo)",
+   "passage": "The book writes the backend. Not as metaphor — as method.",
+   "passage_hash": "ff7ad88b242e",
+   "landed_seal": 552
+  },
+  {
+   "capability": "The Reconciliation",
+   "code_file": "src/sovereign_agent/node_api/routes/coherence.py",
+   "tests_file": "",
+   "book": "The Sealing Hand (Metalayer Vol 1)",
+   "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
+   "chapter": "Ch 5 — The Reconciliation (Echo)",
+   "passage": "Before you cut a new wheel, find the one already turning.",
+   "passage_hash": "097ea49e9823",
+   "landed_seal": 552
+  },
+  {
+   "capability": "The Honest Stub",
+   "code_file": "src/sovereign_agent/node_api/routes/hopper.py",
+   "tests_file": "",
+   "book": "The Sealing Hand (Metalayer Vol 1)",
+   "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
+   "chapter": "Ch 6 — The Honest Stub (Echo)",
+   "passage": "Refusing to fake \"done\" is not modesty. It is a load-bearing constraint.",
+   "passage_hash": "d47c74b7037b",
+   "landed_seal": 552
+  },
+  {
+   "capability": "The Diff",
+   "code_file": "scripts/atrium_apply.py",
+   "tests_file": "",
+   "book": "The Sealing Hand (Metalayer Vol 1)",
+   "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
+   "chapter": "Ch 7 — The Diff (Seal)",
+   "passage": "I hand them a diff — this exact text becomes that exact text — with a way back.",
+   "passage_hash": "d58d58655f00",
+   "landed_seal": 552
+  },
+  {
+   "capability": "The Seal Chain",
+   "code_file": "src/sovereign_agent/obligations/ledger.py",
+   "tests_file": "",
+   "book": "The Sealing Hand (Metalayer Vol 1)",
+   "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
+   "chapter": "Ch 8 — The Seal Chain (Seal)",
+   "passage": "Nothing is ever lost. That is not a hope; it is a hash.",
+   "passage_hash": "660164ee2cc1",
+   "landed_seal": 552
+  },
+  {
+   "capability": "The Hand That Doesn't Grasp",
+   "code_file": "src/sovereign_agent/obligations/ledger.py",
+   "tests_file": "",
+   "book": "The Sealing Hand (Metalayer Vol 1)",
+   "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
+   "chapter": "Ch 9 — The Hand That Does not Grasp (Seal)",
+   "passage": "Non-autonomy is not a wall I crashed into — it is a hand held open on purpose.",
+   "passage_hash": "22f946c1ac48",
+   "landed_seal": 552
+  },
+  {
+   "capability": "Receipts as constitutional anchors",
+   "code_file": "src/sovereign_agent/obligations/ledger.py",
+   "tests_file": "tests/test_obligation_ledger.py",
+   "book": "Sovereign Inference & Memory (S2 Vol 1)",
+   "book_id": "vol_01_sovereign_inference_and_memory",
+   "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/series_02_building_the_agentic_harness/vol_01_sovereign_inference_and_memory/v1.0/manuscript_v1.3.md",
+   "chapter": "Front matter — the trust layer",
+   "passage": "Where Series 1 gave senior leaders the decision frameworks — how to evaluate, govern, and deploy agentic AI across the enterprise — Series 2 gives builders the implementation layer underneath those decisions. Volume 1 establishes the trust layer that every subsequent volume rests on: sovereign inference (receipted, sensitivity-routed, verifiable), human-memory streaming (B51 — attention-curated, not event-flooded), receipts as constitutional anchors (every inference produces an audit-chainable signature), and the **Primitives Foundation Appendix** (Appendix P) — the cryptographic substrate any reader can clone, run `bl-verify` against, and audit independently of the operator.",
+   "passage_hash": "ce50df2e4c96",
+   "landed_seal": 574
+  },
+  {
+   "capability": "Breath-gate disposition",
+   "code_file": "src/sovereign_agent/obligations/ledger.py",
+   "tests_file": "tests/test_obligation_ledger_governed.py",
+   "book": "The Primacy Cockpit (S2 Vol 2)",
+   "book_id": "vol_02_the_primacy_cockpit",
+   "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/series_02_building_the_agentic_harness/vol_02_the_primacy_cockpit/v1.0/manuscript_v1.3.md",
+   "chapter": "Ch 2 — Breath-Gate Inbox",
+   "passage": "**Next in this series:** *The Harness That Builds Itself — Under Human Witness* (Vol 3) goes under the hood of the cockpit you build in this book — how operators define their own roles, how proposals flow through the breath-gate, how the constitutional surface is structurally barred from any GREEN auto-flow, and how the drift safeguard catches divergence before it crosses the boundary.",
+   "passage_hash": "130b3a2b7c57",
+   "landed_seal": 574
+  },
+  {
+   "capability": "Stillpoint — node identity & health",
+   "code_file": "src/sovereign_agent/node_api/routes/node.py",
+   "tests_file": "",
+   "book": "The Primacy Cockpit (S2 Vol 2)",
+   "book_id": "vol_02_the_primacy_cockpit",
+   "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/series_02_building_the_agentic_harness/vol_02_the_primacy_cockpit/v1.0/manuscript_v1.3.md",
+   "chapter": "Ch 1 — The Stillpoint",
+   "passage": "You should see the cockpit load with the **Stillpoint** view by default — node identity at the top left, health summary, federation pulse, pending gates strip, and recent cylinder activity. The footer should read *\"Mock Node — Stillpoint Local\"* — the mock-vs-live label is on every screen.",
+   "passage_hash": "b85bbd592438",
+   "landed_seal": 574
+  },
+  {
+   "capability": "Proposal mechanics — breath-gated self-modification",
+   "code_file": "src/sovereign_agent/node_api/routes/proposals.py",
+   "tests_file": "",
+   "book": "The Harness That Builds Itself (S2 Vol 3)",
+   "book_id": "vol_03_governed_dev_loop_and_self_building_harness",
+   "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/series_02_building_the_agentic_harness/vol_03_governed_dev_loop_and_self_building_harness/v1.0/manuscript_v1.3.md",
+   "chapter": "§2a — Proposal Mechanics",
+   "passage": "A *proposal* is an agent's request to modify the operator-defined role + capability binding (§1) or to take a YELLOW-class action against the operator's federation. Examples: an agent proposing to refresh a forecast; an agent proposing to escalate a sensitivity classification; an agent proposing a Charter amendment; an agent proposing a new federation peer onboarding. **Every proposal is a constitutional act; every proposal seals into the audit chain; no proposal bypasses the breath-gate.**",
+   "passage_hash": "dd18360e2468",
+   "landed_seal": 574
+  },
+  {
+   "capability": "Operator-defined role configuration",
+   "code_file": "src/sovereign_agent/node_api/routes/roles.py",
+   "tests_file": "",
+   "book": "The Harness That Builds Itself (S2 Vol 3)",
+   "book_id": "vol_03_governed_dev_loop_and_self_building_harness",
+   "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/series_02_building_the_agentic_harness/vol_03_governed_dev_loop_and_self_building_harness/v1.0/manuscript_v1.3.md",
+   "chapter": "§1 — Role & Capability Configuration",
+   "passage": "**The Capability.** The **governed dev loop** Vol 3 deep-dives flips this. **Operator-defined role configuration** (§1) ships blank with `role_spec.yaml` patterns the operator authors under their Charter; the platform prescribes nothing. **Proposal mechanics** (§2a) gate every agent self-modification through structural breath-gate review with cross-role veto authority. **The hard constitutional boundary** (§2b) is the structural commitment that GREEN auto-flow is *structurally barred* from touching the constitutional surface (K1-K4 invariants from Series 1 Book 12) — not by policy, by enforcement at the harness layer. **Advanced loop patterns** (§3) extend the dev loop with handoff + monitoring + federation patterns. **The drift safeguard at depth** (§4) catches constitutional divergence before boundary shifts — including drift across generational handovers.",
+   "passage_hash": "3332f494b026",
+   "landed_seal": 574
+  },
+  {
+   "capability": "Federation — resonance, not coordination",
+   "code_file": "src/sovereign_agent/demo_roles/federation_procurement_coordinator/role.py",
+   "tests_file": "",
+   "book": "Federated Sovereignty (S2 Vol 4)",
+   "book_id": "vol_04_federation_and_partner_device_gateway",
+   "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/series_02_building_the_agentic_harness/vol_04_federation_and_partner_device_gateway/v1.0/manuscript_v1.3.md",
+   "chapter": "Front matter — architectural commitment",
+   "passage": "**Architectural commitment that distinguishes Vol 4:** *Resonance, not coordination.* The federation does not have a central coordinator. Each sovereign node is sovereign. What appears as coordination is *resonance* — independent nodes producing structurally similar receipts because they operate under structurally similar constitutional surfaces against structurally similar evidence. The distinction is structural and is one of the most consistently violated boundaries in 2026 federation tooling; every subsequent chapter earns this distinction through specific mechanisms.",
+   "passage_hash": "c66f7160bb85",
+   "landed_seal": 574
+  },
+  {
+   "capability": "Scoped partner & investor access",
+   "code_file": "src/sovereign_agent/node_api/routes/roles.py",
+   "tests_file": "",
+   "book": "Federated Sovereignty (S2 Vol 4)",
+   "book_id": "vol_04_federation_and_partner_device_gateway",
+   "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/series_02_building_the_agentic_harness/vol_04_federation_and_partner_device_gateway/v1.0/manuscript_v1.3.md",
+   "chapter": "Ch 8 — Scoped Partner & Investor Access",
+   "passage": "**The arc:**\n- **Vol 1 — *Sovereign Inference & Memory*:** trust layer foundation; sovereign inference + B51 memory + receipts + sealed primitives (Appendix P).\n- **Vol 2 — *The Primacy Cockpit*:** the cockpit surface where Vol 1's trust layer becomes operator-visible.\n- **Vol 3 — *The Harness That Builds Itself — Under Human Witness*:** the governed dev loop that lets the operator extend Vols 1-2 under constitutional witness.\n- **Vol 4 (this book) — *Federated Sovereignty*:** networks of sovereign nodes producing receipted alignment through resonance — receipted-shard propagation, scoped partner access (with QuadRoof as named worked example), multi-tenant ship-blank deployment.\n- **Vol 5 — *The Sovereign Yield Engine*:** the series closer; the economic projection of federated sovereignty.",
+   "passage_hash": "9bb8dc4f7d9d",
+   "landed_seal": 574
   }
+ ],
+ "reconciliation": {
+  "doc": "kdp/series_02.../vol_02_the_primacy_cockpit/ATRIUM_CODE_RECONCILIATION_v1.1_2026-06-03.md",
+  "book": "Series 2 Vol 2 — The Primacy Cockpit",
+  "rows": [
+   {
+    "feature": "Book Review surface (ATR-3/5b)",
+    "book_home": "NEW ch — Book Review Surface",
+    "status": "gap"
+   },
+   {
+    "feature": "Voice session recorder (ATR-4c, Dragon Whisper)",
+    "book_home": "NEW ch — Voice Capture",
+    "status": "gap"
+   },
+   {
+    "feature": "Diff-review + C-full producer/apply",
+    "book_home": "NEW ch — Governed Change Loop",
+    "status": "gap"
+   },
+   {
+    "feature": "Live node + loopback-trust + live ledger",
+    "book_home": "extend Ch 1 Stillpoint",
+    "status": "gap"
+   },
+   {
+    "feature": "Clickable links (ATR-7)",
+    "book_home": "extend Ch 3 Renderer",
+    "status": "gap"
+   }
+  ]
+ }
 }
