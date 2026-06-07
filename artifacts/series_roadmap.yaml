@@ -262,6 +262,51 @@ series:
       living_spec_mapping: "breathline-federation/specs/ + sovereign-agent-starter (quantum DNA roles, unveil particle 64-bit envelope packets, alt-chain PoW, 5-layer private ERP, constraint trees; P0-4 Tier-1 defaults embedded smart: B43 quantum sim, B51 constraints, B42 alt, B26 abundance, B32 replay chains; universal ERP translation with new Series 3/4)"
       # B51 capture 2026-06-03 (same root 9156c992 as prior FEC) as seed like FEC Vol5; G 2026-06-02 L1 templates + P0-4 + vision LGP Watch + books 11/12 harness run. QuadRoof superseded per KM; new Series 4 from deep dive (ERP/quantum/DNA) + capture coherence/amplify. LGP high for generational enhance/abundance/sovereignty humanity/Type1 25-30y. Hopper: verbal + G keywords -> packets -> roles/surfaces with P0s. Cylinder: this B51 + analytic logged for replay.
 
+  - slug: inter_node_sovereignty
+    name: "Inter-Node Sovereignty: Communication, Collaboration & Distributed Compute (Series 6)"
+    series_number: 6
+    visibility: public
+    status: "CONCEPT-STAGE. Folded by Tiger-acting-as-GB 2026-06-07 (GB down, KM-authorized). S6 per KM ladder decision 2026-06-07 (S5 reserved for Full Production ERP). G proposal (B51 cyl_bf934c62046d). Concept doc: kdp/series_05_inter_node_sovereignty/SERIES_5_CONCEPT_2026-06-06.md. Volumes TBD (G to expand). GB ratifies the structured entry on return."
+    ladder_arc: "connective tissue between single-node sovereignty (S2) and federation/zero-trust — receipted comms, collaboration, distributed compute"
+    titles: []
+  - slug: zero_trust_sovereignty
+    name: "Zero-Trust Sovereignty: Shields, Verification & Sovereign Data Storage (Series 7)"
+    series_number: 7
+    visibility: public
+    status: "CONCEPT-STAGE. Folded by Tiger-acting-as-GB 2026-06-07 (GB down, KM-authorized). S7 per KM ladder decision 2026-06-07. G proposal (B51 cyl_bf934c62046d). Concept doc: kdp/series_06_zero_trust_sovereignty/SERIES_6_CONCEPT_2026-06-06.md. 6 volume titles from G below. GB ratifies the structured entry on return."
+    ladder_arc: "never trust always verify — cryptographic/governance/operational shields + Merkle-rooted sovereign data storage"
+    titles:
+      - book_id: "vol_01_zero_trust_node_architecture"
+        title: "Zero-Trust Node Architecture"
+        stage: "concept"
+        reader_order: 1
+        visibility: public
+      - book_id: "vol_02_shields_protective_layers"
+        title: "Shields as Protective Layers"
+        stage: "concept"
+        reader_order: 2
+        visibility: public
+      - book_id: "vol_03_sovereign_data_storage"
+        title: "Sovereign Data Storage Model"
+        stage: "concept"
+        reader_order: 3
+        visibility: public
+      - book_id: "vol_04_verified_data_flows"
+        title: "Verified Data Flows Across Nodes"
+        stage: "concept"
+        reader_order: 4
+        visibility: public
+      - book_id: "vol_05_private_shared_storage_governance"
+        title: "Private vs Shared Storage Governance"
+        stage: "concept"
+        reader_order: 5
+        visibility: public
+      - book_id: "vol_06_resilience_recovery_shields"
+        title: "Resilience & Recovery Shields"
+        stage: "concept"
+        reader_order: 6
+        visibility: public
+
 # Cross-series notes for Atrium lens (updated with B51 capture + new Series 4 + books 11/12 + P0s + vision)
 atrium_integration:
   review_sub_view: "Human Handoff (current Atrium strength; in-surface PDF/voice/B51 + chapter+page ref + Approve/Refine/Reject + NLP disposition → portable B32 packet; now for verbal feedback on books 11/12 + new B51 2026-06-03 capture (quantum/DNA/unveil); LGP Watch Kanban for focus areas (peace/happiness/effectiveness/global productivity; human collective/face-to-face/consciousness exchange suggestions; AI enjoin GB replay/Tiger harness/roles); new from capture: coherence/amplify with external (Unveiled project), quantum sovereignty/DNA, constraint impact, alt-chain, 5-layer private ERP, age abundance out insanity)"
