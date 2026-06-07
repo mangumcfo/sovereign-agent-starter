@@ -1,0 +1,174 @@
+{
+ "counts": {
+  "VALIDATED": 17,
+  "PINNED_UNTESTED": 0,
+  "DRIFT": 0,
+  "FAIL": 0
+ },
+ "gate_pass": true,
+ "roots": {
+  "registry_root": "f70c0ebc3c1d530c",
+  "modules_root": "6101f99d366cbbc1",
+  "capabilities_root": "dfdab16e62897084"
+ },
+ "root_drift": [],
+ "per_book": {
+  "11_ma_due_diligence": {
+   "validated": 1,
+   "untested": 0,
+   "drift": 0,
+   "fail": 0
+  },
+  "the_sealing_hand": {
+   "validated": 9,
+   "untested": 0,
+   "drift": 0,
+   "fail": 0
+  },
+  "vol_01_sovereign_inference_and_memory": {
+   "validated": 1,
+   "untested": 0,
+   "drift": 0,
+   "fail": 0
+  },
+  "vol_02_the_primacy_cockpit": {
+   "validated": 2,
+   "untested": 0,
+   "drift": 0,
+   "fail": 0
+  },
+  "vol_03_governed_dev_loop_and_self_building_harness": {
+   "validated": 2,
+   "untested": 0,
+   "drift": 0,
+   "fail": 0
+  },
+  "vol_04_federation_and_partner_device_gateway": {
+   "validated": 2,
+   "untested": 0,
+   "drift": 0,
+   "fail": 0
+  }
+ },
+ "anchors": [
+  {
+   "book_id": "11_ma_due_diligence",
+   "capability": "Data-Room Classifier",
+   "status": "VALIDATED",
+   "test_result": "pass",
+   "tests_file": "tests/test_ma_data_room.py"
+  },
+  {
+   "book_id": "the_sealing_hand",
+   "capability": "The Gate",
+   "status": "VALIDATED",
+   "test_result": "pass",
+   "tests_file": "tests/test_obligation_ledger.py"
+  },
+  {
+   "book_id": "the_sealing_hand",
+   "capability": "The Fence",
+   "status": "VALIDATED",
+   "test_result": "pass",
+   "tests_file": "tests/test_extrusion_anchors.py"
+  },
+  {
+   "book_id": "the_sealing_hand",
+   "capability": "The Thin Waist",
+   "status": "VALIDATED",
+   "test_result": "pass",
+   "tests_file": "tests/test_node_api_series.py"
+  },
+  {
+   "book_id": "the_sealing_hand",
+   "capability": "Co-Extrusion",
+   "status": "VALIDATED",
+   "test_result": "pass",
+   "tests_file": "tests/test_extrusion_anchors.py"
+  },
+  {
+   "book_id": "the_sealing_hand",
+   "capability": "The Reconciliation",
+   "status": "VALIDATED",
+   "test_result": "pass",
+   "tests_file": "tests/test_extrusion_anchors.py"
+  },
+  {
+   "book_id": "the_sealing_hand",
+   "capability": "The Honest Stub",
+   "status": "VALIDATED",
+   "test_result": "pass",
+   "tests_file": "tests/test_node_api_hopper.py"
+  },
+  {
+   "book_id": "the_sealing_hand",
+   "capability": "The Diff",
+   "status": "VALIDATED",
+   "test_result": "pass",
+   "tests_file": "tests/test_extrusion_anchors.py"
+  },
+  {
+   "book_id": "the_sealing_hand",
+   "capability": "The Seal Chain",
+   "status": "VALIDATED",
+   "test_result": "pass",
+   "tests_file": "tests/test_obligation_ledger.py"
+  },
+  {
+   "book_id": "the_sealing_hand",
+   "capability": "The Hand That Doesn't Grasp",
+   "status": "VALIDATED",
+   "test_result": "pass",
+   "tests_file": "tests/test_obligation_ledger.py"
+  },
+  {
+   "book_id": "vol_01_sovereign_inference_and_memory",
+   "capability": "Receipts as constitutional anchors",
+   "status": "VALIDATED",
+   "test_result": "pass",
+   "tests_file": "tests/test_obligation_ledger.py"
+  },
+  {
+   "book_id": "vol_02_the_primacy_cockpit",
+   "capability": "Breath-gate disposition",
+   "status": "VALIDATED",
+   "test_result": "pass",
+   "tests_file": "tests/test_obligation_ledger_governed.py"
+  },
+  {
+   "book_id": "vol_02_the_primacy_cockpit",
+   "capability": "Stillpoint \u2014 node identity & health",
+   "status": "VALIDATED",
+   "test_result": "pass",
+   "tests_file": "tests/test_node_api.py"
+  },
+  {
+   "book_id": "vol_03_governed_dev_loop_and_self_building_harness",
+   "capability": "Proposal mechanics \u2014 breath-gated self-modification",
+   "status": "VALIDATED",
+   "test_result": "pass",
+   "tests_file": "tests/test_extrusion_anchors.py"
+  },
+  {
+   "book_id": "vol_03_governed_dev_loop_and_self_building_harness",
+   "capability": "Operator-defined role configuration",
+   "status": "VALIDATED",
+   "test_result": "pass",
+   "tests_file": "tests/test_node_api.py"
+  },
+  {
+   "book_id": "vol_04_federation_and_partner_device_gateway",
+   "capability": "Federation \u2014 resonance, not coordination",
+   "status": "VALIDATED",
+   "test_result": "pass",
+   "tests_file": "tests/test_extrusion_anchors.py"
+  },
+  {
+   "book_id": "vol_04_federation_and_partner_device_gateway",
+   "capability": "Scoped partner & investor access",
+   "status": "VALIDATED",
+   "test_result": "pass",
+   "tests_file": "tests/test_node_api.py"
+  }
+ ]
+}

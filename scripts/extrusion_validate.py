@@ -38,6 +38,7 @@ CAPS = REPO / "memory" / "coherence_capabilities.json"
 BASELINE = REPO / "memory" / "extrusion_validation_baseline.json"
 ROADMAP = REPO / "artifacts" / "series_roadmap.yaml"
 REPORT = REPO / "artifacts" / "Extrusion_Validation_Report_2026-06-07.md"
+STATE = REPO / "memory" / "extrusion_validation_state.json"   # cheap state the Atrium /coherence/rollup reads
 
 
 def _sha(b: bytes) -> str:
@@ -76,6 +77,18 @@ def _run_pytest(tests_file: str) -> tuple[str, str]:
         return "error", str(e)[:120]
 
 
+def _book_id(e: dict) -> str:
+    """book_id from the entry, else derived from the book_file path (.../<book_id>/vN.N/...)."""
+    if e.get("book_id"):
+        return e["book_id"]
+    import re
+    parts = Path(e.get("book_file", "")).parts
+    for i, seg in enumerate(parts):
+        if i and re.match(r"^v\d", seg):
+            return parts[i - 1]
+    return "?"
+
+
 def validate():
     reg = json.loads(REGISTRY.read_text()) if REGISTRY.is_file() else {"extrusions": []}
     exts = reg.get("extrusions", [])
@@ -98,7 +111,7 @@ def validate():
             status = "VALIDATED"
         else:
             status = "PINNED_UNTESTED"
-        results.append({"book_id": e.get("book_id", ""), "book": e.get("book", ""),
+        results.append({"book_id": _book_id(e), "book": e.get("book", ""),
                         "capability": e.get("capability", ""), "status": status,
                         "book_present": book_present, "hash_ok": hash_ok, "code_present": code_present,
                         "code_file": e.get("code_file", ""), "tests_file": tf,
@@ -175,6 +188,18 @@ def main(argv):
         lines.append(f"| {d['book']} | {d['series'] or '—'} | {d['kdp']} | {d['social']} | {d['federation']} |")
     lines += ["", "∞Δ∞ tests + Merkle + distribution — the rigorous end-to-end gate. ∞Δ∞"]
     REPORT.write_text("\n".join(lines))
+    # Cheap state for the Atrium monitor (/coherence/rollup reads this — no pytest at request time).
+    per_book = {}
+    for r in results:
+        b = per_book.setdefault(r["book_id"] or "?", {"validated": 0, "untested": 0, "drift": 0, "fail": 0})
+        b[r["status"].lower().replace("pinned_untested", "untested")] += 1
+    STATE.write_text(json.dumps({
+        "counts": n, "gate_pass": (n["DRIFT"] + n["FAIL"] + len(cap_bad) + len(drift_roots)) == 0,
+        "roots": {k: v[:16] for k, v in roots.items()}, "root_drift": list(drift_roots),
+        "per_book": per_book,
+        "anchors": [{"book_id": r["book_id"], "capability": r["capability"], "status": r["status"],
+                     "test_result": r["test_result"], "tests_file": r["tests_file"]} for r in results],
+    }, indent=1))
     print(f"✓ report → {REPORT.name}")
     print(f"  VALIDATED {n['VALIDATED']} · UNTESTED {n['PINNED_UNTESTED']} · DRIFT {n['DRIFT']} · FAIL {n['FAIL']}")
     print(f"  registry_root {roots['registry_root'][:16]} · modules {len(module_hashes)}"

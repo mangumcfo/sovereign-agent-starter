@@ -10,16 +10,16 @@
 
 ## Anchors (by status)
 ### VALIDATED (17)
-- **** · Data-Room Classifier → `role.py` · tests pass
-- **** · The Gate → `ledger.py` · tests pass
-- **** · The Fence → `thread.py` · tests pass
-- **** · The Thin Waist → `series.py` · tests pass
-- **** · Co-Extrusion → `atrium_producer.py` · tests pass
-- **** · The Reconciliation → `coherence.py` · tests pass
-- **** · The Honest Stub → `hopper.py` · tests pass
-- **** · The Diff → `atrium_apply.py` · tests pass
-- **** · The Seal Chain → `ledger.py` · tests pass
-- **** · The Hand That Doesn't Grasp → `ledger.py` · tests pass
+- **11_ma_due_diligence** · Data-Room Classifier → `role.py` · tests pass
+- **the_sealing_hand** · The Gate → `ledger.py` · tests pass
+- **the_sealing_hand** · The Fence → `thread.py` · tests pass
+- **the_sealing_hand** · The Thin Waist → `series.py` · tests pass
+- **the_sealing_hand** · Co-Extrusion → `atrium_producer.py` · tests pass
+- **the_sealing_hand** · The Reconciliation → `coherence.py` · tests pass
+- **the_sealing_hand** · The Honest Stub → `hopper.py` · tests pass
+- **the_sealing_hand** · The Diff → `atrium_apply.py` · tests pass
+- **the_sealing_hand** · The Seal Chain → `ledger.py` · tests pass
+- **the_sealing_hand** · The Hand That Doesn't Grasp → `ledger.py` · tests pass
 - **vol_01_sovereign_inference_and_memory** · Receipts as constitutional anchors → `ledger.py` · tests pass
 - **vol_02_the_primacy_cockpit** · Breath-gate disposition → `ledger.py` · tests pass
 - **vol_02_the_primacy_cockpit** · Stillpoint — node identity & health → `node.py` · tests pass

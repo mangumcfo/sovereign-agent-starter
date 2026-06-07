@@ -30,6 +30,7 @@ def _registry_path() -> Path:
 
 COVERAGE = Path(__file__).resolve().parents[4] / "memory" / "coherence_coverage.json"
 CAPABILITIES = Path(__file__).resolve().parents[4] / "memory" / "coherence_capabilities.json"
+VALIDATION_STATE = Path(__file__).resolve().parents[4] / "memory" / "extrusion_validation_state.json"
 
 
 def _compute(reg: dict, repo: Path):
@@ -127,10 +128,14 @@ def coherence_rollup():
             b[st] += 1
             cap_tot[st] = cap_tot.get(st, 0) + 1
         b["rows"].append(c)
+    # Extrusion-validation state (written by scripts/extrusion_validate.py — runs pytest + Merkle out of band;
+    # read cheaply here so the monitor shows VALIDATED/untested/drift/fail + Merkle roots without running tests).
+    val = json.loads(VALIDATION_STATE.read_text(encoding="utf-8")) if VALIDATION_STATE.is_file() else {}
     return jsonify({
         "by_book": sorted(by.values(), key=lambda b: b["book"]),
         "narrative": narrative,
         "capabilities": cap_by_book,
+        "validation": val,
         "overall": {"coherent": coherent, "drift": drift, "total": coherent + drift,
                     "books": len(by), "narrative": len(narrative),
                     "cap_present": cap_tot["present"], "cap_partial": cap_tot["partial"],
