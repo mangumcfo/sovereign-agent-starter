@@ -77,8 +77,11 @@ def verify() -> bool:
 
 
 def show() -> None:
-    for e in _load():
-        print(f"[{e['n']}] {e['ts']} {e['from']}→{e['to']} ({e['ref']}): {e['msg'][:80]}")
+    # robust: tolerate older/malformed entries missing 'n' etc. (was crashing GB's start-ritual replay)
+    for idx, e in enumerate(_load()):
+        n = e.get("n", idx + 1)
+        msg = str(e.get("msg", ""))[:80]
+        print(f"[{n}] {e.get('ts','')} {e.get('from','?')}→{e.get('to','?')} ({e.get('ref','')}): {msg}")
 
 
 if __name__ == "__main__":
