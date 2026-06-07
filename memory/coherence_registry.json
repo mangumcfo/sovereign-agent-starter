@@ -14,7 +14,7 @@
   {
    "capability": "The Gate",
    "code_file": "src/sovereign_agent/obligations/ledger.py",
-   "tests_file": "",
+   "tests_file": "tests/test_obligation_ledger.py",
    "book": "The Sealing Hand (Metalayer Vol 1)",
    "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
    "chapter": "Ch 1 — The Gate (Form)",
@@ -25,7 +25,7 @@
   {
    "capability": "The Fence",
    "code_file": "scripts/thread.py",
-   "tests_file": "",
+   "tests_file": "tests/test_extrusion_anchors.py",
    "book": "The Sealing Hand (Metalayer Vol 1)",
    "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
    "chapter": "Ch 2 — The Fence (Form)",
@@ -36,7 +36,7 @@
   {
    "capability": "The Thin Waist",
    "code_file": "src/sovereign_agent/node_api/routes/series.py",
-   "tests_file": "",
+   "tests_file": "tests/test_node_api_series.py",
    "book": "The Sealing Hand (Metalayer Vol 1)",
    "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
    "chapter": "Ch 3 — The Thin Waist (Form)",
@@ -47,7 +47,7 @@
   {
    "capability": "Co-Extrusion",
    "code_file": "scripts/atrium_producer.py",
-   "tests_file": "",
+   "tests_file": "tests/test_extrusion_anchors.py",
    "book": "The Sealing Hand (Metalayer Vol 1)",
    "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
    "chapter": "Ch 4 — Co-Extrusion (Echo)",
@@ -58,7 +58,7 @@
   {
    "capability": "The Reconciliation",
    "code_file": "src/sovereign_agent/node_api/routes/coherence.py",
-   "tests_file": "",
+   "tests_file": "tests/test_extrusion_anchors.py",
    "book": "The Sealing Hand (Metalayer Vol 1)",
    "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
    "chapter": "Ch 5 — The Reconciliation (Echo)",
@@ -69,7 +69,7 @@
   {
    "capability": "The Honest Stub",
    "code_file": "src/sovereign_agent/node_api/routes/hopper.py",
-   "tests_file": "",
+   "tests_file": "tests/test_node_api_hopper.py",
    "book": "The Sealing Hand (Metalayer Vol 1)",
    "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
    "chapter": "Ch 6 — The Honest Stub (Echo)",
@@ -80,7 +80,7 @@
   {
    "capability": "The Diff",
    "code_file": "scripts/atrium_apply.py",
-   "tests_file": "",
+   "tests_file": "tests/test_extrusion_anchors.py",
    "book": "The Sealing Hand (Metalayer Vol 1)",
    "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
    "chapter": "Ch 7 — The Diff (Seal)",
@@ -91,7 +91,7 @@
   {
    "capability": "The Seal Chain",
    "code_file": "src/sovereign_agent/obligations/ledger.py",
-   "tests_file": "",
+   "tests_file": "tests/test_obligation_ledger.py",
    "book": "The Sealing Hand (Metalayer Vol 1)",
    "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
    "chapter": "Ch 8 — The Seal Chain (Seal)",
@@ -102,7 +102,7 @@
   {
    "capability": "The Hand That Doesn't Grasp",
    "code_file": "src/sovereign_agent/obligations/ledger.py",
-   "tests_file": "",
+   "tests_file": "tests/test_obligation_ledger.py",
    "book": "The Sealing Hand (Metalayer Vol 1)",
    "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/metalayer_companion_private/the_sealing_hand/v1.0/manuscript_v1.0.md",
    "chapter": "Ch 9 — The Hand That Does not Grasp (Seal)",
@@ -137,7 +137,7 @@
   {
    "capability": "Stillpoint — node identity & health",
    "code_file": "src/sovereign_agent/node_api/routes/node.py",
-   "tests_file": "",
+   "tests_file": "tests/test_node_api.py",
    "book": "The Primacy Cockpit (S2 Vol 2)",
    "book_id": "vol_02_the_primacy_cockpit",
    "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/series_02_building_the_agentic_harness/vol_02_the_primacy_cockpit/v1.0/manuscript_v1.3.md",
@@ -149,7 +149,7 @@
   {
    "capability": "Proposal mechanics — breath-gated self-modification",
    "code_file": "src/sovereign_agent/node_api/routes/proposals.py",
-   "tests_file": "",
+   "tests_file": "tests/test_extrusion_anchors.py",
    "book": "The Harness That Builds Itself (S2 Vol 3)",
    "book_id": "vol_03_governed_dev_loop_and_self_building_harness",
    "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/series_02_building_the_agentic_harness/vol_03_governed_dev_loop_and_self_building_harness/v1.0/manuscript_v1.3.md",
@@ -161,7 +161,7 @@
   {
    "capability": "Operator-defined role configuration",
    "code_file": "src/sovereign_agent/node_api/routes/roles.py",
-   "tests_file": "",
+   "tests_file": "tests/test_node_api.py",
    "book": "The Harness That Builds Itself (S2 Vol 3)",
    "book_id": "vol_03_governed_dev_loop_and_self_building_harness",
    "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/series_02_building_the_agentic_harness/vol_03_governed_dev_loop_and_self_building_harness/v1.0/manuscript_v1.3.md",
@@ -173,7 +173,7 @@
   {
    "capability": "Federation — resonance, not coordination",
    "code_file": "src/sovereign_agent/demo_roles/federation_procurement_coordinator/role.py",
-   "tests_file": "",
+   "tests_file": "tests/test_extrusion_anchors.py",
    "book": "Federated Sovereignty (S2 Vol 4)",
    "book_id": "vol_04_federation_and_partner_device_gateway",
    "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/series_02_building_the_agentic_harness/vol_04_federation_and_partner_device_gateway/v1.0/manuscript_v1.3.md",
@@ -185,7 +185,7 @@
   {
    "capability": "Scoped partner & investor access",
    "code_file": "src/sovereign_agent/node_api/routes/roles.py",
-   "tests_file": "",
+   "tests_file": "tests/test_node_api.py",
    "book": "Federated Sovereignty (S2 Vol 4)",
    "book_id": "vol_04_federation_and_partner_device_gateway",
    "book_file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/series_02_building_the_agentic_harness/vol_04_federation_and_partner_device_gateway/v1.0/manuscript_v1.3.md",

@@ -1,34 +1,32 @@
 # Extrusion Validation Report — 2026-06-07
 
-**Anchors:** 17 · ✅ VALIDATED 3 · ◌ PINNED_UNTESTED 14 · ⚠ DRIFT 0 · ✗ FAIL 0
+**Anchors:** 17 · ✅ VALIDATED 17 · ◌ PINNED_UNTESTED 0 · ⚠ DRIFT 0 · ✗ FAIL 0
 
 ## Object-model integrity (Merkle)
-- registry_root: `12e7f1871cddb08eecfa8104`
+- registry_root: `f70c0ebc3c1d530c9f4eab24`
 - modules_root: `6101f99d366cbbc1464d7fac` (12 cited code modules)
 - capabilities_root: `dfdab16e62897084451291de`
 - baseline: match ✓
 
 ## Anchors (by status)
-### PINNED_UNTESTED (14)
-- **** · The Gate → `ledger.py` · (no tests)
-- **** · The Fence → `thread.py` · (no tests)
-- **** · The Thin Waist → `series.py` · (no tests)
-- **** · Co-Extrusion → `atrium_producer.py` · (no tests)
-- **** · The Reconciliation → `coherence.py` · (no tests)
-- **** · The Honest Stub → `hopper.py` · (no tests)
-- **** · The Diff → `atrium_apply.py` · (no tests)
-- **** · The Seal Chain → `ledger.py` · (no tests)
-- **** · The Hand That Doesn't Grasp → `ledger.py` · (no tests)
-- **vol_02_the_primacy_cockpit** · Stillpoint — node identity & health → `node.py` · (no tests)
-- **vol_03_governed_dev_loop_and_self_building_harness** · Proposal mechanics — breath-gated self-modification → `proposals.py` · (no tests)
-- **vol_03_governed_dev_loop_and_self_building_harness** · Operator-defined role configuration → `roles.py` · (no tests)
-- **vol_04_federation_and_partner_device_gateway** · Federation — resonance, not coordination → `role.py` · (no tests)
-- **vol_04_federation_and_partner_device_gateway** · Scoped partner & investor access → `roles.py` · (no tests)
-
-### VALIDATED (3)
+### VALIDATED (17)
 - **** · Data-Room Classifier → `role.py` · tests pass
+- **** · The Gate → `ledger.py` · tests pass
+- **** · The Fence → `thread.py` · tests pass
+- **** · The Thin Waist → `series.py` · tests pass
+- **** · Co-Extrusion → `atrium_producer.py` · tests pass
+- **** · The Reconciliation → `coherence.py` · tests pass
+- **** · The Honest Stub → `hopper.py` · tests pass
+- **** · The Diff → `atrium_apply.py` · tests pass
+- **** · The Seal Chain → `ledger.py` · tests pass
+- **** · The Hand That Doesn't Grasp → `ledger.py` · tests pass
 - **vol_01_sovereign_inference_and_memory** · Receipts as constitutional anchors → `ledger.py` · tests pass
 - **vol_02_the_primacy_cockpit** · Breath-gate disposition → `ledger.py` · tests pass
+- **vol_02_the_primacy_cockpit** · Stillpoint — node identity & health → `node.py` · tests pass
+- **vol_03_governed_dev_loop_and_self_building_harness** · Proposal mechanics — breath-gated self-modification → `proposals.py` · tests pass
+- **vol_03_governed_dev_loop_and_self_building_harness** · Operator-defined role configuration → `roles.py` · tests pass
+- **vol_04_federation_and_partner_device_gateway** · Federation — resonance, not coordination → `role.py` · tests pass
+- **vol_04_federation_and_partner_device_gateway** · Scoped partner & investor access → `roles.py` · tests pass
 
 ## Distribution readiness (per title)
 
