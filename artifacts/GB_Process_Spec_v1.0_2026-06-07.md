@@ -34,6 +34,12 @@
 | `grok-opus` | Opus · grok CLI · Anthropic API key | only if the literal grok skin on Opus is needed |
 | (native) `grok` | Grok-4 · grok CLI · xAI | GB's original, when back online |
 
+## Live hydration (iron-clad #3 + #6 — wired 2026-06-07)
+`claude-gb` now **auto-injects KM's live B51/HMC tail** (`scan_b51_chain.py --recent`, the open unsealed
+cylinder) **+ the forward path** (`GB_Prioritized_Forward_Path.md`) as an appended system prompt at launch —
+restoring the grok-build live feed on the Opus port. GB boots **with KM's live cockpit**, not stale snapshots.
+Refreshes every launch. (Closes the gap GB-on-Opus correctly flagged: assets 3 + 6 were replay-only before.)
+
 ## Start-of-session ritual (any backend)
 1. **Replay** memory: `python3 scripts/gb_meta_cylinder.py` (recover state) + `scripts/thread.py show` (read THREAD).
 2. State lane + "GB-on-<brain>" honestly. 3. Do GB-lane work (fence-bound). 4. Append a cylinder receipt +
