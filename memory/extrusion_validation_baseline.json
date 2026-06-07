@@ -1,0 +1,21 @@
+{
+ "roots": {
+  "registry_root": "12e7f1871cddb08eecfa8104c8a232450dc041053355db13c4601e9fccc9027d",
+  "modules_root": "6101f99d366cbbc1464d7fac919eff6a5a7b68860a66d1344a5868bc129acdcd",
+  "capabilities_root": "dfdab16e62897084451291dec954afc68940c00980d465472cc4921615ecf2ce"
+ },
+ "modules": {
+  "scripts/atrium_apply.py": "8818bc3f4b0a4489ad670ffbf066920e23cb7e00cbef1d938b5c4c504a087a5d",
+  "scripts/atrium_producer.py": "f58719eecf734a06e345c716b2c6d0142234dae6273eea729b693adee568bc04",
+  "scripts/thread.py": "ebf544366f739325bb4c352172ac9354a63e6a7402eb278bac899e7d76655e29",
+  "src/sovereign_agent/demo_roles/federation_procurement_coordinator/role.py": "d0be5454b86374e05983dd0222220517f7ee4a024f64120168b2682624643107",
+  "src/sovereign_agent/demo_roles/ma_data_room/role.py": "883447a8675511190cc8d2f35391f3e0ba01e106dc92c2678ae7ebf8e7408fb3",
+  "src/sovereign_agent/node_api/routes/coherence.py": "8cd79eafdef39b1b1b0ea2c9a15f3715e5b8aa36282ccf2c0e9ff194b3d299c6",
+  "src/sovereign_agent/node_api/routes/hopper.py": "d0d25fdb251be3cb997a63d3f26bef01802d15d7f63e7bec644733ebc25597ae",
+  "src/sovereign_agent/node_api/routes/node.py": "6e577dbf1825ff4c01911b2cafbb53c3577471359916d2976c28d57839d3dc8d",
+  "src/sovereign_agent/node_api/routes/proposals.py": "8133b539b418653dfcc9a1d94dedb4c119c1fec9f55474ee28e56b4aef63000f",
+  "src/sovereign_agent/node_api/routes/roles.py": "8cef176ecbe29592d1211e760ab20d12a9faffc18f63126bb451e10708ada2a9",
+  "src/sovereign_agent/node_api/routes/series.py": "770ce28fdc90205d356a0fb744ca4052867dc2053546d3dd4f2dc897d02f6734",
+  "src/sovereign_agent/obligations/ledger.py": "4993d482ba807f5591362d7c2c573d3dba315d0b4d3160e16564649d2cc138a0"
+ }
+}
