@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Extrusion Validation Harness — Mental Map</title>
+<style>
+  :root{
+    --bg:#0a1018; --panel:#0f1b2e; --panel2:#101a2b; --ink:#e6edf6; --dim:#8a97ab;
+    --line:#243450; --cyan:#7dd3fc; --violet:#c4b5fd; --green:#86efac; --amber:#fbbf24;
+    --red:#fca5a5; --grey:#9aa4b2; --accent:#7dd3fc;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 700px at 50% -10%, #11203a 0%, var(--bg) 60%);
+    color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:28px 18px 60px}
+  .wrap{max-width:1080px;margin:0 auto}
+  h1{font-size:26px;margin:0 0 4px;letter-spacing:.2px}
+  .sub{color:var(--dim);margin:0 0 6px}
+  .cadence{color:var(--violet);font:13px/1.4 ui-monospace,Menlo,monospace;margin:0 0 22px}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+  .stage{margin:0 auto 6px;max-width:980px}
+  .stage-label{color:var(--dim);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;margin:18px 0 8px;text-align:center}
+  .arrow{text-align:center;color:var(--line);font-size:22px;line-height:1;margin:2px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+  .row > .card{flex:1;min-width:210px}
+  .ttl{font-weight:600;margin:0 0 4px;font-size:14px}
+  .ttl small{font-weight:400;color:var(--dim)}
+  .note{color:var(--dim);font-size:12.5px;margin:4px 0 0}
+  .big{max-width:980px;margin:0 auto}
+  .q{text-align:center;font-size:18px;color:var(--cyan);background:var(--panel);border:1px solid var(--line);
+     border-radius:12px;padding:16px;max-width:760px;margin:0 auto}
+  /* chain */
+  .chain{display:flex;align-items:stretch;gap:0;flex-wrap:wrap;justify-content:center}
+  .step{flex:1;min-width:120px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;
+     padding:10px 10px;text-align:center;position:relative;margin:4px}
+  .step b{display:block;font-size:13px}
+  .step .s{font-size:11px;color:var(--dim);margin-top:2px}
+  .step .num{position:absolute;top:-9px;left:-9px;background:var(--accent);color:#06121f;border-radius:50%;
+     width:20px;height:20px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .chev{align-self:center;color:var(--line);font-size:20px;padding:0 2px}
+  /* outcomes */
+  .out{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+  .pill{border-radius:10px;padding:10px 14px;border:1px solid;min-width:150px;text-align:center}
+  .pill b{display:block;font-size:14px}
+  .pill .d{font-size:11px;color:var(--dim);margin-top:2px}
+  .ok{border-color:#1f8a4c;background:#0f1f14} .ok b{color:var(--green)}
+  .un{border-color:#7a5b12;background:#1f1809} .un b{color:var(--amber)}
+  .dr{border-color:#7f1d1d;background:#220e10} .dr b{color:var(--red)}
+  .fa{border-color:#7f1d1d;background:#220e10} .fa b{color:var(--red)}
+  .chip{display:inline-block;border:1px solid var(--line);border-radius:6px;padding:1px 7px;font-size:11px;margin:2px 3px 0 0}
+  .snap{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+  .kpi{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center}
+  .kpi .v{font-size:26px;font-weight:700} .kpi .l{font-size:11px;color:var(--dim);margin-top:2px}
+  .bar{height:8px;border-radius:5px;background:#1a2740;overflow:hidden;margin-top:6px}
+  .bar > i{display:block;height:100%;background:linear-gradient(90deg,#1f8a4c,#86efac)}
+  .bk{display:flex;justify-content:space-between;font-size:12px;margin-top:8px}
+  .gate{text-align:center;border-radius:12px;padding:14px;border:1px solid #1f8a4c;background:#0f1f14;max-width:560px;margin:0 auto}
+  .gate b{color:var(--green);font-size:18px}
+  code{background:#0c1626;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:12.5px}
+  .legend{color:var(--dim);font-size:12px;text-align:center;margin-top:8px}
+  a{color:var(--accent)}
+  .foot{color:var(--dim);font-size:12px;text-align:center;margin-top:26px;border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>🧪 Extrusion Validation Harness</h1>
+  <p class="sub">A mental map — how Tiger proves the <b>book and the code still say the same thing</b>.</p>
+  <p class="cadence">Breath → Form → Echo → Seal &nbsp;·&nbsp; <span class="mono">scripts/extrusion_validate.py</span> &nbsp;·&nbsp; snapshot 2026-06-07</p>
+
+  <!-- THE QUESTION -->
+  <div class="stage-label">The one question it answers</div>
+  <div class="big"><div class="q">“Does the code still do what the book says — and can I <b>prove</b> it, automatically?”<br>
+    <span style="font-size:13px;color:var(--dim)">The book is the spec. The code must reflect it. Tests + Merkle prove it before a human reviews.</span></div></div>
+
+  <div class="arrow">↓</div>
+
+  <!-- INPUTS -->
+  <div class="stage-label">3 inputs it reads</div>
+  <div class="stage row">
+    <div class="card"><div class="ttl">📕 Registry <small>coherence_registry.json</small></div>
+      <div class="note">Every <b>anchor</b>: an exact book <b>passage</b> → a <b>code file</b> → a <b>test file</b>, hash-pinned.</div></div>
+    <div class="card"><div class="ttl">⚖ Capabilities <small>coherence_capabilities.json</small></div>
+      <div class="note">G's 2026-05-30 review: each book capability marked <span style="color:var(--green)">Present</span> / <span style="color:var(--amber)">Partial</span> / <span style="color:var(--grey)">Missing</span> vs real code.</div></div>
+    <div class="card"><div class="ttl">🗺 Roadmap <small>series_roadmap.yaml</small></div>
+      <div class="note">Per-title <b>distribution</b> state — KDP / social / federation readiness.</div></div>
+  </div>
+
+  <div class="arrow">↓</div>
+
+  <!-- THE CHAIN -->
+  <div class="stage-label">The check — run for every anchor</div>
+  <div class="stage card">
+    <div class="chain">
+      <div class="step"><span class="num">1</span><b>passage ∈ book</b><div class="s">the exact text is still in the manuscript</div></div>
+      <div class="chev">›</div>
+      <div class="step"><span class="num">2</span><b>hash ✓</b><div class="s">sha256 of the passage matches the pin</div></div>
+      <div class="chev">›</div>
+      <div class="step"><span class="num">3</span><b>code present</b><div class="s">the cited code file exists</div></div>
+      <div class="chev">›</div>
+      <div class="step"><span class="num">4</span><b>tests present</b><div class="s">a test file is pinned</div></div>
+      <div class="chev">›</div>
+      <div class="step" style="border-color:#2b5a8a"><span class="num">5</span><b>pytest PASS</b><div class="s">the test actually runs green</div></div>
+    </div>
+    <div class="legend">↓ the 5 checks decide one of four outcomes ↓</div>
+    <div class="out">
+      <div class="pill ok"><b>✅ VALIDATED</b><div class="d">all 5 green — book ↔ code proven</div></div>
+      <div class="pill un"><b>◌ PINNED-UNTESTED</b><div class="d">pinned + matches, but no test yet</div></div>
+      <div class="pill dr"><b>⚠ DRIFT</b><div class="d">passage / hash / code mismatch</div></div>
+      <div class="pill fa"><b>✗ FAIL</b><div class="d">test ran and failed</div></div>
+    </div>
+  </div>
+
+  <div class="arrow">↓</div>
+
+  <!-- MERKLE + DISTRIBUTION -->
+  <div class="stage-label">Two extra guards</div>
+  <div class="stage row">
+    <div class="card"><div class="ttl">⛓ Merkle object-model integrity</div>
+      <div class="note">Hashes the whole object model into roots; compares to a stored baseline. If a root changes
+        without a sealed change → <b>flagged</b>. "Code can't silently drift."</div>
+      <div style="margin-top:8px">
+        <span class="chip mono">registry_root f70c0ebc</span>
+        <span class="chip mono">modules_root 6101f99d</span>
+        <span class="chip mono">capabilities_root dfdab16e</span></div></div>
+    <div class="card"><div class="ttl">📦 Distribution readiness</div>
+      <div class="note">Per title, alongside coherence: is it propagated?</div>
+      <div style="margin-top:8px">
+        <span class="chip" style="color:var(--green)">KDP ✓ / review / —</span>
+        <span class="chip" style="color:var(--grey)">Social ◌ (not tracked yet)</span>
+        <span class="chip" style="color:var(--grey)">Federation ◌</span></div>
+      <div class="note" style="margin-top:6px">Honest ◌ for untracked channels — no green-washing.</div></div>
+  </div>
+
+  <div class="arrow">↓</div>
+
+  <!-- OUTPUTS -->
+  <div class="stage-label">What comes out</div>
+  <div class="stage row">
+    <div class="card"><div class="ttl">📄 Report <small>+ JSON state</small></div>
+      <div class="note"><span class="mono">Extrusion_Validation_Report.md</span> (per-book matrix) + <span class="mono">extrusion_validation_state.json</span> (cheap state).</div></div>
+    <div class="card"><div class="ttl">🖥 Atrium monitor</div>
+      <div class="note"><span class="mono">/coherence/rollup</span> reads the state → Series Pipeline shows the <b>🧪 gate</b> + Merkle root + per-book drilldown. <i>No tests run at request time.</i></div></div>
+    <div class="card"><div class="ttl">🚦 Gate (exit code)</div>
+      <div class="note">CI-able: <b>0</b> only if 0 drift + 0 fail + Merkle intact. Run at every volume handoff.</div></div>
+  </div>
+
+  <div class="arrow">↓</div>
+
+  <!-- LIVE SNAPSHOT -->
+  <div class="stage-label">Live snapshot — the whole pinned catalog right now</div>
+  <div class="big">
+    <div class="gate" style="margin-bottom:14px"><b>✓ GATE: PASS</b><div class="note">0 blocking · 0 untested · object model intact</div></div>
+    <div class="snap">
+      <div class="kpi"><div class="v" style="color:var(--green)">17</div><div class="l">✅ VALIDATED</div></div>
+      <div class="kpi"><div class="v" style="color:var(--amber)">0</div><div class="l">◌ untested</div></div>
+      <div class="kpi"><div class="v" style="color:var(--red)">0</div><div class="l">⚠ drift</div></div>
+      <div class="kpi"><div class="v" style="color:var(--red)">0</div><div class="l">✗ fail</div></div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <div class="ttl">Per-book (anchors validated)</div>
+      <div class="bk"><span>The Sealing Hand <span class="mono" style="color:var(--dim)">(metalayer)</span></span><span class="mono" style="color:var(--green)">9 / 9 ✅</span></div><div class="bar"><i style="width:100%"></i></div>
+      <div class="bk"><span>S2 Vol 2 — Primacy Cockpit</span><span class="mono" style="color:var(--green)">2 / 2 ✅</span></div><div class="bar"><i style="width:100%"></i></div>
+      <div class="bk"><span>S2 Vol 3 — Governed Dev Loop</span><span class="mono" style="color:var(--green)">2 / 2 ✅</span></div><div class="bar"><i style="width:100%"></i></div>
+      <div class="bk"><span>S2 Vol 4 — Federation</span><span class="mono" style="color:var(--green)">2 / 2 ✅</span></div><div class="bar"><i style="width:100%"></i></div>
+      <div class="bk"><span>S2 Vol 1 — Sovereign Inference</span><span class="mono" style="color:var(--green)">1 / 1 ✅</span></div><div class="bar"><i style="width:100%"></i></div>
+      <div class="bk"><span>Book 11 — M&A</span><span class="mono" style="color:var(--green)">1 / 1 ✅</span></div><div class="bar"><i style="width:100%"></i></div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <div class="ttl">The wider catalog (honest coverage)</div>
+      <div class="note">Beyond the 17 hash-pinned + tested anchors, G's capability review surfaces the gap ledger:</div>
+      <div style="margin-top:8px">
+        <span class="chip" style="color:var(--green)">10 capabilities Present</span>
+        <span class="chip" style="color:var(--amber)">16 Partial</span>
+        <span class="chip" style="color:var(--grey)">21 Missing → governed-dev-loop builds</span>
+        <span class="chip" style="color:var(--violet)">5 books narrative (no code by nature)</span></div>
+    </div>
+  </div>
+
+  <div class="foot">
+    Run it: <code>python3 scripts/extrusion_validate.py</code> &nbsp;·&nbsp; rebase the fingerprint after a sealed change: <code>--update-baseline</code><br>
+    Book is the spec · code reflects the book · tests + Merkle prove it before the human reviews · the gate holds. ∞Δ∞
+  </div>
+
+</div>
+</body>
+</html>
