@@ -35,6 +35,9 @@ _TITLE_FIELDS = (
     # Publishing lifecycle (GB authors these in the projection; the lens renders a state badge +
     # drill-through). published_date / revision / asin feed the title-card history pane.
     "publishing_state", "published_date", "revision", "asin",
+    # Chapter outline cards (GB folds G's outlines: {n,title,promise,beats[],keywords[],stage,coherence_pin}).
+    # The Series Pipeline drill renders these as read-only chapter cards (ATR-7d).
+    "chapters",
 )
 
 
