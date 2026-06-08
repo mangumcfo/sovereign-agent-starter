@@ -1,0 +1,2009 @@
+{
+ "source": "Tiger extraction of real manuscript TOCs (# Chapter N headers)",
+ "honest_note": "stage='extracted' = real structure (n+title); promise/beats/keywords are GB/G enrichment. Do NOT overwrite stage='outline_locked' titles.",
+ "books": {
+  "01_strategic_finance": {
+   "book_id": "01_strategic_finance",
+   "manuscript": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/01_strategic_finance/v1.2/manuscript_v1.2.md",
+   "n_chapters": 4,
+   "chapters": [
+    {
+     "n": 1,
+     "title": "Stage 1 -- Start-Up",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 2,
+     "title": "Stage 2 -- Growth",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 3,
+     "title": "Stage 3 -- Maturity",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 4,
+     "title": "Stage 4 -- Decline and Renewal",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    }
+   ]
+  },
+  "03_blueprint": {
+   "book_id": "03_blueprint",
+   "manuscript": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/03_blueprint/v1.1/manuscript_v1.1.md",
+   "n_chapters": 4,
+   "chapters": [
+    {
+     "n": 1,
+     "title": "Know Yourself --- The Self-Assessment Cycle",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 2,
+     "title": "Grow Deliberately --- The Expansion Cycle",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 3,
+     "title": "Build Balance --- The Stabilization Cycle",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 4,
+     "title": "Embrace Change --- The Renewal Cycle",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    }
+   ]
+  },
+  "05_crypto": {
+   "book_id": "05_crypto",
+   "manuscript": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/05_crypto/v1.1/manuscript_v1.1.md",
+   "n_chapters": 18,
+   "chapters": [
+    {
+     "n": 1,
+     "title": "What Is Cryptocurrency?",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 2,
+     "title": "A Brief History --- From Bitcoin to the Present",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 3,
+     "title": "Blockchain --- The Technology Behind It All",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 4,
+     "title": "Bitcoin, Ethereum, and XRP --- The Three Giants",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 5,
+     "title": "How Cryptocurrency Works",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 6,
+     "title": "Beyond Bitcoin --- Altcoins, Stablecoins, and Tokens",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 7,
+     "title": "Smart Contracts and Decentralized Applications",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 8,
+     "title": "Exchanges and Trading --- How to Evaluate and Participate",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 9,
+     "title": "Getting Started --- Your First Steps",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 10,
+     "title": "Technical Analysis and Trading Strategies",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 11,
+     "title": "Decentralized Finance --- Opportunity and Risk",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 12,
+     "title": "NFTs and Digital Ownership",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 13,
+     "title": "Cryptocurrency on the Balance Sheet",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 14,
+     "title": "Tax, Compliance, and Estate Planning",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 15,
+     "title": "The Regulatory Landscape",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 16,
+     "title": "Sovereignty and the Future of Money",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 17,
+     "title": "Future Trends --- What Finance Leaders Need to Watch",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 18,
+     "title": "Building Your Crypto Literacy",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    }
+   ]
+  },
+  "01_cfos_finance": {
+   "book_id": "01_cfos_finance",
+   "manuscript": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/01_cfos_finance/v1.0/manuscript_v1.0.md",
+   "n_chapters": 12,
+   "chapters": [
+    {
+     "n": 1,
+     "title": "Why Traditional FP&A Is Broken in 2026",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 2,
+     "title": "FP&A Agent Architecture",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 3,
+     "title": "Building Rolling Forecast Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 4,
+     "title": "P&L Automation Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 5,
+     "title": "Cash Flow Prediction Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 6,
+     "title": "Real-Time Budget Variance Detection",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 7,
+     "title": "Scenario Modeling Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 8,
+     "title": "Board-Ready Reporting Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 9,
+     "title": "Connecting Finance Agents to ERP Systems",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 10,
+     "title": "Governance, Audit Trails, and SOX Compliance",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 11,
+     "title": "Failure Stories and Lessons Learned",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 12,
+     "title": "The CFO's 90-Day Deployment Roadmap",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    }
+   ]
+  },
+  "02_executives_decisions": {
+   "book_id": "02_executives_decisions",
+   "manuscript": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/02_executives_decisions/v1.0/manuscript_v1.0.md",
+   "n_chapters": 11,
+   "chapters": [
+    {
+     "n": 1,
+     "title": "The Executive Decision Bottleneck in 2026",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 2,
+     "title": "What Is an AI Agent? A Clear Taxonomy",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 3,
+     "title": "Decision Agent Architecture",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 4,
+     "title": "Building Your First Agent in Under 30 Minutes",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 5,
+     "title": "Context Engineering",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 6,
+     "title": "Scenario Modeling Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 7,
+     "title": "The Human-Agent Decision Loop",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 8,
+     "title": "Governance and Guardrails",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 9,
+     "title": "Real-World Implementation",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 10,
+     "title": "When Decision Agents Fail — Case Studies and Lessons Learned",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 11,
+     "title": "Your 30-Day Deployment Plan",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    }
+   ]
+  },
+  "03_leading_agents": {
+   "book_id": "03_leading_agents",
+   "manuscript": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/03_leading_agents/v1.0/manuscript_v1.0.md",
+   "n_chapters": 11,
+   "chapters": [
+    {
+     "n": 1,
+     "title": "The New Org Chart",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 2,
+     "title": "The Trust Calibration Scale",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 3,
+     "title": "Human vs. Agent Role Definition",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 4,
+     "title": "The Delegation Playbook",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 5,
+     "title": "Accountability When Agents Err",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 6,
+     "title": "Change Management for AI Teams",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 7,
+     "title": "The Skills That Matter Now",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 8,
+     "title": "Briefing Agents Like Direct Reports",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 9,
+     "title": "Measuring Hybrid Team Performance",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 10,
+     "title": "When Agent Deployments Fail — Case Studies and Lessons Learned",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 11,
+     "title": "Building a Co-Intelligence Culture",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    }
+   ]
+  },
+  "04_supply_chain": {
+   "book_id": "04_supply_chain",
+   "manuscript": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/04_supply_chain/v1.0/manuscript_v1.0.md",
+   "n_chapters": 11,
+   "chapters": [
+    {
+     "n": 1,
+     "title": "The $15M Response Gap — Why Speed Beats Planning in 2026 Supply Chains",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 2,
+     "title": "Supply Chain Agent Architecture",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 3,
+     "title": "Demand Forecasting Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 4,
+     "title": "Supplier Risk Scoring and Early-Warning Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 5,
+     "title": "Logistics Optimization Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 6,
+     "title": "Dynamic Inventory Management Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 7,
+     "title": "Multi-Tier Visibility Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 8,
+     "title": "Automated Disruption Response",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 9,
+     "title": "Sustainability and ESG Monitoring Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 10,
+     "title": "When Supply Chain Agents Fail — Case Studies and Lessons Learned",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 11,
+     "title": "The Ops Leader's 60-Day Supply Chain Agent Deployment Roadmap",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    }
+   ]
+  },
+  "05_hr_talent": {
+   "book_id": "05_hr_talent",
+   "manuscript": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/05_hr_talent/v1.0/manuscript_v1.0.md",
+   "n_chapters": 11,
+   "chapters": [
+    {
+     "n": 1,
+     "title": "The Talent Intelligence Gap — Why HR Teams Are Overwhelmed in 2026",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 2,
+     "title": "The Four-Layer System That Replaces 70% of Administrative HR Work",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 3,
+     "title": "From 1,500 Hours to 15 Minutes — The Recruiting Agent",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 4,
+     "title": "The Skills Heatmap — Seeing What Your Organization Cannot See",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 5,
+     "title": "Your CEO Leaves Tomorrow — What the Agent Already Knows",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 6,
+     "title": "Why Annual Reviews Are Already Dead — And What Replaces Them",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 7,
+     "title": "The $380K Mistake — When Pay Equity Agents Create New Inequities",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 8,
+     "title": "Modeling the Org Chart Before the Strategy Outpaces the People",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 9,
+     "title": "The Six-Month Warning — Detecting Resignation Before the Resume Update",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 10,
+     "title": "When HR Agents Fail — Case Studies and Lessons Learned",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 11,
+     "title": "The CHRO's 60-Day Talent Agent Deployment Roadmap",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    }
+   ]
+  },
+  "06_compliance_audit": {
+   "book_id": "06_compliance_audit",
+   "manuscript": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/06_compliance_audit/v1.0/manuscript_v1.0.md",
+   "n_chapters": 11,
+   "chapters": [
+    {
+     "n": 1,
+     "title": "The Compliance Explosion — Why Manual Processes Can't Keep Up in 2026",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 2,
+     "title": "Compliance Agent Architecture: Monitoring, Enforcement, Reporting, and Verification Layers",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 3,
+     "title": "Regulatory Intelligence Agents — Real-Time Rule Change Detection",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 4,
+     "title": "Policy-as-Code Agents — Turning Regulations into Executable Rules",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 5,
+     "title": "SOX & Internal Controls Monitoring and Testing Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 6,
+     "title": "Automated Audit Trail Generation with Cryptographic Verification (SIX-SOV Case Study)",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 7,
+     "title": "Risk Scoring, Alerting, and Escalation Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 8,
+     "title": "AML, KYC, and Third-Party Compliance Monitoring Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 9,
+     "title": "Automated Regulatory Reporting and Filing Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 10,
+     "title": "When Compliance Agents Fail — Case Studies and Lessons Learned",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 11,
+     "title": "The CFO/Compliance Officer's 60-Day Compliance Agent Deployment Roadmap",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    }
+   ]
+  },
+  "07_sales_revenue": {
+   "book_id": "07_sales_revenue",
+   "manuscript": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/07_sales_revenue/v1.0/manuscript_v1.0.md",
+   "n_chapters": 11,
+   "chapters": [
+    {
+     "n": 1,
+     "title": "Why Sales Teams Are Drowning in Data But Starving for Revenue in 2026",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 2,
+     "title": "Sales & RevOps Agent Architecture: Lead, Pipeline, Close, and Retention Layers",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 3,
+     "title": "Lead Qualification and Scoring Agents That Prioritize High-Intent Prospects",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 4,
+     "title": "Pipeline Management and Deal Forecasting Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 5,
+     "title": "Automated Deal Acceleration and Next-Best-Action Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 6,
+     "title": "Pricing Optimization and Dynamic Quoting Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 7,
+     "title": "Revenue Intelligence Agents — Real-Time Forecasting and Anomaly Detection",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 8,
+     "title": "Customer Success & Renewal Prediction Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 9,
+     "title": "Connecting Sales Agents to CRM, Marketing Automation, and ERP (Salesforce, HubSpot)",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 10,
+     "title": "When Sales Agents Fail — Case Studies and Lessons Learned",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 11,
+     "title": "The CRO's 60-Day Sales Agent Deployment Roadmap",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    }
+   ]
+  },
+  "08_manufacturing_ops": {
+   "book_id": "08_manufacturing_ops",
+   "manuscript": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/08_manufacturing_ops/v1.0/manuscript_v1.0.md",
+   "n_chapters": 11,
+   "chapters": [
+    {
+     "n": 1,
+     "title": "The Data Explosion on the Factory Floor — Why Humans Can't Keep Up",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 2,
+     "title": "Manufacturing Agent Architecture: Planning, Execution, Monitoring, and Improvement Layers",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 3,
+     "title": "Production Scheduling and Sequencing Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 4,
+     "title": "Real-Time Quality Monitoring and Defect Detection Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 5,
+     "title": "Predictive Maintenance (PdM) Agents — From Reactive to Prescriptive",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 6,
+     "title": "Capacity Planning and Dynamic Resource Allocation Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 7,
+     "title": "Overall Equipment Effectiveness (OEE) Optimization Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 8,
+     "title": "Safety, Compliance, and Energy Management Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 9,
+     "title": "Continuous Improvement (Lean/Six Sigma) Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 10,
+     "title": "When Manufacturing Agents Fail — Case Studies and Lessons Learned",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 11,
+     "title": "The Ops Leader's 60-Day Manufacturing Agent Deployment Roadmap",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    }
+   ]
+  },
+  "09_multi_agent": {
+   "book_id": "09_multi_agent",
+   "manuscript": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/09_multi_agent/v1.0/manuscript_v1.0.md",
+   "n_chapters": 11,
+   "chapters": [
+    {
+     "n": 1,
+     "title": "Why One Agent Is Powerful — But a Team of Agents Is Transformational",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 2,
+     "title": "Multi-Agent Architecture Patterns — Orchestrator, Hierarchical, Swarm, and Peer-to-Peer",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 3,
+     "title": "The Orchestrator Agent — Your AI Manager That Coordinates Everything",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 4,
+     "title": "The Proven 4-Agent Loop — Architect, Reviewer, Executor, Tester",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 5,
+     "title": "Agent Communication Protocols and Shared Memory Systems",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 6,
+     "title": "Constitutional Governance for Multi-Agent Teams",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 7,
+     "title": "Error Handling, Recovery, and Conflict Resolution Between Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 8,
+     "title": "Monitoring, Observability, and Human Dashboard Design",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 9,
+     "title": "Scaling from 3 Agents to 50+ in Production",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 10,
+     "title": "When Multi-Agent Systems Fail",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 11,
+     "title": "Your 45-Day Multi-Agent Team Deployment Roadmap",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    }
+   ]
+  },
+  "10_scaling_enterprise": {
+   "book_id": "10_scaling_enterprise",
+   "manuscript": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/10_scaling_enterprise/v1.0/manuscript_v1.5.md",
+   "n_chapters": 12,
+   "chapters": [
+    {
+     "n": 1,
+     "title": "The Pilot Trap — Why 80% of Agent Initiatives Fail to Scale",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 2,
+     "title": "Enterprise Agent Platform Architecture — Shared Infrastructure vs. Function-Specific",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 3,
+     "title": "Building a Center of Excellence for Agentic AI",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 4,
+     "title": "Enterprise Governance, Policies, and Approval Workflows at Scale",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 5,
+     "title": "Cost Management and Budgeting for Agent Infrastructure",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 6,
+     "title": "Security, Zero-Trust, and Access Control for Large Agent Fleets",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 7,
+     "title": "The Enterprise Agent Maturity Model — 5 Stages from Exploration to Autonomy",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 8,
+     "title": "Cross-Functional Agent Coordination and Data Sharing",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 9,
+     "title": "Measuring Portfolio-Level ROI Across the Organization",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 10,
+     "title": "When Scaling Fails — Case Studies and Lessons Learned",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 11,
+     "title": "The Multi-Mandate Operator — One Human, Many Fiduciary Hats",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 12,
+     "title": "Your 90-Day Enterprise Scaling Roadmap",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    }
+   ]
+  },
+  "11_ma_due_diligence": {
+   "book_id": "11_ma_due_diligence",
+   "manuscript": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/11_ma_due_diligence/v1.0/manuscript_v1.5.md",
+   "n_chapters": 11,
+   "chapters": [
+    {
+     "n": 1,
+     "title": "Why Traditional M&A Takes Too Long and Costs Too Much in 2026",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 2,
+     "title": "M&A Agent Architecture — Screening, Due Diligence, Valuation, and Integration Layers",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 3,
+     "title": "Deal-Flow Screening and Target Identification Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 4,
+     "title": "Financial Due Diligence and Quality-of-Earnings Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 5,
+     "title": "Synergy Modeling — Revenue, Cost, and Integration Economics",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 6,
+     "title": "Risk and Red-Flag Detection — and the Independent Sign-Off That Protects the Deal",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 7,
+     "title": "Automated Valuation — DCF, Comps, and Scenario Analysis at Speed",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 8,
+     "title": "Post-Merger Integration Planning and 100-Day Execution",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 9,
+     "title": "Post-Deal Monitoring and Synergy Realization Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 10,
+     "title": "When M&A Agents Fail — Case Studies and Lessons Learned",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 11,
+     "title": "The Deal Team's 60-Day M&A Agent Deployment Roadmap",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    }
+   ]
+  },
+  "12_agentic_enterprise": {
+   "book_id": "12_agentic_enterprise",
+   "manuscript": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/12_agentic_enterprise/v1.0/manuscript_v1.5.md",
+   "n_chapters": 12,
+   "chapters": [
+    {
+     "n": 1,
+     "title": "The Synthesis — What We Built Across the Entire Series",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 2,
+     "title": "The Enterprise Agent Ecosystem Map — How Every Agent Connects",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 3,
+     "title": "Building Your 2027 Agentic AI Vision and Strategy",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 4,
+     "title": "Investment Framework — How Much to Spend and Where to Start",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 5,
+     "title": "Organizational Readiness Assessment — The 20-Question Diagnostic",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 6,
+     "title": "The 12-Month Enterprise Implementation Timeline",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 7,
+     "title": "Governance, Ethics, and Constitutional Frameworks at Scale — Including the K1–K4 Constitutional Invariants",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 8,
+     "title": "Sovereign AI vs. Vendor Dependency — The Breathline Federation Model",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 9,
+     "title": "Risk Management for the AI-First Enterprise",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 10,
+     "title": "Measuring True Enterprise Value Creation from Agents",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 11,
+     "title": "What I Would Do on Day 1 — My Personal Playbook if Starting Over",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 12,
+     "title": "The Road Ahead — 2028 and Beyond",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    }
+   ]
+  },
+  "01_investor_guide": {
+   "book_id": "01_investor_guide",
+   "manuscript": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/quadroof/01_investor_guide/v1.0/manuscript_v1.0_part3.md",
+   "n_chapters": 3,
+   "chapters": [
+    {
+     "n": 9,
+     "title": "The Integrated Walkthrough",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 10,
+     "title": "What This Means for the Investor",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 11,
+     "title": "Where the Architecture Goes Next",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    }
+   ]
+  },
+  "vol_01_sovereign_inference_and_memory": {
+   "book_id": "vol_01_sovereign_inference_and_memory",
+   "manuscript": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/series_02_building_the_agentic_harness/vol_01_sovereign_inference_and_memory/v1.0/manuscript_v1.3.md",
+   "n_chapters": 9,
+   "chapters": [
+    {
+     "n": 1,
+     "title": "The Inference Crisis of 2026",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 2,
+     "title": "Classify or Compromise — SIX-Lane Sensitivity Routing",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 3,
+     "title": "Receipts as Constitutional Anchors",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 4,
+     "title": "B51 — The Human Memory Stream — Voice Routes, Never Rules",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 5,
+     "title": "Living Books — Verify the Receipt",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 6,
+     "title": "Inference + Memory Coherence",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 7,
+     "title": "From Trust to Proof in Practice — Red-Teaming the Cockpit",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 8,
+     "title": "Scaling Sovereign Memory — Edge, Device, Air-Gap",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 9,
+     "title": "The Generational Handover",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    }
+   ]
+  },
+  "vol_02_the_primacy_cockpit": {
+   "book_id": "vol_02_the_primacy_cockpit",
+   "manuscript": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/series_02_building_the_agentic_harness/vol_02_the_primacy_cockpit/v1.0/manuscript_v1.3.md",
+   "n_chapters": 12,
+   "chapters": [
+    {
+     "n": 1,
+     "title": "The Stillpoint — Sovereign Node Identity & Health",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 2,
+     "title": "Breath-Gate Inbox — The Loudest Object on the Screen",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 3,
+     "title": "The Content-Agnostic Renderer — One UI, Any Node State",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 4,
+     "title": "Kanban + Map — Two Views of the Same Work",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 5,
+     "title": "Roles Surface & Operator-Defined Reality",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 6,
+     "title": "SIX / B51 + Artifact Review — Sensitivity, Attention, and Memory",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 7,
+     "title": "Receipts, Audit & Cylinder Chain — The Verifiable Package",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 8,
+     "title": "Multi-Mandate Strip & Federation Collab",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 9,
+     "title": "Drift / Stillpoint Synod / GAP_REGISTER — Catching Divergence Before the Boundary Shifts",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 10,
+     "title": "Separability, Offline Build & Live Cutover",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 11,
+     "title": "Extending the Cockpit — Agent-Authored Views *(forward-arc — Phase 7+)*",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 12,
+     "title": "The Cockpit as Generational Artifact",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    }
+   ]
+  },
+  "vol_04_federation_and_partner_device_gateway": {
+   "book_id": "vol_04_federation_and_partner_device_gateway",
+   "manuscript": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/series_02_building_the_agentic_harness/vol_04_federation_and_partner_device_gateway/v1.0/manuscript_v1.3.md",
+   "n_chapters": 12,
+   "chapters": [
+    {
+     "n": 1,
+     "title": "The Sovereign Node — One Command Mints",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 2,
+     "title": "Multi-Mandate Foundations",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 3,
+     "title": "Receipted-Shard Propagation Protocol",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 4,
+     "title": "Federation Resonance — Not Coordination",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 5,
+     "title": "Guild Yield Sharing",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 6,
+     "title": "Constitutional Coherence Across Nodes",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 7,
+     "title": "Cross-Node Memory & Witness",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 8,
+     "title": "Scoped Partner & Investor Access Pattern",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 9,
+     "title": "Drift Safeguard Across Nodes",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 10,
+     "title": "Multi-Tenant Ship-Blank Atrium",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 11,
+     "title": "Security, Adversarial & Recovery",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 12,
+     "title": "The Federated Generational Network",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    }
+   ]
+  },
+  "vol_05_yield_organism_and_generational_prosperity": {
+   "book_id": "vol_05_yield_organism_and_generational_prosperity",
+   "manuscript": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/series_02_building_the_agentic_harness/vol_05_yield_organism_and_generational_prosperity/v1.0/manuscript_v1.3.md",
+   "n_chapters": 10,
+   "chapters": [
+    {
+     "n": 1,
+     "title": "The Yield Organism — Primitives Overview",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 2,
+     "title": "Crypto Engine & Receipted Value Flows",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 3,
+     "title": "Autonomy Ledgers & Incentive Alignment",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 4,
+     "title": "Yield Mechanisms & Compounding Models",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 5,
+     "title": "Guild & Federation Yield Sharing",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 6,
+     "title": "Family Office & Generational Structures",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 7,
+     "title": "Risk, Adversarial Economics & Safeguards",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 8,
+     "title": "Regulatory Compliance & Provable Yield",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 9,
+     "title": "Implementation Patterns & Atrium Integration",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    },
+    {
+     "n": 10,
+     "title": "The Generational Prosperity Close",
+     "promise": "",
+     "beats": [],
+     "keywords": [],
+     "stage": "extracted",
+     "coherence_pin": null
+    }
+   ]
+  }
+ }
+}
