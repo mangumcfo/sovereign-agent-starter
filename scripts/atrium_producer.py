@@ -92,6 +92,17 @@ def _post(path: str, body: dict):
         return json.loads(r.read().decode())
 
 
+def _close(oid: str, evidence: str):
+    """Over-opening fix: auto-ack/close a NON-ACTIONABLE capture's obligation so it never sits as a
+    standing open loop. require_e1=False = an explicit dismissal disposition (transparent on the chain)."""
+    try:
+        return _post(f"/obligations/{oid}/close",
+                     {"evidence": evidence, "require_e1": False, "closed_by": "producer"})
+    except Exception as exc:  # never break the producer run on an auto-close miss
+        _log(f"  auto-close failed for {oid}: {exc}")
+        return None
+
+
 def _state() -> dict:
     try:
         return json.loads(open(STATE, encoding="utf-8").read())
@@ -273,14 +284,27 @@ def process_one(oid: str) -> None:
         # CM1/CM3: carry the classification so the card isn't a dead "no change" — a principle becomes
         # ◈ Principle captured (→ GB fidelity); a tooling ask offers Send-to-Tiger.
         r = result or {}
-        _log(f"  no diff → info card (route={r.get('route','observation')}; {note[:50]})")
+        route = r.get("route")   # EXPLICIT classification only; None ⇒ timeout/too-broad ⇒ keep OPEN for a manual pass
+        _log(f"  no diff → info card (route={route or 'unclassified'}; {note[:50]})")
+        pid = ""
         try:
-            _post("/proposals", {"session_ref": r.get("session_ref", o.get("ref", "")),
+            ip = _post("/proposals", {"session_ref": r.get("session_ref", o.get("ref", "")),
                                  "obligation_id": oid, "book": book, "info": True, "note": note, "groups": [],
                                  "reflection_mode": r.get("reflection_mode"), "principle": r.get("principle"),
-                                 "route": r.get("route", "observation")})
+                                 "route": route or "observation"})
+            pid = (ip or {}).get("id", "")
         except Exception as exc:
             _log(f"  info post failed: {exc}")
+        # OVER-OPENING FIX (root cause of the parked pile-up): a capture EXPLICITLY classified as a pure
+        # OBSERVATION or a captured PRINCIPLE is NOT a Tiger deliverable → AUTO-CLOSE its obligation so it
+        # never becomes a standing open loop. The capture is preserved (info card + close evidence); a
+        # principle still routes to GB. Unclassified/timeout no-diffs stay OPEN (may be a real edit).
+        if route in ("observation", "principle"):
+            tag = ("principle captured → GB fidelity/drift watch" if route == "principle"
+                   else "observation/question — no action needed")
+            _close(oid, f"auto-closed by producer: {tag}. Captured{' (proposal ' + pid + ')' if pid else ''}; "
+                        f"no manuscript change. ref={r.get('session_ref', o.get('ref', ''))}")
+            _log(f"  ✓ auto-closed {oid} (route={route}) — capture logged, no standing open loop")
     # CROSS-BOOK: sweep the same issue in each named book → a separate proposal per book.
     for cb in cross:
         _log(f"  cross-book sweep → {cb}")
