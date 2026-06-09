@@ -401,8 +401,14 @@ def proposals_dismiss(proposal_id: str):
             get_obligation_ledger().close(
                 oid, evidence="E1: dismissed — " + str((prop or {}).get("note", "no diff produced"))[:120],
                 evidence_tier="E1", closed_by="tiger")
-        except Exception:  # noqa: BLE001 — dismissal must never error the UI
-            pass
+        except Exception as exc:  # noqa: BLE001 — dismissal must never ERROR the UI, but must not fail SILENTLY
+            import logging
+            logging.getLogger("breathline.obligations").warning(
+                "dismiss: close(%s) failed for proposal %s: %s — obligation may remain OPEN (card will resurface)",
+                oid, proposal_id, exc)
+            return jsonify({"status": "dismissed_proposal_only", "proposal_id": proposal_id,
+                            "warning": "proposal dismissed but obligation close failed — see node log",
+                            "obligation_id": oid}), 200
     return jsonify({"status": "dismissed", "proposal_id": proposal_id})
 
 
