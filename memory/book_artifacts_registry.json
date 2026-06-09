@@ -2,8 +2,8 @@
   "_meta": {
     "schema": "book-artifacts-registry-1.0 (Helix increment #1)",
     "vault": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp",
-    "generated_at": "2026-06-05T20:16:07Z",
-    "receipt": "8e6150f0cbdef715",
+    "generated_at": "2026-06-09T16:05:44Z",
+    "receipt": "372513e980cd80ac",
     "n_titles": 24,
     "n_with_pdf": 23,
     "n_missing_pdf": 1
@@ -16,7 +16,7 @@
       "manuscript": "agentic_playbooks/01_cfos_finance/v1.0/manuscript_v1.0.md",
       "pdf": "agentic_playbooks/01_cfos_finance/v1.0/final/AI_Agents_for_CFOs_PRINT.pdf",
       "epub": "agentic_playbooks/01_cfos_finance/v1.0/final/AI_Agents_for_CFOs.epub",
-      "cover": "agentic_playbooks/01_cfos_finance/v1.0/final/cover_hardcover_wrap.pdf",
+      "cover": "agentic_playbooks/01_cfos_finance/v1.0/final/cover_KDP.jpg",
       "present": {
         "pdf": true,
         "manuscript": true,
@@ -46,7 +46,7 @@
       "manuscript": "01_strategic_finance/v1.2/manuscript_v1.2.md",
       "pdf": "01_strategic_finance/v1.2/final/Strategic_Finance_For_Growth_COMPLETE.pdf",
       "epub": "01_strategic_finance/v1.2/final/Strategic_Finance_For_Growth.epub",
-      "cover": "01_strategic_finance/v1.2/final/cover_hardcover_wrap.pdf",
+      "cover": "01_strategic_finance/v1.2/final/cover_KDP.jpg",
       "present": {
         "pdf": true,
         "manuscript": true,
@@ -61,7 +61,7 @@
       "manuscript": "agentic_playbooks/02_executives_decisions/v1.0/manuscript_v1.0.md",
       "pdf": "agentic_playbooks/02_executives_decisions/v1.0/final/AI_Agents_for_Executives_PRINT.pdf",
       "epub": "agentic_playbooks/02_executives_decisions/v1.0/final/AI_Agents_for_Executives.epub",
-      "cover": "agentic_playbooks/02_executives_decisions/v1.0/final/cover_hardcover_wrap.pdf",
+      "cover": "agentic_playbooks/02_executives_decisions/v1.0/final/cover_KDP.jpg",
       "present": {
         "pdf": true,
         "manuscript": true,
@@ -76,7 +76,7 @@
       "manuscript": "02_harnessing_ai/v1.2/manuscript_v1.2.md",
       "pdf": "02_harnessing_ai/v1.2/final/Harnessing_AI_PRINT.pdf",
       "epub": "02_harnessing_ai/v1.2/final/Harnessing_AI.epub",
-      "cover": "02_harnessing_ai/v1.2/final/cover_hardcover_wrap.pdf",
+      "cover": "02_harnessing_ai/v1.2/final/cover_KDP.jpg",
       "present": {
         "pdf": true,
         "manuscript": true,
@@ -91,7 +91,7 @@
       "manuscript": "03_blueprint/v1.1/manuscript_v1.1.md",
       "pdf": "03_blueprint/v1.1/final/Blueprint_for_Brilliance_PRINT.pdf",
       "epub": "03_blueprint/v1.1/final/Blueprint_for_Brilliance.epub",
-      "cover": "03_blueprint/v1.1/final/cover_hardcover_wrap.pdf",
+      "cover": "03_blueprint/v1.1/final/cover_KDP.jpg",
       "present": {
         "pdf": true,
         "manuscript": true,
@@ -106,7 +106,7 @@
       "manuscript": "agentic_playbooks/03_leading_agents/v1.0/manuscript_v1.0.md",
       "pdf": "agentic_playbooks/03_leading_agents/v1.0/final/Leading_with_AI_Agents_PRINT.pdf",
       "epub": "agentic_playbooks/03_leading_agents/v1.0/final/Leading_with_AI_Agents.epub",
-      "cover": "agentic_playbooks/03_leading_agents/v1.0/final/cover_hardcover_wrap.pdf",
+      "cover": "agentic_playbooks/03_leading_agents/v1.0/final/cover_KDP.jpg",
       "present": {
         "pdf": true,
         "manuscript": true,
@@ -121,7 +121,7 @@
       "manuscript": "agentic_playbooks/04_supply_chain/v1.0/manuscript_v1.0.md",
       "pdf": "agentic_playbooks/04_supply_chain/v1.0/final/AI_Agents_for_Supply_Chain.pdf",
       "epub": "agentic_playbooks/04_supply_chain/v1.0/final/AI_Agents_for_Supply_Chain.epub",
-      "cover": "agentic_playbooks/04_supply_chain/v1.0/final/cover_paperback_wrap.pdf",
+      "cover": "agentic_playbooks/04_supply_chain/v1.0/final/cover_KDP.jpg",
       "present": {
         "pdf": true,
         "manuscript": true,
@@ -151,7 +151,7 @@
       "manuscript": "05_crypto/v1.1/manuscript_v1.1.md",
       "pdf": "05_crypto/v1.1/final/Cryptocurrency_Decoded_PRINT.pdf",
       "epub": "05_crypto/v1.1/final/Cryptocurrency_Decoded.epub",
-      "cover": "05_crypto/v1.1/final/cover_hardcover_wrap.pdf",
+      "cover": "05_crypto/v1.1/final/cover_KDP.jpg",
       "present": {
         "pdf": true,
         "manuscript": true,
@@ -166,7 +166,7 @@
       "manuscript": "agentic_playbooks/05_hr_talent/v1.0/manuscript_v1.0.md",
       "pdf": "agentic_playbooks/05_hr_talent/v1.0/final/AI_Agents_for_HR.pdf",
       "epub": "agentic_playbooks/05_hr_talent/v1.0/final/AI_Agents_for_HR.epub",
-      "cover": "agentic_playbooks/05_hr_talent/v1.0/final/cover_paperback_wrap.pdf",
+      "cover": "agentic_playbooks/05_hr_talent/v1.0/final/cover_KDP.jpg",
       "present": {
         "pdf": true,
         "manuscript": true,
@@ -181,7 +181,7 @@
       "manuscript": "agentic_playbooks/06_compliance_audit/v1.0/manuscript_v1.0.md",
       "pdf": "agentic_playbooks/06_compliance_audit/v1.0/final/AI_Agents_for_Compliance.pdf",
       "epub": "agentic_playbooks/06_compliance_audit/v1.0/final/AI_Agents_for_Compliance.epub",
-      "cover": "agentic_playbooks/06_compliance_audit/v1.0/final/cover_paperback_wrap.pdf",
+      "cover": "agentic_playbooks/06_compliance_audit/v1.0/final/cover_KDP.jpg",
       "present": {
         "pdf": true,
         "manuscript": true,
@@ -196,7 +196,7 @@
       "manuscript": "agentic_playbooks/07_sales_revenue/v1.0/manuscript_v1.0.md",
       "pdf": "agentic_playbooks/07_sales_revenue/v1.0/final/AI_Agents_for_Sales.pdf",
       "epub": "agentic_playbooks/07_sales_revenue/v1.0/final/AI_Agents_for_Sales.epub",
-      "cover": "agentic_playbooks/07_sales_revenue/v1.0/final/cover_paperback_wrap.pdf",
+      "cover": "agentic_playbooks/07_sales_revenue/v1.0/final/cover_KDP.jpg",
       "present": {
         "pdf": true,
         "manuscript": true,
@@ -211,7 +211,7 @@
       "manuscript": "agentic_playbooks/08_manufacturing_ops/v1.0/manuscript_v1.0.md",
       "pdf": "agentic_playbooks/08_manufacturing_ops/v1.0/final/AI_Agents_for_Manufacturing.pdf",
       "epub": "agentic_playbooks/08_manufacturing_ops/v1.0/final/AI_Agents_for_Manufacturing.epub",
-      "cover": "agentic_playbooks/08_manufacturing_ops/v1.0/final/cover_paperback_wrap.pdf",
+      "cover": "agentic_playbooks/08_manufacturing_ops/v1.0/final/cover_KDP.jpg",
       "present": {
         "pdf": true,
         "manuscript": true,
@@ -226,12 +226,12 @@
       "manuscript": "agentic_playbooks/09_multi_agent/v1.0/manuscript_v1.0.md",
       "pdf": "agentic_playbooks/09_multi_agent/v1.0/final/Multi_Agent_AI_Systems.pdf",
       "epub": "agentic_playbooks/09_multi_agent/v1.0/final/Multi_Agent_AI_Systems.epub",
-      "cover": null,
+      "cover": "agentic_playbooks/09_multi_agent/v1.0/final/cover_KDP.jpg",
       "present": {
         "pdf": true,
         "manuscript": true,
         "epub": true,
-        "cover": false
+        "cover": true
       }
     },
     "10_scaling_enterprise": {
@@ -241,12 +241,12 @@
       "manuscript": "agentic_playbooks/10_scaling_enterprise/v1.0/manuscript_v1.5.md",
       "pdf": "agentic_playbooks/10_scaling_enterprise/v1.0/final/Scaling_AI_Agents.pdf",
       "epub": "agentic_playbooks/10_scaling_enterprise/v1.0/final/Scaling_AI_Agents.epub",
-      "cover": null,
+      "cover": "agentic_playbooks/10_scaling_enterprise/v1.0/final/cover_KDP.jpg",
       "present": {
         "pdf": true,
         "manuscript": true,
         "epub": true,
-        "cover": false
+        "cover": true
       }
     },
     "11_ma_due_diligence": {
@@ -256,12 +256,12 @@
       "manuscript": "agentic_playbooks/11_ma_due_diligence/v1.0/manuscript_v1.5.md",
       "pdf": "agentic_playbooks/11_ma_due_diligence/v1.0/final/AI_Agents_for_MA.pdf",
       "epub": "agentic_playbooks/11_ma_due_diligence/v1.0/final/AI_Agents_for_MA.epub",
-      "cover": null,
+      "cover": "agentic_playbooks/11_ma_due_diligence/v1.0/final/cover_KDP.jpg",
       "present": {
         "pdf": true,
         "manuscript": true,
         "epub": true,
-        "cover": false
+        "cover": true
       }
     },
     "12_agentic_enterprise": {
@@ -271,12 +271,12 @@
       "manuscript": "agentic_playbooks/12_agentic_enterprise/v1.0/manuscript_v1.5.md",
       "pdf": "agentic_playbooks/12_agentic_enterprise/v1.0/final/The_Agentic_Enterprise.pdf",
       "epub": "agentic_playbooks/12_agentic_enterprise/v1.0/final/The_Agentic_Enterprise.epub",
-      "cover": null,
+      "cover": "agentic_playbooks/12_agentic_enterprise/v1.0/final/cover_KDP.jpg",
       "present": {
         "pdf": true,
         "manuscript": true,
         "epub": true,
-        "cover": false
+        "cover": true
       }
     },
     "the_sealing_hand": {

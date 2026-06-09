@@ -268,6 +268,99 @@ def book_pdf():
     return send_file(pdfs[0], mimetype="application/pdf", max_age=0)
 
 
+# ── KDP Dispatch (Atrium ship surface) — artifact serving + KDP-ready metadata ──────────────────
+def _artifact_path(book: str, kind: str):
+    """Resolve a book's artifact (pdf|epub|cover) → (abs_path|None, bid|None). Registry-first, glob fallback
+    (mirrors /book_pdf; the registry is the source of truth, the glob is robustness)."""
+    import glob
+    bid = _resolve_book_id(book)
+    if not bid or "/" in bid or ".." in bid:
+        return None, None
+    e = _book_registry().get(bid) or {}
+    rel = e.get(kind)
+    if rel:
+        p = os.path.join(_VAULT, rel)
+        if os.path.isfile(p):
+            return p, bid
+    pats = {
+        "pdf": ["**/{b}/v*/final/*.pdf", "{b}/v*/final/*.pdf"],
+        "epub": ["**/{b}/v*/final/*.epub", "{b}/v*/final/*.epub"],
+        "cover": ["**/{b}/v*/final/cover*.jpg", "{b}/v*/final/cover*.jpeg",
+                  "**/{b}/v*/final/cover*.png", "{b}/v*/final/cover*.png"],
+    }.get(kind, [])
+    found = []
+    for pat in pats:
+        found += glob.glob(os.path.join(_VAULT, pat.format(b=bid)), recursive=True)
+    if kind == "pdf":
+        found = [p for p in found if "cover" not in os.path.basename(p).lower()]
+    found = sorted([p for p in found if os.path.isfile(p)], key=os.path.getmtime, reverse=True)
+    return (found[0] if found else None), bid
+
+
+@bp.get("/book_epub")
+@require_principal
+def book_epub():
+    """Serve a book's built EPUB (registry-first + glob fallback)."""
+    from flask import send_file
+    p, bid = _artifact_path(request.args.get("book") or "", "epub")
+    if not bid:
+        return jsonify({"error": "unknown_book"}), 400
+    if not p:
+        return jsonify({"error": "no_epub", "what": f"No EPUB for '{bid}'."}), 404
+    return send_file(p, mimetype="application/epub+zip", max_age=0)
+
+
+@bp.get("/book_cover")
+@require_principal
+def book_cover():
+    """Serve a book's KDP cover image (jpg/png)."""
+    from flask import send_file
+    p, bid = _artifact_path(request.args.get("book") or "", "cover")
+    if not bid:
+        return jsonify({"error": "unknown_book"}), 400
+    if not p:
+        return jsonify({"error": "no_cover", "what": f"No cover for '{bid}'."}), 404
+    mt = "image/png" if p.lower().endswith(".png") else "image/jpeg"
+    return send_file(p, mimetype=mt, max_age=0)
+
+
+@bp.get("/book_kdp")
+@require_principal
+def book_kdp():
+    """KDP Dispatch payload — artifact presence + URLs + parsed KDP-ready metadata for one book.
+    The Atrium KDP Dispatch surface renders this; each metadata field is copy-to-clipboard for the
+    manual KDP web upload (KDP has no API — this stages everything up to the one manual click)."""
+    from urllib.parse import quote
+    from ...kdp_metadata import parse_kdp_metadata
+    book = (request.args.get("book") or "").strip()
+    bid = _resolve_book_id(book)
+    if not bid or "/" in bid or ".." in bid:
+        return jsonify({"error": "unknown_book", "what": f"No id resolvable from '{book}'."}), 400
+    e = _book_registry().get(bid) or {}
+    pdf_p, _ = _artifact_path(book, "pdf")
+    epub_p, _ = _artifact_path(book, "epub")
+    cover_p, _ = _artifact_path(book, "cover")
+    meta = {}
+    d = e.get("dir")
+    if d:
+        mp = os.path.join(_VAULT, d, "metadata_v1.0.md")
+        if os.path.isfile(mp):
+            try:
+                meta = parse_kdp_metadata(Path(mp).read_text(encoding="utf-8"))
+            except Exception as ex:  # tolerant — a parse error still yields a usable card
+                meta = {"_error": f"metadata parse failed: {ex}"}
+    bq = quote(book)
+    return jsonify({
+        "book": book, "book_id": bid, "version": e.get("version"),
+        "artifacts": {
+            "pdf": {"present": bool(pdf_p), "url": f"/api/v1/book_pdf?book={bq}"},
+            "epub": {"present": bool(epub_p), "url": f"/api/v1/book_epub?book={bq}"},
+            "cover": {"present": bool(cover_p), "url": f"/api/v1/book_cover?book={bq}"},
+        },
+        "metadata": meta,
+    })
+
+
 @bp.post("/proposals/<proposal_id>/apply")
 @require_principal
 def proposals_apply(proposal_id: str):

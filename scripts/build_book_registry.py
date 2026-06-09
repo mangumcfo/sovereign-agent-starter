@@ -61,7 +61,10 @@ def build() -> dict:
         pdfs = glob.glob(os.path.join(final, "*.pdf"))
         interiors = [p for p in pdfs if "cover" not in os.path.basename(p).lower()]
         pdf = _newest(interiors or pdfs)
-        cover = _newest([p for p in pdfs if "cover" in os.path.basename(p).lower()])
+        # Cover is an IMAGE artifact (cover_KDP.jpg|png) — KDP uploads the .jpg. Prefer jpg → png → any cover PDF.
+        cover = (_newest(glob.glob(os.path.join(final, "cover*.jpg")) + glob.glob(os.path.join(final, "cover*.jpeg")))
+                 or _newest(glob.glob(os.path.join(final, "cover*.png")))
+                 or _newest([p for p in pdfs if "cover" in os.path.basename(p).lower()]))
         epub = _newest(glob.glob(os.path.join(final, "*.epub")))
         manuscript = _newest(glob.glob(os.path.join(vdir, "manuscript_v*.md")))
         reg[bid] = {
