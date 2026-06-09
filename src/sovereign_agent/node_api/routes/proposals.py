@@ -282,12 +282,23 @@ def _artifact_path(book: str, kind: str):
         p = os.path.join(_VAULT, rel)
         if os.path.isfile(p):
             return p, bid
+    # Cover VARIANTS (KDP needs 3): ebook = front-only JPG/PNG; paperback/hardcover = full wraps (front+spine+back).
+    # Only the ebook cover exists today; paperback/hardcover wraps are generated on request (cover-tweak channel).
+    cover_variants = {
+        "cover_ebook": ["**/{b}/v*/final/cover_KDP.jpg", "{b}/v*/final/cover_KDP.jpg",
+                        "**/{b}/v*/final/cover_KDP.png", "{b}/v*/final/cover_kdp*.jpg", "{b}/v*/final/cover_ebook*.*"],
+        "cover_paperback": ["**/{b}/v*/final/*paperback*.pdf", "{b}/v*/final/*paperback*.pdf",
+                            "**/{b}/v*/final/*paperback*.png", "**/{b}/v*/final/cover*wrap*pb*.*"],
+        "cover_hardcover": ["**/{b}/v*/final/*hardcover*.pdf", "{b}/v*/final/*hardcover*.pdf",
+                            "**/{b}/v*/final/*hardback*.pdf", "**/{b}/v*/final/*hardcover*.png"],
+    }
     pats = {
         "pdf": ["**/{b}/v*/final/*.pdf", "{b}/v*/final/*.pdf"],
         "epub": ["**/{b}/v*/final/*.epub", "{b}/v*/final/*.epub"],
         "cover": ["**/{b}/v*/final/cover*.jpg", "{b}/v*/final/cover*.jpeg",
                   "**/{b}/v*/final/cover*.png", "{b}/v*/final/cover*.png"],
-    }.get(kind, [])
+    }
+    pats = cover_variants.get(kind, pats.get(kind, []))
     found = []
     for pat in pats:
         found += glob.glob(os.path.join(_VAULT, pat.format(b=bid)), recursive=True)
@@ -313,14 +324,19 @@ def book_epub():
 @bp.get("/book_cover")
 @require_principal
 def book_cover():
-    """Serve a book's KDP cover image (jpg/png)."""
+    """Serve a book's cover. ?variant=ebook|paperback|hardcover (default ebook). Paperback/hardcover are
+    full wraps (PDF) generated on request; ebook is the front-cover image."""
     from flask import send_file
-    p, bid = _artifact_path(request.args.get("book") or "", "cover")
+    variant = (request.args.get("variant") or "ebook").lower()
+    kind = {"ebook": "cover_ebook", "paperback": "cover_paperback", "hardcover": "cover_hardcover"}.get(variant, "cover_ebook")
+    p, bid = _artifact_path(request.args.get("book") or "", kind)
     if not bid:
         return jsonify({"error": "unknown_book"}), 400
     if not p:
-        return jsonify({"error": "no_cover", "what": f"No cover for '{bid}'."}), 404
-    mt = "image/png" if p.lower().endswith(".png") else "image/jpeg"
+        return jsonify({"error": "no_cover", "variant": variant,
+                        "what": f"No {variant} cover for '{bid}' — needs generation (use the cover-tweak channel)."}), 404
+    ext = p.lower().rsplit(".", 1)[-1]
+    mt = {"pdf": "application/pdf", "png": "image/png"}.get(ext, "image/jpeg")
     return send_file(p, mimetype=mt, max_age=0)
 
 
@@ -339,7 +355,9 @@ def book_kdp():
     e = _book_registry().get(bid) or {}
     pdf_p, _ = _artifact_path(book, "pdf")
     epub_p, _ = _artifact_path(book, "epub")
-    cover_p, _ = _artifact_path(book, "cover")
+    cov_ebook, _ = _artifact_path(book, "cover_ebook")
+    cov_pb, _ = _artifact_path(book, "cover_paperback")
+    cov_hc, _ = _artifact_path(book, "cover_hardcover")
     meta = {}
     d = e.get("dir")
     if d:
@@ -355,7 +373,12 @@ def book_kdp():
         "artifacts": {
             "pdf": {"present": bool(pdf_p), "url": f"/api/v1/book_pdf?book={bq}"},
             "epub": {"present": bool(epub_p), "url": f"/api/v1/book_epub?book={bq}"},
-            "cover": {"present": bool(cover_p), "url": f"/api/v1/book_cover?book={bq}"},
+            # KDP needs 3 covers: ebook (front JPG) · paperback (wrap) · hardcover (wrap).
+            "covers": {
+                "ebook": {"present": bool(cov_ebook), "url": f"/api/v1/book_cover?book={bq}&variant=ebook"},
+                "paperback": {"present": bool(cov_pb), "url": f"/api/v1/book_cover?book={bq}&variant=paperback"},
+                "hardcover": {"present": bool(cov_hc), "url": f"/api/v1/book_cover?book={bq}&variant=hardcover"},
+            },
         },
         "metadata": meta,
     })
