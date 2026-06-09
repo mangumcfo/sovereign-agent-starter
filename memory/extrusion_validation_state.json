@@ -8,7 +8,7 @@
  "gate_pass": true,
  "roots": {
   "registry_root": "f70c0ebc3c1d530c",
-  "modules_root": "6101f99d366cbbc1",
+  "modules_root": "be98c2d1e47106f5",
   "capabilities_root": "dfdab16e62897084"
  },
  "root_drift": [],
