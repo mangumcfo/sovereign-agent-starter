@@ -112,6 +112,23 @@ def awaiting_km():
     })
 
 
+@bp.get("/review_brief")
+@require_principal
+def review_brief():
+    """review_brief — serve the sealed Review Brief markdown for a book so it is one click from the
+    Awaiting-KM card (pilot finding #2, GB [171]: 'is the brief attached to the card?' — yes)."""
+    from pathlib import Path as _P  # noqa: PLC0415
+    tok = (request.args.get("book") or "").strip()
+    if not tok:
+        return jsonify({"error": "missing_book", "what": "Pass ?book=<id-or-token> (e.g. B12)."}), 400
+    art = _P(__file__).resolve().parents[4] / "artifacts"
+    for p in sorted(art.glob("*[Rr]eview_[Bb]rief*")):
+        if tok.lower() in p.name.lower():
+            return jsonify({"book": tok, "file": p.name, "markdown": p.read_text(encoding="utf-8")})
+    return jsonify({"error": "not_found", "what": f"No Review Brief found for '{tok}'.",
+                    "next_step": "GB seals it in artifacts/<TOKEN>_*Review_Brief*.md."}), 404
+
+
 @bp.post("/feedback/<obligation_id>/disposition")
 @require_principal
 def feedback_disposition(obligation_id: str):

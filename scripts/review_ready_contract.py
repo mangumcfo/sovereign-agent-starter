@@ -90,6 +90,10 @@ def _check_obligations(refs: list[str]) -> dict:
                 "gap": "repair obligation ledger access"}
 
     def _matches(o: dict) -> bool:
+        # The review packet itself IS the human gate (ref=review_ready:<book>), not an unresolved board
+        # finding — never count it against the book's own readiness (it stays open until KM dispositions).
+        if (o.get("ref") or "").startswith("review_ready:"):
+            return False
         hay = f"{o.get('intent', '')} {o.get('title', '')} {o.get('ref', '')}".lower()
         return any(r in hay for r in refs)
 
@@ -149,6 +153,47 @@ def _check_review_brief(bdir: Path | None, book_id: str, extra: list[str] | None
             "gap": ("" if ok else f"Review Brief needs 3–7 judgment calls (found {calls})")}
 
 
+def _brief_path(book_id: str, extra: list[str]) -> str:
+    bdir = _book_dir(book_id)
+    chk = _check_review_brief(bdir, book_id, extra)
+    # chk.detail is "<name>: N judgment calls"; recover the artifact path if it lives in artifacts/
+    for tok in [book_id] + (extra or []):
+        for p in (REPO / "artifacts").glob("*[Rr]eview_[Bb]rief*"):
+            if tok.lower() in p.name.lower():
+                return str(p.relative_to(REPO))
+    return chk.get("detail", "")
+
+
+def mint_review_packet(book_id: str, label: str, extra: list[str]) -> str | None:
+    """On READY, mint the human-gate packet so the book APPEARS in the Awaiting-KM view with its Brief
+    one click away (pilot finding #2, GB [171]). Idempotent: skip if a review packet already exists."""
+    try:
+        sys.path.insert(0, str(REPO / "src"))
+        from sovereign_agent.obligations.ledger import ObligationLedger
+        lg = ObligationLedger(str(LEDGER_ROOT), principal_id="KM-1176")
+    except Exception:  # noqa: BLE001
+        return None
+    ref = f"review_ready:{book_id}"
+    for o in lg.open_obligations():
+        if (o.get("ref") or "") == ref:
+            return o.get("id")  # already minted — idempotent
+    brief = _brief_path(book_id, extra)
+    bdir = _book_dir(book_id)
+    ms = ""
+    if bdir:
+        cands = sorted(bdir.glob("manuscript_v*.md"))
+        ms = str(cands[-1].relative_to(REPO.parent)) if cands else ""
+    entry = lg.open(
+        title=f"📖 Review {label} — READY for your eyes",
+        owner="KM-1176", classification="C1", material=True, next_gate="Human disposition", ref=ref,
+        intent=(f"Passed all Review-Ready Rail gates (boards rigor-pass · obligations clean · fidelity pass · "
+                f"Review Brief sealed). Detection is done — judgment + voice only. "
+                f"Review Brief: {brief}. Manuscript: {ms}."),
+        lgp={"objective": "first book through the rail — human keeps only the judgment (LGP/human primacy)"},
+    )
+    return entry.get("id")
+
+
 def evaluate(book_id: str, extra: list[str]) -> dict:
     bdir = _book_dir(book_id)
     refs = _book_refs(book_id, extra)
@@ -180,6 +225,11 @@ def main() -> int:
         print(json.dumps(result, indent=2)); return 0 if result["review_ready"] else 1
     flag = "✅ REVIEW-READY" if result["review_ready"] else "⛔ NOT READY"
     print(f"{flag} — {args.book_id}")
+    if result["review_ready"]:
+        label = (args.match[0] if args.match else args.book_id)
+        pid = mint_review_packet(args.book_id, f"{label} ({args.book_id})", args.match)
+        if pid:
+            print(f"  📖 review packet on the human gate: {pid} (appears in Awaiting-KM)")
     for c in result["checks"]:
         print(f"  {'✓' if c['pass'] else '✗'} {c['check']:20} {c['detail']}")
     if result["gaps"]:
