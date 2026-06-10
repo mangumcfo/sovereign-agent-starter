@@ -39,6 +39,7 @@ from .routes import proposals as proposals_routes
 from .routes import roles as roles_routes
 from .routes import series as series_routes
 from .routes import hopper as hopper_routes
+from .routes import feedback as feedback_routes
 
 
 def create_app() -> Flask:
@@ -65,6 +66,7 @@ def create_app() -> Flask:
     app.register_blueprint(coherence_routes.bp)
     app.register_blueprint(series_routes.bp)
     app.register_blueprint(hopper_routes.bp)
+    app.register_blueprint(feedback_routes.bp)
     app.register_blueprint(placeholder_routes.bp)
 
     # --- CORS — minimal viable for Atrium local development ---
