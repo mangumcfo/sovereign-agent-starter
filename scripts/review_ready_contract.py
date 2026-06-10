@@ -125,13 +125,19 @@ def _check_fidelity(refs: list[str]) -> dict:
             "gap": ("" if passed else "GB fidelity trace must record PASS (semantic source-trace)")}
 
 
-def _check_review_brief(bdir: Path | None, book_id: str) -> dict:
-    """One-page Review Brief present with 3–7 genuine judgment calls (framed as decisions)."""
+def _check_review_brief(bdir: Path | None, book_id: str, extra: list[str] | None = None) -> dict:
+    """One-page Review Brief present with 3–7 genuine judgment calls (framed as decisions). GB seals it in
+    artifacts/ — match by book_id or any short token (e.g. 'B12') so the contract finds it wherever it lives."""
+    tokens = [book_id] + [t for t in (extra or []) if t]
     cands = []
     if bdir:
         cands += list(bdir.glob("*review_brief*")) + list(bdir.glob("*Review_Brief*")) + list(bdir.glob("REVIEW_BRIEF*"))
-    cands += list((REPO / "artifacts").glob(f"*[Rr]eview_[Bb]rief*{book_id}*")) + \
-        list((REPO / "artifacts").glob(f"*{book_id}*[Rr]eview*[Bb]rief*"))
+    art = REPO / "artifacts"
+    for tok in tokens:
+        cands += [p for p in art.glob("*[Rr]eview_[Bb]rief*") if tok.lower() in p.name.lower()]
+        cands += [p for p in art.glob(f"*{tok}*") if "review" in p.name.lower() and "brief" in p.name.lower()]
+        cands += [p for p in art.glob(f"*{tok}*[Ff]old*[Rr]eview*")]
+    cands = list(dict.fromkeys(cands))  # dedupe, keep order
     if not cands:
         return {"check": "review_brief_sealed", "pass": False, "detail": "no Review Brief found",
                 "gap": "GB seals one-page Review Brief w/ 3–7 judgment calls"}
@@ -147,7 +153,7 @@ def evaluate(book_id: str, extra: list[str]) -> dict:
     bdir = _book_dir(book_id)
     refs = _book_refs(book_id, extra)
     checks = [_check_boards(bdir), _check_obligations(refs), _check_fidelity(refs),
-              _check_review_brief(bdir, book_id)]
+              _check_review_brief(bdir, book_id, extra)]
     ready = all(c["pass"] for c in checks)
     return {
         "book_id": book_id, "review_ready": ready,
