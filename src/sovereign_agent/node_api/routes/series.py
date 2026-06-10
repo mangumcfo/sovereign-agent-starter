@@ -142,6 +142,38 @@ def _dispatch_gate_summary(channel_index: dict) -> dict:
             "gate": "G1 — Dispatch Gate (batched)", "doctrine": "one look, one Accept, all channels"}
 
 
+def _stage_labels() -> dict:
+    """Canonical stage vocabulary (GB sole-write artifacts/pipeline_stage_labels.yaml). Renderers LABEL from
+    this — never the raw slug (pilot #3); an unknown slug must render LOUD, never blank (pilot #4 / Error Voice §4)."""
+    try:
+        import yaml  # noqa: PLC0415
+    except ImportError:
+        return {}
+    p = Path(__file__).resolve().parents[4] / "artifacts" / "pipeline_stage_labels.yaml"
+    try:
+        data = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
+    except (OSError, ValueError):
+        return {}
+    return data.get("stages", {}) if isinstance(data, dict) else {}
+
+
+def _review_index() -> dict:
+    """Review-Ready contract truth per book (artifacts/review_ready/<book_id>.json) — the per-step overlay so
+    the /series checklist renders the live contract, never a hand-kept stage (pilot finding #1). Auto, never stale."""
+    out = {}
+    base = Path(__file__).resolve().parents[4] / "artifacts" / "review_ready"
+    if not base.is_dir():
+        return out
+    for p in base.glob("*.json"):
+        try:
+            d = json.loads(p.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        out[p.stem] = {"review_ready": bool(d.get("review_ready")),
+                       "checks": {c.get("check"): c.get("pass") for c in d.get("checks", []) if isinstance(c, dict)}}
+    return out
+
+
 # --- In-memory read-repair (GB owns the file; we NEVER write it). A common GB gotcha is an unquoted
 # scalar value carrying an inner ": " (e.g.  drill_down: Published; KDP evidence: Live $19.99 ...) which
 # breaks strict YAML and can blank the whole lens. We quote ONLY such values, and ONLY when not inside a
@@ -268,7 +300,8 @@ def _load(text: str):
 
 
 def _title_card(t: dict, chapter_index: dict | None = None, publishing_index: dict | None = None,
-                channel_index: dict | None = None) -> dict:
+                channel_index: dict | None = None, stage_labels: dict | None = None,
+                review_index: dict | None = None) -> dict:
     card = {k: t.get(k) for k in _TITLE_FIELDS if t.get(k) is not None}
     # Path B (lens-sourced chapters): a title's own chapters always win (rich G-outlines / outline_locked).
     # If it carries none, merge the extracted TOC from the index by book_id — so chapters trace to the
@@ -295,11 +328,29 @@ def _title_card(t: dict, chapter_index: dict | None = None, publishing_index: di
         if isinstance(chans, dict) and chans:
             card["channels"] = chans
             card["channel_source"] = "channel-tracker"
+    # Stage-vocabulary contract: label from pipeline_stage_labels.yaml, NEVER the raw slug; an unknown slug
+    # screams (Error Voice) instead of rendering blank (pilot findings #3 raw-slug + #4 silent-blank).
+    stage = t.get("stage")
+    if stage is not None and stage_labels is not None:
+        info = stage_labels.get(stage)
+        if isinstance(info, dict):
+            card["stage_label"] = info.get("label", stage)
+            card["stage_step"] = info.get("step")
+            card["stage_state"] = info.get("state")
+        else:
+            card["stage_label"] = f"⚠ UNMAPPED STAGE: {stage}"
+            card["stage_unmapped"] = True
+    # Review-Ready contract overlay (pilot finding #1): per-step truth from review_ready/<book>.json.
+    if review_index:
+        rv = review_index.get(t.get("book_id"))
+        if isinstance(rv, dict):
+            card["review_contract"] = rv
     return card
 
 
 def _series_card(s: dict, chapter_index: dict | None = None, publishing_index: dict | None = None,
-                 channel_index: dict | None = None) -> dict:
+                 channel_index: dict | None = None, stage_labels: dict | None = None,
+                 review_index: dict | None = None) -> dict:
     titles = s.get("titles") or s.get("volumes") or []
     return {
         "number": s.get("series_number"),
@@ -309,7 +360,7 @@ def _series_card(s: dict, chapter_index: dict | None = None, publishing_index: d
         "visibility": s.get("visibility") or "public",
         "status": s.get("status", ""),
         "title_count": len(titles),
-        "titles": [_title_card(t, chapter_index, publishing_index, channel_index)
+        "titles": [_title_card(t, chapter_index, publishing_index, channel_index, stage_labels, review_index)
                    for t in titles if isinstance(t, dict)],
     }
 
@@ -330,7 +381,9 @@ def series_list():
     chapter_index = _chapter_index()  # Path B: chapters merged from the manuscripts' extracted TOCs
     publishing_index = _publishing_index()  # KDP status overlaid from the ASIN_TRACKER — auto, never stale
     channel_index = _channel_index()  # distribution-federation state overlaid from CHANNEL_TRACKER — auto
-    all_cards = [_series_card(s, chapter_index, publishing_index, channel_index)
+    stage_labels = _stage_labels()  # canonical stage vocabulary — label, never raw slug; unknown screams
+    review_index = _review_index()  # Review-Ready contract truth per book — per-step overlay, never stale
+    all_cards = [_series_card(s, chapter_index, publishing_index, channel_index, stage_labels, review_index)
                  for s in (data.get("series") or []) if isinstance(s, dict)]
     # One-source-of-truth visibility gate (KM ratify 2026-06-09): the public Series Pipeline view
     # shows only the public ladder. Private series (series_number: null, visibility: private) are
