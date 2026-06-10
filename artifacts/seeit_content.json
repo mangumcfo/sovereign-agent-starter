@@ -1,0 +1,183 @@
+{
+  "_meta": {
+    "surface": "seeit",
+    "kind": "derived-operator-docs (render-not-recreate)",
+    "source_series": "S2 — Building the Agentic Harness (core mechanics) + S1 B10-12 (chapter walkthroughs)",
+    "generated_at": "2026-06-10T15:15:20Z",
+    "content_hash": "dd24a1f32d8dc167",
+    "n_topics": 5,
+    "n_sourced": 5,
+    "n_walkthrough_chapters": 12,
+    "note": "Mechanics RENDER cited S2 passages; walkthroughs are the /seeit/<book>-chN pages S1 B10-12 link to. Book↔code: sourced + hashed; re-run to auto-refresh."
+  },
+  "topics": [
+    {
+      "id": "b32_packets",
+      "title": "B32 Obligation Packets",
+      "icon": "🧾",
+      "operator_explanation": "Every commitment is a receipt with two sides: opening it is a DRAFT (nothing happens until you approve), closing it requires EVIDENCE. So every piece of work is tracked, provable, and reversible — you can always see what's open, what's done, and the proof behind it.",
+      "source": {
+        "book": "S2 Vol 3 — The Governed Dev Loop",
+        "manuscript": "vol_03_governed_dev_loop_and_self_building_harness/v1.0/manuscript_v1.3.md",
+        "section": "About This Series",
+        "passage": "**Reader-effort calibration:** Reading time ~90 minutes for the manuscript proper. Hands-on time with the `sovereign-agent-starter` demos ~3 hours (six core demos × ~30 minutes each, including JSON-receipt inspection + role spec editing + cross-role veto reproduction). The deep-dive companion's specialist depth assumes the reader will engage at both layers; the volume's claims are only fully redeemable through hands-on engagement.",
+        "passage_sha": "b354cb89e99a48a7",
+        "found": true
+      }
+    },
+    {
+      "id": "k1_k4",
+      "title": "K1–K4 Constitutional Invariants",
+      "icon": "⚖",
+      "operator_explanation": "Four rules the system ALWAYS enforces, no exceptions. The first and most important — K1, human primacy — means you stay in command: agents propose, you dispose. Nothing material happens without your breath. The others guarantee receipts, fail-closed safety, and honest errors.",
+      "source": {
+        "book": "S2 Vol 2 — The Primacy Cockpit",
+        "manuscript": "vol_02_the_primacy_cockpit/v1.0/manuscript_v1.3.md",
+        "section": "About This Series",
+        "passage": "- **Volume 1 — *Sovereign Inference & Memory*:** the receipted inference foundation. SIX-lane routing, B51 human-memory streaming, receipts as constitutional anchors. The trust layer everything else rests on. - **Volume 2 (this book) — *The Primacy Cockpit*:** the surface where human primacy is visible. The Atrium — every screen built so the operator can see what the agents are doing, what the constitution is enforcing, what's waiting for human breath, and what has already been sealed. - **Volume 3 — *The Harness That Builds Itself — Under Human Witness*:** the governed dev loop. Operator-defined roles, proposal mechanics, the hard constitutional boundary, the drift safeguard at depth.",
+        "passage_sha": "0369da4cf04ef2c7",
+        "found": true
+      }
+    },
+    {
+      "id": "merkle_anchors",
+      "title": "Merkle Anchors (Receipted Memory)",
+      "icon": "⛓",
+      "operator_explanation": "Everything the system does is written to a tamper-evident chain — each entry locked to the one before it by a cryptographic hash. Like a sealed ledger: if anything were altered, the chain breaks visibly. It's how you can PROVE what happened and when, years later.",
+      "source": {
+        "book": "S2 Vol 1 — Sovereign Inference & Memory",
+        "manuscript": "vol_01_sovereign_inference_and_memory/v1.0/manuscript_v1.3.md",
+        "section": "Build the Receipted Cockpit That Keeps Humans in Command",
+        "passage": "**Sovereign Inference & Memory: Build the Receipted Cockpit That Keeps Humans in Command**",
+        "passage_sha": "9ce5c7c51fdfc791",
+        "found": true
+      }
+    },
+    {
+      "id": "governed_loop",
+      "title": "The Governed Loop",
+      "icon": "🔁",
+      "operator_explanation": "How a thought becomes a sealed change: capture → packet → validate → ACCEPT (your one gate) → apply → seal. The agents do the work in the background and bring you a single decision; nothing lands without your Accept. One human gate, everything else automated.",
+      "source": {
+        "book": "S2 Vol 3 — The Governed Dev Loop",
+        "manuscript": "vol_03_governed_dev_loop_and_self_building_harness/v1.0/manuscript_v1.3.md",
+        "section": "About This Series",
+        "passage": "This is **Volume 3** of *Building the Agentic Harness* — the **deep-dive companion** volume. Where Vols 1-2 + 4-5 deliver broader-audience treatments (operator-builder + family-office + general technical-architect audiences), Vol 3 deep-dives the *governed dev loop* for the specialist audience: senior developers, platform architects, and constitutional-governance specialists responsible for configuring, governing, and extending agentic systems in production where drift is a board-level risk.",
+        "passage_sha": "ca14a472308442db",
+        "found": true
+      }
+    },
+    {
+      "id": "atrium_surfaces",
+      "title": "Atrium Surfaces (The Cockpit)",
+      "icon": "🖥",
+      "operator_explanation": "The Atrium is your cockpit — one place to see everything: what the agents are doing, what the constitution is enforcing, what's waiting for your breath, and what's already sealed. You never leave it; every part of the system surfaces here so you stay sovereign without touching code.",
+      "source": {
+        "book": "S2 Vol 2 — The Primacy Cockpit",
+        "manuscript": "vol_02_the_primacy_cockpit/v1.0/manuscript_v1.3.md",
+        "section": "Build the Atrium That Keeps Humans Sovereign in the Agentic Era",
+        "passage": "**The Primacy Cockpit: Build the Atrium That Keeps Humans Sovereign in the Agentic Era**",
+        "passage_sha": "226946f60738fd13",
+        "found": true
+      }
+    }
+  ],
+  "walkthroughs": [
+    {
+      "book": "B10",
+      "book_id": "10_scaling_enterprise",
+      "title": "Scaling AI Agents",
+      "n": 5,
+      "chapters": [
+        {
+          "chapter": 1,
+          "title": "Bind your first attested role",
+          "seeit_path": "/seeit/b10-ch1",
+          "demo": "python examples/load_role_demo.py"
+        },
+        {
+          "chapter": 6,
+          "title": "Fail-closed security verdicts",
+          "seeit_path": "/seeit/b10-ch6",
+          "demo": "python examples/fail_closed_demo.py"
+        },
+        {
+          "chapter": 7,
+          "title": "Maturity read from real evidence",
+          "seeit_path": "/seeit/b10-ch7",
+          "demo": "*see walkthrough*"
+        },
+        {
+          "chapter": 11,
+          "title": "Multi-mandate joint attestation",
+          "seeit_path": "/seeit/b10-ch11",
+          "demo": "python examples/multi_mandate_handoff_demo.py"
+        },
+        {
+          "chapter": 12,
+          "title": "Graduation — your governance fingerprint",
+          "seeit_path": "/seeit/b10-ch12",
+          "demo": "*see walkthrough*"
+        }
+      ]
+    },
+    {
+      "book": "B11",
+      "book_id": "11_ma_due_diligence",
+      "title": "AI Agents for M&A",
+      "n": 4,
+      "chapters": [
+        {
+          "chapter": 4,
+          "title": "An attested quality-of-earnings artifact",
+          "seeit_path": "/seeit/b11-ch4",
+          "demo": "python examples/compliance_cfo_demo.py"
+        },
+        {
+          "chapter": 6,
+          "title": "The cross-role veto that protects the deal",
+          "seeit_path": "/seeit/b11-ch6",
+          "demo": "python examples/cross_role_veto_demo.py"
+        },
+        {
+          "chapter": 9,
+          "title": "A 3-month synergy receipt chain",
+          "seeit_path": "/seeit/b11-ch9",
+          "demo": "python examples/post_deal_monitoring_demo.py"
+        },
+        {
+          "chapter": 11,
+          "title": "Graduation — a signed sovereign bundle",
+          "seeit_path": "/seeit/b11-ch11",
+          "demo": "*see walkthrough*"
+        }
+      ]
+    },
+    {
+      "book": "B12",
+      "book_id": "12_agentic_enterprise",
+      "title": "The Agentic Enterprise",
+      "n": 3,
+      "chapters": [
+        {
+          "chapter": 1,
+          "title": "Your first attested action",
+          "seeit_path": "/seeit/b12-ch1",
+          "demo": "python examples/breathline_connected_cfo.py"
+        },
+        {
+          "chapter": 7,
+          "title": "The K1–K4 invariant defenses",
+          "seeit_path": "/seeit/b12-ch7",
+          "demo": "python examples/k_invariant_walkthrough.py"
+        },
+        {
+          "chapter": 11,
+          "title": "Day-1 graduation — operator-of-record trail",
+          "seeit_path": "/seeit/b12-ch11",
+          "demo": "*see walkthrough*"
+        }
+      ]
+    }
+  ]
+}

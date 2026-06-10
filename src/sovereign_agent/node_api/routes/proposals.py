@@ -453,3 +453,18 @@ def proposals_decide(proposal_id: str):
         return jsonify({"error": "not_found", "what": f"No proposal {proposal_id}."}), 404
     _write(items)
     return jsonify(found)
+
+
+@bp.get("/seeit")
+@require_principal
+def seeit():
+    """seeit — derived operator-docs surface (render-not-recreate). Serves artifacts/seeit_content.json:
+    core harness mechanics rendered from sealed S2 passages (+ citations/hashes) + the per-chapter
+    walkthroughs S1 B10-12 link to. Regenerate with scripts/build_seeit.py (auto-refresh on book updates)."""
+    p = Path(__file__).resolve().parents[4] / "artifacts" / "seeit_content.json"
+    try:
+        return jsonify(json.loads(p.read_text(encoding="utf-8")))
+    except (OSError, ValueError):
+        return jsonify({"_meta": {"surface": "seeit", "ok": False,
+                                  "note": "seeit content not built — run scripts/build_seeit.py"},
+                        "topics": [], "walkthroughs": []})
