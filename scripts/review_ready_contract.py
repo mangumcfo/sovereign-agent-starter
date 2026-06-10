@@ -43,16 +43,34 @@ def _book_dir(book_id: str) -> Path | None:
 
 
 def _check_boards(bdir: Path | None) -> dict:
-    """Editorial + UX + Technical board artifacts present (each emits an enhancement list)."""
+    """Editorial + UX + Technical boards present AND each passes the Board Rigor gate (no rubber stamps,
+    KM 2026-06-10). A board counts as executed only if its <board>*.findings.json passes board_rigor."""
     if not bdir:
         return {"check": "boards_executed", "pass": False, "detail": "book dir not found",
                 "gap": "locate book artifact dir"}
-    names = [p.name.lower() for p in bdir.glob("*board*")] + [p.name.lower() for p in bdir.glob("*review*")]
-    present = {b for b in REQUIRED_BOARDS if any(b in n for n in names)}
-    missing = [b for b in REQUIRED_BOARDS if b not in present]
-    return {"check": "boards_executed", "pass": not missing,
-            "detail": f"present: {sorted(present) or 'none'}",
-            "gap": (f"run boards: {', '.join(missing)} → enhancement list → B32 obligations" if missing else "")}
+    try:
+        sys.path.insert(0, str(REPO / "scripts"))
+        from board_rigor import rigor_check
+    except Exception:  # noqa: BLE001
+        rigor_check = None
+    ok, issues = [], []
+    for b in REQUIRED_BOARDS:
+        ff = sorted(bdir.glob(f"*{b}*findings.json")) or sorted(bdir.glob(f"{b}_board*findings.json"))
+        md = sorted(bdir.glob(f"*{b}*board*")) + sorted(bdir.glob(f"*{b}*review*"))
+        if not ff:
+            issues.append(f"{b}: missing rigor findings file" if md else f"{b}: not run")
+            continue
+        if rigor_check:
+            r = rigor_check(json.loads(ff[0].read_text(encoding="utf-8")))
+            if r["pass"]:
+                ok.append(b)
+            else:
+                issues.append(f"{b}: RIGOR FAIL ({len(r['gaps'])} gaps)")
+        else:
+            ok.append(b)  # checker unavailable → presence-only fallback (still honest in detail)
+    return {"check": "boards_executed", "pass": not issues,
+            "detail": f"rigor-pass: {ok or 'none'}" + (f" | issues: {issues}" if issues else ""),
+            "gap": ("; ".join(issues) + " → enhancement list (Board Rigor Standard) → B32 obligations" if issues else "")}
 
 
 def _book_refs(book_id: str, extra: list[str]) -> list[str]:
