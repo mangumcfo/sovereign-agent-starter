@@ -48,8 +48,11 @@
   thead th{background:var(--navy);color:#fff;font-size:11px;letter-spacing:.04em;}
   thead th:first-child{background:var(--navy2);}
   tbody td:first-child{background:#f1f5f9;font-weight:700;color:var(--navy);width:20%;}
-  .col-ours{background:#fffdf5;}
+  td.col-ours{background:#fffdf5;}
   tbody tr:nth-child(even) td.col-theirs{background:#fafbfc;}
+  /* headers always navy + white, regardless of column class (fix: white-on-tan) */
+  thead th.col-ours{background:var(--navy);color:#fff;}
+  thead th.col-theirs{background:var(--navy);color:#fff;}
   /* Callouts */
   .deeper{background:#fdf6e3;border:1px solid #ecd9a0;border-left:4px solid var(--gold2);border-radius:10px;padding:14px 18px;margin:12px 0;}
   .risk{background:#fef6f5;border:1px solid #f3d6cf;border-left:4px solid #c2532f;border-radius:10px;padding:14px 18px;margin:10px 0;}
