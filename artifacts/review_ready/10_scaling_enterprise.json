@@ -1,0 +1,42 @@
+{
+  "book_id": "10_scaling_enterprise",
+  "review_ready": false,
+  "checks": [
+    {
+      "check": "boards_executed",
+      "pass": false,
+      "detail": "present: ['editorial']",
+      "gap": "run boards: ux, technical \u2192 enhancement list \u2192 B32 obligations"
+    },
+    {
+      "check": "obligations_closed",
+      "pass": true,
+      "detail": "0 open for book (0 blocking, 0 deferred)",
+      "gap": "",
+      "blocking_ids": []
+    },
+    {
+      "check": "fidelity_passed",
+      "pass": false,
+      "detail": "no fidelity record for book",
+      "gap": "GB fidelity trace must record PASS (semantic source-trace)"
+    },
+    {
+      "check": "review_brief_sealed",
+      "pass": false,
+      "detail": "no Review Brief found",
+      "gap": "GB seals one-page Review Brief w/ 3\u20137 judgment calls"
+    }
+  ],
+  "gaps": [
+    "run boards: ux, technical \u2192 enhancement list \u2192 B32 obligations",
+    "GB fidelity trace must record PASS (semantic source-trace)",
+    "GB seals one-page Review Brief w/ 3\u20137 judgment calls"
+  ],
+  "meta": {
+    "contract": "Review-Ready Rail R1 v1.0",
+    "spec": "artifacts/GB_ReviewReady_Rail_Spec_2026-06-10.md",
+    "book_dir": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/10_scaling_enterprise/v1.0",
+    "evaluated_at": "2026-06-10T17:13:23Z"
+  }
+}
