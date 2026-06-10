@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sovereign Harness vs. Agentic AI Governance Package — Alignment, Differences &amp; Collaboration</title>
+<style>
+  :root{
+    --navy:#0c2340;--navy2:#0a1c33;--ink:#1a2433;--slate:#475569;--dim:#64748b;
+    --gold:#b8860b;--gold2:#c9a227;--line:#e2e8f0;--bg:#f5f7fa;--card:#ffffff;--ok:#15803d;--mute:#94a3b8;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);
+       font-size:13px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:900px;margin:0 auto;padding:0 28px;}
+  a{color:var(--gold);}
+  h1,h2,h3{font-weight:700;letter-spacing:-0.01em;color:var(--navy);}
+  /* Cover band */
+  .cover{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);color:#fff;padding:46px 0 40px;}
+  .cover .wrap{max-width:900px;}
+  .rule{height:3px;width:64px;background:var(--gold2);margin:14px 0 18px;border-radius:2px;}
+  .cover h1{color:#fff;font-size:27px;line-height:1.2;margin:0 0 6px;}
+  .cover .sub{color:#c7d2e0;font-size:14px;margin:0 0 4px;}
+  .cover .meta{color:#9fb3c8;font-size:11.5px;margin-top:16px;letter-spacing:.02em;}
+  .badge{display:inline-block;border:1px solid #335074;color:#cfe0f2;
+         font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;padding:4px 10px;border-radius:20px;margin-bottom:18px;}
+  /* Sections */
+  section{padding:26px 0 4px;}
+  .sec-k{color:var(--gold);font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;margin-bottom:4px;}
+  h2{font-size:18px;margin:0 0 12px;padding-bottom:8px;border-bottom:2px solid var(--line);}
+  h3{font-size:13.5px;margin:16px 0 6px;color:var(--navy);}
+  p{margin:0 0 10px;}
+  .lede{font-size:14.5px;line-height:1.7;color:var(--ink);}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:12px 0;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  ul{margin:6px 0 10px;padding-left:18px;}
+  li{margin:3px 0;}
+  .tag{display:inline-block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;
+       padding:2px 8px;border-radius:5px;}
+  .tag-ours{background:#fdf6e3;color:var(--gold);border:1px solid #ecd9a0;}
+  .tag-theirs{background:#eef2f7;color:var(--slate);border:1px solid #d8e0ea;}
+  .small{font-size:11.5px;color:var(--dim);}
+  .note{font-size:11.5px;color:var(--dim);font-style:italic;}
+  /* Comparison table */
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:11.8px;}
+  th,td{text-align:left;vertical-align:top;padding:9px 11px;border:1px solid var(--line);}
+  thead th{background:var(--navy);color:#fff;font-size:11px;letter-spacing:.04em;}
+  thead th:first-child{background:var(--navy2);}
+  tbody td:first-child{background:#f1f5f9;font-weight:700;color:var(--navy);width:20%;}
+  .col-ours{background:#fffdf5;}
+  tbody tr:nth-child(even) td.col-theirs{background:#fafbfc;}
+  /* Callouts */
+  .deeper{background:#fdf6e3;border:1px solid #ecd9a0;border-left:4px solid var(--gold2);border-radius:10px;padding:14px 18px;margin:12px 0;}
+  .risk{background:#fef6f5;border:1px solid #f3d6cf;border-left:4px solid #c2532f;border-radius:10px;padding:14px 18px;margin:10px 0;}
+  .reco{background:#f0f7f1;border:1px solid #cfe6d2;border-left:4px solid var(--ok);border-radius:10px;padding:14px 18px;margin:10px 0;}
+  .flow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0;}
+  .flow .step{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;}
+  .flow .num{display:inline-flex;width:22px;height:22px;border-radius:6px;background:var(--navy);color:#fff;
+             align-items:center;justify-content:center;font-weight:700;font-size:11px;margin-bottom:6px;}
+  .foot{margin:30px 0 50px;padding-top:14px;border-top:1px solid var(--line);font-size:10.5px;color:var(--mute);}
+  @page{size:Letter;margin:18mm 16mm;}
+  @media print{
+    body{background:#fff;font-size:11pt;}
+    .cover{padding:30px 0;}
+    .wrap{max-width:none;padding:0;}
+    section{padding:14px 0 2px;page-break-inside:avoid;}
+    .card,.deeper,.risk,.reco,table{page-break-inside:avoid;}
+    h2{page-break-after:avoid;}
+    a{color:var(--gold);text-decoration:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="wrap">
+    <span class="badge">Confidential · Strategic — for discussion with Quad / Dover</span>
+    <h1>Sovereign Harness vs. Agentic&nbsp;AI&nbsp;Governance&nbsp;Package</h1>
+    <div class="rule"></div>
+    <div class="sub">Alignment, Differences &amp; Collaboration Opportunities</div>
+    <div class="sub">A comparison of <b style="color:#fff">Decidr&nbsp;MCP</b> (decidrmcp.com) and the <b style="color:#fff">Breathline Sovereign Harness</b> / Agentic AI Governance Package</div>
+    <div class="meta">Prepared by Kenn+ (Kenneth Mangum · KM-1176) &nbsp;·&nbsp; 2026-06-10 &nbsp;·&nbsp; Derived from sealed sources · Decidr details from public materials (to confirm with Dover)</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<section>
+  <div class="sec-k">1 · Executive Summary</div>
+  <h2>Same conviction, two depths</h2>
+  <p class="lede">Decidr MCP and the Sovereign Harness answer the same emerging need: <b>governed decision infrastructure</b> that keeps a human in command of AI agents — turning conversational generation into <b>reviewable, accountable decisions</b> with an audit trail. The alignment in philosophy is real and unusual: both treat <b>human judgment as the scarce resource to protect</b>, both make proposals <b>reviewable before commitment</b>, and both keep a record of what was decided.</p>
+  <p>They differ in <b>depth and scope</b>. Decidr is a lightweight, MCP-native commercial tool that bridges Claude conversations into governed initiatives and reviewable decisions — a fast, low-friction on-ramp. The Sovereign Harness is a full-stack sovereign substrate: receipted obligations on a hash-chained ledger, structural human gates (breath-gates), a cockpit of review surfaces (Atrium), a sovereign execution node, constitutional invariants enforced in the runtime, cryptographic anchoring, federation across nodes, and a living book&#8596;code source of truth — designed for fiduciary, regulated, and multi-generational contexts.</p>
+  <p><b>The opportunity:</b> these are complementary, not competing. A Decidr-class package is exactly the kind of human-friendly surface that could <b>license and layer on top of our sovereign primitives</b> — gaining verifiable governance, cryptographic auditability, and rigor it would otherwise have to build — while we keep the foundational research, the constitutional core, and the sovereign node as retained IP. This document maps where the two align, where ours goes deeper, and how a collaboration could be structured.</p>
+</section>
+
+<section>
+  <div class="sec-k">2 · Side-by-Side Comparison</div>
+  <h2>Primitive-by-primitive</h2>
+  <table>
+    <thead>
+      <tr><th>Dimension</th><th class="col-theirs">Decidr MCP <span style="font-weight:400">(decidrmcp.com)</span></th><th class="col-ours">Sovereign Harness / Agentic AI Governance Package</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Decision / proposal unit</td>
+        <td class="col-theirs">"Governed initiative" — an unstructured request converted into questions and reviewable decisions, kept connected to the work.</td>
+        <td class="col-ours">B32 <b>obligation packet</b> — a typed, receipted unit carrying level (L0–L3), role/capability, surfaces, tests, LGP-alignment, and exact source citations; double-entry (debit/credit) on a hash-chained ledger.</td></tr>
+      <tr><td>Review surface</td>
+        <td class="col-theirs">Initiative planner, agent chat, message composing — reviewable decision documentation alongside the project.</td>
+        <td class="col-ours"><b>Atrium cockpit</b> — Kanban/board review surfaces, an "Awaiting-Me" human-gate queue, manuscript viewer, voice/text feedback capture, KDP dispatch, coherence/drift monitor — all rendering live node state.</td></tr>
+      <tr><td>Governance model</td>
+        <td class="col-theirs">Governance "built in" — decisions stay connected to work with accountability (public framing).</td>
+        <td class="col-ours"><b>Constitution@A1 + K1–K4 invariants</b> enforced structurally in the runtime (Human-Primacy, Default-Deny, Audit-Immutable, Constitution-Validated-Extension); SOURCE/TRUTH/INTEGRITY triad.</td></tr>
+      <tr><td>Human gate</td>
+        <td class="col-theirs">Human review of decisions before they are recorded/actioned.</td>
+        <td class="col-ours"><b>Breath-gate</b> — Propose &#8594; Approve &#8594; Execute; nothing material commits without a documented human authorization token. One recurring gate by design.</td></tr>
+      <tr><td>Auditability</td>
+        <td class="col-theirs">Audit trails / decision accountability (per public materials).</td>
+        <td class="col-ours"><b>Receipted, hash-chained</b> ledger + cylinder seal chain; evidence tiers (E0 rejected · E1 pointer · E2 artifact+hash); Merkle anchoring; independently replayable.</td></tr>
+      <tr><td>Source of truth</td>
+        <td class="col-theirs">Decision documents connected to project work.</td>
+        <td class="col-ours"><b>Living book&#8596;code</b> — the published books are the spec; code is their derived form; surfaces render from sealed sources (render, not recreate), with a fidelity gate proving the trace.</td></tr>
+      <tr><td>Alignment objective</td>
+        <td class="col-theirs">Better, governed project decisions; accountability.</td>
+        <td class="col-ours"><b>Lasting Generational Prosperity (LGP)</b> — every packet, gate, and surface scored by its LGP / human-primacy contribution; multi-generational continuity is a design goal.</td></tr>
+      <tr><td>Architecture &amp; AI plumbing</td>
+        <td class="col-theirs"><b>MCP-native</b> CLI integrating Claude via Model Context Protocol; cloud product.</td>
+        <td class="col-ours">Sovereign node (loopback-trust, local-first), a Node API contract seam, sovereign inference routing by sensitivity; replaceable cockpit over a sovereign contract.</td></tr>
+      <tr><td>Scope</td>
+        <td class="col-theirs"><b>Focused commercial package</b> — project/initiative decision governance for teams; quick to adopt.</td>
+        <td class="col-ours"><b>Full sovereign stack</b> — governance, execution, economics (yield organism), federation, and a productizable commercial layer on top.</td></tr>
+      <tr><td>Strengths</td>
+        <td class="col-theirs">Low friction, fast on-ramp, MCP-standard, commercially packaged and available today; clean product surface.</td>
+        <td class="col-ours">Depth, verifiability, cryptographic auditability, constitutional enforcement, rigor standards, sovereignty &amp; portability, generational durability.</td></tr>
+      <tr><td>Gaps (candid)</td>
+        <td class="col-theirs">Depth of audit/cryptographic proof, sovereignty/portability, structural (not policy) governance, and rigor against "correct-but-hollow" output are unproven from public materials.</td>
+        <td class="col-ours">Heavier to adopt; commercial packaging/GTM still maturing; the lightweight, instantly-usable on-ramp is exactly where a Decidr-class product is ahead.</td></tr>
+    </tbody>
+  </table>
+  <p class="note">Decidr column reflects public materials at decidrmcp.com (the page is intentionally sparse); specifics to confirm directly with Dover. Sovereign Harness column derives from sealed specs (Review-Ready Rail, Board Rigor Standard, Controlled-Link &amp; Book&#8596;Code Tree, Constitution@A1) and the live node.</p>
+</section>
+
+<section>
+  <div class="sec-k">3 · Detailed Alignment &amp; Differences</div>
+  <h2>Where the concepts match</h2>
+  <div class="card">
+    <ul>
+      <li><b>Reviewable proposals before commitment.</b> Decidr's "reviewable decisions" map directly onto our <b>obligation packets + breath-gate</b> — a proposal is examined and dispositioned before it becomes action.</li>
+      <li><b>Human primacy.</b> Both insist a human ratifies; agents inform, humans decide. Our K1 makes this a structural runtime guarantee rather than a workflow convention.</li>
+      <li><b>From unstructured input to governed unit.</b> Decidr "a few sentences &#8594; a governed initiative" is the same move as our <b>capture &#8594; packet &#8594; validate &#8594; gate</b> governed loop.</li>
+      <li><b>Audit trail.</b> Both keep a record of decisions; ours is hash-chained, receipted, and independently replayable.</li>
+      <li><b>MCP common ground.</b> Decidr is MCP-native; our node exposes a clean API contract and can speak MCP — a natural technical bridge.</li>
+    </ul>
+  </div>
+  <h2 style="margin-top:18px">The differences, along five axes</h2>
+  <table>
+    <thead><tr><th>Axis</th><th class="col-theirs">Decidr MCP</th><th class="col-ours">Sovereign Harness</th></tr></thead>
+    <tbody>
+      <tr><td>Foundation</td>
+        <td class="col-theirs">A product feature on the MCP/Claude stack — governance as application logic atop a cloud tool.</td>
+        <td class="col-ours">A sovereign substrate — Constitution@A1 + a runtime that enforces governance <b>structurally</b>, local-first and portable.</td></tr>
+      <tr><td>Source of truth</td>
+        <td class="col-theirs">Decision documents connected to project work.</td>
+        <td class="col-ours">Living <b>book&#8596;code</b> — published books are the spec; surfaces render from sealed text; a fidelity gate proves the trace.</td></tr>
+      <tr><td>Sovereignty depth</td>
+        <td class="col-theirs">Cloud SaaS; data and governance live in the vendor's product.</td>
+        <td class="col-ours">Operator owns the node, data, governance, and audit chain; "contract sovereign, UI replaceable."</td></tr>
+      <tr><td>Generational continuity</td>
+        <td class="col-theirs">Project/initiative horizon.</td>
+        <td class="col-ours">Designed to be inherited across stewards; scored against Lasting Generational Prosperity.</td></tr>
+      <tr><td>Federation</td>
+        <td class="col-theirs">Single-tenant product workflow (per public materials).</td>
+        <td class="col-ours">Sovereign nodes coordinate by signed <b>resonance</b>, not central control — multi-party without merging chains.</td></tr>
+    </tbody>
+  </table>
+  <h2 style="margin-top:18px">Where ours goes deeper</h2>
+  <div class="deeper">
+    <ul>
+      <li><b>Living book&#8596;code source.</b> Our governance is derived from published books that are the spec; a Book&#8596;Code tree audits that every module traces to a chapter, and surfaces render from sealed text — provable, not asserted.</li>
+      <li><b>Helix rendering &amp; derived surfaces.</b> Operator docs (seeit) and review surfaces are <i>rendered</i> from sealed sources, auto-refreshing — no parallel canon to drift.</li>
+      <li><b>Merkle anchors &amp; receipted memory.</b> A tamper-evident, hash-chained record with cryptographic anchoring; you can prove what happened years later.</li>
+      <li><b>K1–K4 constitutional invariants.</b> Human-Primacy, Default-Deny, Audit-Immutable, Constitution-Validated-Extension — enforced server-side as structural properties, defensible to a board or regulator in ~60 seconds on the operator's own node.</li>
+      <li><b>Federation resonance.</b> Sovereign nodes coordinate by signed resonance, not central control — multi-party governance without merging chains.</li>
+      <li><b>Generational continuity.</b> The whole stack is scored against Lasting Generational Prosperity and built to be inherited across stewards.</li>
+      <li><b>Rigor standards (no rubber stamps).</b> A Review-Ready Rail with machine-checked board rigor (LGP alignment per finding, findings&#8594;obligations, depth gate, fidelity witness, human-sense test) — the antidote to "correct-but-hollow" output.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="sec-k">4 · Collaboration Paths</div>
+  <h2>How a Decidr-class package could layer on our primitives</h2>
+  <p>The cleanest model: the commercial package keeps its fast, friendly surface and <b>licenses the sovereign substrate underneath</b> — gaining verifiable governance and auditability it would otherwise build from scratch, while our core IP (constitutional design, sovereign node source, book&#8596;code research) stays retained.</p>
+  <div class="grid2">
+    <div class="card"><h3>Technical integration points</h3>
+      <ul>
+        <li><b>B32 packets + obligation ledger:</b> their initiatives mint <b>B32 obligation packets</b> on our hash-chained ledger — typed, receipted, evidence-tiered decision records.</li>
+        <li><b>MCP seam:</b> expose our Node API + ledger as an MCP server; Decidr-style agents emit proposals straight into our governed loop.</li>
+        <li><b>Atrium cockpit:</b> white-label or co-branded review surfaces (Awaiting-Me gate, board review, coherence monitor) over their initiatives.</li>
+        <li><b>Helix rendering:</b> their decision docs render from sealed sources (render-not-recreate) — operator-facing surfaces that can't drift from the source.</li>
+        <li><b>Merkle enforcement:</b> decisions anchor to our Merkle/hash-chain so each record is tamper-evident and independently replayable.</li>
+      </ul>
+    </div>
+    <div class="card"><h3>Value flow (backer / royalty)</h3>
+      <ul>
+        <li><b>Licensing/royalty</b> on the sovereign substrate embedded in the commercial package.</li>
+        <li><b>Equity or revenue share</b> in a separate commercial vehicle (the Agentic AI Governance Package entity) — preferred for aligned capital.</li>
+        <li><b>Performance participation</b> tied to governed "proceed" outcomes (fewer false starts, faster ratified projects, auditable sign-off).</li>
+        <li><b>Future on-chain yield instruments</b> linked to the governance packages, once regulatory clarity exists.</li>
+      </ul>
+      <p class="small">Structure mirrors the prepared Agentic AI Governance Package financial case: core retained in the primary entity; production layer licensed to the commercial vehicle.</p>
+    </div>
+  </div>
+  <div class="flow">
+    <div class="step"><span class="num">1</span><div><b>Pilot bridge</b><div class="small">Stand up the MCP seam; route one Decidr-style initiative through our obligation ledger + breath-gate; produce a receipted decision.</div></div></div>
+    <div class="step"><span class="num">2</span><div><b>Co-branded surface</b><div class="small">Wrap it in an Atrium review surface (Awaiting-Me + board review) the partner can demo to a regulated client.</div></div></div>
+    <div class="step"><span class="num">3</span><div><b>Commercial vehicle</b><div class="small">Formalize licensing + value flow; the package sells, the sovereign core stays retained and continues its research cadence.</div></div></div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-k">5 · Risks &amp; Recommendations</div>
+  <h2>Where shallow work creeps in — and how our rigor strengthens the offering</h2>
+  <div class="risk">
+    <p style="margin:0"><b>Risk — "correct but hollow."</b> A lightweight decision bridge can ship outputs that <i>look</i> governed (a record exists, a human clicked approve) but are shallow — no depth check, no source trace, no proof the decision was substantive. At scale this compounds into GIGO and erodes trust exactly where accountability was the selling point.</p>
+  </div>
+  <div class="reco">
+    <p style="margin:0"><b>Recommendation.</b> Our <b>Board Rigor Standard</b> and <b>validation/fidelity harness</b> are the structural antidote — and a differentiator a partner could license: every material finding becomes a tracked obligation, every claim must trace to a resolving source, a depth gate forbids silent "all clear," and an independent witness verifies before anything reaches the human. This is what turns "an audit trail" into "verifiable governance."</p>
+  </div>
+  <div class="reco">
+    <p style="margin:0"><b>IP &amp; sovereignty protection.</b> Retain the sovereign node source, constitutional design, and book&#8596;code research in the primary entity; license only the production surfaces, templates, and coordination modules. The Controlled-Link Doctrine (published artifacts point only at surfaces we control) keeps the partner's deployments dependent on our living, governed source — not a fork.</p>
+  </div>
+  <h3>Next steps for the Dover / Quad discussion</h3>
+  <ul>
+    <li>Confirm Decidr's actual depth (audit model, governance enforcement, MCP scope) directly with Dover — this doc's "their" column is from public materials.</li>
+    <li>Agree the comparison framing: <b>complementary layers</b>, not competitors — Decidr (or their package) as a friendly surface; our harness as the verifiable substrate.</li>
+    <li>Scope a <b>pilot bridge</b> (Step 1 above): one initiative through the MCP seam &#8594; receipted, breath-gated decision &#8594; demoed in an Atrium surface.</li>
+    <li>Outline the commercial-vehicle + value-flow terms (licensing/royalty/equity) consistent with the prepared financial case.</li>
+  </ul>
+</section>
+
+<div class="foot">
+  Confidential — prepared for KM-1176 for discussion with Quad / Dover. Sovereign Harness claims derive from sealed sources (Constitution@A1; Review-Ready Rail, Board Rigor, Controlled-Link &amp; Book&#8596;Code Tree specs; the live node). Decidr MCP claims derive from public materials at decidrmcp.com and are marked for confirmation with Dover. Framing remains consistent with human primacy and Lasting Generational Prosperity. &nbsp;·&nbsp; ∞Δ∞
+</div>
+
+</div>
+</body>
+</html>
