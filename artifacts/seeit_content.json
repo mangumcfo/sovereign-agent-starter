@@ -3,8 +3,8 @@
     "surface": "seeit",
     "kind": "derived-operator-docs (render-not-recreate)",
     "source_series": "S2 — Building the Agentic Harness (core mechanics) + S1 B10-12 (chapter walkthroughs)",
-    "generated_at": "2026-06-10T15:15:20Z",
-    "content_hash": "dd24a1f32d8dc167",
+    "generated_at": "2026-06-10T16:29:38Z",
+    "content_hash": "81b8d9e00938e77c",
     "n_topics": 5,
     "n_sourced": 5,
     "n_walkthrough_chapters": 12,
@@ -12,16 +12,20 @@
   },
   "topics": [
     {
-      "id": "b32_packets",
-      "title": "B32 Obligation Packets",
+      "id": "receipts",
+      "title": "Receipts — the Verifiable Audit Chain",
       "icon": "🧾",
-      "operator_explanation": "Every commitment is a receipt with two sides: opening it is a DRAFT (nothing happens until you approve), closing it requires EVIDENCE. So every piece of work is tracked, provable, and reversible — you can always see what's open, what's done, and the proof behind it.",
+      "operator_explanation": "Every action the agents take produces a receipt — a real, verifiable audit-chain entry. Each receipt extends the chain, and every extension renews your presence in the loop: the system operates WITH your witness, not after a one-time approval. You can always prove what happened, and the book's own claims are checkable against the real receipts.",
       "source": {
         "book": "S2 Vol 3 — The Governed Dev Loop",
         "manuscript": "vol_03_governed_dev_loop_and_self_building_harness/v1.0/manuscript_v1.3.md",
-        "section": "About This Series",
-        "passage": "**Reader-effort calibration:** Reading time ~90 minutes for the manuscript proper. Hands-on time with the `sovereign-agent-starter` demos ~3 hours (six core demos × ~30 minutes each, including JSON-receipt inspection + role spec editing + cross-role veto reproduction). The deep-dive companion's specialist depth assumes the reader will engage at both layers; the volume's claims are only fully redeemable through hands-on engagement.",
-        "passage_sha": "b354cb89e99a48a7",
+        "section": "Witness, Not Approval — What the Posture Means at the Config Layer",
+        "passage": "This is structurally different from approval-only patterns. In approval-only systems, the operator's role disappears the moment approval is granted (the system runs on the artifact, not the operator's continuing presence). In witness-mode systems, the witness chain *is* the artifact — every act produces a receipt, every receipt extends the chain, every chain extension renews the operator's structural presence in the harness's operation. The harness operates *with* the operator's witness, not *after* the operator's approval.",
+        "passage_sha": "a7496a5651af96fa",
+        "match_score": 18,
+        "required_terms": [
+          "receipt"
+        ],
         "found": true
       }
     },
@@ -29,13 +33,19 @@
       "id": "k1_k4",
       "title": "K1–K4 Constitutional Invariants",
       "icon": "⚖",
-      "operator_explanation": "Four rules the system ALWAYS enforces, no exceptions. The first and most important — K1, human primacy — means you stay in command: agents propose, you dispose. Nothing material happens without your breath. The others guarantee receipts, fail-closed safety, and honest errors.",
+      "operator_explanation": "Four rules the system ALWAYS enforces, no exceptions. The first and most important — K1, human primacy — means you stay in command: agents propose, you dispose. Nothing material becomes action without your breath at the gate. The others guarantee receipts, fail-closed safety, and honest errors.",
       "source": {
         "book": "S2 Vol 2 — The Primacy Cockpit",
         "manuscript": "vol_02_the_primacy_cockpit/v1.0/manuscript_v1.3.md",
-        "section": "About This Series",
-        "passage": "- **Volume 1 — *Sovereign Inference & Memory*:** the receipted inference foundation. SIX-lane routing, B51 human-memory streaming, receipts as constitutional anchors. The trust layer everything else rests on. - **Volume 2 (this book) — *The Primacy Cockpit*:** the surface where human primacy is visible. The Atrium — every screen built so the operator can see what the agents are doing, what the constitution is enforcing, what's waiting for human breath, and what has already been sealed. - **Volume 3 — *The Harness That Builds Itself — Under Human Witness*:** the governed dev loop. Operator-defined roles, proposal mechanics, the hard constitutional boundary, the drift safeguard at depth.",
-        "passage_sha": "0369da4cf04ef2c7",
+        "section": "The Authoritative Pattern Rule",
+        "passage": "The Authoritative Pattern Rule (documented in `breathline-federation/governance/decisions/2026-05-08_v0.6.0-horizon.md`) states: **no runtime ships ahead of the sealed companion book**. For the Atrium, this means the live cutover requires Series 1 Book 12 (*The Agentic Enterprise* — the constitutional invariants K1–K4) to be breath-sealed first. The mock can run anywhere; the live runtime can only ship behind the sealed book.",
+        "passage_sha": "992651c65ab84c02",
+        "match_score": 20,
+        "required_terms": [
+          "human primacy",
+          "\\bK1\\b",
+          "invariant"
+        ],
         "found": true
       }
     },
@@ -43,13 +53,17 @@
       "id": "merkle_anchors",
       "title": "Merkle Anchors (Receipted Memory)",
       "icon": "⛓",
-      "operator_explanation": "Everything the system does is written to a tamper-evident chain — each entry locked to the one before it by a cryptographic hash. Like a sealed ledger: if anything were altered, the chain breaks visibly. It's how you can PROVE what happened and when, years later.",
+      "operator_explanation": "Everything the system does is written to a tamper-evident chain — each entry locked to the one before it by a cryptographic hash (the Merkle layer). Like a sealed ledger: if anything were altered, the chain breaks visibly, verifiable against a public anchor. It's how you can PROVE what happened and when, years later.",
       "source": {
         "book": "S2 Vol 1 — Sovereign Inference & Memory",
         "manuscript": "vol_01_sovereign_inference_and_memory/v1.0/manuscript_v1.3.md",
-        "section": "Build the Receipted Cockpit That Keeps Humans in Command",
-        "passage": "**Sovereign Inference & Memory: Build the Receipted Cockpit That Keeps Humans in Command**",
-        "passage_sha": "9ce5c7c51fdfc791",
+        "section": "P5 Merkle Integrity — B51 Entries Are Audit-Chainable",
+        "passage": "Each B51 entry is a sealed cylinder with a P1 signature (P1 — `breathline-sealed/primitives/sealed/layer_1_root/sign.py`) and a Merkle anchor (P5 — `breathline-sealed/primitives/sealed/layer_5_shields/merkle_tree.py`). The P5 Merkle integrity is what makes the entry audit-chainable not just to the curator but to *every event the curator considered* — the Merkle tree's leaves are the considered-event hashes; the tree's root proves the curator's curation operated on the actual event set, not a tampered subset.",
+        "passage_sha": "bfca0f475322c11a",
+        "match_score": 18,
+        "required_terms": [
+          "merkle"
+        ],
         "found": true
       }
     },
@@ -57,13 +71,19 @@
       "id": "governed_loop",
       "title": "The Governed Loop",
       "icon": "🔁",
-      "operator_explanation": "How a thought becomes a sealed change: capture → packet → validate → ACCEPT (your one gate) → apply → seal. The agents do the work in the background and bring you a single decision; nothing lands without your Accept. One human gate, everything else automated.",
+      "operator_explanation": "How a change is governed: agents propose, and proposal mechanics gate every self-modification through a structural breath-gate review — with cross-role veto authority — before anything becomes action. The agents do the work in the background and bring you a single decision; nothing lands without your gate.",
       "source": {
         "book": "S2 Vol 3 — The Governed Dev Loop",
         "manuscript": "vol_03_governed_dev_loop_and_self_building_harness/v1.0/manuscript_v1.3.md",
-        "section": "About This Series",
-        "passage": "This is **Volume 3** of *Building the Agentic Harness* — the **deep-dive companion** volume. Where Vols 1-2 + 4-5 deliver broader-audience treatments (operator-builder + family-office + general technical-architect audiences), Vol 3 deep-dives the *governed dev loop* for the specialist audience: senior developers, platform architects, and constitutional-governance specialists responsible for configuring, governing, and extending agentic systems in production where drift is a board-level risk.",
-        "passage_sha": "ca14a472308442db",
+        "section": "Bold Executive Brief",
+        "passage": "**The Capability.** The **governed dev loop** Vol 3 deep-dives flips this. **Operator-defined role configuration** (§1) ships blank with `role_spec.yaml` patterns the operator authors under their Charter; the platform prescribes nothing. **Proposal mechanics** (§2a) gate every agent self-modification through structural breath-gate review with cross-role veto authority. **The hard constitutional boundary** (§2b) is the structural commitment that GREEN auto-flow is *structurally barred* from touching the constitutional surface (K1-K4 invariants from Series 1 Book 12) — not by policy, by enforcement at the harness layer.",
+        "passage_sha": "82a5fe1d7cc583c8",
+        "match_score": 24,
+        "required_terms": [
+          "proposal mechanics",
+          "propose",
+          "breath-gate"
+        ],
         "found": true
       }
     },
@@ -71,13 +91,18 @@
       "id": "atrium_surfaces",
       "title": "Atrium Surfaces (The Cockpit)",
       "icon": "🖥",
-      "operator_explanation": "The Atrium is your cockpit — one place to see everything: what the agents are doing, what the constitution is enforcing, what's waiting for your breath, and what's already sealed. You never leave it; every part of the system surfaces here so you stay sovereign without touching code.",
+      "operator_explanation": "The Atrium is your cockpit — one place to see everything: what the agents are doing, what the constitution is enforcing, what's waiting for your breath, and what's already sealed. You never leave it; every screen makes human primacy visible, so you stay sovereign without touching code.",
       "source": {
         "book": "S2 Vol 2 — The Primacy Cockpit",
         "manuscript": "vol_02_the_primacy_cockpit/v1.0/manuscript_v1.3.md",
-        "section": "Build the Atrium That Keeps Humans Sovereign in the Agentic Era",
-        "passage": "**The Primacy Cockpit: Build the Atrium That Keeps Humans Sovereign in the Agentic Era**",
-        "passage_sha": "226946f60738fd13",
+        "section": "Chapter 1: The Stillpoint — Sovereign Node Identity & Health",
+        "passage": "**The Stillpoint is a lens, not a gate.** This distinction governs the entire cockpit and is structurally important to name early. Competing agentic-AI tools in 2026 ship interfaces that *look* like dashboards but *act* like gates — the operator clicks Approve in the dashboard, the dashboard enacts the approval. The Atrium inverts this. The constitution lives in the harness underneath; the cockpit renders the constitutional posture *visibly*. The Stillpoint shows you what the constitution is doing right now. The Breath-Gate (Chapter 2) is where the operator's approval *binds* — but the binding happens through a sealed receipt against the constitutional surface, not through the cockpit's button alone.",
+        "passage_sha": "6bbc59474aa54769",
+        "match_score": 27,
+        "required_terms": [
+          "the Atrium",
+          "cockpit"
+        ],
         "found": true
       }
     }

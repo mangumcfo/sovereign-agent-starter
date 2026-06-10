@@ -28,50 +28,81 @@ def _latest(vol_dir: str) -> Path | None:
     return cands[-1] if cands else None
 
 
-def _extract(md_path: Path, anchors: list[str]) -> tuple[str, str]:
-    """First paragraph matching an anchor (in order). Returns (passage, section_heading_context)."""
+# Front-matter markers (series blurbs / disclaimers / volume lists / "previously in series"). Paragraphs
+# matching these are SKIPPED — they tripped the old loose-anchor extractor into citing boilerplate
+# instead of the mechanic (GB fidelity FAIL 2026-06-10). The body is what renders the mechanic.
+_FRONTMATTER = re.compile(
+    r"about this series|^\s*\*\*disclaimer|this book is the|this volume'?s promise|"
+    r"previously in series|reading time|the unique artifact in this volume|"
+    r"^\s*[-*]\s*\*\*vol(ume)?\s|where series\s*\d|series\s*\d.*gave\s+(senior|builders|leaders)",
+    re.I)
+
+
+def _clean(p: str) -> str:
+    clean = re.sub(r"\s+", " ", p).strip()
+    if len(clean) > 720:
+        cut = clean[:720]
+        clean = cut[: cut.rfind(". ") + 1] if ". " in cut else cut + "…"
+    return clean
+
+
+def _extract(md_path: Path, anchors: list[str], require: list[str]) -> tuple[str, str, int]:
+    """Best BODY paragraph for a topic. Skips front-matter, REQUIRES ≥1 load-bearing term (so we render
+    the mechanic, never boilerplate), scores by required-term + anchor density and heading match. Returns
+    (passage, heading, score). Honest by construction: no required term found in the body → ('', head, 0)
+    rather than a wrong citation. This is the fix for the 2026-06-10 fidelity FAIL."""
     if not md_path or not md_path.is_file():
-        return "", ""
+        return "", "", 0
     text = md_path.read_text(encoding="utf-8")
     paras = [p.strip() for p in re.split(r"\n\s*\n", text) if p.strip()]
-    last_head = ""
+    last_head, best = "", ("", "", 0)
     for p in paras:
         if p.lstrip().startswith("#"):
             last_head = re.sub(r"^#+\s*", "", p.splitlines()[0]).strip()
             continue
-        for a in anchors:
-            if re.search(a, p, re.I):
-                # trim a long paragraph to a clean ~700-char excerpt at a sentence end
-                clean = re.sub(r"\s+", " ", p).strip()
-                if len(clean) > 720:
-                    cut = clean[:720]
-                    clean = cut[: cut.rfind(". ") + 1] if ". " in cut else cut + "…"
-                return clean, last_head
-    return "", last_head
+        if _FRONTMATTER.search(p):
+            continue
+        req_hits = sum(1 for r in require if re.search(r, p, re.I))
+        if not req_hits:  # render-not-recreate: the mechanic's own term must be present
+            continue
+        anc_hits = sum(1 for a in anchors if re.search(a, p, re.I))
+        head_bonus = 5 if any(re.search(a, last_head, re.I) for a in (anchors + require)) else 0
+        score = req_hits * 10 + anc_hits + head_bonus
+        if score > best[2]:
+            best = (_clean(p), last_head, score)
+    return best
 
 
 # Topic config: each operator explanation RENDERS the sourced passage (faithful, plain-English, non-technical).
 TOPICS = [
-    dict(id="b32_packets", title="B32 Obligation Packets", icon="🧾",
+    # Relabeled from "B32 Obligation Packets" (2026-06-10): S2 contains no "B32"/"double-entry" text — that
+    # explanation was authored, not rendered (recreate-not-render violation). S2 DOES teach receipts / the
+    # verifiable audit chain richly. We render THAT — the faithful concept the books actually carry.
+    dict(id="receipts", title="Receipts — the Verifiable Audit Chain", icon="🧾",
          vol="vol_03_governed_dev_loop_and_self_building_harness", vol_label="S2 Vol 3 — The Governed Dev Loop",
-         anchors=[r"double-entry", r"obligation", r"debit", r"B32", r"JSON.?receipt", r"audit.?chain", r"structural commitment.*receipt", r"verifiable governance receipt"],
-         operator="Every commitment is a receipt with two sides: opening it is a DRAFT (nothing happens until you approve), closing it requires EVIDENCE. So every piece of work is tracked, provable, and reversible — you can always see what's open, what's done, and the proof behind it."),
+         require=[r"receipt"],
+         anchors=[r"audit.?chain", r"every act produces", r"chain extension", r"witness", r"verifiable"],
+         operator="Every action the agents take produces a receipt — a real, verifiable audit-chain entry. Each receipt extends the chain, and every extension renews your presence in the loop: the system operates WITH your witness, not after a one-time approval. You can always prove what happened, and the book's own claims are checkable against the real receipts."),
     dict(id="k1_k4", title="K1–K4 Constitutional Invariants", icon="⚖",
          vol="vol_02_the_primacy_cockpit", vol_label="S2 Vol 2 — The Primacy Cockpit",
-         anchors=[r"human primacy", r"\bK1\b", r"non-negotiable", r"invariant"],
-         operator="Four rules the system ALWAYS enforces, no exceptions. The first and most important — K1, human primacy — means you stay in command: agents propose, you dispose. Nothing material happens without your breath. The others guarantee receipts, fail-closed safety, and honest errors."),
+         require=[r"human primacy", r"\bK1\b", r"invariant"],
+         anchors=[r"breath-gate", r"constitutional surface", r"approve or deny", r"proposal becomes action"],
+         operator="Four rules the system ALWAYS enforces, no exceptions. The first and most important — K1, human primacy — means you stay in command: agents propose, you dispose. Nothing material becomes action without your breath at the gate. The others guarantee receipts, fail-closed safety, and honest errors."),
     dict(id="merkle_anchors", title="Merkle Anchors (Receipted Memory)", icon="⛓",
          vol="vol_01_sovereign_inference_and_memory", vol_label="S2 Vol 1 — Sovereign Inference & Memory",
-         anchors=[r"merkle", r"hash-chain", r"tamper", r"receipt", r"cylinder"],
-         operator="Everything the system does is written to a tamper-evident chain — each entry locked to the one before it by a cryptographic hash. Like a sealed ledger: if anything were altered, the chain breaks visibly. It's how you can PROVE what happened and when, years later."),
+         require=[r"merkle"],
+         anchors=[r"hash", r"audit-chain", r"tamper", r"public anchor", r"SHA-256", r"reproducib"],
+         operator="Everything the system does is written to a tamper-evident chain — each entry locked to the one before it by a cryptographic hash (the Merkle layer). Like a sealed ledger: if anything were altered, the chain breaks visibly, verifiable against a public anchor. It's how you can PROVE what happened and when, years later."),
     dict(id="governed_loop", title="The Governed Loop", icon="🔁",
          vol="vol_03_governed_dev_loop_and_self_building_harness", vol_label="S2 Vol 3 — The Governed Dev Loop",
-         anchors=[r"capture.{0,40}packet", r"propose.{0,30}approve", r"review.{0,30}accept", r"one (human )?gate", r"governed"],
-         operator="How a thought becomes a sealed change: capture → packet → validate → ACCEPT (your one gate) → apply → seal. The agents do the work in the background and bring you a single decision; nothing lands without your Accept. One human gate, everything else automated."),
+         require=[r"proposal mechanics", r"propose", r"breath-gate"],
+         anchors=[r"self-modification", r"cross-role veto", r"gate every", r"structural"],
+         operator="How a change is governed: agents propose, and proposal mechanics gate every self-modification through a structural breath-gate review — with cross-role veto authority — before anything becomes action. The agents do the work in the background and bring you a single decision; nothing lands without your gate."),
     dict(id="atrium_surfaces", title="Atrium Surfaces (The Cockpit)", icon="🖥",
          vol="vol_02_the_primacy_cockpit", vol_label="S2 Vol 2 — The Primacy Cockpit",
-         anchors=[r"the Atrium", r"the cockpit", r"every screen", r"human primacy is visible"],
-         operator="The Atrium is your cockpit — one place to see everything: what the agents are doing, what the constitution is enforcing, what's waiting for your breath, and what's already sealed. You never leave it; every part of the system surfaces here so you stay sovereign without touching code."),
+         require=[r"the Atrium", r"cockpit"],
+         anchors=[r"every screen", r"human primacy is visible", r"Stillpoint", r"breath-gate"],
+         operator="The Atrium is your cockpit — one place to see everything: what the agents are doing, what the constitution is enforcing, what's waiting for your breath, and what's already sealed. You never leave it; every screen makes human primacy visible, so you stay sovereign without touching code."),
 ]
 
 
@@ -100,7 +131,7 @@ def build() -> dict:
     topics = []
     for t in TOPICS:
         mp = _latest(t["vol"])
-        passage, heading = _extract(mp, t["anchors"])
+        passage, heading, score = _extract(mp, t["anchors"], t.get("require", []))
         topics.append({
             "id": t["id"], "title": t["title"], "icon": t["icon"],
             "operator_explanation": t["operator"],
@@ -110,6 +141,8 @@ def build() -> dict:
                 "section": heading,
                 "passage": passage,
                 "passage_sha": hashlib.sha256(passage.encode()).hexdigest()[:16] if passage else None,
+                "match_score": score,
+                "required_terms": t.get("require", []),
                 "found": bool(passage),
             },
         })
