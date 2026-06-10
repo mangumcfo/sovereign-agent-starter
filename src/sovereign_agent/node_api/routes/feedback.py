@@ -81,7 +81,10 @@ def _awaiting(led) -> list:
     """Open obligations gated on Human disposition — KM-framed (the cockpit's missing home screen)."""
     out = []
     for o in led.open_obligations():
-        if (o.get("next_gate") or "") == HUMAN_GATE:
+        # Awaiting KM = gated on a human AND not yet disposed. Once accepted (approved) it leaves this
+        # view — it's now awaiting the owning agent's execution, not the human's decision. Rejected
+        # items are closed and already drop out of open_obligations().
+        if (o.get("next_gate") or "") == HUMAN_GATE and not o.get("approved"):
             out.append({
                 "id": o.get("id"),
                 "title": o.get("title"),
