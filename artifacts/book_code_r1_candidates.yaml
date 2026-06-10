@@ -1,0 +1,242 @@
+_meta:
+  kind: R1 explicit-anchor CANDIDATES (mechanical) — NOT the map
+  for: GB to review + fold real edges into artifacts/book_code_map.yaml (GB sole-write)
+  spec: artifacts/GB_BookCode_Tree_Derivation_Spec_2026-06-10.md §3 R1
+  generated_at: '2026-06-10T16:19:14Z'
+  n_candidates: 39
+  discipline: every candidate's anchor is a real source line; GB promotes to class:derived on verify
+candidates:
+- code: src/sovereign_agent/breath_inventory.py
+  rule: R1
+  class: pending
+  book: B32
+  anchor: 'src/sovereign_agent/breath_inventory.py:8: the human still disposes. B32 receipt + the breath-gate remain the hard rules (BG-1/2).'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/breath_inventory.py
+  rule: R1
+  class: pending
+  book: B32
+  anchor: 'src/sovereign_agent/breath_inventory.py:15: "B32": "Obligation Cylinder — dr/cr receipts + immutable audit (receipt everything material)",'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/breath_inventory.py
+  rule: R1
+  class: pending
+  book: B35
+  anchor: 'src/sovereign_agent/breath_inventory.py:16: "B35": "Helix — deterministic ''book writes the backend'' rendering (living-spec output)",'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/breath_inventory.py
+  rule: R1
+  class: pending
+  book: B51
+  anchor: 'src/sovereign_agent/breath_inventory.py:17: "B51": "Agent-to-Agent Handoffs (A4) — safe multi-agent coordination trace",'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/breath_inventory.py
+  rule: R1
+  class: pending
+  book: B42
+  anchor: 'src/sovereign_agent/breath_inventory.py:18: "B42": "Deterministic Agent Swarms — receipted, reproducible coordination",'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/breath_inventory.py
+  rule: R1
+  class: pending
+  book: B43
+  anchor: 'src/sovereign_agent/breath_inventory.py:19: "B43": "Unified Crypto Stack — auditable cryptography",'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/breath_inventory.py
+  rule: R1
+  class: pending
+  book: B39
+  anchor: 'src/sovereign_agent/breath_inventory.py:20: "B39": "Crypto Primitive Wiring — canonical primitives for packet immutability",'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/breath_inventory.py
+  rule: R1
+  class: pending
+  book: B31
+  anchor: 'src/sovereign_agent/breath_inventory.py:21: "B31": "SIX — Sovereign Inference Exchange — receipts & verification (attestation)",'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/breath_inventory.py
+  rule: R1
+  class: pending
+  book: B30
+  anchor: 'src/sovereign_agent/breath_inventory.py:22: "B30": "Autonomy Spine — directive/spec/prompt triad for governed agents",'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/breath_inventory.py
+  rule: R1
+  class: pending
+  book: B26
+  anchor: 'src/sovereign_agent/breath_inventory.py:23: "B26": "Yield Organisms & XRPL — economic / yield layer (families-first value)",'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/breath_inventory.py
+  rule: R1
+  class: pending
+  book: B28
+  anchor: 'src/sovereign_agent/breath_inventory.py:24: "B28": "Legal Framework Hardening — lex mercatoria / jus cogens for contracts",'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/breath_inventory.py
+  rule: R1
+  class: pending
+  book: B25
+  anchor: 'src/sovereign_agent/breath_inventory.py:25: "B25": "Federation / resonant shards — opt-in, non-devouring federation + privacy",'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/breath_inventory.py
+  rule: R1
+  class: pending
+  book: B43
+  anchor: 'src/sovereign_agent/breath_inventory.py:30: (("zk", "proof", "profile", "privacy", "sign", "hash", "crypt"), ["B43", "B39", "B25"]),'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/breath_inventory.py
+  rule: R1
+  class: pending
+  book: B31
+  anchor: 'src/sovereign_agent/breath_inventory.py:31: (("attest", "six", "verify", "receipt"), ["B31"]),'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/breath_inventory.py
+  rule: R1
+  class: pending
+  book: B42
+  anchor: 'src/sovereign_agent/breath_inventory.py:32: (("optim", "coordinat", "match", "swarm", "run_"), ["B42", "B51"]),'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/breath_inventory.py
+  rule: R1
+  class: pending
+  book: B51
+  anchor: 'src/sovereign_agent/breath_inventory.py:33: (("handoff", "agent", "negotiat", "propose"), ["B51"]),'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/breath_inventory.py
+  rule: R1
+  class: pending
+  book: B35
+  anchor: 'src/sovereign_agent/breath_inventory.py:34: (("render", "spec", "plan", "document", "report", "draft", "living"), ["B35"]),'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/breath_inventory.py
+  rule: R1
+  class: pending
+  book: B26
+  anchor: 'src/sovereign_agent/breath_inventory.py:35: (("value", "yield", "distribut", "pool", "procure", "guild", "order"), ["B26"]),'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/breath_inventory.py
+  rule: R1
+  class: pending
+  book: B28
+  anchor: 'src/sovereign_agent/breath_inventory.py:36: (("contract", "agreement", "order", "legal", "commit", "guild"), ["B28"]),'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/breath_inventory.py
+  rule: R1
+  class: pending
+  book: B32
+  anchor: 'src/sovereign_agent/breath_inventory.py:43: Always includes B32 (every action is a receipted obligation). Material actions add B51'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/breath_inventory.py
+  rule: R1
+  class: pending
+  book: B28
+  anchor: 'src/sovereign_agent/breath_inventory.py:44: (a visible handoff trace becomes evidence) + B28 where a commitment/contract is implied.'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/breath_inventory.py
+  rule: R1
+  class: pending
+  book: B32
+  anchor: 'src/sovereign_agent/breath_inventory.py:50: picked: List[str] = ["B32"]  # always: receipt everything'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/breath_inventory.py
+  rule: R1
+  class: pending
+  book: B51
+  anchor: 'src/sovereign_agent/breath_inventory.py:52: picked += ["B51"]  # material → a visible handoff trace is part of the evidence'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/breath_inventory.py
+  rule: R1
+  class: pending
+  book: B32
+  anchor: 'src/sovereign_agent/breath_inventory.py:75: "note": "Defaults suggested per action; agents propose, human disposes. B32 receipt + breath-gate are hard.",'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/demo_roles/federation_procurement_coordinator/role.py
+  rule: R1
+  class: pending
+  book: B35
+  anchor: 'src/sovereign_agent/demo_roles/federation_procurement_coordinator/role.py:78: return {"match": {"method": "helix_attribute_match (B35)", "pools_suggested": 2, "opt_in_only": True},'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/demo_roles/federation_procurement_coordinator/role.py
+  rule: R1
+  class: pending
+  book: B51
+  anchor: 'src/sovereign_agent/demo_roles/federation_procurement_coordinator/role.py:83: "projected_uplift": "+18% (illustrative)", "swarm": "B51 handoff + B42 reduce"},'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/demo_roles/federation_procurement_coordinator/role.py
+  rule: R1
+  class: pending
+  book: B31
+  anchor: 'src/sovereign_agent/demo_roles/federation_procurement_coordinator/role.py:88: "message": "Closes the obligation with E2 + node receipt + B31 SIX attestation (stubbed shape)."}'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/demo_roles/ma_data_room/role.py
+  rule: R1
+  class: pending
+  book: B11
+  anchor: 'src/sovereign_agent/demo_roles/ma_data_room/role.py:2: Data-Room Classifier — extruded from AI Agents for M&A (Book 11), Ch 2:'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/node_api/routes/hopper.py
+  rule: R1
+  class: pending
+  book: B51
+  anchor: 'src/sovereign_agent/node_api/routes/hopper.py:4: The "hopper" is the Series Pipeline''s intake: raw B51 voice-delta captures surface here as'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/node_api/routes/hopper.py
+  rule: R1
+  class: pending
+  book: B32
+  anchor: 'src/sovereign_agent/node_api/routes/hopper.py:5: cards, and a single human action — **Send to Packet** — turns a card into a B32 obligation'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/node_api/routes/hopper.py
+  rule: R1
+  class: pending
+  book: B32
+  anchor: 'src/sovereign_agent/node_api/routes/hopper.py:10: POST /hopper/packet   → open a B32 obligation seeded from a card → { obligation, … }'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/node_api/routes/hopper.py
+  rule: R1
+  class: pending
+  book: B51
+  anchor: 'src/sovereign_agent/node_api/routes/hopper.py:13: - If env HOPPER_SOURCE points at a B51 `session.yaml`, we render its real entries (live=True).'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/node_api/routes/hopper.py
+  rule: R1
+  class: pending
+  book: B51
+  anchor: 'src/sovereign_agent/node_api/routes/hopper.py:59: """Parse a B51 capture into hopper cards. Handles BOTH formats:'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/node_api/routes/node.py
+  rule: R1
+  class: pending
+  book: B1
+  anchor: 'src/sovereign_agent/node_api/routes/node.py:133: 0: "B1 — Strategic Finance",'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/node_api/routes/node.py
+  rule: R1
+  class: pending
+  book: B12
+  anchor: 'src/sovereign_agent/node_api/routes/node.py:134: 1: "B12 — The Agentic Enterprise",'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/node_api/routes/node.py
+  rule: R1
+  class: pending
+  book: B12
+  anchor: 'src/sovereign_agent/node_api/routes/node.py:135: 2: "B12 — The Agentic Enterprise",'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/node_api/routes/proposals.py
+  rule: R1
+  class: pending
+  book: B3
+  anchor: 'src/sovereign_agent/node_api/routes/proposals.py:84: "reflection_mode": body.get("reflection_mode"),   # B3: embodied_principle | direct_mechanics'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/obligations/ledger.py
+  rule: R1
+  class: pending
+  book: B32
+  anchor: 'src/sovereign_agent/obligations/ledger.py:1: """ObligationLedger — node-local B32 obligation ledger (R-23 Phase 1).'
+  note: auto-extracted candidate — GB verify
+- code: src/sovereign_agent/obligations/ledger.py
+  rule: R1
+  class: pending
+  book: B32
+  anchor: 'src/sovereign_agent/obligations/ledger.py:4: sovereign node, on its OWN storage root. It vendors the patterns from the live B32 primitives'
+  note: auto-extracted candidate — GB verify

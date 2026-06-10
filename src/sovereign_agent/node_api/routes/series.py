@@ -104,6 +104,44 @@ def _publishing_index() -> dict:
     return {}
 
 
+def _channel_index() -> dict:
+    """Distribution-federation state keyed by book_id, derived from CHANNEL_TRACKER.yaml (Tiger-owned,
+    sibling of ASIN_TRACKER). The lens OVERLAYS per-channel state (beyond kdp_core, which _publishing_index
+    already carries) so the Series Pipeline shows the WHOLE federation's truth automatically — never stale,
+    never hand-edited. Mirrors _publishing_index. CHANNEL_TRACKER env overrides; absence no-ops the overlay."""
+    try:
+        import yaml  # noqa: PLC0415 — local import keeps the lens yaml-optional
+    except ImportError:
+        return {}
+    explicit = os.environ.get("CHANNEL_TRACKER")
+    cands = [Path(explicit)] if explicit else [
+        Path("/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/CHANNEL_TRACKER.yaml")]
+    for p in cands:
+        try:
+            data = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
+        except (OSError, ValueError):
+            continue
+        out = {}
+        for section in ("books", "executive_series"):
+            for bid, b in (data.get(section) or {}).items():
+                if isinstance(b, dict):
+                    out[bid] = {k: v for k, v in b.items() if isinstance(v, dict)}
+        return out
+    return {}
+
+
+def _dispatch_gate_summary(channel_index: dict) -> dict:
+    """The batched G1 Dispatch Gate (Distribution Spec §2): ONE recurring card listing all staged dispatches
+    across channels — KM looks once, accepts once. Counts staged rows so the surface never pings per-item."""
+    staged = []
+    for bid, chans in channel_index.items():
+        for ch, st in chans.items():
+            if isinstance(st, dict) and st.get("state") == "staged":
+                staged.append({"book_id": bid, "channel": ch, "note": st.get("note", "")})
+    return {"staged_count": len(staged), "staged": staged,
+            "gate": "G1 — Dispatch Gate (batched)", "doctrine": "one look, one Accept, all channels"}
+
+
 # --- In-memory read-repair (GB owns the file; we NEVER write it). A common GB gotcha is an unquoted
 # scalar value carrying an inner ": " (e.g.  drill_down: Published; KDP evidence: Live $19.99 ...) which
 # breaks strict YAML and can blank the whole lens. We quote ONLY such values, and ONLY when not inside a
@@ -229,7 +267,8 @@ def _load(text: str):
     return {}, True, "Roadmap unparseable — even the safe prefix failed; GB must fix the YAML."
 
 
-def _title_card(t: dict, chapter_index: dict | None = None, publishing_index: dict | None = None) -> dict:
+def _title_card(t: dict, chapter_index: dict | None = None, publishing_index: dict | None = None,
+                channel_index: dict | None = None) -> dict:
     card = {k: t.get(k) for k in _TITLE_FIELDS if t.get(k) is not None}
     # Path B (lens-sourced chapters): a title's own chapters always win (rich G-outlines / outline_locked).
     # If it carries none, merge the extracted TOC from the index by book_id — so chapters trace to the
@@ -250,10 +289,17 @@ def _title_card(t: dict, chapter_index: dict | None = None, publishing_index: di
             if pub.get("release") and not card.get("published_date"):
                 card["published_date"] = str(pub["release"])
             card["publishing_source"] = "asin-tracker"
+    # Distribution-federation overlay (CHANNEL_TRACKER truth): per-channel state beyond kdp_core, auto-derived.
+    if channel_index:
+        chans = channel_index.get(t.get("book_id"))
+        if isinstance(chans, dict) and chans:
+            card["channels"] = chans
+            card["channel_source"] = "channel-tracker"
     return card
 
 
-def _series_card(s: dict, chapter_index: dict | None = None, publishing_index: dict | None = None) -> dict:
+def _series_card(s: dict, chapter_index: dict | None = None, publishing_index: dict | None = None,
+                 channel_index: dict | None = None) -> dict:
     titles = s.get("titles") or s.get("volumes") or []
     return {
         "number": s.get("series_number"),
@@ -263,7 +309,8 @@ def _series_card(s: dict, chapter_index: dict | None = None, publishing_index: d
         "visibility": s.get("visibility") or "public",
         "status": s.get("status", ""),
         "title_count": len(titles),
-        "titles": [_title_card(t, chapter_index, publishing_index) for t in titles if isinstance(t, dict)],
+        "titles": [_title_card(t, chapter_index, publishing_index, channel_index)
+                   for t in titles if isinstance(t, dict)],
     }
 
 
@@ -282,7 +329,9 @@ def series_list():
     msr = data.get("multi_series_roadmap", {}) if isinstance(data, dict) else {}
     chapter_index = _chapter_index()  # Path B: chapters merged from the manuscripts' extracted TOCs
     publishing_index = _publishing_index()  # KDP status overlaid from the ASIN_TRACKER — auto, never stale
-    all_cards = [_series_card(s, chapter_index, publishing_index) for s in (data.get("series") or []) if isinstance(s, dict)]
+    channel_index = _channel_index()  # distribution-federation state overlaid from CHANNEL_TRACKER — auto
+    all_cards = [_series_card(s, chapter_index, publishing_index, channel_index)
+                 for s in (data.get("series") or []) if isinstance(s, dict)]
     # One-source-of-truth visibility gate (KM ratify 2026-06-09): the public Series Pipeline view
     # shows only the public ladder. Private series (series_number: null, visibility: private) are
     # hidden unless KM explicitly surfaces them via ?include_private=1. Honest labels: we never drop
@@ -309,6 +358,7 @@ def series_list():
                 "" if include_private or not private_hidden
                 else f"{private_hidden} private series hidden from public view — "
                      "append ?include_private=1 (KM only) to surface them."),
+            "dispatch_gate": _dispatch_gate_summary(channel_index),
         },
         "series": series,
     })

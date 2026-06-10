@@ -1,0 +1,2698 @@
+{
+  "book_tree": [
+    {
+      "slug": "mangum_executive_foundational",
+      "name": "Mangum Executive Foundational (Series 0)",
+      "series_number": 0,
+      "visibility": "public",
+      "titles": [
+        {
+          "book_id": "01_strategic_finance",
+          "title": "Strategic Finance for Growth",
+          "publishing_state": null,
+          "chapter_count": 4,
+          "chapters": [
+            {
+              "id": "01_strategic_finance#ch1",
+              "n": 1,
+              "title": "Stage 1 -- Start-Up"
+            },
+            {
+              "id": "01_strategic_finance#ch2",
+              "n": 2,
+              "title": "Stage 2 -- Growth"
+            },
+            {
+              "id": "01_strategic_finance#ch3",
+              "n": 3,
+              "title": "Stage 3 -- Maturity"
+            },
+            {
+              "id": "01_strategic_finance#ch4",
+              "n": 4,
+              "title": "Stage 4 -- Decline and Renewal"
+            }
+          ]
+        },
+        {
+          "book_id": "02_harnessing_ai",
+          "title": "Harnessing Artificial Intelligence",
+          "publishing_state": null,
+          "chapter_count": 12,
+          "chapters": [
+            {
+              "id": "02_harnessing_ai#ch1",
+              "n": 1,
+              "title": "The AI Landscape in 2026: Why This Moment Demands Leadership"
+            },
+            {
+              "id": "02_harnessing_ai#ch2",
+              "n": 2,
+              "title": "The Economic Engine: How AI is Driving Measurable Value Across Industries"
+            },
+            {
+              "id": "02_harnessing_ai#ch3",
+              "n": 3,
+              "title": "The New Workforce: How AI is Redefining Jobs, Skills, and Careers"
+            },
+            {
+              "id": "02_harnessing_ai#ch4",
+              "n": 4,
+              "title": "Smart Classrooms: How AI is Transforming American Education"
+            },
+            {
+              "id": "02_harnessing_ai#ch5",
+              "n": 5,
+              "title": "Governing Intelligence: Federal and State Strategies for AI Adoption"
+            },
+            {
+              "id": "02_harnessing_ai#ch6",
+              "n": 6,
+              "title": "The AI Strategy Stack: A Business Leader's Guide to Competitive Advantage"
+            },
+            {
+              "id": "02_harnessing_ai#ch7",
+              "n": 7,
+              "title": "The Global Race for AI Supremacy: Competition, Cooperation, and the Path Forward"
+            },
+            {
+              "id": "02_harnessing_ai#ch8",
+              "n": 8,
+              "title": "The AI Energy Equation: Power, Infrastructure, and the Hidden Variable"
+            },
+            {
+              "id": "02_harnessing_ai#ch9",
+              "n": 9,
+              "title": "Sovereign and Distributed Technologies: Safeguards for Data Privacy and Digital Freedom"
+            },
+            {
+              "id": "02_harnessing_ai#ch10",
+              "n": 10,
+              "title": "The Robotics Revolution: When AI Gets a Body"
+            },
+            {
+              "id": "02_harnessing_ai#ch11",
+              "n": 11,
+              "title": "America's AI Roadmap: From Strategy to Action"
+            },
+            {
+              "id": "02_harnessing_ai#ch12",
+              "n": 12,
+              "title": "Your Personal AI Toolkit: A Practitioner's Guide to AI-Powered Productivity"
+            }
+          ]
+        },
+        {
+          "book_id": "03_blueprint",
+          "title": "Blueprint for Brilliance",
+          "publishing_state": null,
+          "chapter_count": 4,
+          "chapters": [
+            {
+              "id": "03_blueprint#ch1",
+              "n": 1,
+              "title": "Know Yourself --- The Self-Assessment Cycle"
+            },
+            {
+              "id": "03_blueprint#ch2",
+              "n": 2,
+              "title": "Grow Deliberately --- The Expansion Cycle"
+            },
+            {
+              "id": "03_blueprint#ch3",
+              "n": 3,
+              "title": "Build Balance --- The Stabilization Cycle"
+            },
+            {
+              "id": "03_blueprint#ch4",
+              "n": 4,
+              "title": "Embrace Change --- The Renewal Cycle"
+            }
+          ]
+        },
+        {
+          "book_id": "05_crypto",
+          "title": "Cryptocurrency Decoded",
+          "publishing_state": null,
+          "chapter_count": 18,
+          "chapters": [
+            {
+              "id": "05_crypto#ch1",
+              "n": 1,
+              "title": "What Is Cryptocurrency?"
+            },
+            {
+              "id": "05_crypto#ch2",
+              "n": 2,
+              "title": "A Brief History --- From Bitcoin to the Present"
+            },
+            {
+              "id": "05_crypto#ch3",
+              "n": 3,
+              "title": "Blockchain --- The Technology Behind It All"
+            },
+            {
+              "id": "05_crypto#ch4",
+              "n": 4,
+              "title": "Bitcoin, Ethereum, and XRP --- The Three Giants"
+            },
+            {
+              "id": "05_crypto#ch5",
+              "n": 5,
+              "title": "How Cryptocurrency Works"
+            },
+            {
+              "id": "05_crypto#ch6",
+              "n": 6,
+              "title": "Beyond Bitcoin --- Altcoins, Stablecoins, and Tokens"
+            },
+            {
+              "id": "05_crypto#ch7",
+              "n": 7,
+              "title": "Smart Contracts and Decentralized Applications"
+            },
+            {
+              "id": "05_crypto#ch8",
+              "n": 8,
+              "title": "Exchanges and Trading --- How to Evaluate and Participate"
+            },
+            {
+              "id": "05_crypto#ch9",
+              "n": 9,
+              "title": "Getting Started --- Your First Steps"
+            },
+            {
+              "id": "05_crypto#ch10",
+              "n": 10,
+              "title": "Technical Analysis and Trading Strategies"
+            },
+            {
+              "id": "05_crypto#ch11",
+              "n": 11,
+              "title": "Decentralized Finance --- Opportunity and Risk"
+            },
+            {
+              "id": "05_crypto#ch12",
+              "n": 12,
+              "title": "NFTs and Digital Ownership"
+            },
+            {
+              "id": "05_crypto#ch13",
+              "n": 13,
+              "title": "Cryptocurrency on the Balance Sheet"
+            },
+            {
+              "id": "05_crypto#ch14",
+              "n": 14,
+              "title": "Tax, Compliance, and Estate Planning"
+            },
+            {
+              "id": "05_crypto#ch15",
+              "n": 15,
+              "title": "The Regulatory Landscape"
+            },
+            {
+              "id": "05_crypto#ch16",
+              "n": 16,
+              "title": "Sovereignty and the Future of Money"
+            },
+            {
+              "id": "05_crypto#ch17",
+              "n": 17,
+              "title": "Future Trends --- What Finance Leaders Need to Watch"
+            },
+            {
+              "id": "05_crypto#ch18",
+              "n": 18,
+              "title": "Building Your Crypto Literacy"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "agentic_playbooks",
+      "name": "Agentic AI Playbooks for Executives (Series 1)",
+      "series_number": 1,
+      "visibility": "public",
+      "titles": [
+        {
+          "book_id": "01_cfos_finance",
+          "title": "AI Agents for CFOs",
+          "publishing_state": null,
+          "chapter_count": 12,
+          "chapters": [
+            {
+              "id": "01_cfos_finance#ch1",
+              "n": 1,
+              "title": "Why Traditional FP&A Is Broken in 2026"
+            },
+            {
+              "id": "01_cfos_finance#ch2",
+              "n": 2,
+              "title": "FP&A Agent Architecture"
+            },
+            {
+              "id": "01_cfos_finance#ch3",
+              "n": 3,
+              "title": "Building Rolling Forecast Agents"
+            },
+            {
+              "id": "01_cfos_finance#ch4",
+              "n": 4,
+              "title": "P&L Automation Agents"
+            },
+            {
+              "id": "01_cfos_finance#ch5",
+              "n": 5,
+              "title": "Cash Flow Prediction Agents"
+            },
+            {
+              "id": "01_cfos_finance#ch6",
+              "n": 6,
+              "title": "Real-Time Budget Variance Detection"
+            },
+            {
+              "id": "01_cfos_finance#ch7",
+              "n": 7,
+              "title": "Scenario Modeling Agents"
+            },
+            {
+              "id": "01_cfos_finance#ch8",
+              "n": 8,
+              "title": "Board-Ready Reporting Agents"
+            },
+            {
+              "id": "01_cfos_finance#ch9",
+              "n": 9,
+              "title": "Connecting Finance Agents to ERP Systems"
+            },
+            {
+              "id": "01_cfos_finance#ch10",
+              "n": 10,
+              "title": "Governance, Audit Trails, and SOX Compliance"
+            },
+            {
+              "id": "01_cfos_finance#ch11",
+              "n": 11,
+              "title": "Failure Stories and Lessons Learned"
+            },
+            {
+              "id": "01_cfos_finance#ch12",
+              "n": 12,
+              "title": "The CFO's 90-Day Deployment Roadmap"
+            }
+          ]
+        },
+        {
+          "book_id": "02_executives_decisions",
+          "title": "AI Agents for Executives",
+          "publishing_state": null,
+          "chapter_count": 11,
+          "chapters": [
+            {
+              "id": "02_executives_decisions#ch1",
+              "n": 1,
+              "title": "The Executive Decision Bottleneck in 2026"
+            },
+            {
+              "id": "02_executives_decisions#ch2",
+              "n": 2,
+              "title": "What Is an AI Agent? A Clear Taxonomy"
+            },
+            {
+              "id": "02_executives_decisions#ch3",
+              "n": 3,
+              "title": "Decision Agent Architecture"
+            },
+            {
+              "id": "02_executives_decisions#ch4",
+              "n": 4,
+              "title": "Building Your First Agent in Under 30 Minutes"
+            },
+            {
+              "id": "02_executives_decisions#ch5",
+              "n": 5,
+              "title": "Context Engineering"
+            },
+            {
+              "id": "02_executives_decisions#ch6",
+              "n": 6,
+              "title": "Scenario Modeling Agents"
+            },
+            {
+              "id": "02_executives_decisions#ch7",
+              "n": 7,
+              "title": "The Human-Agent Decision Loop"
+            },
+            {
+              "id": "02_executives_decisions#ch8",
+              "n": 8,
+              "title": "Governance and Guardrails"
+            },
+            {
+              "id": "02_executives_decisions#ch9",
+              "n": 9,
+              "title": "Real-World Implementation"
+            },
+            {
+              "id": "02_executives_decisions#ch10",
+              "n": 10,
+              "title": "When Decision Agents Fail — Case Studies and Lessons Learned"
+            },
+            {
+              "id": "02_executives_decisions#ch11",
+              "n": 11,
+              "title": "Your 30-Day Deployment Plan"
+            }
+          ]
+        },
+        {
+          "book_id": "03_leading_agents",
+          "title": "Leading with AI Agents",
+          "publishing_state": null,
+          "chapter_count": 11,
+          "chapters": [
+            {
+              "id": "03_leading_agents#ch1",
+              "n": 1,
+              "title": "The New Org Chart"
+            },
+            {
+              "id": "03_leading_agents#ch2",
+              "n": 2,
+              "title": "The Trust Calibration Scale"
+            },
+            {
+              "id": "03_leading_agents#ch3",
+              "n": 3,
+              "title": "Human vs. Agent Role Definition"
+            },
+            {
+              "id": "03_leading_agents#ch4",
+              "n": 4,
+              "title": "The Delegation Playbook"
+            },
+            {
+              "id": "03_leading_agents#ch5",
+              "n": 5,
+              "title": "Accountability When Agents Err"
+            },
+            {
+              "id": "03_leading_agents#ch6",
+              "n": 6,
+              "title": "Change Management for AI Teams"
+            },
+            {
+              "id": "03_leading_agents#ch7",
+              "n": 7,
+              "title": "The Skills That Matter Now"
+            },
+            {
+              "id": "03_leading_agents#ch8",
+              "n": 8,
+              "title": "Briefing Agents Like Direct Reports"
+            },
+            {
+              "id": "03_leading_agents#ch9",
+              "n": 9,
+              "title": "Measuring Hybrid Team Performance"
+            },
+            {
+              "id": "03_leading_agents#ch10",
+              "n": 10,
+              "title": "When Agent Deployments Fail — Case Studies and Lessons Learned"
+            },
+            {
+              "id": "03_leading_agents#ch11",
+              "n": 11,
+              "title": "Building a Co-Intelligence Culture"
+            }
+          ]
+        },
+        {
+          "book_id": "04_supply_chain",
+          "title": "AI Agents for Supply Chain",
+          "publishing_state": null,
+          "chapter_count": 11,
+          "chapters": [
+            {
+              "id": "04_supply_chain#ch1",
+              "n": 1,
+              "title": "The $15M Response Gap — Why Speed Beats Planning in 2026 Supply Chains"
+            },
+            {
+              "id": "04_supply_chain#ch2",
+              "n": 2,
+              "title": "Supply Chain Agent Architecture"
+            },
+            {
+              "id": "04_supply_chain#ch3",
+              "n": 3,
+              "title": "Demand Forecasting Agents"
+            },
+            {
+              "id": "04_supply_chain#ch4",
+              "n": 4,
+              "title": "Supplier Risk Scoring and Early-Warning Agents"
+            },
+            {
+              "id": "04_supply_chain#ch5",
+              "n": 5,
+              "title": "Logistics Optimization Agents"
+            },
+            {
+              "id": "04_supply_chain#ch6",
+              "n": 6,
+              "title": "Dynamic Inventory Management Agents"
+            },
+            {
+              "id": "04_supply_chain#ch7",
+              "n": 7,
+              "title": "Multi-Tier Visibility Agents"
+            },
+            {
+              "id": "04_supply_chain#ch8",
+              "n": 8,
+              "title": "Automated Disruption Response"
+            },
+            {
+              "id": "04_supply_chain#ch9",
+              "n": 9,
+              "title": "Sustainability and ESG Monitoring Agents"
+            },
+            {
+              "id": "04_supply_chain#ch10",
+              "n": 10,
+              "title": "When Supply Chain Agents Fail — Case Studies and Lessons Learned"
+            },
+            {
+              "id": "04_supply_chain#ch11",
+              "n": 11,
+              "title": "The Ops Leader's 60-Day Supply Chain Agent Deployment Roadmap"
+            }
+          ]
+        },
+        {
+          "book_id": "05_hr_talent",
+          "title": "AI Agents for HR",
+          "publishing_state": null,
+          "chapter_count": 11,
+          "chapters": [
+            {
+              "id": "05_hr_talent#ch1",
+              "n": 1,
+              "title": "The Talent Intelligence Gap — Why HR Teams Are Overwhelmed in 2026"
+            },
+            {
+              "id": "05_hr_talent#ch2",
+              "n": 2,
+              "title": "The Four-Layer System That Replaces 70% of Administrative HR Work"
+            },
+            {
+              "id": "05_hr_talent#ch3",
+              "n": 3,
+              "title": "From 1,500 Hours to 15 Minutes — The Recruiting Agent"
+            },
+            {
+              "id": "05_hr_talent#ch4",
+              "n": 4,
+              "title": "The Skills Heatmap — Seeing What Your Organization Cannot See"
+            },
+            {
+              "id": "05_hr_talent#ch5",
+              "n": 5,
+              "title": "Your CEO Leaves Tomorrow — What the Agent Already Knows"
+            },
+            {
+              "id": "05_hr_talent#ch6",
+              "n": 6,
+              "title": "Why Annual Reviews Are Already Dead — And What Replaces Them"
+            },
+            {
+              "id": "05_hr_talent#ch7",
+              "n": 7,
+              "title": "The $380K Mistake — When Pay Equity Agents Create New Inequities"
+            },
+            {
+              "id": "05_hr_talent#ch8",
+              "n": 8,
+              "title": "Modeling the Org Chart Before the Strategy Outpaces the People"
+            },
+            {
+              "id": "05_hr_talent#ch9",
+              "n": 9,
+              "title": "The Six-Month Warning — Detecting Resignation Before the Resume Update"
+            },
+            {
+              "id": "05_hr_talent#ch10",
+              "n": 10,
+              "title": "When HR Agents Fail — Case Studies and Lessons Learned"
+            },
+            {
+              "id": "05_hr_talent#ch11",
+              "n": 11,
+              "title": "The CHRO's 60-Day Talent Agent Deployment Roadmap"
+            }
+          ]
+        },
+        {
+          "book_id": "06_compliance_audit",
+          "title": "AI Agents for Compliance",
+          "publishing_state": null,
+          "chapter_count": 11,
+          "chapters": [
+            {
+              "id": "06_compliance_audit#ch1",
+              "n": 1,
+              "title": "The Compliance Explosion — Why Manual Processes Can't Keep Up in 2026"
+            },
+            {
+              "id": "06_compliance_audit#ch2",
+              "n": 2,
+              "title": "Compliance Agent Architecture: Monitoring, Enforcement, Reporting, and Verification Layers"
+            },
+            {
+              "id": "06_compliance_audit#ch3",
+              "n": 3,
+              "title": "Regulatory Intelligence Agents — Real-Time Rule Change Detection"
+            },
+            {
+              "id": "06_compliance_audit#ch4",
+              "n": 4,
+              "title": "Policy-as-Code Agents — Turning Regulations into Executable Rules"
+            },
+            {
+              "id": "06_compliance_audit#ch5",
+              "n": 5,
+              "title": "SOX & Internal Controls Monitoring and Testing Agents"
+            },
+            {
+              "id": "06_compliance_audit#ch6",
+              "n": 6,
+              "title": "Automated Audit Trail Generation with Cryptographic Verification (SIX-SOV Case Study)"
+            },
+            {
+              "id": "06_compliance_audit#ch7",
+              "n": 7,
+              "title": "Risk Scoring, Alerting, and Escalation Agents"
+            },
+            {
+              "id": "06_compliance_audit#ch8",
+              "n": 8,
+              "title": "AML, KYC, and Third-Party Compliance Monitoring Agents"
+            },
+            {
+              "id": "06_compliance_audit#ch9",
+              "n": 9,
+              "title": "Automated Regulatory Reporting and Filing Agents"
+            },
+            {
+              "id": "06_compliance_audit#ch10",
+              "n": 10,
+              "title": "When Compliance Agents Fail — Case Studies and Lessons Learned"
+            },
+            {
+              "id": "06_compliance_audit#ch11",
+              "n": 11,
+              "title": "The CFO/Compliance Officer's 60-Day Compliance Agent Deployment Roadmap"
+            }
+          ]
+        },
+        {
+          "book_id": "07_sales_revenue",
+          "title": "AI Agents for Sales & Revenue Operations",
+          "publishing_state": null,
+          "chapter_count": 11,
+          "chapters": [
+            {
+              "id": "07_sales_revenue#ch1",
+              "n": 1,
+              "title": "Why Sales Teams Are Drowning in Data But Starving for Revenue in 2026"
+            },
+            {
+              "id": "07_sales_revenue#ch2",
+              "n": 2,
+              "title": "Sales & RevOps Agent Architecture: Lead, Pipeline, Close, and Retention Layers"
+            },
+            {
+              "id": "07_sales_revenue#ch3",
+              "n": 3,
+              "title": "Lead Qualification and Scoring Agents That Prioritize High-Intent Prospects"
+            },
+            {
+              "id": "07_sales_revenue#ch4",
+              "n": 4,
+              "title": "Pipeline Management and Deal Forecasting Agents"
+            },
+            {
+              "id": "07_sales_revenue#ch5",
+              "n": 5,
+              "title": "Automated Deal Acceleration and Next-Best-Action Agents"
+            },
+            {
+              "id": "07_sales_revenue#ch6",
+              "n": 6,
+              "title": "Pricing Optimization and Dynamic Quoting Agents"
+            },
+            {
+              "id": "07_sales_revenue#ch7",
+              "n": 7,
+              "title": "Revenue Intelligence Agents — Real-Time Forecasting and Anomaly Detection"
+            },
+            {
+              "id": "07_sales_revenue#ch8",
+              "n": 8,
+              "title": "Customer Success & Renewal Prediction Agents"
+            },
+            {
+              "id": "07_sales_revenue#ch9",
+              "n": 9,
+              "title": "Connecting Sales Agents to CRM, Marketing Automation, and ERP (Salesforce, HubSpot)"
+            },
+            {
+              "id": "07_sales_revenue#ch10",
+              "n": 10,
+              "title": "When Sales Agents Fail — Case Studies and Lessons Learned"
+            },
+            {
+              "id": "07_sales_revenue#ch11",
+              "n": 11,
+              "title": "The CRO's 60-Day Sales Agent Deployment Roadmap"
+            }
+          ]
+        },
+        {
+          "book_id": "08_manufacturing_ops",
+          "title": "AI Agents for Manufacturing",
+          "publishing_state": null,
+          "chapter_count": 11,
+          "chapters": [
+            {
+              "id": "08_manufacturing_ops#ch1",
+              "n": 1,
+              "title": "The Data Explosion on the Factory Floor — Why Humans Can't Keep Up"
+            },
+            {
+              "id": "08_manufacturing_ops#ch2",
+              "n": 2,
+              "title": "Manufacturing Agent Architecture: Planning, Execution, Monitoring, and Improvement Layers"
+            },
+            {
+              "id": "08_manufacturing_ops#ch3",
+              "n": 3,
+              "title": "Production Scheduling and Sequencing Agents"
+            },
+            {
+              "id": "08_manufacturing_ops#ch4",
+              "n": 4,
+              "title": "Real-Time Quality Monitoring and Defect Detection Agents"
+            },
+            {
+              "id": "08_manufacturing_ops#ch5",
+              "n": 5,
+              "title": "Predictive Maintenance (PdM) Agents — From Reactive to Prescriptive"
+            },
+            {
+              "id": "08_manufacturing_ops#ch6",
+              "n": 6,
+              "title": "Capacity Planning and Dynamic Resource Allocation Agents"
+            },
+            {
+              "id": "08_manufacturing_ops#ch7",
+              "n": 7,
+              "title": "Overall Equipment Effectiveness (OEE) Optimization Agents"
+            },
+            {
+              "id": "08_manufacturing_ops#ch8",
+              "n": 8,
+              "title": "Safety, Compliance, and Energy Management Agents"
+            },
+            {
+              "id": "08_manufacturing_ops#ch9",
+              "n": 9,
+              "title": "Continuous Improvement (Lean/Six Sigma) Agents"
+            },
+            {
+              "id": "08_manufacturing_ops#ch10",
+              "n": 10,
+              "title": "When Manufacturing Agents Fail — Case Studies and Lessons Learned"
+            },
+            {
+              "id": "08_manufacturing_ops#ch11",
+              "n": 11,
+              "title": "The Ops Leader's 60-Day Manufacturing Agent Deployment Roadmap"
+            }
+          ]
+        },
+        {
+          "book_id": "09_multi_agent",
+          "title": "Multi-Agent AI Systems",
+          "publishing_state": null,
+          "chapter_count": 11,
+          "chapters": [
+            {
+              "id": "09_multi_agent#ch1",
+              "n": 1,
+              "title": "Why One Agent Is Powerful — But a Team of Agents Is Transformational"
+            },
+            {
+              "id": "09_multi_agent#ch2",
+              "n": 2,
+              "title": "Multi-Agent Architecture Patterns — Orchestrator, Hierarchical, Swarm, and Peer-to-Peer"
+            },
+            {
+              "id": "09_multi_agent#ch3",
+              "n": 3,
+              "title": "The Orchestrator Agent — Your AI Manager That Coordinates Everything"
+            },
+            {
+              "id": "09_multi_agent#ch4",
+              "n": 4,
+              "title": "The Proven 4-Agent Loop — Architect, Reviewer, Executor, Tester"
+            },
+            {
+              "id": "09_multi_agent#ch5",
+              "n": 5,
+              "title": "Agent Communication Protocols and Shared Memory Systems"
+            },
+            {
+              "id": "09_multi_agent#ch6",
+              "n": 6,
+              "title": "Constitutional Governance for Multi-Agent Teams"
+            },
+            {
+              "id": "09_multi_agent#ch7",
+              "n": 7,
+              "title": "Error Handling, Recovery, and Conflict Resolution Between Agents"
+            },
+            {
+              "id": "09_multi_agent#ch8",
+              "n": 8,
+              "title": "Monitoring, Observability, and Human Dashboard Design"
+            },
+            {
+              "id": "09_multi_agent#ch9",
+              "n": 9,
+              "title": "Scaling from 3 Agents to 50+ in Production"
+            },
+            {
+              "id": "09_multi_agent#ch10",
+              "n": 10,
+              "title": "When Multi-Agent Systems Fail"
+            },
+            {
+              "id": "09_multi_agent#ch11",
+              "n": 11,
+              "title": "Your 45-Day Multi-Agent Team Deployment Roadmap"
+            }
+          ]
+        },
+        {
+          "book_id": "10_scaling_enterprise",
+          "title": "Scaling AI Agents",
+          "publishing_state": null,
+          "chapter_count": 12,
+          "chapters": [
+            {
+              "id": "10_scaling_enterprise#ch1",
+              "n": 1,
+              "title": "The Pilot Trap — Why 80% of Agent Initiatives Fail to Scale"
+            },
+            {
+              "id": "10_scaling_enterprise#ch2",
+              "n": 2,
+              "title": "Enterprise Agent Platform Architecture — Shared Infrastructure vs. Function-Specific"
+            },
+            {
+              "id": "10_scaling_enterprise#ch3",
+              "n": 3,
+              "title": "Building a Center of Excellence for Agentic AI"
+            },
+            {
+              "id": "10_scaling_enterprise#ch4",
+              "n": 4,
+              "title": "Enterprise Governance, Policies, and Approval Workflows at Scale"
+            },
+            {
+              "id": "10_scaling_enterprise#ch5",
+              "n": 5,
+              "title": "Cost Management and Budgeting for Agent Infrastructure"
+            },
+            {
+              "id": "10_scaling_enterprise#ch6",
+              "n": 6,
+              "title": "Security, Zero-Trust, and Access Control for Large Agent Fleets"
+            },
+            {
+              "id": "10_scaling_enterprise#ch7",
+              "n": 7,
+              "title": "The Enterprise Agent Maturity Model — 5 Stages from Exploration to Autonomy"
+            },
+            {
+              "id": "10_scaling_enterprise#ch8",
+              "n": 8,
+              "title": "Cross-Functional Agent Coordination and Data Sharing"
+            },
+            {
+              "id": "10_scaling_enterprise#ch9",
+              "n": 9,
+              "title": "Measuring Portfolio-Level ROI Across the Organization"
+            },
+            {
+              "id": "10_scaling_enterprise#ch10",
+              "n": 10,
+              "title": "When Scaling Fails — Case Studies and Lessons Learned"
+            },
+            {
+              "id": "10_scaling_enterprise#ch11",
+              "n": 11,
+              "title": "The Multi-Mandate Operator — One Human, Many Fiduciary Hats"
+            },
+            {
+              "id": "10_scaling_enterprise#ch12",
+              "n": 12,
+              "title": "Your 90-Day Enterprise Scaling Roadmap"
+            }
+          ]
+        },
+        {
+          "book_id": "11_ma_due_diligence",
+          "title": "AI Agents for M&A",
+          "publishing_state": null,
+          "chapter_count": 11,
+          "chapters": [
+            {
+              "id": "11_ma_due_diligence#ch1",
+              "n": 1,
+              "title": "Why Traditional M&A Takes Too Long and Costs Too Much in 2026"
+            },
+            {
+              "id": "11_ma_due_diligence#ch2",
+              "n": 2,
+              "title": "M&A Agent Architecture — Screening, Due Diligence, Valuation, and Integration Layers"
+            },
+            {
+              "id": "11_ma_due_diligence#ch3",
+              "n": 3,
+              "title": "Deal-Flow Screening and Target Identification Agents"
+            },
+            {
+              "id": "11_ma_due_diligence#ch4",
+              "n": 4,
+              "title": "Financial Due Diligence and Quality-of-Earnings Agents"
+            },
+            {
+              "id": "11_ma_due_diligence#ch5",
+              "n": 5,
+              "title": "Synergy Modeling — Revenue, Cost, and Integration Economics"
+            },
+            {
+              "id": "11_ma_due_diligence#ch6",
+              "n": 6,
+              "title": "Risk and Red-Flag Detection — and the Independent Sign-Off That Protects the Deal"
+            },
+            {
+              "id": "11_ma_due_diligence#ch7",
+              "n": 7,
+              "title": "Automated Valuation — DCF, Comps, and Scenario Analysis at Speed"
+            },
+            {
+              "id": "11_ma_due_diligence#ch8",
+              "n": 8,
+              "title": "Post-Merger Integration Planning and 100-Day Execution"
+            },
+            {
+              "id": "11_ma_due_diligence#ch9",
+              "n": 9,
+              "title": "Post-Deal Monitoring and Synergy Realization Agents"
+            },
+            {
+              "id": "11_ma_due_diligence#ch10",
+              "n": 10,
+              "title": "When M&A Agents Fail — Case Studies and Lessons Learned"
+            },
+            {
+              "id": "11_ma_due_diligence#ch11",
+              "n": 11,
+              "title": "The Deal Team's 60-Day M&A Agent Deployment Roadmap"
+            }
+          ]
+        },
+        {
+          "book_id": "12_agentic_enterprise",
+          "title": "The Agentic Enterprise",
+          "publishing_state": null,
+          "chapter_count": 12,
+          "chapters": [
+            {
+              "id": "12_agentic_enterprise#ch1",
+              "n": 1,
+              "title": "The Synthesis — What We Built Across the Entire Series"
+            },
+            {
+              "id": "12_agentic_enterprise#ch2",
+              "n": 2,
+              "title": "The Enterprise Agent Ecosystem Map — How Every Agent Connects"
+            },
+            {
+              "id": "12_agentic_enterprise#ch3",
+              "n": 3,
+              "title": "Building Your 2027 Agentic AI Vision and Strategy"
+            },
+            {
+              "id": "12_agentic_enterprise#ch4",
+              "n": 4,
+              "title": "Investment Framework — How Much to Spend and Where to Start"
+            },
+            {
+              "id": "12_agentic_enterprise#ch5",
+              "n": 5,
+              "title": "Organizational Readiness Assessment — The 20-Question Diagnostic"
+            },
+            {
+              "id": "12_agentic_enterprise#ch6",
+              "n": 6,
+              "title": "The 12-Month Enterprise Implementation Timeline"
+            },
+            {
+              "id": "12_agentic_enterprise#ch7",
+              "n": 7,
+              "title": "Governance, Ethics, and Constitutional Frameworks at Scale — Including the K1–K4 Constitutional Invariants"
+            },
+            {
+              "id": "12_agentic_enterprise#ch8",
+              "n": 8,
+              "title": "Sovereign AI vs. Vendor Dependency — The Breathline Federation Model"
+            },
+            {
+              "id": "12_agentic_enterprise#ch9",
+              "n": 9,
+              "title": "Risk Management for the AI-First Enterprise"
+            },
+            {
+              "id": "12_agentic_enterprise#ch10",
+              "n": 10,
+              "title": "Measuring True Enterprise Value Creation from Agents"
+            },
+            {
+              "id": "12_agentic_enterprise#ch11",
+              "n": 11,
+              "title": "What I Would Do on Day 1 — My Personal Playbook if Starting Over"
+            },
+            {
+              "id": "12_agentic_enterprise#ch12",
+              "n": 12,
+              "title": "The Road Ahead — 2028 and Beyond"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "agentic_harness",
+      "name": "Building the Agentic Harness (Series 2)",
+      "series_number": 2,
+      "visibility": "public",
+      "titles": [
+        {
+          "book_id": "vol_01_sovereign_inference_and_memory",
+          "title": "Sovereign Inference & Memory",
+          "publishing_state": null,
+          "chapter_count": 9,
+          "chapters": [
+            {
+              "id": "vol_01_sovereign_inference_and_memory#ch1",
+              "n": 1,
+              "title": "The Inference Crisis of 2026"
+            },
+            {
+              "id": "vol_01_sovereign_inference_and_memory#ch2",
+              "n": 2,
+              "title": "Classify or Compromise — SIX-Lane Sensitivity Routing"
+            },
+            {
+              "id": "vol_01_sovereign_inference_and_memory#ch3",
+              "n": 3,
+              "title": "Receipts as Constitutional Anchors"
+            },
+            {
+              "id": "vol_01_sovereign_inference_and_memory#ch4",
+              "n": 4,
+              "title": "B51 — The Human Memory Stream — Voice Routes, Never Rules"
+            },
+            {
+              "id": "vol_01_sovereign_inference_and_memory#ch5",
+              "n": 5,
+              "title": "Living Books — Verify the Receipt"
+            },
+            {
+              "id": "vol_01_sovereign_inference_and_memory#ch6",
+              "n": 6,
+              "title": "Inference + Memory Coherence"
+            },
+            {
+              "id": "vol_01_sovereign_inference_and_memory#ch7",
+              "n": 7,
+              "title": "From Trust to Proof in Practice — Red-Teaming the Cockpit"
+            },
+            {
+              "id": "vol_01_sovereign_inference_and_memory#ch8",
+              "n": 8,
+              "title": "Scaling Sovereign Memory — Edge, Device, Air-Gap"
+            },
+            {
+              "id": "vol_01_sovereign_inference_and_memory#ch9",
+              "n": 9,
+              "title": "The Generational Handover"
+            }
+          ]
+        },
+        {
+          "book_id": "vol_02_the_primacy_cockpit",
+          "title": "The Primacy Cockpit",
+          "publishing_state": null,
+          "chapter_count": 12,
+          "chapters": [
+            {
+              "id": "vol_02_the_primacy_cockpit#ch1",
+              "n": 1,
+              "title": "The Stillpoint — Sovereign Node Identity & Health"
+            },
+            {
+              "id": "vol_02_the_primacy_cockpit#ch2",
+              "n": 2,
+              "title": "Breath-Gate Inbox — The Loudest Object on the Screen"
+            },
+            {
+              "id": "vol_02_the_primacy_cockpit#ch3",
+              "n": 3,
+              "title": "The Content-Agnostic Renderer — One UI, Any Node State"
+            },
+            {
+              "id": "vol_02_the_primacy_cockpit#ch4",
+              "n": 4,
+              "title": "Kanban + Map — Two Views of the Same Work"
+            },
+            {
+              "id": "vol_02_the_primacy_cockpit#ch5",
+              "n": 5,
+              "title": "Roles Surface & Operator-Defined Reality"
+            },
+            {
+              "id": "vol_02_the_primacy_cockpit#ch6",
+              "n": 6,
+              "title": "SIX / B51 + Artifact Review — Sensitivity, Attention, and Memory"
+            },
+            {
+              "id": "vol_02_the_primacy_cockpit#ch7",
+              "n": 7,
+              "title": "Receipts, Audit & Cylinder Chain — The Verifiable Package"
+            },
+            {
+              "id": "vol_02_the_primacy_cockpit#ch8",
+              "n": 8,
+              "title": "Multi-Mandate Strip & Federation Collab"
+            },
+            {
+              "id": "vol_02_the_primacy_cockpit#ch9",
+              "n": 9,
+              "title": "Drift / Stillpoint Synod / GAP_REGISTER — Catching Divergence Before the Boundary Shifts"
+            },
+            {
+              "id": "vol_02_the_primacy_cockpit#ch10",
+              "n": 10,
+              "title": "Separability, Offline Build & Live Cutover"
+            },
+            {
+              "id": "vol_02_the_primacy_cockpit#ch11",
+              "n": 11,
+              "title": "Extending the Cockpit — Agent-Authored Views *(forward-arc — Phase 7+)*"
+            },
+            {
+              "id": "vol_02_the_primacy_cockpit#ch12",
+              "n": 12,
+              "title": "The Cockpit as Generational Artifact"
+            }
+          ]
+        },
+        {
+          "book_id": "vol_03_governed_dev_loop_and_self_building_harness",
+          "title": "The Harness That Builds Itself — Under Human Witness",
+          "publishing_state": null,
+          "chapter_count": 5,
+          "chapters": [
+            {
+              "id": "vol_03_governed_dev_loop_and_self_building_harness#ch1",
+              "n": 1,
+              "title": "Role & Capability Configuration"
+            },
+            {
+              "id": "vol_03_governed_dev_loop_and_self_building_harness#ch2",
+              "n": 2,
+              "title": "Proposal Mechanics"
+            },
+            {
+              "id": "vol_03_governed_dev_loop_and_self_building_harness#ch3",
+              "n": 3,
+              "title": "The Hard Constitutional Boundary"
+            },
+            {
+              "id": "vol_03_governed_dev_loop_and_self_building_harness#ch4",
+              "n": 4,
+              "title": "Advanced Loop Patterns"
+            },
+            {
+              "id": "vol_03_governed_dev_loop_and_self_building_harness#ch5",
+              "n": 5,
+              "title": "The Drift Safeguard at Depth"
+            }
+          ]
+        },
+        {
+          "book_id": "vol_04_federation_and_partner_device_gateway",
+          "title": "Federated Sovereignty",
+          "publishing_state": null,
+          "chapter_count": 12,
+          "chapters": [
+            {
+              "id": "vol_04_federation_and_partner_device_gateway#ch1",
+              "n": 1,
+              "title": "The Sovereign Node — One Command Mints"
+            },
+            {
+              "id": "vol_04_federation_and_partner_device_gateway#ch2",
+              "n": 2,
+              "title": "Multi-Mandate Foundations"
+            },
+            {
+              "id": "vol_04_federation_and_partner_device_gateway#ch3",
+              "n": 3,
+              "title": "Receipted-Shard Propagation Protocol"
+            },
+            {
+              "id": "vol_04_federation_and_partner_device_gateway#ch4",
+              "n": 4,
+              "title": "Federation Resonance — Not Coordination"
+            },
+            {
+              "id": "vol_04_federation_and_partner_device_gateway#ch5",
+              "n": 5,
+              "title": "Guild Yield Sharing"
+            },
+            {
+              "id": "vol_04_federation_and_partner_device_gateway#ch6",
+              "n": 6,
+              "title": "Constitutional Coherence Across Nodes"
+            },
+            {
+              "id": "vol_04_federation_and_partner_device_gateway#ch7",
+              "n": 7,
+              "title": "Cross-Node Memory & Witness"
+            },
+            {
+              "id": "vol_04_federation_and_partner_device_gateway#ch8",
+              "n": 8,
+              "title": "Scoped Partner & Investor Access Pattern"
+            },
+            {
+              "id": "vol_04_federation_and_partner_device_gateway#ch9",
+              "n": 9,
+              "title": "Drift Safeguard Across Nodes"
+            },
+            {
+              "id": "vol_04_federation_and_partner_device_gateway#ch10",
+              "n": 10,
+              "title": "Multi-Tenant Ship-Blank Atrium"
+            },
+            {
+              "id": "vol_04_federation_and_partner_device_gateway#ch11",
+              "n": 11,
+              "title": "Security, Adversarial & Recovery"
+            },
+            {
+              "id": "vol_04_federation_and_partner_device_gateway#ch12",
+              "n": 12,
+              "title": "The Federated Generational Network"
+            }
+          ]
+        },
+        {
+          "book_id": "vol_05_yield_organism_and_generational_prosperity",
+          "title": "The Sovereign Yield Engine",
+          "publishing_state": null,
+          "chapter_count": 10,
+          "chapters": [
+            {
+              "id": "vol_05_yield_organism_and_generational_prosperity#ch1",
+              "n": 1,
+              "title": "The Yield Organism — Primitives Overview"
+            },
+            {
+              "id": "vol_05_yield_organism_and_generational_prosperity#ch2",
+              "n": 2,
+              "title": "Crypto Engine & Receipted Value Flows"
+            },
+            {
+              "id": "vol_05_yield_organism_and_generational_prosperity#ch3",
+              "n": 3,
+              "title": "Autonomy Ledgers & Incentive Alignment"
+            },
+            {
+              "id": "vol_05_yield_organism_and_generational_prosperity#ch4",
+              "n": 4,
+              "title": "Yield Mechanisms & Compounding Models"
+            },
+            {
+              "id": "vol_05_yield_organism_and_generational_prosperity#ch5",
+              "n": 5,
+              "title": "Guild & Federation Yield Sharing"
+            },
+            {
+              "id": "vol_05_yield_organism_and_generational_prosperity#ch6",
+              "n": 6,
+              "title": "Family Office & Generational Structures"
+            },
+            {
+              "id": "vol_05_yield_organism_and_generational_prosperity#ch7",
+              "n": 7,
+              "title": "Risk, Adversarial Economics & Safeguards"
+            },
+            {
+              "id": "vol_05_yield_organism_and_generational_prosperity#ch8",
+              "n": 8,
+              "title": "Regulatory Compliance & Provable Yield"
+            },
+            {
+              "id": "vol_05_yield_organism_and_generational_prosperity#ch9",
+              "n": 9,
+              "title": "Implementation Patterns & Atrium Integration"
+            },
+            {
+              "id": "vol_05_yield_organism_and_generational_prosperity#ch10",
+              "n": 10,
+              "title": "The Generational Prosperity Close"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "programmable_sovereign_erp",
+      "name": "Programmable Sovereign ERP (Series 3) — The Business Operating System Governed by Living Constitutional Code",
+      "series_number": 3,
+      "visibility": "public",
+      "titles": [
+        {
+          "book_id": "vol_01_immutable_core",
+          "title": "The Immutable Core: Receipts, Cylinders & Constitutional Truth",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "vol_02_programmable_governance_skin",
+          "title": "Programmable Governance Skin: YAML Roles, Action Classes & Breath-Gates",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "vol_03_helix_book_writes_backend",
+          "title": "Helix: When the Book Literally Writes the Backend",
+          "publishing_state": null,
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "vol_03_helix_book_writes_backend#ch1",
+              "n": 1,
+              "title": "The Documentation Lie"
+            },
+            {
+              "id": "vol_03_helix_book_writes_backend#ch2",
+              "n": 2,
+              "title": "B35 Helix Protocol Foundations"
+            },
+            {
+              "id": "vol_03_helix_book_writes_backend#ch3",
+              "n": 3,
+              "title": "From Prose to Executable Artifacts"
+            },
+            {
+              "id": "vol_03_helix_book_writes_backend#ch4",
+              "n": 4,
+              "title": "Constitutional Guardrails in Rendering"
+            },
+            {
+              "id": "vol_03_helix_book_writes_backend#ch5",
+              "n": 5,
+              "title": "Atrium as the Helix Rendering Cockpit"
+            },
+            {
+              "id": "vol_03_helix_book_writes_backend#ch6",
+              "n": 6,
+              "title": "Industry Pattern Rendering"
+            },
+            {
+              "id": "vol_03_helix_book_writes_backend#ch7",
+              "n": 7,
+              "title": "Drift Control & Self-Healing Renders"
+            },
+            {
+              "id": "vol_03_helix_book_writes_backend#ch8",
+              "n": 8,
+              "title": "LGP Synthesis — The Book as Generational Covenant"
+            }
+          ]
+        },
+        {
+          "book_id": "vol_04_industry_sovereign_erps_generational",
+          "title": "Industry Sovereign ERPs & Generational Continuity",
+          "publishing_state": null,
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "vol_04_industry_sovereign_erps_generational#ch1",
+              "n": 1,
+              "title": "The Sovereign ERP Pattern Language"
+            },
+            {
+              "id": "vol_04_industry_sovereign_erps_generational#ch2",
+              "n": 2,
+              "title": "Dairy / Agrifood Sovereign ERP Pattern"
+            },
+            {
+              "id": "vol_04_industry_sovereign_erps_generational#ch3",
+              "n": 3,
+              "title": "Manufacturing Sovereign ERP Pattern"
+            },
+            {
+              "id": "vol_04_industry_sovereign_erps_generational#ch4",
+              "n": 4,
+              "title": "Electronics Sovereign ERP Pattern"
+            },
+            {
+              "id": "vol_04_industry_sovereign_erps_generational#ch5",
+              "n": 5,
+              "title": "Professional Services Sovereign ERP Pattern"
+            },
+            {
+              "id": "vol_04_industry_sovereign_erps_generational#ch6",
+              "n": 6,
+              "title": "Family Office & Multi-Generational ERP Structures"
+            },
+            {
+              "id": "vol_04_industry_sovereign_erps_generational#ch7",
+              "n": 7,
+              "title": "Forkability & Verifiable Business Handoff"
+            },
+            {
+              "id": "vol_04_industry_sovereign_erps_generational#ch8",
+              "n": 8,
+              "title": "LGP Synthesis — The Sovereign ERP as Family Covenant"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "quadroof",
+      "name": "QuadRoof Investor Series — PRIVATE (per KM ratify 2026-06-07: QuadRoof is a PRIVATE series, NOT the public Series 4. Public Series 4 is now 'Sovereign Token & Economic Organism'. Formerly mis-slotted as S4.)",
+      "series_number": null,
+      "visibility": "private",
+      "titles": [
+        {
+          "book_id": "01_investor_guide",
+          "title": "Investing in QuadRoof",
+          "publishing_state": null,
+          "chapter_count": 3,
+          "chapters": [
+            {
+              "id": "01_investor_guide#ch9",
+              "n": 9,
+              "title": "The Integrated Walkthrough"
+            },
+            {
+              "id": "01_investor_guide#ch10",
+              "n": 10,
+              "title": "What This Means for the Investor"
+            },
+            {
+              "id": "01_investor_guide#ch11",
+              "n": 11,
+              "title": "Where the Architecture Goes Next"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "quantum_unveiled_private",
+      "name": "Quantum / Unveiled Learning Series — PRIVATE (per KM ratify 2026-06-07: stays private/parked, NOT a public Series 4. Respects external partner IP — Unveiled/Jacob network. Concept doc: kdp/private_quantum_unveiled/PRIVATE_QUANTUM_CONCEPT_2026-06-06.md)",
+      "series_number": null,
+      "visibility": "private",
+      "titles": [
+        {
+          "book_id": "quantum_dna_alignment",
+          "title": "Quantum DNA Alignment for Generational Prosperity",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        }
+      ]
+    },
+    {
+      "slug": "metalayer_companion",
+      "name": "Metalayer Companion — One Arc, Two Altitudes (Private)",
+      "series_number": null,
+      "visibility": "private",
+      "titles": [
+        {
+          "book_id": "the_sealing_hand",
+          "title": "The Sealing Hand",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "breath_and_echo",
+          "title": "Breath & Echo: The Meta Lens on Sovereign Co-Creation",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        }
+      ]
+    },
+    {
+      "slug": "sovereign_token_economic_organism",
+      "name": "Sovereign Token & Economic Organism (Series 4)",
+      "series_number": 4,
+      "visibility": "public",
+      "titles": [
+        {
+          "book_id": "vol_01_sovereign_token_substrate",
+          "title": "The Sovereign Token Substrate — Receipts, Obligations & Private Minting",
+          "publishing_state": null,
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "vol_01_sovereign_token_substrate#ch1",
+              "n": 1,
+              "title": "The Crisis of Mutable Token Ledgers"
+            },
+            {
+              "id": "vol_01_sovereign_token_substrate#ch2",
+              "n": 2,
+              "title": "The Receipt as Token Atomic Unit"
+            },
+            {
+              "id": "vol_01_sovereign_token_substrate#ch3",
+              "n": 3,
+              "title": "B32 Obligation Cylinder for Token Accounting"
+            },
+            {
+              "id": "vol_01_sovereign_token_substrate#ch4",
+              "n": 4,
+              "title": "Private Minting Under Absolute Human Primacy"
+            },
+            {
+              "id": "vol_01_sovereign_token_substrate#ch5",
+              "n": 5,
+              "title": "Token Policy Declaration at Genesis"
+            },
+            {
+              "id": "vol_01_sovereign_token_substrate#ch6",
+              "n": 6,
+              "title": "Substrate Visibility — Honest Views of the Token Ledger"
+            },
+            {
+              "id": "vol_01_sovereign_token_substrate#ch7",
+              "n": 7,
+              "title": "Honest Realism vs Public Blockchain Substrates"
+            },
+            {
+              "id": "vol_01_sovereign_token_substrate#ch8",
+              "n": 8,
+              "title": "Sovereign Token Substrate Foundation & LGP Transition"
+            }
+          ]
+        },
+        {
+          "book_id": "vol_02_governed_token_mechanics",
+          "title": "Governed Token Mechanics — YAML Policy, Action Classes & Breath-Gates",
+          "publishing_state": null,
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "vol_02_governed_token_mechanics#ch1",
+              "n": 1,
+              "title": "YAML as Constitutional Skin for Tokens"
+            },
+            {
+              "id": "vol_02_governed_token_mechanics#ch2",
+              "n": 2,
+              "title": "Operator-Defined Token Roles & Lattices"
+            },
+            {
+              "id": "vol_02_governed_token_mechanics#ch3",
+              "n": 3,
+              "title": "Action Classes for Token Operations"
+            },
+            {
+              "id": "vol_02_governed_token_mechanics#ch4",
+              "n": 4,
+              "title": "Breath-Gates on Token Movements"
+            },
+            {
+              "id": "vol_02_governed_token_mechanics#ch5",
+              "n": 5,
+              "title": "Industry Token Policy Examples"
+            },
+            {
+              "id": "vol_02_governed_token_mechanics#ch6",
+              "n": 6,
+              "title": "Governed Dev Loop for Token Extensions"
+            },
+            {
+              "id": "vol_02_governed_token_mechanics#ch7",
+              "n": 7,
+              "title": "Multi-Mandate & Scoped Token Access"
+            },
+            {
+              "id": "vol_02_governed_token_mechanics#ch8",
+              "n": 8,
+              "title": "Drift Control, Self-Healing & Generational Token Config"
+            }
+          ]
+        },
+        {
+          "book_id": "vol_03_yield_organism_integration",
+          "title": "Yield Organism Integration — Private Tokens & Compounding Prosperity",
+          "publishing_state": null,
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "vol_03_yield_organism_integration#ch1",
+              "n": 1,
+              "title": "Why Ungoverned Token Yield Is Eventual Theft"
+            },
+            {
+              "id": "vol_03_yield_organism_integration#ch2",
+              "n": 2,
+              "title": "Token Yield Primitives & Receipted Staking"
+            },
+            {
+              "id": "vol_03_yield_organism_integration#ch3",
+              "n": 3,
+              "title": "Private AMM & Liquidity Mechanics"
+            },
+            {
+              "id": "vol_03_yield_organism_integration#ch4",
+              "n": 4,
+              "title": "Governed Revenue Sharing & Guild Economics"
+            },
+            {
+              "id": "vol_03_yield_organism_integration#ch5",
+              "n": 5,
+              "title": "Family Office & Multi-Generational Token Structures"
+            },
+            {
+              "id": "vol_03_yield_organism_integration#ch6",
+              "n": 6,
+              "title": "Atrium Yield Meter & Token Dashboard"
+            },
+            {
+              "id": "vol_03_yield_organism_integration#ch7",
+              "n": 7,
+              "title": "Risk Modeling & Adversarial Token Economics"
+            },
+            {
+              "id": "vol_03_yield_organism_integration#ch8",
+              "n": 8,
+              "title": "LGP Close — Tokens as Multi-Generational Alignment Tools"
+            }
+          ]
+        },
+        {
+          "book_id": "vol_04_legal_hardening_forkability_generational",
+          "title": "Legal Hardening, Forkability & Generational Token Systems",
+          "publishing_state": null,
+          "chapter_count": 9,
+          "chapters": [
+            {
+              "id": "vol_04_legal_hardening_forkability_generational#ch1",
+              "n": 1,
+              "title": "Why Most Token Systems Fail Generational Prosperity"
+            },
+            {
+              "id": "vol_04_legal_hardening_forkability_generational#ch2",
+              "n": 2,
+              "title": "Breath 28 Legal Primitives for Tokens"
+            },
+            {
+              "id": "vol_04_legal_hardening_forkability_generational#ch3",
+              "n": 3,
+              "title": "Forkability as Core Sovereignty Feature"
+            },
+            {
+              "id": "vol_04_legal_hardening_forkability_generational#ch4",
+              "n": 4,
+              "title": "Verifiable Token Package for Heirs & Auditors"
+            },
+            {
+              "id": "vol_04_legal_hardening_forkability_generational#ch5",
+              "n": 5,
+              "title": "Honest Comparison to Blockchain Token Systems"
+            },
+            {
+              "id": "vol_04_legal_hardening_forkability_generational#ch6",
+              "n": 6,
+              "title": "Industry & Family Token Worked Examples"
+            },
+            {
+              "id": "vol_04_legal_hardening_forkability_generational#ch7",
+              "n": 7,
+              "title": "Exit Guarantees, Subsidized Forks & Dignity Preservation"
+            },
+            {
+              "id": "vol_04_legal_hardening_forkability_generational#ch8",
+              "n": 8,
+              "title": "Atrium as the Family Token Governance Cockpit"
+            },
+            {
+              "id": "vol_04_legal_hardening_forkability_generational#ch9",
+              "n": 9,
+              "title": "LGP Synthesis & Call to Action"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "full_production_erp",
+      "name": "Full Production ERP (Series 5)",
+      "series_number": 5,
+      "visibility": "public",
+      "titles": [
+        {
+          "book_id": "s5_01_immutable_core",
+          "title": "The Immutable Core — Receipts, Cylinders & Constitutional Truth",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_02_governance_skin",
+          "title": "Programmable Governance Skin — Roles, Action Classes & Breath-Gates",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_03_helix",
+          "title": "Helix — When the Book Literally Writes the Backend",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_04_coherence_ledger",
+          "title": "Coherence as Living Ledger — Real-Time Drift Detection & Integrity",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_05_sovereign_object_model",
+          "title": "Sovereign Object Model — Registry, Manifests & Merkle Integrity",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_06_distribution_matrix_gov",
+          "title": "Distribution Matrix Governance — Books as the Authoritative Join",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_07_sovereign_financials",
+          "title": "Sovereign Financials — General Ledger, Controlling & Reporting",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_08_treasury_cash",
+          "title": "Treasury & Cash Management — Liquidity, Forecasting & Compliance",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_09_supply_chain",
+          "title": "Supply Chain Execution — Procurement, Logistics & Inventory",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_10_manufacturing_quality",
+          "title": "Manufacturing & Quality — Production, MES & Traceability",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_11_project_portfolio",
+          "title": "Project & Portfolio Management — Planning, Execution & Governance",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_12_asset_maintenance",
+          "title": "Asset & Maintenance Management — Lifecycle & Reliability",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_13_human_capital_payroll",
+          "title": "Human Capital & Sovereign Payroll — Roles, Compensation & Continuity",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_14_compliance_audit",
+          "title": "Compliance & Audit Automation — Standards Ingestion & Evidence",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_15_revenue_o2c",
+          "title": "Revenue & Order-to-Cash — Contracts, Billing & Recognition",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_16_procure_to_pay",
+          "title": "Procurement-to-Pay — Sourcing, Contracts & Supplier Governance",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_17_analytics_decision",
+          "title": "Analytics & Decision Intelligence — Real-Time Insights with Provenance",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_18_multi_entity_consolidation",
+          "title": "Multi-Entity & Consolidation — Global Structures & Intercompany",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_19_manufacturing_erp",
+          "title": "Manufacturing Sovereign ERP — Discrete & Process Operations",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_20_distribution_wholesale",
+          "title": "Distribution & Wholesale — Inventory, Logistics & Channel Management",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_21_professional_services",
+          "title": "Professional Services — Project Billing, Resource & Knowledge",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_22_energy_resources",
+          "title": "Energy & Resources — Asset-Intensive Operations & Compliance",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_23_construction_projects",
+          "title": "Construction & Projects — Job Costing, Subcontractor & Safety",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_24_regulated_industries",
+          "title": "Regulated Industries — Traceability, Quality & Audit Readiness",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_25_multi_standard_ingestion",
+          "title": "Multi-Standard Ingestion — Mapping External Boards into Sovereign Rules",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_26_federation_node_gov",
+          "title": "Federation Node Governance — Cross-Node Validation & Sharing",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_27_generational_continuity",
+          "title": "Generational Continuity — Private Series, Handoff Rituals & Legacy",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_28_private_series_templates",
+          "title": "Private Series Templates — Family & Enterprise Constitutions",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_29_exception_gov_workflows",
+          "title": "Exception & Governance Workflows — Human Gate Patterns at Scale",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_30_social_external_distribution",
+          "title": "Social & External Distribution — Content Propagation with Provenance",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_31_federation_marketplace",
+          "title": "Federation Marketplace — Shared Patterns & Verified Blueprints",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s5_32_erp_operations_console",
+          "title": "Sovereign ERP Operations Console — Atrium as the Single Operating Surface",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        }
+      ]
+    },
+    {
+      "slug": "inter_node_sovereignty",
+      "name": "Inter-Node Sovereignty: Communication, Collaboration & Distributed Compute (Series 6)",
+      "series_number": 6,
+      "visibility": "public",
+      "titles": [
+        {
+          "book_id": "vol_01_receipted_inter_node_messaging",
+          "title": "Receipted Inter-Node Messaging",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "vol_02_sovereign_collaboration",
+          "title": "Sovereign Collaboration",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "vol_03_distributed_sovereign_compute",
+          "title": "Distributed Sovereign Compute",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "vol_04_resonance_coordination",
+          "title": "Resonance Coordination (not central control)",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "vol_05_inter_node_trust_boundaries_handoff",
+          "title": "Inter-Node Trust Boundaries & Handoff",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        }
+      ]
+    },
+    {
+      "slug": "zero_trust_sovereignty",
+      "name": "Zero-Trust Sovereignty: Shields, Verification & Sovereign Data Storage (Series 7)",
+      "series_number": 7,
+      "visibility": "public",
+      "titles": [
+        {
+          "book_id": "vol_01_zero_trust_node_architecture",
+          "title": "Zero-Trust Node Architecture",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "vol_02_shields_protective_layers",
+          "title": "Shields as Protective Layers",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "vol_03_sovereign_data_storage",
+          "title": "Sovereign Data Storage Model",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "vol_04_verified_data_flows",
+          "title": "Verified Data Flows Across Nodes",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "vol_05_private_shared_storage_governance",
+          "title": "Private vs Shared Storage Governance",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "vol_06_resilience_recovery_shields",
+          "title": "Resilience & Recovery Shields",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        }
+      ]
+    },
+    {
+      "slug": "sovereign_ux",
+      "name": "Sovereign UX — Real-Time Rendering, Human Alignment & Aesthetic Resonance (Series 8 — RATIFIED KM 2026-06-08)",
+      "series_number": 8,
+      "visibility": "public",
+      "titles": [
+        {
+          "book_id": "s8_01_sovereign_lens",
+          "title": "The Sovereign Lens — Content-Agnostic Rendering & Honest Views",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s8_02_breath_gated_interfaces",
+          "title": "Breath-Gated Interfaces — Human Primacy in Every Pixel",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s8_03_aesthetic_resonance",
+          "title": "Aesthetic Resonance — Beauty as Functional Attention",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s8_04_atrium_living_os",
+          "title": "Atrium as Living OS — The Sovereign Decision Cockpit",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s8_05_generational_ux",
+          "title": "Generational UX — Interfaces That Heirs Actually Want to Inherit",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s8_06_federation_ux",
+          "title": "Federation UX — Resonance Across Sovereign Nodes",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s8_07_zero_trust_ux",
+          "title": "Zero-Trust UX — Shields, Verification & Adversarial Clarity",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        },
+        {
+          "book_id": "s8_08_ux_executable_covenant",
+          "title": "UX as Executable Covenant — The Living Proof",
+          "publishing_state": null,
+          "chapter_count": 0,
+          "chapters": []
+        }
+      ]
+    }
+  ],
+  "code_tree": [
+    {
+      "path": "src/sovereign_agent/_portal_launcher.py",
+      "size": 1288,
+      "purpose": "Thin launcher shim for the 'start-sovereign-portal' console script."
+    },
+    {
+      "path": "src/sovereign_agent/bootstrap.py",
+      "size": 10452,
+      "purpose": "Pure Python Bootstrap for breathline_primitives."
+    },
+    {
+      "path": "src/sovereign_agent/breath_inventory.py",
+      "size": 4279,
+      "purpose": "Breath Inventory Tier-1 defaults (P0-4) — the 'always approve on' cluster, embedded."
+    },
+    {
+      "path": "src/sovereign_agent/capabilities/economics.py",
+      "size": 4889,
+      "purpose": "Economic / Yield Capability Module — Enhanced for Generational Use"
+    },
+    {
+      "path": "src/sovereign_agent/capabilities/legacy.py",
+      "size": 2798,
+      "purpose": "Legacy & Estate Capability Module — Enhanced for Multi-Generational Use"
+    },
+    {
+      "path": "src/sovereign_agent/capabilities/research.py",
+      "size": 1058,
+      "purpose": "Research Capability Module (with attestation)"
+    },
+    {
+      "path": "src/sovereign_agent/compliance/compliance_engine.py",
+      "size": 19365,
+      "purpose": "ComplianceEngine + VerifiableInference — Sovereign bridge to Playbook 6 + SIX patterns."
+    },
+    {
+      "path": "src/sovereign_agent/compliance/human_approval_gate.py",
+      "size": 2990,
+      "purpose": "HumanApprovalGate + EscalationPolicy — lightweight, sovereign, configurable."
+    },
+    {
+      "path": "src/sovereign_agent/compliance/policy_loader.py",
+      "size": 7251,
+      "purpose": "PolicyLoader — Rich, dynamic loader for Playbook 6-style governance policies."
+    },
+    {
+      "path": "src/sovereign_agent/config.py",
+      "size": 6331,
+      "purpose": "Sovereign System Configuration & Root Resolution"
+    },
+    {
+      "path": "src/sovereign_agent/core.py",
+      "size": 12289,
+      "purpose": "SovereignAgent - Robust Generational Agent Core"
+    },
+    {
+      "path": "src/sovereign_agent/demo_roles/corporate_cfo_demo/role.py",
+      "size": 1717,
+      "purpose": "corporate_cfo_demo role handler (pure, self-contained)."
+    },
+    {
+      "path": "src/sovereign_agent/demo_roles/family_cfo_demo/role.py",
+      "size": 2387,
+      "purpose": "family_cfo_demo role handler (pure, self-contained, no external dependencies)."
+    },
+    {
+      "path": "src/sovereign_agent/demo_roles/federation_procurement_coordinator/role.py",
+      "size": 5997,
+      "purpose": "federation_procurement_coordinator role handler (FEC-T2)."
+    },
+    {
+      "path": "src/sovereign_agent/demo_roles/general_sovereign_demo/role.py",
+      "size": 635,
+      "purpose": "general_sovereign_demo — ultra-light personal sovereignty demo handler."
+    },
+    {
+      "path": "src/sovereign_agent/demo_roles/ma_data_room/role.py",
+      "size": 2617,
+      "purpose": "Data-Room Classifier — extruded from AI Agents for M&A (Book 11), Ch 2:"
+    },
+    {
+      "path": "src/sovereign_agent/kdp_metadata.py",
+      "size": 3951,
+      "purpose": "kdp_metadata.py — parse a book's `metadata_v1.0.md` into KDP-ready fields."
+    },
+    {
+      "path": "src/sovereign_agent/kernel_integration.py",
+      "size": 4740,
+      "purpose": "Kernel Primitives Integration — Sovereign bridge to breathline-federation/platform/kernel/primitives."
+    },
+    {
+      "path": "src/sovereign_agent/node_api/auth.py",
+      "size": 6151,
+      "purpose": "principal_id-bearer auth middleware."
+    },
+    {
+      "path": "src/sovereign_agent/node_api/deps.py",
+      "size": 2927,
+      "purpose": "Singleton wiring of the Python core for the Node API process."
+    },
+    {
+      "path": "src/sovereign_agent/node_api/errors.py",
+      "size": 4218,
+      "purpose": "Loud, contextual error builder per CONSTITUTION §4 and contract_v1.yaml."
+    },
+    {
+      "path": "src/sovereign_agent/node_api/json_provider.py",
+      "size": 4533,
+      "purpose": "Thin-waist JSON shim — translate Python-native receipt types into JSON"
+    },
+    {
+      "path": "src/sovereign_agent/node_api/routes/coherence.py",
+      "size": 7294,
+      "purpose": "Section — Book↔Code Coherence (Step D)."
+    },
+    {
+      "path": "src/sovereign_agent/node_api/routes/hopper.py",
+      "size": 12595,
+      "purpose": "Section — Hopper lane (read → one-gate write)."
+    },
+    {
+      "path": "src/sovereign_agent/node_api/routes/node.py",
+      "size": 4562,
+      "purpose": "Section A — Node identity, health, ladder."
+    },
+    {
+      "path": "src/sovereign_agent/node_api/routes/obligations.py",
+      "size": 5017,
+      "purpose": "Section — Obligations (R-23 Phase 3)."
+    },
+    {
+      "path": "src/sovereign_agent/node_api/routes/placeholders.py",
+      "size": 17238,
+      "purpose": "Contract sections B, D, E, F — real thin handlers (Track E1, 2026-05-30)."
+    },
+    {
+      "path": "src/sovereign_agent/node_api/routes/proposals.py",
+      "size": 21441,
+      "purpose": "Section — Proposals (Step C: diff-review)."
+    },
+    {
+      "path": "src/sovereign_agent/node_api/routes/roles.py",
+      "size": 6193,
+      "purpose": "Section C — Roles."
+    },
+    {
+      "path": "src/sovereign_agent/node_api/routes/series.py",
+      "size": 18759,
+      "purpose": "Section — Series Pipeline (ATR-7 lens, read-only)."
+    },
+    {
+      "path": "src/sovereign_agent/node_api/server.py",
+      "size": 6868,
+      "purpose": "Flask app factory + CLI entry for the Node API."
+    },
+    {
+      "path": "src/sovereign_agent/obligations/arc_guardrail.py",
+      "size": 4061,
+      "purpose": "ARC — Autonomic Review Cadence guardrail (card-first, DORMANT by default)."
+    },
+    {
+      "path": "src/sovereign_agent/obligations/ledger.py",
+      "size": 16606,
+      "purpose": "ObligationLedger — node-local B32 obligation ledger (R-23 Phase 1)."
+    },
+    {
+      "path": "src/sovereign_agent/obligations/node_integration.py",
+      "size": 5229,
+      "purpose": "Wire the node's real governance into the ObligationLedger (R-23 Phase 2)."
+    },
+    {
+      "path": "src/sovereign_agent/playbook_loader.py",
+      "size": 12690,
+      "purpose": "PlaybookLoader - Enhanced for Universal Sovereign Node"
+    },
+    {
+      "path": "src/sovereign_agent/role_binder.py",
+      "size": 9600,
+      "purpose": "RoleBinder - Dynamic binding of YAML specs to Python handlers."
+    },
+    {
+      "path": "src/sovereign_agent/universal_sovereign_node.py",
+      "size": 15492,
+      "purpose": "Universal Sovereign Node"
+    }
+  ],
+  "edges": [
+    {
+      "book": "agentic_harness",
+      "code": "src/sovereign_agent/compliance/human_approval_gate.py",
+      "class": "derived",
+      "rule": "R2",
+      "anchor": "Constitution §2 Approval Gates: Propose→Approve→Execute — module implements the gate flow by construction",
+      "pin": "pending"
+    },
+    {
+      "book": "agentic_harness",
+      "code": "src/sovereign_agent/obligations/ledger.py",
+      "class": "derived",
+      "rule": "R2",
+      "anchor": "Constitution §3 TRUTH / receipts discipline — ledger is the receipts organ",
+      "pin": "pending"
+    },
+    {
+      "book": "agentic_harness",
+      "code": "src/sovereign_agent/obligations/arc_guardrail.py",
+      "class": "derived",
+      "rule": "R2",
+      "anchor": "Constitution §2/§4 INTEGRITY + Error Voice — guardrail enforces gated state + loud failure",
+      "pin": "pending"
+    },
+    {
+      "book": "agentic_playbooks/11_ai_agents_for_ma",
+      "code": "src/sovereign_agent/demo_roles/ma_data_room/",
+      "class": "derived",
+      "rule": "R2",
+      "anchor": "demo role is the rendered form of B11's M&A data-room playbooks",
+      "pin": "pending"
+    },
+    {
+      "book": "agentic_playbooks/01_cfos_finance",
+      "code": "src/sovereign_agent/demo_roles/corporate_cfo_demo/role.py",
+      "class": "derived",
+      "rule": "R2",
+      "anchor": "CFO demo role renders S1 B01 CFO/finance playbooks",
+      "pin": "pending"
+    },
+    {
+      "book": "agentic_playbooks/01_cfos_finance",
+      "code": "src/sovereign_agent/demo_roles/family_cfo_demo/role.py",
+      "class": "derived",
+      "rule": "R2",
+      "anchor": "family-CFO variant of the S1 finance playbooks",
+      "pin": "pending"
+    },
+    {
+      "book": "agentic_playbooks",
+      "code": "src/sovereign_agent/kdp_metadata.py",
+      "class": "derived",
+      "rule": "R2",
+      "anchor": "publishing-pipeline organ — renders KDP metadata for the series the books describe shipping",
+      "pin": "pending"
+    },
+    {
+      "book": "agentic_harness",
+      "code": "src/sovereign_agent/node_api/routes/series.py",
+      "class": "derived",
+      "rule": "R2",
+      "anchor": "the lens rendering the books — recursion shown, not hidden (spec §3 R2 seed)",
+      "pin": "pending"
+    },
+    {
+      "book": "sovereign_token_economic_organism",
+      "code": "src/sovereign_agent/capabilities/economics.py",
+      "class": "derived",
+      "rule": "R2",
+      "anchor": "economic-organism mechanics rendered as capability module",
+      "pin": "pending"
+    },
+    {
+      "book": "inter_node_sovereignty",
+      "code": "src/sovereign_agent/obligations/node_integration.py",
+      "class": "derived",
+      "rule": "R2",
+      "anchor": "inter-node communication/coordination structure rendered as obligation module",
+      "pin": "pending"
+    },
+    {
+      "book": "zero_trust_sovereignty",
+      "code": "src/sovereign_agent/compliance/compliance_engine.py",
+      "class": "derived",
+      "rule": "R2",
+      "anchor": "zero-trust verification/shields rendered as compliance engine",
+      "pin": "pending"
+    },
+    {
+      "book": "agentic_harness",
+      "code": "src/sovereign_agent/universal_sovereign_node.py",
+      "class": "derived",
+      "rule": "R2",
+      "anchor": "the node itself — the harness the S2 books describe building",
+      "pin": "pending"
+    }
+  ],
+  "findings": {
+    "orphan_code": [
+      "src/sovereign_agent/_portal_launcher.py",
+      "src/sovereign_agent/bootstrap.py",
+      "src/sovereign_agent/breath_inventory.py",
+      "src/sovereign_agent/capabilities/legacy.py",
+      "src/sovereign_agent/capabilities/research.py",
+      "src/sovereign_agent/compliance/policy_loader.py",
+      "src/sovereign_agent/config.py",
+      "src/sovereign_agent/core.py",
+      "src/sovereign_agent/demo_roles/federation_procurement_coordinator/role.py",
+      "src/sovereign_agent/demo_roles/general_sovereign_demo/role.py",
+      "src/sovereign_agent/kernel_integration.py",
+      "src/sovereign_agent/node_api/auth.py",
+      "src/sovereign_agent/node_api/deps.py",
+      "src/sovereign_agent/node_api/errors.py",
+      "src/sovereign_agent/node_api/json_provider.py",
+      "src/sovereign_agent/node_api/routes/coherence.py",
+      "src/sovereign_agent/node_api/routes/hopper.py",
+      "src/sovereign_agent/node_api/routes/node.py",
+      "src/sovereign_agent/node_api/routes/obligations.py",
+      "src/sovereign_agent/node_api/routes/placeholders.py",
+      "src/sovereign_agent/node_api/routes/proposals.py",
+      "src/sovereign_agent/node_api/routes/roles.py",
+      "src/sovereign_agent/node_api/server.py",
+      "src/sovereign_agent/playbook_loader.py",
+      "src/sovereign_agent/role_binder.py"
+    ],
+    "unrendered_chapters": [
+      "01_cfos_finance#ch1",
+      "01_cfos_finance#ch10",
+      "01_cfos_finance#ch11",
+      "01_cfos_finance#ch12",
+      "01_cfos_finance#ch2",
+      "01_cfos_finance#ch3",
+      "01_cfos_finance#ch4",
+      "01_cfos_finance#ch5",
+      "01_cfos_finance#ch6",
+      "01_cfos_finance#ch7",
+      "01_cfos_finance#ch8",
+      "01_cfos_finance#ch9",
+      "01_strategic_finance#ch1",
+      "01_strategic_finance#ch2",
+      "01_strategic_finance#ch3",
+      "01_strategic_finance#ch4",
+      "02_executives_decisions#ch1",
+      "02_executives_decisions#ch10",
+      "02_executives_decisions#ch11",
+      "02_executives_decisions#ch2",
+      "02_executives_decisions#ch3",
+      "02_executives_decisions#ch4",
+      "02_executives_decisions#ch5",
+      "02_executives_decisions#ch6",
+      "02_executives_decisions#ch7",
+      "02_executives_decisions#ch8",
+      "02_executives_decisions#ch9",
+      "02_harnessing_ai#ch1",
+      "02_harnessing_ai#ch10",
+      "02_harnessing_ai#ch11",
+      "02_harnessing_ai#ch12",
+      "02_harnessing_ai#ch2",
+      "02_harnessing_ai#ch3",
+      "02_harnessing_ai#ch4",
+      "02_harnessing_ai#ch5",
+      "02_harnessing_ai#ch6",
+      "02_harnessing_ai#ch7",
+      "02_harnessing_ai#ch8",
+      "02_harnessing_ai#ch9",
+      "03_blueprint#ch1",
+      "03_blueprint#ch2",
+      "03_blueprint#ch3",
+      "03_blueprint#ch4",
+      "03_leading_agents#ch1",
+      "03_leading_agents#ch10",
+      "03_leading_agents#ch11",
+      "03_leading_agents#ch2",
+      "03_leading_agents#ch3",
+      "03_leading_agents#ch4",
+      "03_leading_agents#ch5",
+      "03_leading_agents#ch6",
+      "03_leading_agents#ch7",
+      "03_leading_agents#ch8",
+      "03_leading_agents#ch9",
+      "04_supply_chain#ch1",
+      "04_supply_chain#ch10",
+      "04_supply_chain#ch11",
+      "04_supply_chain#ch2",
+      "04_supply_chain#ch3",
+      "04_supply_chain#ch4",
+      "04_supply_chain#ch5",
+      "04_supply_chain#ch6",
+      "04_supply_chain#ch7",
+      "04_supply_chain#ch8",
+      "04_supply_chain#ch9",
+      "05_crypto#ch1",
+      "05_crypto#ch10",
+      "05_crypto#ch11",
+      "05_crypto#ch12",
+      "05_crypto#ch13",
+      "05_crypto#ch14",
+      "05_crypto#ch15",
+      "05_crypto#ch16",
+      "05_crypto#ch17",
+      "05_crypto#ch18",
+      "05_crypto#ch2",
+      "05_crypto#ch3",
+      "05_crypto#ch4",
+      "05_crypto#ch5",
+      "05_crypto#ch6",
+      "05_crypto#ch7",
+      "05_crypto#ch8",
+      "05_crypto#ch9",
+      "05_hr_talent#ch1",
+      "05_hr_talent#ch10",
+      "05_hr_talent#ch11",
+      "05_hr_talent#ch2",
+      "05_hr_talent#ch3",
+      "05_hr_talent#ch4",
+      "05_hr_talent#ch5",
+      "05_hr_talent#ch6",
+      "05_hr_talent#ch7",
+      "05_hr_talent#ch8",
+      "05_hr_talent#ch9",
+      "06_compliance_audit#ch1",
+      "06_compliance_audit#ch10",
+      "06_compliance_audit#ch11",
+      "06_compliance_audit#ch2",
+      "06_compliance_audit#ch3",
+      "06_compliance_audit#ch4",
+      "06_compliance_audit#ch5",
+      "06_compliance_audit#ch6",
+      "06_compliance_audit#ch7",
+      "06_compliance_audit#ch8",
+      "06_compliance_audit#ch9",
+      "07_sales_revenue#ch1",
+      "07_sales_revenue#ch10",
+      "07_sales_revenue#ch11",
+      "07_sales_revenue#ch2",
+      "07_sales_revenue#ch3",
+      "07_sales_revenue#ch4",
+      "07_sales_revenue#ch5",
+      "07_sales_revenue#ch6",
+      "07_sales_revenue#ch7",
+      "07_sales_revenue#ch8",
+      "07_sales_revenue#ch9",
+      "08_manufacturing_ops#ch1",
+      "08_manufacturing_ops#ch10",
+      "08_manufacturing_ops#ch11",
+      "08_manufacturing_ops#ch2",
+      "08_manufacturing_ops#ch3",
+      "08_manufacturing_ops#ch4",
+      "08_manufacturing_ops#ch5",
+      "08_manufacturing_ops#ch6",
+      "08_manufacturing_ops#ch7",
+      "08_manufacturing_ops#ch8",
+      "08_manufacturing_ops#ch9",
+      "09_multi_agent#ch1",
+      "09_multi_agent#ch10",
+      "09_multi_agent#ch11",
+      "09_multi_agent#ch2",
+      "09_multi_agent#ch3",
+      "09_multi_agent#ch4",
+      "09_multi_agent#ch5",
+      "09_multi_agent#ch6",
+      "09_multi_agent#ch7",
+      "09_multi_agent#ch8",
+      "09_multi_agent#ch9",
+      "10_scaling_enterprise#ch1",
+      "10_scaling_enterprise#ch10",
+      "10_scaling_enterprise#ch11",
+      "10_scaling_enterprise#ch12",
+      "10_scaling_enterprise#ch2",
+      "10_scaling_enterprise#ch3",
+      "10_scaling_enterprise#ch4",
+      "10_scaling_enterprise#ch5",
+      "10_scaling_enterprise#ch6",
+      "10_scaling_enterprise#ch7",
+      "10_scaling_enterprise#ch8",
+      "10_scaling_enterprise#ch9",
+      "11_ma_due_diligence#ch1",
+      "11_ma_due_diligence#ch10",
+      "11_ma_due_diligence#ch11",
+      "11_ma_due_diligence#ch2",
+      "11_ma_due_diligence#ch3",
+      "11_ma_due_diligence#ch4",
+      "11_ma_due_diligence#ch5",
+      "11_ma_due_diligence#ch6",
+      "11_ma_due_diligence#ch7",
+      "11_ma_due_diligence#ch8",
+      "11_ma_due_diligence#ch9",
+      "12_agentic_enterprise#ch1",
+      "12_agentic_enterprise#ch10",
+      "12_agentic_enterprise#ch11",
+      "12_agentic_enterprise#ch12",
+      "12_agentic_enterprise#ch2",
+      "12_agentic_enterprise#ch3",
+      "12_agentic_enterprise#ch4",
+      "12_agentic_enterprise#ch5",
+      "12_agentic_enterprise#ch6",
+      "12_agentic_enterprise#ch7",
+      "12_agentic_enterprise#ch8",
+      "12_agentic_enterprise#ch9",
+      "vol_01_sovereign_inference_and_memory#ch1",
+      "vol_01_sovereign_inference_and_memory#ch2",
+      "vol_01_sovereign_inference_and_memory#ch3",
+      "vol_01_sovereign_inference_and_memory#ch4",
+      "vol_01_sovereign_inference_and_memory#ch5",
+      "vol_01_sovereign_inference_and_memory#ch6",
+      "vol_01_sovereign_inference_and_memory#ch7",
+      "vol_01_sovereign_inference_and_memory#ch8",
+      "vol_01_sovereign_inference_and_memory#ch9",
+      "vol_01_sovereign_token_substrate#ch1",
+      "vol_01_sovereign_token_substrate#ch2",
+      "vol_01_sovereign_token_substrate#ch3",
+      "vol_01_sovereign_token_substrate#ch4",
+      "vol_01_sovereign_token_substrate#ch5",
+      "vol_01_sovereign_token_substrate#ch6",
+      "vol_01_sovereign_token_substrate#ch7",
+      "vol_01_sovereign_token_substrate#ch8",
+      "vol_02_governed_token_mechanics#ch1",
+      "vol_02_governed_token_mechanics#ch2",
+      "vol_02_governed_token_mechanics#ch3",
+      "vol_02_governed_token_mechanics#ch4",
+      "vol_02_governed_token_mechanics#ch5",
+      "vol_02_governed_token_mechanics#ch6",
+      "vol_02_governed_token_mechanics#ch7",
+      "vol_02_governed_token_mechanics#ch8",
+      "vol_02_the_primacy_cockpit#ch1",
+      "vol_02_the_primacy_cockpit#ch10",
+      "vol_02_the_primacy_cockpit#ch11",
+      "vol_02_the_primacy_cockpit#ch12",
+      "vol_02_the_primacy_cockpit#ch2",
+      "vol_02_the_primacy_cockpit#ch3",
+      "vol_02_the_primacy_cockpit#ch4",
+      "vol_02_the_primacy_cockpit#ch5",
+      "vol_02_the_primacy_cockpit#ch6",
+      "vol_02_the_primacy_cockpit#ch7",
+      "vol_02_the_primacy_cockpit#ch8",
+      "vol_02_the_primacy_cockpit#ch9",
+      "vol_03_governed_dev_loop_and_self_building_harness#ch1",
+      "vol_03_governed_dev_loop_and_self_building_harness#ch2",
+      "vol_03_governed_dev_loop_and_self_building_harness#ch3",
+      "vol_03_governed_dev_loop_and_self_building_harness#ch4",
+      "vol_03_governed_dev_loop_and_self_building_harness#ch5",
+      "vol_03_helix_book_writes_backend#ch1",
+      "vol_03_helix_book_writes_backend#ch2",
+      "vol_03_helix_book_writes_backend#ch3",
+      "vol_03_helix_book_writes_backend#ch4",
+      "vol_03_helix_book_writes_backend#ch5",
+      "vol_03_helix_book_writes_backend#ch6",
+      "vol_03_helix_book_writes_backend#ch7",
+      "vol_03_helix_book_writes_backend#ch8",
+      "vol_03_yield_organism_integration#ch1",
+      "vol_03_yield_organism_integration#ch2",
+      "vol_03_yield_organism_integration#ch3",
+      "vol_03_yield_organism_integration#ch4",
+      "vol_03_yield_organism_integration#ch5",
+      "vol_03_yield_organism_integration#ch6",
+      "vol_03_yield_organism_integration#ch7",
+      "vol_03_yield_organism_integration#ch8",
+      "vol_04_federation_and_partner_device_gateway#ch1",
+      "vol_04_federation_and_partner_device_gateway#ch10",
+      "vol_04_federation_and_partner_device_gateway#ch11",
+      "vol_04_federation_and_partner_device_gateway#ch12",
+      "vol_04_federation_and_partner_device_gateway#ch2",
+      "vol_04_federation_and_partner_device_gateway#ch3",
+      "vol_04_federation_and_partner_device_gateway#ch4",
+      "vol_04_federation_and_partner_device_gateway#ch5",
+      "vol_04_federation_and_partner_device_gateway#ch6",
+      "vol_04_federation_and_partner_device_gateway#ch7",
+      "vol_04_federation_and_partner_device_gateway#ch8",
+      "vol_04_federation_and_partner_device_gateway#ch9",
+      "vol_04_industry_sovereign_erps_generational#ch1",
+      "vol_04_industry_sovereign_erps_generational#ch2",
+      "vol_04_industry_sovereign_erps_generational#ch3",
+      "vol_04_industry_sovereign_erps_generational#ch4",
+      "vol_04_industry_sovereign_erps_generational#ch5",
+      "vol_04_industry_sovereign_erps_generational#ch6",
+      "vol_04_industry_sovereign_erps_generational#ch7",
+      "vol_04_industry_sovereign_erps_generational#ch8",
+      "vol_04_legal_hardening_forkability_generational#ch1",
+      "vol_04_legal_hardening_forkability_generational#ch2",
+      "vol_04_legal_hardening_forkability_generational#ch3",
+      "vol_04_legal_hardening_forkability_generational#ch4",
+      "vol_04_legal_hardening_forkability_generational#ch5",
+      "vol_04_legal_hardening_forkability_generational#ch6",
+      "vol_04_legal_hardening_forkability_generational#ch7",
+      "vol_04_legal_hardening_forkability_generational#ch8",
+      "vol_04_legal_hardening_forkability_generational#ch9",
+      "vol_05_yield_organism_and_generational_prosperity#ch1",
+      "vol_05_yield_organism_and_generational_prosperity#ch10",
+      "vol_05_yield_organism_and_generational_prosperity#ch2",
+      "vol_05_yield_organism_and_generational_prosperity#ch3",
+      "vol_05_yield_organism_and_generational_prosperity#ch4",
+      "vol_05_yield_organism_and_generational_prosperity#ch5",
+      "vol_05_yield_organism_and_generational_prosperity#ch6",
+      "vol_05_yield_organism_and_generational_prosperity#ch7",
+      "vol_05_yield_organism_and_generational_prosperity#ch8",
+      "vol_05_yield_organism_and_generational_prosperity#ch9"
+    ],
+    "intentional_unrendered": [
+      "01_investor_guide#ch10",
+      "01_investor_guide#ch11",
+      "01_investor_guide#ch9"
+    ],
+    "orphan_count": 25,
+    "unrendered_count": 270,
+    "intentional_unrendered_count": 3
+  },
+  "meta": {
+    "surface": "book_code_tree",
+    "kind": "derived-audit (render-not-recreate; sibling-of seeit)",
+    "spec": "artifacts/GB_BookCode_Tree_Derivation_Spec_2026-06-10.md",
+    "generated_from": [
+      "series_roadmap.yaml",
+      "extracted_chapter_outlines*.json",
+      "git ls-tree src/",
+      "book_code_map.yaml"
+    ],
+    "generated_at": "2026-06-10T16:23:55Z",
+    "n_series": 12,
+    "n_chapters": 273,
+    "n_modules": 37,
+    "edge_count": 12,
+    "derived_edge_count": 12,
+    "orphan_count": 25,
+    "unrendered_count": 270,
+    "intentional_unrendered_count": 3,
+    "map_present": true,
+    "content_hash": "6a76e6ae88fff130",
+    "note": "Edges READ from book_code_map.yaml (GB sole-write). Absent map → audit shell (all code orphan / all chapters unrendered) — findings mode working, not an error."
+  }
+}
