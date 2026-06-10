@@ -22,7 +22,7 @@ import os
 import re
 from pathlib import Path
 
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 
 from ..auth import require_principal
 
@@ -47,6 +47,61 @@ def _roadmap_path() -> Path:
         return Path(explicit)
     repo = Path(__file__).resolve().parents[4]
     return repo / "artifacts" / "series_roadmap.yaml"
+
+
+def _chapter_index() -> dict:
+    """Extracted chapter TOCs keyed by book_id (Tiger extracts real '# Chapter N' headers from the
+    manuscripts). The lens MERGES these at render time (Path B, KM ratify 2026-06-09) so the roadmap
+    projection stays lean and chapters trace to the books by construction — no hand-copy, no drift.
+    This is the 1M-book foundation: chapters source from the manuscripts, not a curated YAML.
+    CHAPTER_INDEX overrides; else newest artifacts/extracted_chapter_outlines*.json wins. Missing = {}."""
+    explicit = os.environ.get("CHAPTER_INDEX")
+    if explicit:
+        cands = [Path(explicit)]
+    else:
+        repo = Path(__file__).resolve().parents[4]
+        cands = sorted(repo.glob("artifacts/extracted_chapter_outlines*.json"), reverse=True)
+    for p in cands:
+        try:
+            data = json.loads(p.read_text(encoding="utf-8"))
+            return data.get("books", {}) if isinstance(data, dict) else {}
+        except (ValueError, OSError):
+            continue
+    return {}
+
+
+def _publishing_index() -> dict:
+    """KDP publishing status keyed by book_id, derived from the ASIN_TRACKER (the canonical KDP record
+    Tiger maintains). The lens OVERLAYS publishing_state + asin + release at render time so the Series
+    Pipeline reflects real KDP status AUTOMATICALLY — no manual roadmap edits, never stale. Roadmap stays
+    lean + GB-sole-writer. Mirrors the _chapter_index() read-only merge (Path B). ASIN_TRACKER env overrides;
+    default = the agentic_playbooks tracker. yaml is imported locally so absence just no-ops the overlay."""
+    try:
+        import yaml  # noqa: PLC0415 — local import keeps the lens yaml-optional
+    except ImportError:
+        return {}
+    explicit = os.environ.get("ASIN_TRACKER")
+    cands = [Path(explicit)] if explicit else [
+        Path("/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/ASIN_TRACKER.yaml")]
+    _MAP = {"live": "published", "pre_order_live": "pre_order_live",
+            "pre_order_in_review": "pre_order", "pre_order_publishing": "pre_order_live"}
+    for p in cands:
+        try:
+            data = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
+        except (OSError, ValueError):
+            continue
+        out = {}
+        for section in ("books", "executive_series"):
+            for bid, b in (data.get(section) or {}).items():
+                if not isinstance(b, dict):
+                    continue
+                state = _MAP.get(str(b.get("status", "")).strip())
+                if not state:
+                    continue
+                eb = b.get("ebook") if isinstance(b.get("ebook"), dict) else {}
+                out[bid] = {"publishing_state": state, "asin": eb.get("asin"), "release": b.get("release")}
+        return out
+    return {}
 
 
 # --- In-memory read-repair (GB owns the file; we NEVER write it). A common GB gotcha is an unquoted
@@ -174,11 +229,31 @@ def _load(text: str):
     return {}, True, "Roadmap unparseable — even the safe prefix failed; GB must fix the YAML."
 
 
-def _title_card(t: dict) -> dict:
-    return {k: t.get(k) for k in _TITLE_FIELDS if t.get(k) is not None}
+def _title_card(t: dict, chapter_index: dict | None = None, publishing_index: dict | None = None) -> dict:
+    card = {k: t.get(k) for k in _TITLE_FIELDS if t.get(k) is not None}
+    # Path B (lens-sourced chapters): a title's own chapters always win (rich G-outlines / outline_locked).
+    # If it carries none, merge the extracted TOC from the index by book_id — so chapters trace to the
+    # manuscript by construction, the roadmap YAML stays lean, and there is nothing to drift out of sync.
+    if not card.get("chapters") and chapter_index:
+        idx = chapter_index.get(t.get("book_id"))
+        if isinstance(idx, dict) and idx.get("chapters"):
+            card["chapters"] = idx["chapters"]
+            card["chapters_source"] = "extracted-index"
+    # Publishing-state overlay (KDP truth from the ASIN_TRACKER): a title's OWN publishing_state wins
+    # (GB can pin it); else derive from the tracker by book_id so the pipeline auto-reflects KDP — never stale.
+    if not card.get("publishing_state") and publishing_index:
+        pub = publishing_index.get(t.get("book_id"))
+        if isinstance(pub, dict) and pub.get("publishing_state"):
+            card["publishing_state"] = pub["publishing_state"]
+            if pub.get("asin") and not card.get("asin"):
+                card["asin"] = pub["asin"]
+            if pub.get("release") and not card.get("published_date"):
+                card["published_date"] = str(pub["release"])
+            card["publishing_source"] = "asin-tracker"
+    return card
 
 
-def _series_card(s: dict) -> dict:
+def _series_card(s: dict, chapter_index: dict | None = None, publishing_index: dict | None = None) -> dict:
     titles = s.get("titles") or s.get("volumes") or []
     return {
         "number": s.get("series_number"),
@@ -188,7 +263,7 @@ def _series_card(s: dict) -> dict:
         "visibility": s.get("visibility") or "public",
         "status": s.get("status", ""),
         "title_count": len(titles),
-        "titles": [_title_card(t) for t in titles if isinstance(t, dict)],
+        "titles": [_title_card(t, chapter_index, publishing_index) for t in titles if isinstance(t, dict)],
     }
 
 
@@ -205,7 +280,20 @@ def series_list():
     text = path.read_text(encoding="utf-8")
     data, degraded, detail = _load(text)
     msr = data.get("multi_series_roadmap", {}) if isinstance(data, dict) else {}
-    series = [_series_card(s) for s in (data.get("series") or []) if isinstance(s, dict)]
+    chapter_index = _chapter_index()  # Path B: chapters merged from the manuscripts' extracted TOCs
+    publishing_index = _publishing_index()  # KDP status overlaid from the ASIN_TRACKER — auto, never stale
+    all_cards = [_series_card(s, chapter_index, publishing_index) for s in (data.get("series") or []) if isinstance(s, dict)]
+    # One-source-of-truth visibility gate (KM ratify 2026-06-09): the public Series Pipeline view
+    # shows only the public ladder. Private series (series_number: null, visibility: private) are
+    # hidden unless KM explicitly surfaces them via ?include_private=1. Honest labels: we never drop
+    # them silently — meta.private_hidden tells the surface exactly how many are withheld and how to see them.
+    include_private = request.args.get("include_private", "").strip().lower() in ("1", "true", "yes")
+    if include_private:
+        series = all_cards
+        private_hidden = 0
+    else:
+        series = [c for c in all_cards if c.get("visibility") != "private"]
+        private_hidden = len(all_cards) - len(series)
     return jsonify({
         "meta": {
             "source": str(path),
@@ -215,6 +303,12 @@ def series_list():
             "version": data.get("version", "") if isinstance(data, dict) else "",
             "current_arc": msr.get("current_arc", ""),
             "active_series_count": msr.get("active_series_count"),
+            "include_private": include_private,
+            "private_hidden": private_hidden,
+            "private_note": (
+                "" if include_private or not private_hidden
+                else f"{private_hidden} private series hidden from public view — "
+                     "append ?include_private=1 (KM only) to surface them."),
         },
         "series": series,
     })
