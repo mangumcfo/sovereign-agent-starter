@@ -187,11 +187,12 @@ def mint_review_packet(book_id: str, label: str, extra: list[str]) -> str | None
         cands = sorted(bdir.glob("manuscript_v*.md"))
         ms = str(cands[-1].relative_to(REPO.parent)) if cands else ""
     entry = lg.open(
-        title=f"📖 Review {label} — READY for your eyes",
+        title=f"✍ Sign off {label} — review-ready; Accept to seal",
         owner="KM-1176", classification="C1", material=True, next_gate="Human disposition", ref=ref,
-        intent=(f"Passed all Review-Ready Rail gates (boards rigor-pass · obligations clean · fidelity pass · "
-                f"Review Brief sealed). Detection is done — judgment + voice only. "
-                f"Review Brief: {brief}. Manuscript: {ms}."),
+        intent=(f"All Review-Ready Rail gates green (boards rigor-pass · obligations clean · fidelity PASS · "
+                f"Review Brief sealed) and your review feedback is applied + rebuilt. "
+                f"ACCEPT = your sign-off (review complete) → Tiger seals the final → you provide pb+hc ISBNs "
+                f"for the KDP dispatch bundle. Review Brief: {brief}. Manuscript: {ms}."),
         lgp={"objective": "first book through the rail — human keeps only the judgment (LGP/human primacy)"},
     )
     return entry.get("id")
