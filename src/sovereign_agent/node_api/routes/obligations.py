@@ -65,7 +65,7 @@ def obligations_open():
         }), 400
     entry = get_obligation_ledger().open(
         title=title,
-        owner=body.get("owner") or current_principal(),
+        owner=current_principal(),  # bind to authenticated principal, never the request body (audit 2026-06-10)
         classification=body.get("classification", "C2"),
         intent=body.get("intent"),
         ref=body.get("ref"),
@@ -85,7 +85,7 @@ def obligations_approve(obligation_id: str):
     try:
         entry = led.approve(
             obligation_id,
-            approved_by=body.get("approved_by") or current_principal(),
+            approved_by=current_principal(),  # the breath-gate actor is the AUTHENTICATED principal — uncloneable (audit 2026-06-10)
             rationale=body.get("rationale", ""),
         )
     except PermissionError as exc:
@@ -116,7 +116,7 @@ def obligations_close(obligation_id: str):
             evidence=evidence,
             evidence_tier=body.get("evidence_tier"),
             require_e1=bool(body.get("require_e1", True)),
-            closed_by=body.get("closed_by") or current_principal(),
+            closed_by=current_principal(),  # bind to authenticated principal, never the request body (audit 2026-06-10)
         )
     except ValueError as exc:  # E0 / claim-only insufficient
         return jsonify({

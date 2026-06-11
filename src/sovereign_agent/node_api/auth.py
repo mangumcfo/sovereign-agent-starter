@@ -160,3 +160,33 @@ def require_principal(fn: Callable):
 def current_principal() -> str:
     """Helper for handlers: return the verified principal_id for this request."""
     return getattr(g, "principal_id", "unknown")
+
+
+def _node_owner() -> str | None:
+    """The principal authorized for high-impact (code-executing) routes. BREATHLINE_NODE_OWNER if set,
+    else the loopback owner the operator started the node with."""
+    return (os.environ.get("BREATHLINE_NODE_OWNER", "") or "").strip() or _loopback_owner()
+
+
+def require_owner(fn: Callable):
+    """Authorization gate for routes that execute code / mutate the operator's machine
+    (/produce, /apply, /recompile). Authentication (require_principal) must run FIRST — apply this
+    decorator BELOW @require_principal. Allows ONLY the node owner principal; rejects dev/anonymous and
+    any non-owner principal (incl. authenticated federation peers). 'Execute-after-Approve' becomes
+    enforced authorization, not a docstring (audit 2026-06-10)."""
+
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        p = getattr(g, "principal_id", None)
+        owner = _node_owner()
+        if (not owner) or getattr(g, "auth_dev_mode", False) or str(p or "").startswith("dev:") or p != owner:
+            return jsonify({
+                "error": "forbidden",
+                "what": "This route executes code or changes files on the operator's machine and is "
+                        "restricted to the node owner principal.",
+                "next_step": "Authenticate as the node owner. Dev/anonymous and non-owner principals "
+                             "(including federation peers) are rejected here.",
+            }), 403
+        return fn(*args, **kwargs)
+
+    return wrapper

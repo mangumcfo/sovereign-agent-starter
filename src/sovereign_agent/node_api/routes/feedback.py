@@ -66,7 +66,7 @@ def feedback_intake():
     title = f"{prefix}: {text[:80]}"
     entry = get_obligation_ledger().open(
         title=title,
-        owner=body.get("owner") or current_principal(),
+        owner=current_principal(),  # bind to authenticated principal, never the request body (audit 2026-06-10)
         classification=body.get("classification", "C2"),
         intent=text,
         ref=ref,

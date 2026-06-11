@@ -21,7 +21,7 @@ from pathlib import Path
 
 from flask import Blueprint, jsonify, request
 
-from ..auth import current_principal, require_principal
+from ..auth import current_principal, require_owner, require_principal
 
 bp = Blueprint("proposals", __name__, url_prefix="/api/v1")
 
@@ -79,7 +79,7 @@ def proposals_create():
         "note": body.get("note", ""),
         "info": is_info,
         "cross_book": body.get("cross_book") or [],
-        "produced_by": body.get("produced_by") or current_principal(),
+        "produced_by": current_principal(),  # bind to authenticated principal, never the request body (audit 2026-06-10)
         "groups": groups,
         "reflection_mode": body.get("reflection_mode"),   # B3: embodied_principle | direct_mechanics
         "principle": body.get("principle"),               # the behavior/invariant when embodied_principle
@@ -94,6 +94,7 @@ def proposals_create():
 
 @bp.post("/produce")
 @require_principal
+@require_owner
 def produce():
     """produce — HUMAN-TRIGGERED (the Atrium 'Process' button). Spawns the producer for ONE session:
     it reads the transcript + manuscript and posts grouped diffs to /proposals (proposals only; the
@@ -181,6 +182,7 @@ def processing():
 
 @bp.post("/recompile")
 @require_principal
+@require_owner
 def recompile():
     """recompile — HUMAN-TRIGGERED. Rebuild a book's PDF from the (just-edited) manuscript so KM can
     re-load it in the viewer and see the applied changes. Spawns the book's build script."""
@@ -386,6 +388,7 @@ def book_kdp():
 
 @bp.post("/proposals/<proposal_id>/apply")
 @require_principal
+@require_owner
 def proposals_apply(proposal_id: str):
     """apply — HUMAN-TRIGGERED by KM's Accept. Spawns the apply agent: land accepted+tested diffs →
     re-test code (abort on red) → commit (local) + seal + close. Execute-after-Approve; reversible."""

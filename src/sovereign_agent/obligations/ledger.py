@@ -13,6 +13,7 @@ Everything is appended to a single NDJSON chain (prev_hash linked); state is rec
 """
 from __future__ import annotations
 
+import fcntl
 import hashlib
 import json
 import os
@@ -128,12 +129,57 @@ class ObligationLedger:
         return out
 
     def _append(self, entry: dict) -> dict:
-        entries = self._entries()
-        entry["prev_hash"] = entries[-1]["hash"] if entries else "genesis"
-        entry["hash"] = _hash({k: v for k, v in entry.items() if k != "hash"})
-        with self.path.open("a") as f:
-            f.write(json.dumps(entry, sort_keys=True) + "\n")
+        # CRITICAL write-fence (audit 2026-06-10): an exclusive flock over the read-tail-THROUGH-write
+        # critical section. Without it two appenders read the same tail, compute the same prev_hash, and
+        # permanently fork the hash chain (verify_chain() False forever). O_APPEND alone is insufficient —
+        # prev_hash needs the tail read INSIDE the lock. Every writer (in-process threads via threaded=True
+        # AND cross-process scripts on the shared atrium_review root) funnels through here, so this one lock
+        # closes both races. The sidecar .lock is advisory + never part of the chain.
+        lock_path = self.root / "obligations.lock"
+        with open(lock_path, "a+") as lock:
+            fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+            try:
+                entries = self._entries()
+                entry["prev_hash"] = entries[-1]["hash"] if entries else "genesis"
+                entry["hash"] = _hash({k: v for k, v in entry.items() if k != "hash"})
+                with self.path.open("a") as f:
+                    f.write(json.dumps(entry, sort_keys=True) + "\n")
+                    f.flush()
+                    os.fsync(f.fileno())
+            finally:
+                fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
         return entry
+
+    def repair_chain(self) -> dict:
+        """Re-link an already-forked chain (audit chain-repair command). Reads every entry in file order,
+        recomputes prev_hash + hash so the chain is internally valid again, and rewrites the ndjson — backing
+        up the original to obligations.ndjson.forked.<n> first. Held under the same write-fence. The repaired
+        chain re-hashes content (the fork already broke cryptographic continuity); the backup preserves the
+        raw forked record for audit. Returns {repaired, was_valid, entries, backup}."""
+        lock_path = self.root / "obligations.lock"
+        with open(lock_path, "a+") as lock:
+            fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+            try:
+                if self.verify_chain():
+                    return {"repaired": False, "was_valid": True, "entries": len(self._entries()), "backup": None}
+                entries = self._entries()
+                n = 0
+                while (self.root / f"obligations.ndjson.forked.{n}").exists():
+                    n += 1
+                backup = self.root / f"obligations.ndjson.forked.{n}"
+                backup.write_text(self.path.read_text())
+                prev = "genesis"
+                for e in entries:
+                    e.pop("hash", None)
+                    e["prev_hash"] = prev
+                    e["hash"] = _hash({k: v for k, v in e.items() if k != "hash"})
+                    prev = e["hash"]
+                tmp = self.path.with_suffix(".ndjson.repair")
+                tmp.write_text("".join(json.dumps(e, sort_keys=True) + "\n" for e in entries))
+                tmp.replace(self.path)
+                return {"repaired": True, "was_valid": False, "entries": len(entries), "backup": str(backup)}
+            finally:
+                fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
 
     # ── lifecycle ─────────────────────────────────────────────────────
     def open(self, title: str, owner: Optional[str] = None,

@@ -127,7 +127,7 @@ def main(argv) -> int:
         sys.path.insert(0, str(REPO / "src"))
         from sovereign_agent.obligations.ledger import ObligationLedger
         L = ObligationLedger(root=str(REPO / "memory" / "obligations" / "atrium_review"), principal_id="tiger")
-        existing = {e.get("ref") for e in L._entries() if e.get("type") == "open"}
+        existing = {e.get("ref") for e in L._entries() if e.get("type") == "debit"}  # ledger writes 'debit', not 'open' (audit bonus fix)
         opened = 0
         for g in highs:
             if g["ref"] in existing:
