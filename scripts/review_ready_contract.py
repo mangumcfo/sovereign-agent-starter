@@ -29,16 +29,26 @@ import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
-AGENTIC = Path("/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks")
+KDP = Path("/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp")
+AGENTIC = KDP / "agentic_playbooks"
 LEDGER_ROOT = REPO / "memory" / "obligations" / "atrium_review"
 GB_CYLINDER = REPO / "artifacts" / "GB_KM_Aligned_Interaction_Cylinder.ndjson"
-REQUIRED_BOARDS = ("editorial", "ux", "technical")
+# Cold Reader seated per the B12 Pilot amendment (GB, ratified 2026-06-11) — the persona that catches the
+# line-level issues KM was catching; it gets audited like every board (no new-seat honeymoon).
+REQUIRED_BOARDS = ("editorial", "ux", "technical", "cold_reader")
+
+
+def _book_roots() -> list[Path]:
+    """Where a book's artifact dir can live: the S1 agentic_playbooks vault AND each Series-N folder
+    (Wave 1 brought S2 onto the rail — vols live under series_02_…/<vol_id>/v*). runs_anywhere-friendly."""
+    return [AGENTIC] + sorted(KDP.glob("series_*"))
 
 
 def _book_dir(book_id: str) -> Path | None:
-    for v in sorted((AGENTIC / book_id).glob("v*"), reverse=True):
-        if v.is_dir():
-            return v
+    for root in _book_roots():
+        for v in sorted((root / book_id).glob("v*"), reverse=True):
+            if v.is_dir():
+                return v
     return None
 
 
