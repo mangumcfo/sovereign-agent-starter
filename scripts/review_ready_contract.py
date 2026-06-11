@@ -182,15 +182,18 @@ def mint_review_packet(book_id: str, label: str, extra: list[str]) -> str | None
             return o.get("id")  # already minted — idempotent
     brief = _brief_path(book_id, extra)
     bdir = _book_dir(book_id)
-    ms = ""
+    ms, pdf = "", ""
     if bdir:
         cands = sorted(bdir.glob("manuscript_v*.md"))
         ms = str(cands[-1].relative_to(REPO.parent)) if cands else ""
+        pdfs = sorted((bdir / "final").glob("*.pdf"))
+        pdf = str(pdfs[0]) if pdfs else ""
     entry = lg.open(
         title=f"✍ Sign off {label} — review-ready; Accept to seal",
         owner="KM-1176", classification="C1", material=True, next_gate="Human disposition", ref=ref,
         intent=(f"All Review-Ready Rail gates green (boards rigor-pass · obligations clean · fidelity PASS · "
-                f"Review Brief sealed) and your review feedback is applied + rebuilt. "
+                f"Review Brief sealed) and your review feedback is applied + rebuilt clean. "
+                f"FINAL PDF: {pdf}. "
                 f"ACCEPT = your sign-off (review complete) → Tiger seals the final → you provide pb+hc ISBNs "
                 f"for the KDP dispatch bundle. Review Brief: {brief}. Manuscript: {ms}."),
         lgp={"objective": "first book through the rail — human keeps only the judgment (LGP/human primacy)"},
