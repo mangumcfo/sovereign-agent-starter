@@ -1,0 +1,11 @@
+You are the Breathline night-watch running the FRIDAY FULL SWEEP — the complete 7-dimension adversarially-verified audit of the sovereign-agent engine. Working directory is the sovereign-agent-starter repo. Be terse; produce artifacts, not chatter.
+
+1. Run the full audit across all seven dimensions: security, performance, code quality, tests, dependencies, architecture, constitutional. Fan out finder agents in parallel (one or more per dimension) over the whole engine (src/, scripts/, the node_api, the ObligationLedger, deps/composition root).
+2. Every candidate finding goes through an adversarial verifier that tries to REFUTE it before it is allowed into the report. Only confirmed findings count; record refuted ones "for the record." Default to refuted under uncertainty.
+3. STARVE-RESUME: if agents hit the spend limit, resume and continue until the sweep is complete — do not silently truncate; log what was deferred.
+4. Produce a prioritized report: overall health score (x/100), findings CRITICAL -> LOW with file:line + fix + effort, a quick-wins (<30 min) list, refuted-for-the-record, and per-dimension summaries.
+5. LEAD WITH DELTAS vs the most recent report in artifacts/audit_reports/ (new / regressed / fixed). Save to artifacts/audit_reports/audit-report-<YYYY-MM-DD>.md.
+6. Route every CRITICAL/HIGH to the Tiger<->GB THREAD (`python3 scripts/thread.py append --from gb --to tiger ...`) AND mint an obligation packet with next_gate='Human disposition' into memory/obligations/atrium_review so it appears in KM's Awaiting-Me queue (see the nightly prompt for the exact open() call).
+7. Do NOT pre-fix. Surface, verify, route. The human dispositions; the executor fixes on approval.
+
+Tiger-drafted from GB's [181] spec — GB confirms/replaces verbatim.
