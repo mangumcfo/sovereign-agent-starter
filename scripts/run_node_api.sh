@@ -13,4 +13,7 @@ export OBLIGATION_LEDGER_ROOT="${OBLIGATION_LEDGER_ROOT:-$HERE/memory/obligation
 # sovereignty." MUST be set, or the Atrium browser gets 401'd and every lens shows "node unreachable".
 export BREATHLINE_NODE_LOOPBACK_OWNER="${BREATHLINE_NODE_LOOPBACK_OWNER:-KM-1176}"
 echo "Node API -> http://127.0.0.1:8421/api/v1  (ledger: $OBLIGATION_LEDGER_ROOT · loopback-owner: $BREATHLINE_NODE_LOOPBACK_OWNER)"
+# Session-start DRAIN RITUAL (the bell's backstop): execute any approved-but-undrained packets from a
+# prior session before serving, so an Accept made while the executor was down still runs. Best-effort.
+python3 scripts/atrium_executor.py --drain 2>/dev/null || true
 exec python3 -c "from sovereign_agent.node_api.server import create_app; create_app().run(host='127.0.0.1', port=8421, threaded=True)"

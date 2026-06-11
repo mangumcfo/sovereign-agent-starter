@@ -17,6 +17,9 @@ emit a packet; they never gain write access. DRIFT button and viewer feedback ar
 """
 from __future__ import annotations
 
+import json
+import os
+
 from flask import Blueprint, jsonify, request
 
 from ...obligations import AlreadyClosedError
@@ -204,6 +207,49 @@ def doc():
                     "next_step": "Cards may hand .md/.yaml docs under artifacts/, scripts/, or the books vault kdp/."}), 404
 
 
+def _ring_the_bell(obligation_id: str) -> None:
+    """THE BELL — on KM's Accept, spawn the executor for this packet (detached; clone of /produce's spawn).
+    Turns approval into automatic execution + receipt back in the cockpit, so 'processing' means working,
+    never waiting. Best-effort: a spawn failure is logged, never blocks the disposition (the --drain
+    backstop catches anything missed)."""
+    import logging  # noqa: PLC0415
+    import subprocess  # noqa: PLC0415
+    import sys  # noqa: PLC0415
+    from pathlib import Path as _P  # noqa: PLC0415
+    try:
+        repo = _P(__file__).resolve().parents[4]
+        script = repo / "scripts" / "atrium_executor.py"
+        if not script.exists():
+            return
+        env = dict(os.environ)
+        env["PYTHONPATH"] = str(repo / "src")
+        subprocess.Popen([sys.executable, str(script), obligation_id], cwd=str(repo), env=env,
+                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+    except Exception as exc:  # noqa: BLE001 — the bell must never break the human gate
+        logging.getLogger("breathline.executor").warning("bell spawn failed for %s: %s", obligation_id, exc)
+
+
+@bp.get("/handshakes")
+@require_principal
+def handshakes():
+    """A3 — the handshakes row: agent-to-agent residue (executor pending / awaiting GB / awaiting Tiger) so
+    any not-yet-closed work is ALWAYS visible to KM, never silently stuck. Reads the executor's store."""
+    from pathlib import Path as _P  # noqa: PLC0415
+    led_root = os.environ.get("OBLIGATION_LEDGER_ROOT")
+    base = _P(led_root).parent if led_root else _P(os.path.expanduser("~/.breathline"))
+    store = _P(os.environ.get("HANDSHAKES_STORE") or (base / "handshakes.json"))
+    items = []
+    if store.exists():
+        try:
+            items = [h for h in (json.loads(store.read_text(encoding="utf-8")) or [])
+                     if h.get("status") != "done"]
+        except (OSError, ValueError):
+            items = []
+    items.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+    return jsonify({"meta": {"count": len(items), "doctrine": "every approved packet is working or visible — never stuck"},
+                    "handshakes": items})
+
+
 @bp.post("/feedback/<obligation_id>/disposition")
 @require_principal
 def feedback_disposition(obligation_id: str):
@@ -223,7 +269,8 @@ def feedback_disposition(obligation_id: str):
     try:
         if action == "accept":
             entry = led.approve(obligation_id, approved_by=current_principal())
-            return jsonify({"action": "accept", "obligation": entry})
+            _ring_the_bell(obligation_id)   # Accept IS the ignition — spawn the registered executor
+            return jsonify({"action": "accept", "obligation": entry, "executor": "spawned"})
         entry = led.close(
             obligation_id,
             evidence=f"REJECTED by {current_principal()}: {note or 'no reason given'}",
