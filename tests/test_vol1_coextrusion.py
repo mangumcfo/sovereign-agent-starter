@@ -117,3 +117,21 @@ def test_voice_routes_attention_but_never_rules():
 def test_merkle_root_deterministic():
     assert merkle_root(["a", "b", "c"]) == merkle_root(["a", "b", "c"])
     assert merkle_root(["a", "b"]) != merkle_root(["a", "c"])
+
+
+# ── TA-1: sealed substrate + real P1 signing (the gap the Tech/Arch board found, now closed) ──────────
+def test_receipt_is_p1_signed_when_sealed_present():
+    from sovereign_agent.inference import primitives as P
+    ident = P.new_identity()
+    if not ident:
+        pytest.skip("sealed primitives absent — stdlib fallback (demo mode)")
+    r = R.build_receipt(model_identity="m", input_content="a", output_content="b",
+                        sensitivity_class="YELLOW", routing_decision={"lane": "proposal_inference_lane"},
+                        operator_identity="KM-1176", constitutional_reference={"role_spec": "cfo_agent"},
+                        operator_private_key=ident["private_key"], operator_public_key=ident["public_key"])
+    assert r.get("p1_signature") and r["p1_signature"]["alg"] == "P1-ECDSA-secp256k1"
+    ok, why = R.validate_receipt(r)
+    assert ok, why                                  # P1 signature verifies
+    r["p1_signature"]["s"] += 1                     # tamper the signature
+    ok2, why2 = R.validate_receipt(r)
+    assert not ok2 and "P1 signature does not verify" in why2[0]
