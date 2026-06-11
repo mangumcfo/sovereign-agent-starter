@@ -527,3 +527,43 @@ def dialogue():
                          "Merkle-anchored. Hopper / G responses extend the same lens next."},
         "entries": entries,
     })
+
+
+@bp.get("/book_docs")
+@require_principal
+def book_docs():
+    """List a title's board / review documents (Editorial R1/R2/R3, Book-to-UX, Tech/Arch, Review Brief)
+    so the Series Pipeline card can HAND them — each opens via GET /doc (GB A4). Resolves the book dir
+    across the S1 agentic_playbooks vault AND each Series-N folder; paths are returned vault-relative."""
+    book = (request.args.get("book") or "").strip()
+    if not book or "/" in book or ".." in book:
+        return jsonify({"error": "bad_book", "what": "Pass ?book=<book_id>."}), 400
+    kdp = config.get_books_kdp_root()
+    if not kdp:
+        return jsonify({"book": book, "docs": []})
+    roots = [kdp / "agentic_playbooks"] + sorted(kdp.glob("series_*"))
+    bdir = None
+    for r in roots:
+        vs = sorted((r / book).glob("v*"), reverse=True)
+        if vs and vs[0].is_dir():
+            bdir = vs[0]
+            break
+    docs = []
+    if bdir:
+        labelmap = [("round1", "Editorial R1 — stylistic / structural"),
+                    ("round2", "Editorial R2 — disciplinary / functional"),
+                    ("round3", "Editorial R3 — scholarly / research"),
+                    ("virality_to_ux", "Book-to-UX Translation"),
+                    ("tech_arch", "Tech / Architectural Review (5 gates)"),
+                    ("review_brief", "Review Brief")]
+        seen = set()
+        for pat in ("*editorial_board_review*.md", "*virality_to_ux*.md", "*tech_arch_review*.md",
+                    "*[Rr]eview_[Bb]rief*.md"):
+            for p in sorted(bdir.glob(pat)):
+                if p.name in seen:
+                    continue
+                seen.add(p.name)
+                rel = str(p).split("/breathline-books-vault/")[-1]  # vault-relative → servable by /doc
+                lab = next((l for k, l in labelmap if k in p.name.lower()), p.name)
+                docs.append({"label": lab, "file": p.name, "path": rel})
+    return jsonify({"book": book, "docs": docs})
