@@ -33,12 +33,15 @@ KDP = Path("/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp")
 AGENTIC = KDP / "agentic_playbooks"
 LEDGER_ROOT = REPO / "memory" / "obligations" / "atrium_review"
 GB_CYLINDER = REPO / "artifacts" / "GB_KM_Aligned_Interaction_Cylinder.ndjson"
-# NOTE (2026-06-11): the canonical Series Pipeline boards are Editorial R1/R2/R3 (editorial_board_review),
-# Book-to-UX Translation (virality_to_ux_translation, 17.5), and Tech/Arch 5-gate (tech_arch_review, 17.6)
-# per WORKFLOW.md. This simplified machine-gate set predates that and needs reconciliation with GB (rail
-# owner) — flagged, not unilaterally changed. Where the B12 Cold-Reader amendment seats (a persona inside
-# the Editorial rounds vs a new board) is GB's call.
-REQUIRED_BOARDS = ("editorial", "ux", "technical")
+# Canonical Series-Pipeline boards (WORKFLOW.md), RATIFIED mapping (GB [207] + [209], 2026-06-11):
+#   Editorial R1/R2/R3 (editorial_board_review_v*_round{1,2,3}.md) — each carries an embedded ```rigor```
+#       block (board_rigor.rigor_check_md); the Cold Reader is the 7th LENS inside the rounds, not a board.
+#   Book-to-UX (virality_to_ux_translation_v*.md, step 17.5) — presence (prescriptive board, not prose-rigor).
+#   Tech/Arch 5-gate (tech_arch_review_v*.md, step 17.6) — MANDATORY, fires right after Book-to-UX; review_ready
+#       NEVER flips without its green (GB [209]). It is NOT deferred — an un-run Tech/Arch reads NOT-RUN
+#       (honest red), never a false green. Its docket (what it will check) is surfaced when not-yet-run.
+REQUIRED_EDITORIAL_ROUNDS = ("round1", "round2", "round3")
+TECH_ARCH_DOCKET = "bl-verify repo liveness · receipt-YAML hash-checks · '(planned)'-spec real status · co-extruded-code↔book coherence"
 
 
 def _book_roots() -> list[Path]:
@@ -56,34 +59,62 @@ def _book_dir(book_id: str) -> Path | None:
 
 
 def _check_boards(bdir: Path | None) -> dict:
-    """Editorial + UX + Technical boards present AND each passes the Board Rigor gate (no rubber stamps,
-    KM 2026-06-10). A board counts as executed only if its <board>*.findings.json passes board_rigor."""
+    """The canonical Series-Pipeline boards (ratified mapping GB [207]+[209]): Editorial R1/R2/R3 each
+    rigor-pass via their embedded ```rigor``` block; Book-to-UX present; Tech/Arch present + rigor-pass.
+    Tech/Arch is MANDATORY — un-run reads NOT-RUN (honest red) with its docket, never a false green."""
     if not bdir:
         return {"check": "boards_executed", "pass": False, "detail": "book dir not found",
                 "gap": "locate book artifact dir"}
     try:
         sys.path.insert(0, str(REPO / "scripts"))
-        from board_rigor import rigor_check
+        from board_rigor import rigor_check_md
     except Exception:  # noqa: BLE001
-        rigor_check = None
-    ok, issues = [], []
-    for b in REQUIRED_BOARDS:
-        ff = sorted(bdir.glob(f"*{b}*findings.json")) or sorted(bdir.glob(f"{b}_board*findings.json"))
-        md = sorted(bdir.glob(f"*{b}*board*")) + sorted(bdir.glob(f"*{b}*review*"))
-        if not ff:
-            issues.append(f"{b}: missing rigor findings file" if md else f"{b}: not run")
-            continue
-        if rigor_check:
-            r = rigor_check(json.loads(ff[0].read_text(encoding="utf-8")))
-            if r["pass"]:
-                ok.append(b)
+        rigor_check_md = None
+
+    ok, issues, statuses = [], [], {}
+
+    # 1) Editorial R1/R2/R3 — each round .md present + rigor-pass (Cold Reader is a lens within, flagged in block)
+    for rnd in REQUIRED_EDITORIAL_ROUNDS:
+        files = sorted(bdir.glob(f"*editorial_board_review*{rnd}.md"))
+        label = f"editorial_{rnd}"
+        if not files:
+            issues.append(f"{label}: not run"); statuses[label] = "not-run"; continue
+        if rigor_check_md:
+            r = rigor_check_md(str(files[0]))
+            if r.get("pass"):
+                ok.append(label); statuses[label] = "rigor-pass"
             else:
-                issues.append(f"{b}: RIGOR FAIL ({len(r['gaps'])} gaps)")
+                issues.append(f"{label}: RIGOR FAIL ({len(r.get('gaps', []))})"); statuses[label] = "rigor-fail"
         else:
-            ok.append(b)  # checker unavailable → presence-only fallback (still honest in detail)
+            ok.append(label); statuses[label] = "present"
+
+    # 2) Book-to-UX Translation (17.5) — presence (prescriptive board)
+    if sorted(bdir.glob("*virality_to_ux_translation*.md")):
+        ok.append("book_to_ux"); statuses["book_to_ux"] = "present"
+    else:
+        issues.append("book_to_ux: not run"); statuses["book_to_ux"] = "not-run"
+
+    # 3) Tech/Arch (17.6) — MANDATORY green; un-run is honest red (never a false green), docket surfaced
+    ta = sorted(bdir.glob("*tech_arch_review*.md"))
+    if not ta:
+        issues.append(f"technical: NOT RUN (mandatory, fires after Book-to-UX) — docket: {TECH_ARCH_DOCKET}")
+        statuses["technical"] = "not-run"
+    elif rigor_check_md:
+        r = rigor_check_md(str(ta[0]))
+        if r.get("pass"):
+            ok.append("technical"); statuses["technical"] = "rigor-pass"
+        else:
+            # a tech_arch .md without an embedded rigor block still counts as run if it states a verdict;
+            # but a rigor-fail is honest red, not green.
+            issues.append(f"technical: present but RIGOR FAIL/no-block ({len(r.get('gaps', []))})")
+            statuses["technical"] = "present-no-rigor"
+    else:
+        ok.append("technical"); statuses["technical"] = "present"
+
     return {"check": "boards_executed", "pass": not issues,
-            "detail": f"rigor-pass: {ok or 'none'}" + (f" | issues: {issues}" if issues else ""),
-            "gap": ("; ".join(issues) + " → enhancement list (Board Rigor Standard) → B32 obligations" if issues else "")}
+            "detail": " · ".join(f"{k}={v}" for k, v in statuses.items()),
+            "statuses": statuses,
+            "gap": ("; ".join(issues) if issues else "")}
 
 
 def _book_refs(book_id: str, extra: list[str]) -> list[str]:

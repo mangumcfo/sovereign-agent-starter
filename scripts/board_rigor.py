@@ -85,17 +85,41 @@ def rigor_check(data: dict) -> dict:
             "n_findings": len(findings), "n_sections": len(coverage)}
 
 
+def rigor_check_md(path_or_text: str) -> dict:
+    """Validate the R1.5 rigor of a canonical board .md (ratified rail-sync mapping 2026-06-11): the human
+    board document is the source of truth and carries an embedded machine block — a fenced ```rigor … ```
+    region holding the same {findings, section_coverage} schema rigor_check validates. One artifact, both
+    human + machine. If the path has no rigor block, returns a structural failure (the board must embed it)."""
+    text = path_or_text
+    p = Path(path_or_text)
+    if p.is_file():
+        text = p.read_text(encoding="utf-8")
+    m = re.search(r"```rigor\s*\n(.*?)\n```", text, re.S)
+    if not m:
+        return {"board": p.name if p.is_file() else "?", "pass": False, "rules": {},
+                "gaps": ["no embedded ```rigor``` block in the board .md"], "n_findings": 0, "n_sections": 0}
+    try:
+        data = json.loads(m.group(1))
+    except ValueError as e:
+        return {"board": "?", "pass": False, "rules": {}, "gaps": [f"rigor block invalid JSON: {e}"],
+                "n_findings": 0, "n_sections": 0}
+    return rigor_check(data)
+
+
 def main() -> int:
     if len(sys.argv) < 2:
-        print("usage: board_rigor.py <findings.json>"); return 2
+        print("usage: board_rigor.py <findings.json | board.md>"); return 2
     p = Path(sys.argv[1])
     if not p.is_file():
         print(f"✗ not found: {p}"); return 1
-    try:
-        data = json.loads(p.read_text(encoding="utf-8"))
-    except ValueError as e:
-        print(f"✗ invalid JSON: {e}"); return 1
-    r = rigor_check(data)
+    if p.suffix.lower() == ".md":
+        r = rigor_check_md(str(p))           # canonical board doc with embedded ```rigor``` block
+    else:
+        try:
+            data = json.loads(p.read_text(encoding="utf-8"))
+        except ValueError as e:
+            print(f"✗ invalid JSON: {e}"); return 1
+        r = rigor_check(data)
     flag = "✅ RIGOR PASS" if r["pass"] else "⛔ RIGOR FAIL"
     print(f"{flag} — {r['board']} board / {r['book_id']} ({r['n_findings']} findings, {r['n_sections']} sections)")
     for rule, gg in r["rules"].items():
