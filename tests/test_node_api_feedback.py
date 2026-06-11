@@ -112,3 +112,19 @@ def test_disposition_bad_action_is_400(owner_client):
     oid = _mint(owner_client).get_json()["obligation"]["id"]
     r = owner_client.post(f"/api/v1/feedback/{oid}/disposition", json={"action": "maybe"})
     assert r.status_code == 400 and r.get_json()["error"] == "bad_action"
+
+
+def test_doc_serves_whitelisted_and_refuses_traversal(owner_client, tmp_path):
+    # serves a real artifact under the repo's artifacts/ root
+    import pathlib
+    repo = pathlib.Path(__file__).resolve().parents[1]
+    sample = repo / "artifacts" / "DISTRIBUTION_P1_G1_2026-06-11.md"
+    if sample.exists():
+        r = owner_client.get("/api/v1/doc?path=artifacts/DISTRIBUTION_P1_G1_2026-06-11.md")
+        assert r.status_code == 200 and "markdown" in r.get_json()
+    # missing path → 400; traversal + absolute system path → refused (not served)
+    assert owner_client.get("/api/v1/doc").status_code == 400
+    assert owner_client.get("/api/v1/doc?path=../../../../etc/passwd").status_code == 404
+    assert owner_client.get("/api/v1/doc?path=/etc/passwd").status_code == 404
+    # non-doc extension under a root is refused (only .md/.txt/.yaml served)
+    assert owner_client.get("/api/v1/doc?path=artifacts/../src/sovereign_agent/node_api/server.py").status_code == 404

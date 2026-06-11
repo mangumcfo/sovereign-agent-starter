@@ -162,6 +162,48 @@ def review_brief():
                     "next_step": "GB seals it in artifacts/<TOKEN>_*Review_Brief*.md."}), 404
 
 
+# Allowed document roots — a card may HAND any readable doc under these (GB A4: artifacts handed, not listed).
+def _doc_roots():
+    from pathlib import Path as _P  # noqa: PLC0415
+    repo = _P(__file__).resolve().parents[4]
+    vault = _P("/home/kmangum/work-repos/mangumcfo/breathline-books-vault")
+    return [repo / "artifacts", repo / "scripts", vault / "kdp"]
+
+
+@bp.get("/doc")
+@require_principal
+def doc():
+    """doc — serve a whitelisted document (board review, Review Brief, proposal, dispatch sheet) as markdown
+    so EVERY Awaiting-Me card can hand its artifact for the operator to read before disposing, in-cockpit
+    (GB A4). Safe: resolves ONLY under the allowed doc roots; .md/.txt/.yaml/.yml only; resolve() collapses
+    any '..' and the result must still start with an allowed root (no traversal escape)."""
+    from pathlib import Path as _P  # noqa: PLC0415
+    rel = (request.args.get("path") or "").strip()
+    if not rel:
+        return jsonify({"error": "missing_path",
+                        "what": "Pass ?path=<doc path> (the path the card references)."}), 400
+    roots = [r.resolve() for r in _doc_roots()]
+    raw = _P(rel)
+    cands = [raw] if raw.is_absolute() else [r / rel for r in roots]
+    # also tolerate a path that begins with a root's last segment (e.g. 'artifacts/x.md', 'kdp/...md')
+    for r in _doc_roots():
+        cands.append(r.parent / rel)
+    for c in cands:
+        try:
+            rp = c.resolve()
+        except (OSError, ValueError):
+            continue
+        if rp.suffix.lower() not in (".md", ".txt", ".yaml", ".yml"):
+            continue
+        if not any(str(rp) == str(root) or str(rp).startswith(str(root) + "/") for root in roots):
+            continue   # outside every allowed root → refuse (traversal-safe after resolve())
+        if rp.is_file():
+            return jsonify({"path": rel, "file": rp.name,
+                            "markdown": rp.read_text(encoding="utf-8", errors="replace")})
+    return jsonify({"error": "not_found", "what": f"No readable document for '{rel}'.",
+                    "next_step": "Cards may hand .md/.yaml docs under artifacts/, scripts/, or the books vault kdp/."}), 404
+
+
 @bp.post("/feedback/<obligation_id>/disposition")
 @require_principal
 def feedback_disposition(obligation_id: str):
