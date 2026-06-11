@@ -19,6 +19,7 @@ from __future__ import annotations
 
 from flask import Blueprint, jsonify, request
 
+from ...obligations import AlreadyClosedError
 from ..auth import current_principal, require_principal
 from ..deps import get_obligation_ledger
 
@@ -138,18 +139,28 @@ def feedback_disposition(obligation_id: str):
     action = (body.get("action") or "").lower()
     note = (body.get("note") or "").strip()
     led = get_obligation_ledger()
-    if action == "accept":
-        entry = led.approve(obligation_id, approved_by=current_principal())
-        return jsonify({"action": "accept", "obligation": entry})
-    if action == "reject":
+    if action not in ("accept", "reject"):
+        return jsonify({
+            "error": "bad_action",
+            "what": "Disposition needs an action: accept or reject.",
+            "next_step": "POST .../disposition with JSON {\"action\": \"accept|reject\", \"note\": \"...\"}.",
+        }), 400
+    # Mirror obligations.py error voice (audit fix): not-found → 404, already-closed → 409, denied → 403.
+    try:
+        if action == "accept":
+            entry = led.approve(obligation_id, approved_by=current_principal())
+            return jsonify({"action": "accept", "obligation": entry})
         entry = led.close(
             obligation_id,
             evidence=f"REJECTED by {current_principal()}: {note or 'no reason given'}",
             evidence_tier="E1", require_e1=False, closed_by=current_principal(),
         )
         return jsonify({"action": "reject", "obligation": entry})
-    return jsonify({
-        "error": "bad_action",
-        "what": "Disposition needs an action: accept or reject.",
-        "next_step": "POST .../disposition with JSON {\"action\": \"accept|reject\", \"note\": \"...\"}.",
-    }), 400
+    except KeyError:
+        return jsonify({"error": "obligation_not_found", "what": f"No obligation '{obligation_id}'.",
+                        "next_step": "Refresh the Awaiting-Me view — it may already be disposed."}), 404
+    except AlreadyClosedError as exc:
+        return jsonify({"error": "already_closed", "what": str(exc),
+                        "next_step": "It already left the queue — no further action."}), 409
+    except PermissionError as exc:
+        return jsonify({"error": "breath_gate_denied", "what": str(exc)}), 403

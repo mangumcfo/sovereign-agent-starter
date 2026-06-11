@@ -110,6 +110,11 @@ def produce():
         return jsonify({"error": "missing_obligation_id",
                         "what": "Tell me which session to process.",
                         "next_step": "POST /api/v1/produce with {\"obligation_id\":\"obl_...\"}."}), 400
+    import re as _re  # noqa: PLC0415
+    if not _re.fullmatch(r"obl_[0-9]{8,}_[0-9a-f]{4,}", oid):  # strict shape before subprocess/fs use (audit)
+        return jsonify({"error": "bad_obligation_id",
+                        "what": "obligation_id is not a valid obl_ identifier.",
+                        "next_step": "Use the exact id from /obligations (obl_<digits>_<hex>)."}), 400
     repo = Path(__file__).resolve().parents[4]
     script = repo / "scripts" / "atrium_producer.py"
     if not script.exists():

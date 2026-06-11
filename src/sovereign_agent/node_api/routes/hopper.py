@@ -138,24 +138,15 @@ def _cards_from_feed(path: Path):
 
 def _packeted_refs():
     """Refs of obligations already opened from hopper cards — so a card that's been Sent-to-Packet
-    DISAPPEARS from the feed (no more re-approving the same card → no duplicate-obligation pileup)."""
-    import json as _json
-    root = os.environ.get("OBLIGATION_LEDGER_ROOT", "")
-    refs = set()
-    if root:
-        p = Path(root) / "obligations.ndjson"
-        if p.is_file():
-            for line in p.read_text(encoding="utf-8").splitlines():
-                line = line.strip()
-                if not line:
-                    continue
-                try:
-                    e = _json.loads(line)
-                except ValueError:
-                    continue
-                if e.get("type") == "debit" and e.get("ref"):
-                    refs.add(e["ref"])
-    return refs
+    DISAPPEARS from the feed (no more re-approving the same card → no duplicate-obligation pileup).
+
+    Audit fix: route through the WIRED ledger (same path resolution as every writer). The old version
+    read ONLY from OBLIGATION_LEDGER_ROOT and silently returned an empty set when that env var was
+    unset — while the ledger itself falls back to <repo>/memory/obligations — so on a default node the
+    dedup no-op'd and re-surfaced already-packeted cards (the exact pileup it exists to prevent)."""
+    from ..deps import get_obligation_ledger  # noqa: PLC0415
+    led = get_obligation_ledger()
+    return {e["ref"] for e in led._entries() if e.get("type") == "debit" and e.get("ref")}
 
 
 def _card_packeted(card: dict, packeted: set) -> bool:

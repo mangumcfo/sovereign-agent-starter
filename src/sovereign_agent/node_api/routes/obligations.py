@@ -16,8 +16,20 @@ from __future__ import annotations
 
 from flask import Blueprint, jsonify, request
 
+from ...obligations import AlreadyClosedError
 from ..auth import current_principal, require_principal
 from ..deps import get_obligation_ledger
+
+
+def _not_found(obligation_id: str):
+    return jsonify({"error": "obligation_not_found",
+                    "what": f"No obligation '{obligation_id}' exists.",
+                    "next_step": "Open it first (POST /api/v1/obligations) or check the id."}), 404
+
+
+def _already_closed(exc):
+    return jsonify({"error": "already_closed", "what": str(exc),
+                    "next_step": "This obligation is already credited/closed — no further action."}), 409
 
 bp = Blueprint("obligations", __name__, url_prefix="/api/v1")
 
@@ -88,6 +100,10 @@ def obligations_approve(obligation_id: str):
             approved_by=current_principal(),  # the breath-gate actor is the AUTHENTICATED principal — uncloneable (audit 2026-06-10)
             rationale=body.get("rationale", ""),
         )
+    except KeyError:
+        return _not_found(obligation_id)
+    except AlreadyClosedError as exc:
+        return _already_closed(exc)
     except PermissionError as exc:
         return jsonify({
             "error": "breath_gate_denied",
@@ -118,6 +134,10 @@ def obligations_close(obligation_id: str):
             require_e1=bool(body.get("require_e1", True)),
             closed_by=current_principal(),  # bind to authenticated principal, never the request body (audit 2026-06-10)
         )
+    except KeyError:
+        return _not_found(obligation_id)
+    except AlreadyClosedError as exc:
+        return _already_closed(exc)
     except ValueError as exc:  # E0 / claim-only insufficient
         return jsonify({
             "error": "insufficient_evidence",

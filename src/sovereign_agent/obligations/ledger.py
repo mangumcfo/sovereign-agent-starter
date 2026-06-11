@@ -51,6 +51,10 @@ class LedgerBoundaryError(RuntimeError):
     """Raised if the ledger root would land inside the protected live cylinder infra."""
 
 
+class AlreadyClosedError(RuntimeError):
+    """Raised by close() when an obligation has already been credited/closed (audit guard)."""
+
+
 # Substrings that must never appear in a resolved ledger root (the live Tiger seal chain).
 FORBIDDEN_ROOT_FRAGMENTS = (os.path.join("Tiger_1a", "cylinders"),)
 
@@ -119,14 +123,28 @@ class ObligationLedger:
 
     # ── chain primitives ──────────────────────────────────────────────
     def _entries(self) -> list[dict]:
+        # Parse-cache keyed by (st_mtime_ns, st_size) (audit perf fix): GET /obligations triggered
+        # 6 full NDJSON parses per request (replay/by_status/by_owner/verify_chain). Re-reads only when
+        # the file actually changes — so a multi-instance/append-by-another-process is still caught.
         if not self.path.exists():
+            self._entries_cache = ([], None)
             return []
+        st = self.path.stat()
+        key = (st.st_mtime_ns, st.st_size)
+        cache = getattr(self, "_entries_cache", None)
+        if cache is not None and cache[1] == key:
+            return cache[0]
         out = []
         for line in self.path.read_text().splitlines():
             line = line.strip()
             if line:
                 out.append(json.loads(line))
+        self._entries_cache = (out, key)
         return out
+
+    def _is_closed(self, obligation_id: str) -> bool:
+        return any(e.get("type") == "credit" and e.get("closes") == obligation_id
+                   for e in self._entries())
 
     def _append(self, entry: dict) -> dict:
         # CRITICAL write-fence (audit 2026-06-10): an exclusive flock over the read-tail-THROUGH-write
@@ -231,6 +249,10 @@ class ObligationLedger:
                 rationale: str = "") -> dict:
         """Approve a draft via the breath-gate. If a `gate` is injected, the disposition
         is the gate's verdict (human primacy); a DENY raises and is recorded."""
+        if self._get(obligation_id) is None:  # audit guard: no orphan approvals
+            raise KeyError(f"obligation '{obligation_id}' does not exist")
+        if self._is_closed(obligation_id):
+            raise AlreadyClosedError(f"obligation '{obligation_id}' is already closed — cannot approve")
         disposition, gate_meta = "approved", None
         if self.gate is not None:
             verdict = self.gate("approve", {"id": obligation_id, "approved_by": approved_by,
@@ -262,6 +284,11 @@ class ObligationLedger:
 
         Rejects E0 (claim-only) when require_e1 is True (the default for material obligations).
         """
+        ob = self._get(obligation_id)  # existence/closed guards FIRST — 'not found' beats 'bad evidence' (audit)
+        if ob is None:
+            raise KeyError(f"obligation '{obligation_id}' does not exist")
+        if self._is_closed(obligation_id):
+            raise AlreadyClosedError(f"obligation '{obligation_id}' is already closed")
         tier = EvidenceTier(evidence_tier) if evidence_tier else classify_evidence(evidence)
         if require_e1 and tier == EvidenceTier.E0_CLAIM:
             raise ValueError(
@@ -270,7 +297,6 @@ class ObligationLedger:
             )
         # Human primacy (CYL-006): a MATERIAL obligation cannot close until it has cleared
         # the breath-gate. Only enforced when a gate is wired (standalone stays unchanged).
-        ob = self._get(obligation_id)
         if self.gate is not None and ob and ob.get("material") and not self._is_approved(obligation_id):
             raise PermissionError(
                 f"'{obligation_id}' is material and has not cleared the breath-gate; "
@@ -315,7 +341,10 @@ class ObligationLedger:
         entries = self._entries()
         debits = {e["id"]: e for e in entries if e.get("type") == "debit"}
         closed = {e["closes"] for e in entries if e.get("type") == "credit"}
-        approved = {e["approves"] for e in entries if e.get("type") == "approval"}
+        # Only approvals actually DISPOSITIONED 'approved' count (audit fix): a denied/pending
+        # approval entry must not flip a draft to approved in the replay view. Mirrors _is_approved.
+        approved = {e["approves"] for e in entries
+                    if e.get("type") == "approval" and e.get("disposition", "approved") == "approved"}
         for oid in approved:
             if oid in debits:
                 debits[oid] = {**debits[oid], "draft": False, "approved": True}
@@ -354,8 +383,9 @@ class ObligationLedger:
             t = e.get("type")
             if t == "approval" and e.get("approves") in obs:
                 d = obs[e["approves"]]
-                d["approved"] = True
-                d["draft"] = False
+                d["disposition"] = e.get("disposition", "approved")
+                d["approved"] = d["disposition"] == "approved"  # denied/pending must not read as approved (audit fix)
+                d["draft"] = not d["approved"]
                 d["approved_by"] = e.get("approved_by")
                 d["approval_rationale"] = e.get("rationale")
             elif t == "credit" and e.get("closes") in obs:

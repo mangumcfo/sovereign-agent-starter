@@ -21,6 +21,7 @@ flows under an explicit principal_id; no implicit roots.
 
 from __future__ import annotations
 
+import hmac
 import os
 from functools import wraps
 from pathlib import Path
@@ -73,7 +74,7 @@ def _verify_token_against_file(token: str) -> tuple[bool, str | None, str]:
     except OSError as exc:
         return False, None, f"credential read failed: {exc}"
 
-    if stored != secret:
+    if not hmac.compare_digest(stored, secret):  # constant-time compare — no timing oracle (audit)
         return False, None, "stored secret does not match presented token"
 
     return True, principal_id, ""

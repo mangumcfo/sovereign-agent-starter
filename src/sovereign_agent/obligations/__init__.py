@@ -9,6 +9,9 @@ Vendors the proven patterns from the live B32 primitives WITHOUT importing or dr
 Series principle: receipts as the transactional record of truth; SOURCE (principal_id on every
 entry); INTEGRITY (append-only hash chain, draft->approval gate, no close without evidence).
 """
-from .ledger import ObligationLedger, classify_evidence, EvidenceTier, LedgerBoundaryError
+from .ledger import (
+    ObligationLedger, classify_evidence, EvidenceTier, LedgerBoundaryError, AlreadyClosedError,
+)
 
-__all__ = ["ObligationLedger", "classify_evidence", "EvidenceTier", "LedgerBoundaryError"]
+__all__ = ["ObligationLedger", "classify_evidence", "EvidenceTier", "LedgerBoundaryError",
+           "AlreadyClosedError"]
