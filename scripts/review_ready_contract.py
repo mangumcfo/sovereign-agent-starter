@@ -119,7 +119,10 @@ def _check_fidelity(refs: list[str]) -> dict:
             continue
         for line in src.read_text(encoding="utf-8").splitlines():
             low = line.lower()
-            if "fidelity" not in low or not any(r in low for r in refs):
+            # Only an ACTUAL verdict record counts — not any passing mention of the word "fidelity"
+            # (a later non-verdict GB note was overriding the real PASS). Require the verdict marker.
+            is_verdict = "fidelity_verdict" in low or ("fidelity" in low and ("verdict" in low or src.name.lower().find("fidelity") >= 0))
+            if not is_verdict or not any(r in low for r in refs):
                 continue
             verdict = "pass" if ("pass" in low and "fail" not in low) else ("fail" if "fail" in low else "?")
             latest = verdict  # later lines win (append-only → newest verdict)
