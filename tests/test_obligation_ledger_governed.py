@@ -68,9 +68,12 @@ def test_node_integration_smoke_real_compliance(tmp_path):
         def _self_attest(self, event, details):
             return {"memory_root": "merkle_root_deadbeef", "event": event, "details": details}
 
-    led = wire_node_ledger(root=tmp_path, node=FakeNode(), mode="sovereign", simulate_gate=True)
+    led = wire_node_ledger(root=tmp_path, node=FakeNode(), mode="sovereign")  # real gate (default)
     ob = led.open("Wire Phase 3 Node API /obligations", material=True)
-    led.approve(ob["id"], approved_by="km-1176")        # simulated human disposition
+    appr = led.approve(ob["id"], approved_by="km-1176")  # REAL disposition by the authenticated principal
+    assert appr["approved_by"] == "km-1176"              # actor is the real principal, not a simulated stand-in
+    assert appr["disposition"] == "approved"
+    assert appr["gate"]["real"] is True and appr["gate"]["approver"] == "km-1176"
     credit = led.close(ob["id"], evidence="/repo/server.py hash a1b2c3d4e5f60718")
     # the close carries a real node attestation (Merkle root from the node)
     assert credit["receipt"]["node_receipt_hash"] == "merkle_root_deadbeef"

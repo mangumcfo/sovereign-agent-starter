@@ -56,8 +56,10 @@ def get_obligation_ledger():
     """Return the process-wide ObligationLedger (R-23), wired to this node's breath-gate +
     ComplianceEngine. Node-local storage root (boundary guard applies); never the live seal chain.
 
-    Dev note: wired with simulate_gate=True — a material obligation's approval is a simulated human
-    disposition. Production routes approval to an external workflow (honest, labeled)."""
+    Breath-gate is REAL in every mode (audit 2026-06-11, real_gates_every_mode): a material obligation's
+    approval records the AUTHENTICATED principal who called /approve — never a simulated disposition. Set
+    BREATHLINE_GATE_MODE=external only when approval arrives via an out-of-band workflow (then the gate
+    returns 'pending' and the obligation is not closeable until the real disposition lands)."""
     global _LEDGER
     if _LEDGER is None:
         from ..obligations.node_integration import wire_node_ledger
@@ -65,7 +67,7 @@ def get_obligation_ledger():
             root=os.environ.get("OBLIGATION_LEDGER_ROOT"),  # None -> ledger default (node-local)
             node=get_node(),
             mode=os.environ.get("BREATHLINE_NODE_MODE", "sovereign"),
-            simulate_gate=True,
+            gate_mode=os.environ.get("BREATHLINE_GATE_MODE", "sovereign"),
         )
     return _LEDGER
 

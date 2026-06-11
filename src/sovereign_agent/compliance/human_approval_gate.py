@@ -79,5 +79,21 @@ class HumanApprovalGate:
             "note": "Action did not proceed. The refusal is the constitutional act.",
         }
 
+    def record_disposition(self, req_id: str, status: str = "approved",
+                           approver: str = "node", reason: str = "") -> Dict:
+        """Record a REAL human disposition — the authenticated principal who acted at the breath-gate
+        (the /approve endpoint, behind require_principal). Not a simulation: a real actor + a real UTC
+        timestamp (audit 2026-06-11, real_gates_every_mode). simulate_approval / simulate_denial above
+        remain TEST-ONLY stand-ins and are never used in the live wiring."""
+        from datetime import datetime, timezone  # noqa: PLC0415
+        if req_id not in self._pending:
+            return {"status": "unknown_request"}
+        self._pending.pop(req_id, None)
+        return {
+            "status": status, "req_id": req_id, "approver": approver, "reason": reason,
+            "timestamp": datetime.now(timezone.utc).isoformat(), "real": True,
+            "note": "Human judgment recorded by the authenticated principal.",
+        }
+
     def get_pending(self) -> Dict[str, ApprovalRequest]:
         return dict(self._pending)
