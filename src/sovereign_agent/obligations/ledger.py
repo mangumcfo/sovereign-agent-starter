@@ -146,6 +146,15 @@ class ObligationLedger:
         return any(e.get("type") == "credit" and e.get("closes") == obligation_id
                    for e in self._entries())
 
+    def _stat_key(self) -> tuple:
+        """Identity of the on-disk chain: (mtime_ns, size). This is the SAME trust key `_entries()`
+        uses for its parse cache — so memoizing verify_chain on it is no weaker than the parse cache
+        already is. A genuine append/edit bumps the key; an unchanged file is treated as unchanged."""
+        if not self.path.exists():
+            return ("genesis", 0)
+        st = self.path.stat()
+        return (st.st_mtime_ns, st.st_size)
+
     def _append(self, entry: dict) -> dict:
         # CRITICAL write-fence (audit 2026-06-10): an exclusive flock over the read-tail-THROUGH-write
         # critical section. Without it two appenders read the same tail, compute the same prev_hash, and
@@ -157,6 +166,11 @@ class ObligationLedger:
         with open(lock_path, "a+") as lock:
             fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
             try:
+                # Was the chain VERIFIED-VALID immediately before this append? (cache key must match the
+                # current pre-append file identity — any out-of-band change since the last verify bumps
+                # the key, so we fall back to a full re-verify and still catch the tamper.)
+                pre_cache = getattr(self, "_verify_cache", None)
+                pre_valid = bool(pre_cache and pre_cache[0] == self._stat_key() and pre_cache[1])
                 entries = self._entries()
                 entry["prev_hash"] = entries[-1]["hash"] if entries else "genesis"
                 entry["hash"] = _hash({k: v for k, v in entry.items() if k != "hash"})
@@ -164,6 +178,11 @@ class ObligationLedger:
                     f.write(json.dumps(entry, sort_keys=True) + "\n")
                     f.flush()
                     os.fsync(f.fileno())
+                # Incremental verify frontier (scaling_receipted_engine): a correctly-linked entry appended
+                # onto a known-valid chain leaves it valid — so advance the cached verdict to the new file
+                # identity WITHOUT a full re-hash. If the pre-state wasn't known-valid, drop the cache so the
+                # next verify_chain() recomputes from genesis.
+                self._verify_cache = (self._stat_key(), True) if pre_valid else None
             finally:
                 fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
         return entry
@@ -405,7 +424,25 @@ class ObligationLedger:
         return out
 
     def verify_chain(self) -> bool:
-        """Recompute the hash chain; True iff every prev_hash + hash is intact."""
+        """True iff every prev_hash + hash is intact.
+
+        INCREMENTAL (scaling_receipted_engine): memoized on the file identity key (_stat_key). The hot
+        path — many `chain_ok` reads between writes (GET /obligations recomputes it per request) — returns
+        the cached verdict in O(1) instead of re-hashing the whole chain each time. A change to the file
+        (our own append, or any out-of-band edit) bumps the key and forces a full recompute, so tampering
+        is still caught the moment the file differs. Our in-lock append advances the frontier directly (see
+        _append), so append-then-verify is O(1) too. Soundness note: this trusts the same (mtime_ns, size)
+        key the _entries() parse cache already trusts — it is no weaker than the existing read path."""
+        key = self._stat_key()
+        cache = getattr(self, "_verify_cache", None)
+        if cache is not None and cache[0] == key:
+            return cache[1]
+        ok = self._recompute_chain()
+        self._verify_cache = (key, ok)
+        return ok
+
+    def _recompute_chain(self) -> bool:
+        """Full hash-walk from genesis — the O(n) ground truth behind the memoized verify_chain."""
         prev = "genesis"
         for e in self._entries():
             if e.get("prev_hash") != prev:
