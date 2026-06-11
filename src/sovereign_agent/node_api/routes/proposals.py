@@ -21,9 +21,15 @@ from pathlib import Path
 
 from flask import Blueprint, jsonify, request
 
+from ... import config
 from ..auth import current_principal, require_owner, require_principal
 
 bp = Blueprint("proposals", __name__, url_prefix="/api/v1")
+
+# Books-vault root flows from config (BREATHLINE_BOOKS_VAULT, legacy path is a resolved candidate) so the
+# node runs anywhere; the empty-string fallback keeps the module import-safe on a vault-less host (audit
+# runs_anywhere). Endpoints that need a real file already 404 when the artifact is absent.
+_VAULT = str(config.get_books_kdp_root() or "")
 
 
 def _store_path() -> Path:
@@ -202,7 +208,7 @@ def recompile():
            "12": "12_agentic_enterprise"}.get(m.group(1) if m else "")
     if not sub:
         return jsonify({"error": "unknown_book", "what": f"No build mapping for '{book}'."}), 400
-    vault = "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks"
+    vault = os.path.join(_VAULT, "agentic_playbooks")
     cwd = os.path.join(vault, sub, "v1.0")
     script = os.path.join(cwd, "build_v1.0.py")
     if not os.path.isfile(script):
@@ -211,9 +217,6 @@ def recompile():
                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
     return jsonify({"status": "recompiling", "book": book,
                     "next_step": "~30-90s; then the viewer auto-reloads (GET /book_pdf) or re-Browse."}), 202
-
-
-_VAULT = "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp"
 
 
 def _book_registry() -> dict:

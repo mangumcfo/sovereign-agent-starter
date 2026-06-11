@@ -55,7 +55,8 @@ class PolicyLoader:
     def __init__(self, primary_source: Optional[Path] = None, secondary_source: Optional[Path] = None):
         from .. import config as sovereign_config
         self.primary_source = primary_source or sovereign_config.resolve_primary_source()
-        self.secondary_source = secondary_source or Path("/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks")
+        # Books vault via config (BREATHLINE_BOOKS_VAULT; legacy path is a candidate) — runs anywhere.
+        self.secondary_source = secondary_source or sovereign_config.get_playbooks_dir()
         self._loaded_policies: Dict[str, Policy] = {}
         self._file_mtimes: Dict[str, float] = {}  # for hot-reload detection
 

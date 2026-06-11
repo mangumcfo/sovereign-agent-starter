@@ -34,8 +34,9 @@ class PlaybookLoader:
         # Use centralized resolver (supports demo mode + env vars + legacy paths)
         resolved_primary = sovereign_config.resolve_primary_source(primary_source)
         self.primary_source = resolved_primary
-        # Secondary (books vault) kept as legacy fallback only — primary is now fully resolver-driven
-        self.secondary_source = secondary_source or Path("/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks")
+        # Secondary (books vault) kept as legacy fallback only — primary is now fully resolver-driven.
+        # Resolved via config (BREATHLINE_BOOKS_VAULT; legacy path is a candidate) so it runs anywhere.
+        self.secondary_source = secondary_source or sovereign_config.get_playbooks_dir()
 
         self._is_demo = sovereign_config.is_demo_mode() or (resolved_primary == sovereign_config.get_demo_roles_dir())
         self._validate_sources()

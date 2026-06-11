@@ -34,9 +34,14 @@ def _ensure_kernel_primitives() -> bool:
     if _KERNEL_BOOTSTRAPPED:
         return True
 
-    # Common locations (consistent with the rest of the USN bootstrap strategy)
-    candidates = [
-        Path("/home/kmangum/work-repos/mangumcfo/breathline-federation/platform"),
+    # Resolve the federation platform via config (BREATHLINE_FEDERATION_ROOT + candidate sweep that
+    # still includes the legacy path) so the kernel bootstrap runs anywhere — runs_anywhere (audit).
+    from . import config as sovereign_config  # noqa: PLC0415 — local import avoids an import cycle
+    candidates = []
+    fed = sovereign_config.get_federation_root()
+    if fed:
+        candidates.append(fed / "platform")
+    candidates += [
         Path.home() / "work-repos" / "mangumcfo" / "breathline-federation" / "platform",
     ]
 

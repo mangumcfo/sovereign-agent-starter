@@ -25,6 +25,7 @@ DEMO_MODE_ENV = "SOVEREIGN_DEMO_MODE"
 SEALED_ROOT_ENV = "BREATHLINE_SEALED_ROOT"
 FEDERATION_ROOT_ENV = "BREATHLINE_FEDERATION_ROOT"
 SOVEREIGN_HOME_ENV = "SOVEREIGN_HOME"
+BOOKS_VAULT_ENV = "BREATHLINE_BOOKS_VAULT"   # path to the breathline-books-vault/kdp root
 
 FRIENDLY_DEMO_ROLES = [
     "family_cfo_agent",      # maps to family_cfo_demo internally
@@ -50,6 +51,8 @@ __all__ = [
     "resolve_primary_source",
     "get_friendly_demo_role_names",
     "map_to_demo_role",
+    "get_books_kdp_root",
+    "get_playbooks_dir",
     "DEMO_ROLE_ALIASES",
     "FRIENDLY_DEMO_ROLES",
 ]
@@ -134,6 +137,35 @@ def get_federation_root() -> Optional[Path]:
         if c.exists() and ((c / "platform" / "roles").exists() or (c / "specs").exists()):
             return c
     return None
+
+
+def get_books_kdp_root() -> Optional[Path]:
+    """Resolve the breathline-books-vault/kdp root (interiors, covers, metadata, ASIN/CHANNEL trackers).
+
+    Portability (runs_anywhere, audit 2026-06-11): the modules that serve books used to hardcode
+    '/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp'. Now the path flows from
+    BREATHLINE_BOOKS_VAULT (explicit) or a candidate sweep that still INCLUDES the legacy location, so
+    KM's machine resolves identically while any other host sets one env var. Returns None when no vault
+    is present (a node with no published-books surface — the honest empty state, not a crash)."""
+    env = os.environ.get(BOOKS_VAULT_ENV)
+    if env:
+        return Path(env).expanduser().resolve()   # explicit operator config wins, validated by callers
+    candidates = [
+        Path("/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp"),  # legacy exact (KM's host)
+        Path.home() / "work-repos" / "mangumcfo" / "breathline-books-vault" / "kdp",
+        Path.home() / "work-repos" / "breathline-books-vault" / "kdp",
+        get_sovereign_home() / "breathline-books-vault" / "kdp",
+    ]
+    for c in candidates:
+        if c.exists():
+            return c.resolve()
+    return None
+
+
+def get_playbooks_dir() -> Optional[Path]:
+    """The agentic_playbooks directory under the kdp vault (where manuscripts + trackers live)."""
+    root = get_books_kdp_root()
+    return (root / "agentic_playbooks") if root else None
 
 
 def get_demo_roles_dir() -> Path:

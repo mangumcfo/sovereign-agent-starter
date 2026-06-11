@@ -24,9 +24,14 @@ from pathlib import Path
 
 from flask import Blueprint, jsonify, request
 
+from ... import config
 from ..auth import require_principal
 
 bp = Blueprint("series", __name__, url_prefix="/api/v1")
+
+# Playbooks dir flows from config (BREATHLINE_BOOKS_VAULT, legacy path is a resolved candidate) so the
+# trackers resolve on any host; None when no vault is present (the overlay simply no-ops) — runs_anywhere.
+_PLAYBOOKS_DIR = config.get_playbooks_dir()
 
 # Title fields the read-only card needs (everything else in the projection is GB working detail).
 _TITLE_FIELDS = (
@@ -81,8 +86,8 @@ def _publishing_index() -> dict:
     except ImportError:
         return {}
     explicit = os.environ.get("ASIN_TRACKER")
-    cands = [Path(explicit)] if explicit else [
-        Path("/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/ASIN_TRACKER.yaml")]
+    cands = ([Path(explicit)] if explicit
+             else [_PLAYBOOKS_DIR / "ASIN_TRACKER.yaml"] if _PLAYBOOKS_DIR else [])
     _MAP = {"live": "published", "pre_order_live": "pre_order_live",
             "pre_order_in_review": "pre_order", "pre_order_publishing": "pre_order_live"}
     for p in cands:
@@ -114,8 +119,8 @@ def _channel_index() -> dict:
     except ImportError:
         return {}
     explicit = os.environ.get("CHANNEL_TRACKER")
-    cands = [Path(explicit)] if explicit else [
-        Path("/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/CHANNEL_TRACKER.yaml")]
+    cands = ([Path(explicit)] if explicit
+             else [_PLAYBOOKS_DIR / "CHANNEL_TRACKER.yaml"] if _PLAYBOOKS_DIR else [])
     for p in cands:
         try:
             data = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
@@ -448,7 +453,13 @@ def _thread_entries():
 # root_hash over the whole cylinder, NOT a per-entry prev/hash chain like the THREAD. So we render each entry
 # honestly: receipt = sha256(content)[:16] (deterministic, verifiable per-entry), and the cylinder's
 # merkle_root is the chain anchor surfaced in meta. Read-only; we never write the cylinder.
-_B51_LIVE_DIR = Path("/home/kmangum/.local/share/human-memory-cylinder/sessions")
+# B51 live capture dir flows from B51_LIVE_DIR (default: XDG data home) so it resolves per-operator
+# rather than for one host (runs_anywhere); read-only — we never write the cylinder.
+_B51_LIVE_DIR = Path(os.environ.get(
+    "B51_LIVE_DIR",
+    os.path.join(os.environ.get("XDG_DATA_HOME", os.path.expanduser("~/.local/share")),
+                 "human-memory-cylinder", "sessions"),
+))
 
 
 def _b51_cylinder_path() -> Path | None:
