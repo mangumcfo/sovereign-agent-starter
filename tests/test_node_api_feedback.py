@@ -24,7 +24,8 @@ def owner_client(tmp_path, monkeypatch):
 
 
 def _mint(client, text="Tighten the ch3 cross-foot", **extra):
-    body = {"text": text, "type": "viewer", "book": "B12", "chapter": 3, **extra}
+    # default category=judgment so the packet is KM-gated (lands in Awaiting-Me) for the gate tests below.
+    body = {"text": text, "type": "viewer", "book": "B12", "chapter": 3, "category": "judgment", **extra}
     r = client.post("/api/v1/feedback", json=body)
     return r
 
@@ -36,7 +37,39 @@ def test_feedback_binds_owner_to_authenticated_principal(owner_client):
     ob = r.get_json()["obligation"]
     assert ob["owner"] == "KM-1176"           # bound to current_principal, NOT the request body
     assert ob["ref"] == "viewer:B12 ch3"      # resolving source ref built from the typed fields
-    assert ob["next_gate"] == "Human disposition"
+    assert ob["next_gate"] == "Human disposition"   # judgment → KM-gated discrete lane
+    assert ob["category"] == "judgment" and ob["lane"] == "discrete"
+
+
+def test_a2_mechanical_goes_to_batch_not_km(owner_client):
+    # A mechanical capture (wording/typo/structure) is born-approved into the batch lane — it does NOT
+    # land on KM's Awaiting-Me. This is the burden-removal: mechanical edits never touch his attention.
+    for cat in ("typo", "wording", "structure"):
+        r = owner_client.post("/api/v1/feedback", json={"text": "fix this", "category": cat})
+        assert r.status_code == 201
+        body = r.get_json()
+        assert body["lane"] == "batch" and body["category"] == cat
+        ob = body["obligation"]
+        assert ob["material"] is False and ob["next_gate"] == "batch:mechanical"
+    aw = owner_client.get("/api/v1/awaiting_km").get_json()
+    assert aw["meta"]["count"] == 0           # nothing mechanical reached KM
+
+
+def test_a2_technical_routes_to_tiger_implement(owner_client):
+    ob = owner_client.post("/api/v1/feedback", json={"text": "TOC links broken", "category": "technical"}).get_json()["obligation"]
+    assert ob["lane"] == "discrete" and ob["next_gate"] == "KM confirm → Tiger implement" and ob["material"] is False
+
+
+def test_a2_judgment_is_km_gated_discrete(owner_client):
+    ob = owner_client.post("/api/v1/feedback", json={"text": "is this framing right?", "category": "judgment"}).get_json()["obligation"]
+    assert ob["lane"] == "discrete" and ob["next_gate"] == "Human disposition" and ob["material"] is True
+    assert owner_client.get("/api/v1/awaiting_km").get_json()["meta"]["count"] == 1
+
+
+def test_a2_smart_default_kills_other(owner_client):
+    # No category given → smart default 'wording' (mechanical), flagged as defaulted. Never 'other'.
+    body = owner_client.post("/api/v1/feedback", json={"text": "no category here"}).get_json()
+    assert body["category"] == "wording" and body["category_defaulted"] is True and body["lane"] == "batch"
 
 
 def test_feedback_missing_text_is_loud_400(owner_client):

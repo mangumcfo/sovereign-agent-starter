@@ -222,13 +222,17 @@ class ObligationLedger:
     def open(self, title: str, owner: Optional[str] = None,
              classification: str = "C2", intent: Optional[str] = None,
              ref: Optional[str] = None, material: bool = False,
-             lgp: Optional[dict] = None, next_gate: Optional[str] = None) -> dict:
+             lgp: Optional[dict] = None, next_gate: Optional[str] = None,
+             category: Optional[str] = None, lane: Optional[str] = None) -> dict:
         """Open an obligation = a DRAFT action-proposal (debit). CYL-006: starts draft.
 
         material=True ⇒ a gated ledger requires human approval (breath-gate) before close.
         lgp (P0-2) ⇒ optional families-first contribution that travels WITH the obligation, e.g.
           {"alignment_score": "0.92", "families_first_impact": "+18% effective purchasing power (C2F)"}.
         next_gate ⇒ human-readable next human-disposition point (mirrors series_roadmap.yaml).
+        category / lane (A2 capture classification) ⇒ the one-tap capture category (typo/wording/
+          structure/technical/judgment) and the lane it routed to (batch | discrete). Travel WITH the
+          obligation so triage never lands downstream — the 36% 'other' is killed at capture, not after.
         """
         entry = {
             "type": "debit",
@@ -250,6 +254,10 @@ class ObligationLedger:
             entry["lgp"] = lgp          # P0-2: LGP travels with the obligation
         if next_gate:
             entry["next_gate"] = next_gate
+        if category:
+            entry["category"] = category   # A2: capture-time classification travels with the obligation
+        if lane:
+            entry["lane"] = lane           # A2: batch (born-approved mechanical) | discrete (gated)
         return self._append(entry)
 
     # ── lookups ───────────────────────────────────────────────────────
@@ -298,10 +306,13 @@ class ObligationLedger:
 
     def close(self, obligation_id: str, evidence: str,
               evidence_tier: Optional[str] = None, require_e1: bool = True,
-              closed_by: Optional[str] = None) -> dict:
+              closed_by: Optional[str] = None, rejected: bool = False) -> dict:
         """Close an obligation = credit, with evidence + a minted receipt.
 
         Rejects E0 (claim-only) when require_e1 is True (the default for material obligations).
+        rejected=True ⇒ this close is a human REFUSAL, not an execution. The breath-gate guards
+        execution (work done), not refusal — a rejection is itself a valid human disposition, so a
+        material obligation may be rejected without a prior approve() (human primacy: 'no' needs no gate).
         """
         ob = self._get(obligation_id)  # existence/closed guards FIRST — 'not found' beats 'bad evidence' (audit)
         if ob is None:
@@ -314,9 +325,10 @@ class ObligationLedger:
                 f"Evidence tier E0 (claim-only) insufficient to close '{obligation_id}'. "
                 f"Provide an artifact pointer / hash / receipt (E1+)."
             )
-        # Human primacy (CYL-006): a MATERIAL obligation cannot close until it has cleared
-        # the breath-gate. Only enforced when a gate is wired (standalone stays unchanged).
-        if self.gate is not None and ob and ob.get("material") and not self._is_approved(obligation_id):
+        # Human primacy (CYL-006): a MATERIAL obligation cannot EXECUTE (close with work-done) until it
+        # has cleared the breath-gate. A rejection is exempt — refusing is itself the human disposition.
+        if (self.gate is not None and ob and ob.get("material")
+                and not rejected and not self._is_approved(obligation_id)):
             raise PermissionError(
                 f"'{obligation_id}' is material and has not cleared the breath-gate; "
                 f"call approve() (human disposition) before close."

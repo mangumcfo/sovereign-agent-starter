@@ -26,6 +26,8 @@ from ..deps import get_obligation_ledger
 bp = Blueprint("feedback", __name__, url_prefix="/api/v1")
 
 HUMAN_GATE = "Human disposition"
+TIGER_GATE = "KM confirm → Tiger implement"
+BATCH_GATE = "batch:mechanical"
 
 # Typed sources → a readable title prefix. Any surface can emit; the type just frames the packet.
 _KINDS = {
@@ -35,6 +37,30 @@ _KINDS = {
     "coherence": "Coherence/DRIFT",
     "general": "Feedback",
 }
+
+# A2 (GB meta-review #2) — capture-time classification. The one-tap category routes the lane
+# AUTOMATICALLY so triage never lands downstream on Tiger or on KM's attention:
+#   mechanical (typo/wording/structure) → BATCH lane, born-approved (material=False, no KM gate)
+#   technical                           → DISCRETE, KM confirm → Tiger implements (a build/tooling fix)
+#   judgment                            → DISCRETE, gated on KM's Human disposition (he decides)
+# Smart default = 'wording': the dominant class (~90 PDF-edit packets are page-level wording/typo/
+# structure). Defaulting kills the 36% "other" — capture is always classified, never unclassified.
+_CATEGORIES = {
+    "typo":      {"lane": "batch",    "material": False, "gate": BATCH_GATE},
+    "wording":   {"lane": "batch",    "material": False, "gate": BATCH_GATE},
+    "structure": {"lane": "batch",    "material": False, "gate": BATCH_GATE},
+    "technical": {"lane": "discrete", "material": False, "gate": TIGER_GATE},
+    "judgment":  {"lane": "discrete", "material": True,  "gate": HUMAN_GATE},
+}
+_DEFAULT_CATEGORY = "wording"
+
+
+def _classify(body: dict) -> tuple[str, dict, bool]:
+    """Resolve the capture category → (category, routing, defaulted?). Unknown/absent → smart default."""
+    raw = (body.get("category") or "").strip().lower()
+    if raw in _CATEGORIES:
+        return raw, _CATEGORIES[raw], False
+    return _DEFAULT_CATEGORY, _CATEGORIES[_DEFAULT_CATEGORY], True
 
 
 def _source_ref(body: dict) -> str:
@@ -64,18 +90,24 @@ def feedback_intake():
     kind = (body.get("type") or "general").lower()
     prefix = _KINDS.get(kind, _KINDS["general"])
     ref = _source_ref(body)
-    title = f"{prefix}: {text[:80]}"
+    # A2 capture classification → automatic lane routing (mechanical batch / technical / judgment).
+    category, route, defaulted = _classify(body)
+    title = f"[{category}] {prefix}: {text[:72]}"
     entry = get_obligation_ledger().open(
         title=title,
         owner=current_principal(),  # bind to authenticated principal, never the request body (audit 2026-06-10)
         classification=body.get("classification", "C2"),
         intent=text,
         ref=ref,
-        material=bool(body.get("material", False)),
+        material=route["material"],   # category drives the gate, not the caller (judgment=gated, mechanical=born-approved)
         lgp=body.get("lgp"),
-        next_gate=HUMAN_GATE,
+        next_gate=route["gate"],
+        category=category,
+        lane=route["lane"],
     )
-    return jsonify({"obligation": entry, "kind": kind, "source": ref}), 201
+    return jsonify({"obligation": entry, "kind": kind, "source": ref,
+                    "category": category, "lane": route["lane"],
+                    "category_defaulted": defaulted}), 201
 
 
 def _awaiting(led) -> list:
@@ -154,6 +186,7 @@ def feedback_disposition(obligation_id: str):
             obligation_id,
             evidence=f"REJECTED by {current_principal()}: {note or 'no reason given'}",
             evidence_tier="E1", require_e1=False, closed_by=current_principal(),
+            rejected=True,  # a refusal is a valid human disposition — no prior approve() needed (even if material)
         )
         return jsonify({"action": "reject", "obligation": entry})
     except KeyError:
