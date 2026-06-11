@@ -33,9 +33,12 @@ KDP = Path("/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp")
 AGENTIC = KDP / "agentic_playbooks"
 LEDGER_ROOT = REPO / "memory" / "obligations" / "atrium_review"
 GB_CYLINDER = REPO / "artifacts" / "GB_KM_Aligned_Interaction_Cylinder.ndjson"
-# Cold Reader seated per the B12 Pilot amendment (GB, ratified 2026-06-11) — the persona that catches the
-# line-level issues KM was catching; it gets audited like every board (no new-seat honeymoon).
-REQUIRED_BOARDS = ("editorial", "ux", "technical", "cold_reader")
+# NOTE (2026-06-11): the canonical Series Pipeline boards are Editorial R1/R2/R3 (editorial_board_review),
+# Book-to-UX Translation (virality_to_ux_translation, 17.5), and Tech/Arch 5-gate (tech_arch_review, 17.6)
+# per WORKFLOW.md. This simplified machine-gate set predates that and needs reconciliation with GB (rail
+# owner) — flagged, not unilaterally changed. Where the B12 Cold-Reader amendment seats (a persona inside
+# the Editorial rounds vs a new board) is GB's call.
+REQUIRED_BOARDS = ("editorial", "ux", "technical")
 
 
 def _book_roots() -> list[Path]:
