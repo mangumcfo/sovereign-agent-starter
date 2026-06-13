@@ -39,6 +39,7 @@ from .routes import proposals as proposals_routes
 from .routes import book_artifacts as book_artifacts_routes
 from .routes import roles as roles_routes
 from .routes import series as series_routes
+from .routes import dialogue as dialogue_routes
 from .routes import hopper as hopper_routes
 from .routes import feedback as feedback_routes
 from .routes import relay as relay_routes
@@ -68,6 +69,7 @@ def create_app() -> Flask:
     app.register_blueprint(book_artifacts_routes.bp)
     app.register_blueprint(coherence_routes.bp)
     app.register_blueprint(series_routes.bp)
+    app.register_blueprint(dialogue_routes.bp)
     app.register_blueprint(hopper_routes.bp)
     app.register_blueprint(feedback_routes.bp)
     app.register_blueprint(relay_routes.bp)
