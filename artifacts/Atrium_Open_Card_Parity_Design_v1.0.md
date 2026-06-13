@@ -18,9 +18,11 @@ The root cause is conceptual: a transaction system (the ledger) is being operate
 
 *No silent hiding. No phantom cards. No lost work.* And — critically — **every hidden item carries an expiry or review condition.** A reason without a review date eventually becomes a place where things are quietly forgotten; so "hidden" is itself a governed, time-bounded state, not a graveyard.
 
+> *Concrete example.* A card may be hidden with the reason *"superseded by the v1.4 revision — review on next volume seal (2026-07-01)."* It does not clutter the operator's queue, but it is not gone: it carries who hid it, why, and the date it must re-justify its absence. On that date it returns to review automatically.
+
 ## How it works
 - **The queue is a query.** Cards are not minted and maintained as separate objects — they **render automatically** whenever a ledger condition is true (e.g. *"open obligation, no human disposition, viewer is authorized"*). A view over truth cannot forget to exist, so the entire class of stale/missing/duplicate cards disappears at the root.
-- **The Parity Pulse.** One indicator at the top of the operator's queue, seen before anything else:
+- **The Parity Pulse.** The **first thing the operator sees on every sit-down** — one indicator at the very top of the queue, before any individual card:
   > **Parity: PASS** · engine 47 · visible 47 · hidden-by-policy 0 · divergence 0 · checked 14s ago
   Green is trust at a glance. Any divergence becomes the **top item**, with full evidence — it is impossible to miss and cannot silently persist.
 - **Continuous, three-way check.** The system continuously reconciles *engine state ↔ each surface ↔ every other surface.* Divergence is graded — from "the engine holds an open item no surface shows and no policy explains" (most serious) down to a cosmetic render mismatch — and the serious classes raise loudly rather than degrade quietly.

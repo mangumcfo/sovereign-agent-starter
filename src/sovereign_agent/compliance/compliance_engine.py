@@ -21,7 +21,6 @@ compliance & verifiable inference layer first-class and loadable.
 """
 
 from __future__ import annotations
-import sys
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
@@ -29,13 +28,21 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 # --- Optional SIX integration (graceful) ---
+# NOTE (audit 2026-06-13c #14): the module name `six` COLLIDES with the ubiquitous PyPI py2/3 shim. When
+# that shim is on sys.path (it usually is), `from six import six_attestation…` resolves to the WRONG
+# package and raises ImportError. We catch ONLY ImportError (never swallow real errors) and log a loud
+# diagnostic so the disabled SIX backends are visible, not silent. The real SIX services live under
+# constitution-federation-v2/services/six and should be imported via an explicit path/namespace
+# (six_services) when wired — tracked for the SIX integration work.
 _SIX_AVAILABLE = False
 try:
-    # When the SIX services are on the path (e.g. via constitution-federation-v2/services/six)
-    # these become available. We treat them as optional backends.
-    from six import six_attestation, six_compliance, six_crypto  # type: ignore
+    from six import six_attestation, six_compliance, six_crypto  # type: ignore  # noqa: PLC0415
     _SIX_AVAILABLE = True
-except Exception:
+except ImportError as _six_exc:
+    import logging as _logging
+    _logging.getLogger("breathline.compliance").info(
+        "SIX backends unavailable (%s) — `six` resolved to the PyPI shim or the services aren't on the "
+        "path; attestation/compliance/crypto SIX backends are DISABLED. (audit 2026-06-13c #14)", _six_exc)
     six_attestation = six_compliance = six_crypto = None  # type: ignore
 
 

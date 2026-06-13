@@ -3,61 +3,73 @@
     {
       "name": "sha256_kat[b'']",
       "pass": true,
+      "skipped": false,
       "detail": "got=e3b0c44298fc1c14\u2026"
     },
     {
       "name": "sha256_kat[b'abc']",
       "pass": true,
+      "skipped": false,
       "detail": "got=ba7816bf8f01cfea\u2026"
     },
     {
       "name": "sha256_kat[b'abcdbcde']",
       "pass": true,
+      "skipped": false,
       "detail": "got=248d6a61d20638b8\u2026"
     },
     {
       "name": "merkle_root_deterministic",
       "pass": true,
+      "skipped": false,
       "detail": ""
     },
     {
       "name": "merkle_root_sensitive",
       "pass": true,
+      "skipped": false,
       "detail": ""
     },
     {
       "name": "p1_sign_verify_roundtrip",
       "pass": true,
+      "skipped": false,
       "detail": ""
     },
     {
       "name": "p1_rfc6979_deterministic",
       "pass": true,
-      "detail": "r=0x8e8f3d91f0\u2026"
+      "skipped": false,
+      "detail": "r=0x1b5673f56c\u2026"
     },
     {
       "name": "p1_s_in_range",
       "pass": true,
+      "skipped": false,
       "detail": ""
     },
     {
       "name": "p1_wrong_message_fails",
       "pass": true,
+      "skipped": false,
       "detail": ""
     },
     {
       "name": "interop_p1sig_verifies_in_cryptography",
       "pass": true,
+      "skipped": false,
       "detail": ""
     },
     {
       "name": "interop_cryptographysig_verifies_in_p1",
       "pass": true,
+      "skipped": false,
       "detail": ""
     },
     {
       "name": "p1_invalid_curve_rejected",
       "pass": true,
+      "skipped": false,
       "detail": ""
     }
   ],

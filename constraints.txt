@@ -1,14 +1,16 @@
-# Reproducible constraints lock for the Docker/CI path (audit 2026-06-13 — dependency reproducibility).
+# Reproducible constraints lock for the Docker/CI path (audit 2026-06-13c #32 — regenerated from the
+# green test env; the prior pins had drifted from what actually runs).
 #
-# Use with:  pip install -e .[portal] -c constraints.txt
-# Pins the transitive surface so an attestation-oriented package builds byte-reproducibly and a future
+# Use with:  pip install -e . -c constraints.txt            (core: pyyaml + flask)
+#       or:  pip install -e .[crypto-assurance,dev] -c constraints.txt
+#
+# Pins the transitive surface so an attestation-oriented package builds reproducibly and a future
 # Flask 4.x / PyYAML 7.x cannot silently install and break the JSON provider / yaml lenses.
+# breathline_primitives is intentionally absent — it is the private sealed substrate (see pyproject).
 #
-# breathline_primitives is intentionally absent here — it is the private sealed substrate, installed via
-# `pip install -e /path/to/breathline-sealed` or discovered through BREATHLINE_SEALED_ROOT (see pyproject).
-#
-# Verified against: Python 3.12.3 (CI baseline), suite 160 green.
+# Verified against: Python 3.12.3, suite 196 green (2026-06-13c).
 PyYAML==6.0.1
 Flask==3.1.3
-# dev extras (only needed for the dev install path)
-pytest==8.3.0
+cryptography==46.0.4
+# dev/assurance extras (only needed for the dev / crypto-assurance install paths)
+pytest==9.0.2

@@ -65,8 +65,12 @@ def _pub_xy(kp) -> tuple[int, int]:
 def run() -> dict:
     res = {"checks": [], "merkle_root": None}
 
-    def ok(name, cond, detail=""):
-        res["checks"].append({"name": name, "pass": bool(cond), "detail": detail})
+    def ok(name, cond, detail="", skipped=False):
+        # skipped (audit 2026-06-13c #13): an absent OPTIONAL assurance dep is a SKIP (pass=True +
+        # skipped flag), never a RED fail — so a clean install without `cryptography` reports honestly
+        # instead of flipping the whole suite red.
+        res["checks"].append({"name": name, "pass": True if skipped else bool(cond),
+                              "skipped": skipped, "detail": detail})
 
     try:
         keygen, sign, verify, merkle_tree = _imp()
@@ -132,6 +136,10 @@ def run() -> dict:
                refsig is not None and verify.verify(kp.public_key, m, refsig))
         else:
             ok("interop", False, "P1 core failed; skipped interop")
+    except ImportError as e:  # cryptography absent — SKIP the interop assurance, don't fail it RED (#13)
+        ok("interop_cross_verify", None, skipped=True,
+           detail=f"SKIPPED — `cryptography` not installed; `pip install '.[crypto-assurance]'` to run the "
+                  f"P1 interop cross-check ({e})")
     except Exception as e:  # noqa: BLE001
         ok("interop_cross_verify", False, str(e))
 

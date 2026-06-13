@@ -18,7 +18,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
-import yaml  # We may need to add pyyaml; for now assume available or use safe load
+import yaml  # pyyaml is a declared core dependency (pyproject) — required at import (audit 2026-06-13c #31)
 
 from ._lazy_bp import MerkleTree, hash_function  # CRIT-2: lazy crypto surface (import never hard-fails)
 from .role_binder import bind_role, BoundRole

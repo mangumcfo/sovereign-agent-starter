@@ -29,6 +29,10 @@ dependencies = [
     # Upper bounds (audit 2026-06-13): an unbounded range let a future PyYAML 7.x install silently and
     # break the yaml lenses. Pin a known-good major. See constraints.txt for the reproducible lock.
     "pyyaml>=6.0,<7",
+    # flask is CORE, not optional (audit 2026-06-13c #4): the `breathline-node-api` console script is
+    # declared unconditionally and every node_api module imports flask at top level, so `pip install .`
+    # installed a command that crashed with ModuleNotFoundError. node_api is a first-class engine surface.
+    "flask>=3.0,<4",
 ]
 
 # CRYPTOGRAPHIC SUBSTRATE — breathline_primitives (P1 ECDSA secp256k1 + P5 Merkle) is NOT a public PyPI
@@ -39,10 +43,15 @@ dependencies = [
 # import (sovereign_agent/__init__.py) instead of a silent crash. To install for development:
 #   pip install -e /path/to/breathline-sealed   # or set BREATHLINE_SEALED_ROOT
 [project.optional-dependencies]
-portal = [
-    "flask>=3.0,<4",
-]
+# `portal` retained as an alias for back-compat (flask is now core); installs nothing extra.
+portal = []
 demo = []
+# crypto-assurance: the P1 ECDSA interop cross-check (scripts/crypto_vector_check.py) needs the external
+# `cryptography` lib as its independent reference (audit 2026-06-13c #13) — declared here + pinned in
+# constraints.txt so a clean install can run the crypto cadence instead of silently degrading it to RED.
+crypto-assurance = [
+    "cryptography>=42,<47",
+]
 dev = [
     "pytest>=7.0",
     "build>=1.0",
