@@ -19,6 +19,7 @@ from pathlib import Path
 from flask import Blueprint, jsonify
 
 from .._filecache import memoize_on
+from .._jsonstore import read_json_cached
 from ..auth import require_principal
 
 bp = Blueprint("coherence", __name__, url_prefix="/api/v1")
@@ -94,7 +95,7 @@ def coherence():
     p = _registry_path()
     if not p.exists():
         return jsonify({"extrusions": [], "reconciliation": {}, "summary": {"coherent": 0, "drift": 0, "gaps": 0}})
-    reg = json.loads(p.read_text(encoding="utf-8"))
+    reg = read_json_cached(p, {})   # memoized registry read (audit 2026-06-13c #33)
     out, coherent, drift = _compute(reg, repo)
     recon = reg.get("reconciliation", {})
     gaps = sum(1 for r in recon.get("rows", []) if r.get("status") == "gap")
@@ -112,7 +113,7 @@ def coherence_rollup():
     p = _registry_path()
     if not p.exists():
         return jsonify({"by_book": [], "overall": {"coherent": 0, "drift": 0, "total": 0, "books": 0}})
-    reg = json.loads(p.read_text(encoding="utf-8"))
+    reg = read_json_cached(p, {})   # memoized registry read (audit 2026-06-13c #33)
     out, coherent, drift = _compute(reg, repo)
     by = {}
     for e in out:
@@ -128,11 +129,11 @@ def coherence_rollup():
         b["pct"] = round(100 * b["coherent"] / b["total"]) if b["total"] else 0
     # Honest coverage: books classified as narrative (no code spec) so the roadmap shows 📖 narrative —
     # distinct from ◌ awaiting-anchor. Read-only companion file (Tiger-authored via coherence_backfill.py).
-    cov = json.loads(COVERAGE.read_text(encoding="utf-8")) if COVERAGE.is_file() else {}
+    cov = read_json_cached(COVERAGE, {})
     narrative = cov.get("narrative", {}) if isinstance(cov, dict) else {}
     # Capability ledger (G's 2026-05-30 review harvest) — semantic Present/Partial/Missing per book,
     # folded per book_id so the roadmap shows the true coverage (not just hash-pinned passages).
-    capdoc = json.loads(CAPABILITIES.read_text(encoding="utf-8")) if CAPABILITIES.is_file() else {}
+    capdoc = read_json_cached(CAPABILITIES, {})
     caps = capdoc.get("capabilities", []) if isinstance(capdoc, dict) else []
     cap_by_book, cap_tot = {}, {"present": 0, "partial": 0, "missing": 0}
     for c in caps:
@@ -144,7 +145,7 @@ def coherence_rollup():
         b["rows"].append(c)
     # Extrusion-validation state (written by scripts/extrusion_validate.py — runs pytest + Merkle out of band;
     # read cheaply here so the monitor shows VALIDATED/untested/drift/fail + Merkle roots without running tests).
-    val = json.loads(VALIDATION_STATE.read_text(encoding="utf-8")) if VALIDATION_STATE.is_file() else {}
+    val = read_json_cached(VALIDATION_STATE, {})
     return jsonify({
         "by_book": sorted(by.values(), key=lambda b: b["book"]),
         "narrative": narrative,

@@ -251,10 +251,14 @@ def _brief_path(book_id: str, extra: list[str]) -> str:
 def mint_review_packet(book_id: str, label: str, extra: list[str]) -> str | None:
     """On READY, mint the human-gate packet so the book APPEARS in the Awaiting-KM view with its Brief
     one click away (pilot finding #2, GB [171]). Idempotent: skip if a review packet already exists."""
+    # Node owner derived from env, not a hardcoded literal (audit 2026-06-13c #24, CONSTITUTION §1) — so
+    # the packet attributes correctly on any node, matching the runs-anywhere LEDGER_ROOT fix beside it.
+    owner = (os.environ.get("BREATHLINE_NODE_OWNER") or os.environ.get("BREATHLINE_NODE_LOOPBACK_OWNER")
+             or "KM-1176").strip()
     try:
         sys.path.insert(0, str(REPO / "src"))
         from sovereign_agent.obligations.ledger import ObligationLedger
-        lg = ObligationLedger(str(LEDGER_ROOT), principal_id="KM-1176")
+        lg = ObligationLedger(str(LEDGER_ROOT), principal_id=owner)
     except Exception:  # noqa: BLE001
         return None
     ref = f"review_ready:{book_id}"
@@ -271,7 +275,7 @@ def mint_review_packet(book_id: str, label: str, extra: list[str]) -> str | None
         pdf = str(pdfs[0]) if pdfs else ""
     entry = lg.open(
         title=f"✍ Sign off {label} — review-ready; Accept to seal",
-        owner="KM-1176", classification="C1", material=True, next_gate="Human disposition", ref=ref,
+        owner=owner, classification="C1", material=True, next_gate="Human disposition", ref=ref,
         intent=(f"All Review-Ready Rail gates green (boards rigor-pass · obligations clean · fidelity PASS · "
                 f"Review Brief sealed) and your review feedback is applied + rebuilt clean. "
                 f"FINAL PDF: {pdf}. "
