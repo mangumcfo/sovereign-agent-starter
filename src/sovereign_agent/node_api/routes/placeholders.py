@@ -213,7 +213,11 @@ def breath_gate_pending():
 def breath_gate_approve(gate_id: str):
     """breath_gate.{id}/approve — explicit human approval (the witness act).
     Owner-gated (audit 2026-06-13c #6): a breath-gate disposition is a constitutional human act and must
-    carry the same authority as the sibling disposition routes (obligations/feedback/proposals)."""
+    carry the same authority as the sibling disposition routes (obligations/feedback/proposals).
+
+    CROSS-REF (audit 2026-06-13c #29): this is the SESSION-SCOPED in-memory HumanApprovalGate surface.
+    The LIVE constitutional gate for material *obligations* is POST /obligations/<id>/approve (ledger-
+    backed). Use that for obligation dispositions; this surface is the compliance-engine breath-gate."""
     gate = get_approval_gate()
     result = gate.simulate_approval(gate_id, approver=current_principal())
     if result.get("status") == "unknown_request":

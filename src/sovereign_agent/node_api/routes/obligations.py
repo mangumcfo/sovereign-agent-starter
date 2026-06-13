@@ -104,7 +104,10 @@ def obligations_approve(obligation_id: str):
 
     Owner-gated (audit 2026-06-13 W5 #1): approve() clears KM's constitutional breath-gate and records
     `approved_by`, so it must carry the SAME authority as /feedback/disposition, /proposals/decide,
-    /apply. A non-owner (dev/loopback/federation peer) can no longer dispose KM's material obligations."""
+    /apply. A non-owner (dev/loopback/federation peer) can no longer dispose KM's material obligations.
+
+    CROSS-REF (audit 2026-06-13c #29): this ledger-backed route is the LIVE constitutional gate. The
+    separate /breath_gate/<id>/approve surface is the session-scoped in-memory ComplianceEngine gate."""
     body = request.get_json(silent=True) or {}
     led = get_obligation_ledger()
     try:
@@ -133,7 +136,11 @@ def obligations_close(obligation_id: str):
     """obligations.close — credit with evidence; mints a node receipt.
 
     Owner-gated (audit 2026-06-13 W5 #1): close() mints a receipt + credit on the immutable chain and
-    records `closed_by`; owner-only, mirroring the sibling disposition routes."""
+    records `closed_by`; owner-only, mirroring the sibling disposition routes.
+
+    NOTE (audit 2026-06-13c #23): a body `closed_by`/`owner` is INTENTIONALLY IGNORED — the principal is
+    always bound to the authenticated caller (current_principal()), never the request body (§1, no
+    spoofing). HTTP callers that still send the field have it silently dropped; this is by design."""
     body = request.get_json(silent=True) or {}
     evidence = (body.get("evidence") or "").strip()
     if not evidence:
