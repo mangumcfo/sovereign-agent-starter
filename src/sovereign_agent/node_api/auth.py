@@ -68,8 +68,16 @@ def _verify_token_against_file(token: str) -> tuple[bool, str | None, str]:
     if not cred_file.exists():
         return False, None, f"no credential file for principal_id '{principal_id}'"
 
+    # Enforce 0600 (audit 2026-06-13d #18): a group/world-readable cred file silently authenticates
+    # anyone who can read it. Refuse loudly instead of trusting the comment / the OS default.
     try:
-        # 0600 check is informational here — the OS enforces the actual access
+        mode = cred_file.stat().st_mode
+    except OSError as exc:
+        return False, None, f"credential stat failed: {exc}"
+    if mode & 0o077:
+        return False, None, (f"credential file is group/world-accessible (mode {oct(mode & 0o777)}) — "
+                             f"`chmod 600 {cred_file}` before use")
+    try:
         stored = cred_file.read_text(encoding="utf-8").strip()
     except OSError as exc:
         return False, None, f"credential read failed: {exc}"

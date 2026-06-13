@@ -151,3 +151,22 @@ def test_dev_mode_refuses_non_loopback_host(monkeypatch):
         assert ei.value.code == 2
     finally:
         os.environ.pop("BREATHLINE_NODE_API_DEV", None)
+
+
+def test_group_world_readable_cred_file_is_refused(tmp_path, monkeypatch):
+    """audit 2026-06-13d #18: a 0644 credential file silently authenticates anyone who can read it.
+    _verify_token_against_file must refuse loudly (mode in the message, chmod-600 next_step) instead of
+    trusting 'the OS enforces it'. A 0600 file with the same secret verifies normally."""
+    import sovereign_agent.node_api.auth as auth
+    monkeypatch.setattr(auth, "CREDENTIALS_DIR", tmp_path)
+    cred = tmp_path / "km-1176.token"
+    cred.write_text("s3cr3t", encoding="utf-8")
+
+    cred.chmod(0o644)                                   # group/world-readable
+    ok, pid, reason = auth._verify_token_against_file("km-1176:s3cr3t")
+    assert ok is False and pid is None
+    assert "group/world-accessible" in reason and "chmod 600" in reason
+
+    cred.chmod(0o600)                                   # operator-only
+    ok, pid, _ = auth._verify_token_against_file("km-1176:s3cr3t")
+    assert ok is True and pid == "km-1176"

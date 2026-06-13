@@ -32,7 +32,21 @@ from collections import defaultdict
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
-DEFAULT_ROOT = REPO / "memory" / "obligations" / "atrium_review"
+
+
+def _resolve_default_root() -> Path:
+    """Route through THE canonical resolver (audit 2026-06-13d #31) — one root, boundary-checked, never a
+    split-brain vs the node. Same default (atrium_review), now honoring OBLIGATION_LEDGER_ROOT via the
+    shared resolver (the --root CLI flag still wins, as before)."""
+    import sys
+    src = str(REPO / "src")
+    if src not in sys.path:
+        sys.path.insert(0, src)
+    from sovereign_agent.obligations.ledger import get_ledger_root
+    return get_ledger_root(default=REPO / "memory" / "obligations" / "atrium_review")
+
+
+DEFAULT_ROOT = _resolve_default_root()
 
 
 def _rows(root: Path) -> list[dict]:

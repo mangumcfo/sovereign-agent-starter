@@ -32,11 +32,18 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[1]
 KDP = Path("/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp")
 AGENTIC = KDP / "agentic_playbooks"
-# Env-aware (audit 2026-06-13): this script previously IGNORED OBLIGATION_LEDGER_ROOT and hardcoded
-# atrium_review. Mirror the canonical resolver's semantics (env → atrium_review) so the rail gate reads
-# the SAME root the node serves; tests monkeypatch the env before import.
-LEDGER_ROOT = Path(os.environ.get("OBLIGATION_LEDGER_ROOT")
-                   or (REPO / "memory" / "obligations" / "atrium_review"))
+# Route through THE canonical resolver (audit 2026-06-13d #31): this script once IGNORED
+# OBLIGATION_LEDGER_ROOT; now it shares the exact resolver the node serves (env → atrium_review),
+# single-sourced + boundary-checked. Tests monkeypatch the env before import.
+def _resolve_ledger_root() -> Path:
+    src = str(REPO / "src")
+    if src not in sys.path:
+        sys.path.insert(0, src)
+    from sovereign_agent.obligations.ledger import get_ledger_root
+    return get_ledger_root(default=REPO / "memory" / "obligations" / "atrium_review")
+
+
+LEDGER_ROOT = _resolve_ledger_root()
 GB_CYLINDER = REPO / "artifacts" / "GB_KM_Aligned_Interaction_Cylinder.ndjson"
 # Canonical Series-Pipeline boards (WORKFLOW.md), RATIFIED mapping (GB [207] + [209], 2026-06-11):
 #   Editorial R1/R2/R3 (editorial_board_review_v*_round{1,2,3}.md) — each carries an embedded ```rigor```

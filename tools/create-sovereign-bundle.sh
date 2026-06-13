@@ -16,13 +16,19 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$REPO_ROOT"
 
-# Dynamically extract version from pyproject.toml (PEP 440 friendly)
+# Dynamically extract version from pyproject.toml (PEP 440 friendly).
+# audit 2026-06-13d #30: do NOT swallow the failure and fall back to a stale literal "0.3.0" — a
+# bundle stamped with the wrong version is a TRUTH violation. Fail loudly with the real cause instead.
 VERSION=$(python3 -c "
 import tomllib
 with open('pyproject.toml', 'rb') as f:
     data = tomllib.load(f)
 print(data['project']['version'])
-" 2>/dev/null || echo "0.3.0")
+") || { echo "FATAL: could not read project.version from pyproject.toml (need Python 3.11+ tomllib)" >&2; exit 1; }
+if [ -z "$VERSION" ]; then
+    echo "FATAL: project.version resolved empty — refusing to build an unversioned bundle" >&2
+    exit 1
+fi
 
 BUNDLE_NAME="sovereign-system-v${VERSION}"
 BUNDLE_DIR="/tmp/${BUNDLE_NAME}"

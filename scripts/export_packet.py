@@ -34,10 +34,17 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
-# Env-aware default (audit 2026-06-13c #10): honor OBLIGATION_LEDGER_ROOT (the canonical resolver's first
-# source) so a non-default node reads the same chain the API serves, not an orphan.
-DEFAULT_ROOT = Path(os.environ.get("OBLIGATION_LEDGER_ROOT")
-                    or (REPO / "memory" / "obligations" / "atrium_review"))
+def _resolve_default_root() -> Path:
+    """Route through THE canonical resolver (audit 2026-06-13d #31): one root, boundary-checked, never a
+    split-brain vs the node API / bell. Same semantics (OBLIGATION_LEDGER_ROOT → atrium_review)."""
+    src = str(REPO / "src")
+    if src not in sys.path:
+        sys.path.insert(0, src)
+    from sovereign_agent.obligations.ledger import get_ledger_root
+    return get_ledger_root(default=REPO / "memory" / "obligations" / "atrium_review")
+
+
+DEFAULT_ROOT = _resolve_default_root()
 VERSION = "r22-1/v1"
 
 
