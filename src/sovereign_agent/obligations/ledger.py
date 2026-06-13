@@ -13,7 +13,6 @@ Everything is appended to a single NDJSON chain (prev_hash linked); state is rec
 """
 from __future__ import annotations
 
-import fcntl
 import hashlib
 import json
 import os
@@ -23,6 +22,38 @@ from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
 from typing import Optional
+
+# POSIX advisory lock for the write-fence. Guarded so the module imports on non-POSIX platforms
+# (audit 2026-06-13: pyproject claims requires-python>=3.10 with no OS restriction, but a top-level
+# `import fcntl` hard-failed on Windows at package load). On a platform without fcntl the fence degrades
+# to a no-op with a ONE-TIME loud warning — never a silent weakening of the hash-chain fence.
+try:
+    import fcntl as _fcntl
+    _HAS_FCNTL = True
+except ImportError:  # pragma: no cover — non-POSIX
+    _fcntl = None
+    _HAS_FCNTL = False
+
+_FLOCK_WARNED = False
+
+
+def _flock_ex(fileobj) -> None:
+    if _HAS_FCNTL:
+        _fcntl.flock(fileobj.fileno(), _fcntl.LOCK_EX)
+        return
+    global _FLOCK_WARNED
+    if not _FLOCK_WARNED:
+        import warnings
+        warnings.warn(
+            "fcntl unavailable on this platform — the obligation-ledger cross-process write fence is "
+            "NOT enforced; concurrent multi-process appends could fork the chain. Single-process use "
+            "is safe.", RuntimeWarning, stacklevel=2)
+        _FLOCK_WARNED = True
+
+
+def _flock_un(fileobj) -> None:
+    if _HAS_FCNTL:
+        _fcntl.flock(fileobj.fileno(), _fcntl.LOCK_UN)
 
 # ── evidence tiers (vendored from breath_32 v2.1 + task_chain.py) ──────────
 class EvidenceTier(str, Enum):
@@ -218,7 +249,7 @@ class ObligationLedger:
         # closes both races. The sidecar .lock is advisory + never part of the chain.
         lock_path = self.root / "obligations.lock"
         with open(lock_path, "a+") as lock:
-            fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+            _flock_ex(lock)
             try:
                 # Was the chain VERIFIED-VALID immediately before this append? (cache key must match the
                 # current pre-append file identity — any out-of-band change since the last verify bumps
@@ -238,7 +269,7 @@ class ObligationLedger:
                 # next verify_chain() recomputes from genesis.
                 self._verify_cache = (self._stat_key(), True) if pre_valid else None
             finally:
-                fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
+                _flock_un(lock)
         return entry
 
     def repair_chain(self) -> dict:
@@ -249,7 +280,7 @@ class ObligationLedger:
         raw forked record for audit. Returns {repaired, was_valid, entries, backup}."""
         lock_path = self.root / "obligations.lock"
         with open(lock_path, "a+") as lock:
-            fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+            _flock_ex(lock)
             try:
                 if self.verify_chain():
                     return {"repaired": False, "was_valid": True, "entries": len(self._entries()), "backup": None}
@@ -270,7 +301,7 @@ class ObligationLedger:
                 tmp.replace(self.path)
                 return {"repaired": True, "was_valid": False, "entries": len(entries), "backup": str(backup)}
             finally:
-                fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
+                _flock_un(lock)
 
     # ── lifecycle ─────────────────────────────────────────────────────
     def open(self, title: str, owner: Optional[str] = None,

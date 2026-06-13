@@ -26,12 +26,21 @@ classifiers = [
     "Topic :: Office/Business :: Financial",
 ]
 dependencies = [
-    "pyyaml>=6.0",
+    # Upper bounds (audit 2026-06-13): an unbounded range let a future PyYAML 7.x install silently and
+    # break the yaml lenses. Pin a known-good major. See constraints.txt for the reproducible lock.
+    "pyyaml>=6.0,<7",
 ]
 
+# CRYPTOGRAPHIC SUBSTRATE — breathline_primitives (P1 ECDSA secp256k1 + P5 Merkle) is NOT a public PyPI
+# package; it is provided by the `breathline-sealed` checkout. The package bootstrap
+# (sovereign_agent.bootstrap.ensure_breathline_primitives) discovers it via BREATHLINE_SEALED_ROOT or the
+# common checkout locations and injects it onto sys.path. Audit 2026-06-13 (dependency CRITICAL): this is
+# now declared here (was nowhere) and a missing substrate produces a loud, actionable RuntimeWarning at
+# import (sovereign_agent/__init__.py) instead of a silent crash. To install for development:
+#   pip install -e /path/to/breathline-sealed   # or set BREATHLINE_SEALED_ROOT
 [project.optional-dependencies]
 portal = [
-    "flask>=3.0",
+    "flask>=3.0,<4",
 ]
 demo = []
 dev = [

@@ -14,13 +14,26 @@ All cryptography and attestation flow through breathline_primitives
 
 from __future__ import annotations
 
-# Auto-bootstrap on package import for maximum self-containment
+# Auto-bootstrap on package import for maximum self-containment.
+# breathline_primitives is the cryptographic substrate (P1 ECDSA + P5 Merkle), provided by the
+# breathline-sealed checkout — NOT a public PyPI package. The bootstrap finds it via
+# BREATHLINE_SEALED_ROOT or the common checkout locations and injects it onto sys.path.
+# Audit 2026-06-13 (dependency CRITICAL): do NOT swallow a bootstrap failure silently. A clean install
+# without the sealed checkout used to crash at `from breathline_primitives import ...` with no clue why;
+# now the operator gets an actionable message naming the fix. (The subsequent core imports still require
+# the substrate — this makes the failure DIAGNOSABLE, not absent.)
 try:
     from .bootstrap import ensure_breathline_primitives
     ensure_breathline_primitives()
-except Exception:
-    # Silent fail on import — user can call manually or use shell activation
-    pass
+except Exception as _bp_exc:  # noqa: BLE001
+    import warnings as _warnings
+    _warnings.warn(
+        "breathline_primitives could not be activated: "
+        f"{_bp_exc}\n"
+        "  Set BREATHLINE_SEALED_ROOT to your breathline-sealed checkout (or `pip install -e` it), "
+        "then re-import sovereign_agent. Cryptographic attestation is unavailable until then.",
+        RuntimeWarning, stacklevel=2,
+    )
 
 from .core import SovereignAgent, ConstitutionalGovernor, VerifiableMemory
 from .universal_sovereign_node import (
