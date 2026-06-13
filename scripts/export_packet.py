@@ -29,11 +29,15 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
-DEFAULT_ROOT = REPO / "memory" / "obligations" / "atrium_review"
+# Env-aware default (audit 2026-06-13c #10): honor OBLIGATION_LEDGER_ROOT (the canonical resolver's first
+# source) so a non-default node reads the same chain the API serves, not an orphan.
+DEFAULT_ROOT = Path(os.environ.get("OBLIGATION_LEDGER_ROOT")
+                    or (REPO / "memory" / "obligations" / "atrium_review"))
 VERSION = "r22-1/v1"
 
 

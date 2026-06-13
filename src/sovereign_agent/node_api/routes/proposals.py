@@ -23,7 +23,7 @@ from flask import Blueprint, jsonify, request
 
 from ... import config
 from ...obligations.ledger import get_ledger_root
-from .._jsonstore import read_json, update_json
+from .._jsonstore import read_json, sidecar_store, update_json
 from ..auth import current_principal, require_owner, require_principal
 
 bp = Blueprint("proposals", __name__, url_prefix="/api/v1")
@@ -40,12 +40,7 @@ _BOOK_NUM_TO_ID = {"10": "10_scaling_enterprise", "11": "11_ma_due_diligence",
 
 
 def _store_path() -> Path:
-    explicit = os.environ.get("PROPOSALS_STORE")
-    if explicit:
-        return Path(explicit)
-    led = os.environ.get("OBLIGATION_LEDGER_ROOT")
-    base = Path(led).parent if led else Path(os.path.expanduser("~/.breathline"))
-    return base / "proposals.json"
+    return sidecar_store("proposals.json", "PROPOSALS_STORE")   # one resolver (audit 2026-06-13c #9)
 
 
 def _read() -> list:

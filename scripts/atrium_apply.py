@@ -198,21 +198,13 @@ def _revert(changed: dict, created: dict) -> None:
                 _git(root, ["checkout", "--", f])   # per-path: an untracked/bad pathspec can't abort the rest
 
 
-def _store_path() -> str:
-    explicit = os.environ.get("PROPOSALS_STORE")
-    if explicit:
-        return explicit
-    led = os.environ.get("OBLIGATION_LEDGER_ROOT")
-    base = os.path.dirname(led) if led else os.path.expanduser("~/.breathline")
-    return os.path.join(base, "proposals.json")
-
-
 def _update_store(mutate):
-    """Fenced RMW on proposals.json shared with the node (audit 2026-06-13 W5 #2/#11): this subprocess
-    races the node's own writes, so it must use the SAME flock as node_api._jsonstore."""
+    """Fenced RMW on proposals.json shared with the node (audit 2026-06-13 W5 #2/#11 + #9): this
+    subprocess races the node's own writes, so it must use the SAME flock AND the SAME path resolver
+    (sidecar_store) as node_api._jsonstore — one resolver, no split-brain."""
     sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src"))
-    from sovereign_agent.node_api._jsonstore import update_json  # noqa: PLC0415
-    return update_json(_store_path(), mutate)
+    from sovereign_agent.node_api._jsonstore import update_json, sidecar_store  # noqa: PLC0415
+    return update_json(sidecar_store("proposals.json", "PROPOSALS_STORE"), mutate)
 
 
 def _mark_error(pid: str, reason: str) -> None:

@@ -14,8 +14,23 @@ ledger already proved, factored out so every store shares one locked writer.
 from __future__ import annotations
 
 import json
+import os
 from contextlib import contextmanager
 from pathlib import Path
+
+
+def sidecar_store(name: str, env_var: str | None = None) -> Path:
+    """Resolve a node-local sidecar JSON path (proposals.json / relays.json / handshakes.json):
+    explicit `env_var` override → beside the ledger-root's parent → ~/.breathline. ONE resolver
+    (audit 2026-06-13c #9) so the node and the apply/executor subprocesses — which share the same
+    flock — can never disagree about where the store lives."""
+    if env_var:
+        explicit = os.environ.get(env_var)
+        if explicit:
+            return Path(explicit)
+    led = os.environ.get("OBLIGATION_LEDGER_ROOT")
+    base = Path(led).parent if led else Path(os.path.expanduser("~/.breathline"))
+    return base / name
 
 try:
     import fcntl as _fcntl

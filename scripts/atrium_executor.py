@@ -52,12 +52,10 @@ def _ledger():
 
 
 def _hs_path() -> Path:
-    env = os.environ.get("HANDSHAKES_STORE")
-    if env:
-        return Path(env)
-    led = os.environ.get("OBLIGATION_LEDGER_ROOT")
-    base = Path(led).parent if led else Path(os.path.expanduser("~/.breathline"))
-    return base / "handshakes.json"
+    # one resolver shared with the node + apply subprocess (audit 2026-06-13c #9)
+    sys.path.insert(0, str(REPO / "src"))
+    from sovereign_agent.node_api._jsonstore import sidecar_store  # noqa: PLC0415
+    return sidecar_store("handshakes.json", "HANDSHAKES_STORE")
 
 
 def _handshake(frm: str, to: str, ref: str, what: str, status: str = "pending") -> None:

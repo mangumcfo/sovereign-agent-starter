@@ -50,8 +50,8 @@ def _diff(base: dict, now: dict) -> dict:
 def _mint_critical_card(d: dict, now: dict) -> str | None:
     try:
         sys.path.insert(0, str(REPO / "src"))
-        from sovereign_agent.obligations.ledger import ObligationLedger
-        led = ObligationLedger(root=str(REPO / "memory" / "obligations" / "atrium_review"))
+        from sovereign_agent.obligations.ledger import ObligationLedger, get_ledger_root
+        led = ObligationLedger(root=str(get_ledger_root()))
         detail = (f"CRITICAL — sealed-primitives integrity drift detected. The breathline-sealed crypto "
                   f"substrate is frozen; a change here is a constitutional event. changed={d['changed']} "
                   f"added={d['added']} removed={d['removed']}. new manifest_hash={now['manifest_hash'][:16]}…. "

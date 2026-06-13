@@ -27,7 +27,7 @@ from pathlib import Path
 from flask import Blueprint, jsonify, request
 
 from .. import thread_channel
-from .._jsonstore import read_json, update_json
+from .._jsonstore import read_json, sidecar_store, update_json
 from ..auth import current_principal, require_owner, require_principal
 
 bp = Blueprint("relay", __name__, url_prefix="/api/v1")
@@ -38,12 +38,7 @@ _AGENTS = ("tiger", "gb")
 
 
 def _store_path() -> Path:
-    explicit = os.environ.get("RELAY_STORE")
-    if explicit:
-        return Path(explicit)
-    led = os.environ.get("OBLIGATION_LEDGER_ROOT")
-    base = Path(led).parent if led else Path(os.path.expanduser("~/.breathline"))
-    return base / "relays.json"
+    return sidecar_store("relays.json", "RELAY_STORE")   # one resolver (audit 2026-06-13c #9)
 
 
 def _read() -> list:

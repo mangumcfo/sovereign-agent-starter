@@ -24,8 +24,8 @@ BASELINE_SENTINEL = REPO / "artifacts" / "crypto" / ".deep_baseline_carded"
 
 def _ledger():
     sys.path.insert(0, str(REPO / "src"))
-    from sovereign_agent.obligations.ledger import ObligationLedger
-    return ObligationLedger(root=str(REPO / "memory" / "obligations" / "atrium_review"))
+    from sovereign_agent.obligations.ledger import ObligationLedger, get_ledger_root
+    return ObligationLedger(root=str(get_ledger_root()))
 
 
 def surface(stamp: str | None = None) -> dict:

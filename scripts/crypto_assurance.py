@@ -59,8 +59,8 @@ def assess(stamp: str | None = None, mint_card: bool = True) -> dict:
         # Vector failure → gating card (tripwire mints its own CRITICAL card on drift, so don't double up).
         try:
             sys.path.insert(0, str(REPO / "src"))
-            from sovereign_agent.obligations.ledger import ObligationLedger
-            led = ObligationLedger(root=str(REPO / "memory" / "obligations" / "atrium_review"))
+            from sovereign_agent.obligations.ledger import ObligationLedger, get_ledger_root
+            led = ObligationLedger(root=str(get_ledger_root()))
             led.open(title="🔴 CRITICAL — crypto vector assurance RED (primitives fail test vectors)",
                      owner="KM-1176", classification="C1", material=True, category="judgment",
                      next_gate="Human disposition (Atrium Review)", ref="crypto_assurance:vectors_red",

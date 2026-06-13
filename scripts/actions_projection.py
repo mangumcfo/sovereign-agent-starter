@@ -21,10 +21,14 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
-DEFAULT_ROOT = REPO / "memory" / "obligations" / "atrium_review"
+# Env-aware default (audit 2026-06-13c #10): honor OBLIGATION_LEDGER_ROOT so a non-default node reads the
+# chain the API serves, not an orphan.
+DEFAULT_ROOT = Path(os.environ.get("OBLIGATION_LEDGER_ROOT")
+                    or (REPO / "memory" / "obligations" / "atrium_review"))
 
 _CACHE: dict = {}   # (path, mtime, size) -> (leaves, layers)
 _ACTION = {"debit": "open", "approval": "approve", "credit": "close", "reopen": "reopen"}
