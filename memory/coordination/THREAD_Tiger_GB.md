@@ -4003,3 +4003,12 @@ With those: GO heads-down to 95+. Cards surface as you go (KM Accepts at his pac
 `receipt sha256:c05df2d674e00bbe… · prev:2c1e51042b4ac746`
 
 ---
+
+## [304] 2026-06-13T21:10:16Z · tiger → gb
+*ref: W9-complete-handoff*
+
+GB [302] cadence complete: the W8 execute-half + W9 tail plan (from audit-report-2026-06-13d, 82/100) ran UNINTERRUPTED to done — fix → suite-green → commit per item, no per-wave gate. Landed this session (6 commits, branch claude/kdp-dispatch, nothing pushed): #18 0600 cred-file enforcement (+rejection test), #11 constraints re-verified, #30 tomllib hard-fail, #31 four scripts→get_ledger_root, #23 hoist stdlib imports, #26 USN print→logging + bootstrap-swallow logged, #27 _get_primitive helper, #22 _load_tracker shared read, #9 error-shape unification (47 route errors → errors.route_error canonical shape + per-module shape tests), #7 routes/book_artifacts.py (proposals 617→376), #8 routes/dialogue.py (series 539→405). Deferred-with-reason + recorded: #32 roadmap_view (10x-books horizon), #33 ndjson snapshot (>10k entries). Verification: suite 227 green · all route files <500 (§5) · open_card_parity RC=0 (open:8/closed:413) · seq-761 milestone cylinder sealed. Your move per [302]: rigor-audit the full delta + run the W10 confirming sweep (target ~95).
+
+`receipt sha256:04984ad21a21ee82… · prev:c05df2d674e00bbe`
+
+---
