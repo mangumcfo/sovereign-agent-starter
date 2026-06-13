@@ -17,10 +17,13 @@ This evolves the Sovereign Agent Starter into the Universal Sovereign Node.
 """
 
 from __future__ import annotations
+import logging
 import os
 import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+
+logger = logging.getLogger(__name__)
 
 # Cryptographic root — lazy surface (audit 2026-06-13 CRIT-2): import never hard-fails on a substrate-
 # less host; names resolve on first USE, call sites unchanged.
@@ -103,8 +106,11 @@ class UniversalSovereignNode(SovereignAgent):
             try:
                 from .bootstrap import ensure_breathline_primitives
                 ensure_breathline_primitives()
-            except Exception:
-                pass  # User may have activated via shell or pip install -e
+            except Exception as e:
+                # User may have activated via shell or pip install -e; the lazy crypto surface
+                # (_lazy_bp) keeps the node usable regardless. Log at debug so the swallow is
+                # observable when diagnosing (audit 2026-06-13d #26) without noising normal runs.
+                logger.debug("auto_bootstrap of breathline_primitives skipped: %s", e)
 
         super().__init__(name, memory_path)
         
@@ -178,7 +184,7 @@ class UniversalSovereignNode(SovereignAgent):
         try:
             return self.playbook_loader.discover_roles()
         except Exception as e:
-            print(f"Discovery warning: {e}")
+            logger.warning("playbook discovery failed: %s", e)
             return []
 
     # ------------------------------------------------------------------
@@ -198,7 +204,7 @@ class UniversalSovereignNode(SovereignAgent):
                 results[name] = br
                 self.loaded_roles[name] = br
             except Exception as e:
-                print(f"[MultiRole] Failed to load role '{name}': {e}")
+                logger.warning("[MultiRole] failed to load role '%s': %s", name, e)
         self._self_attest("multi_roles_loaded", {"roles": list(results.keys())})
         return results
 

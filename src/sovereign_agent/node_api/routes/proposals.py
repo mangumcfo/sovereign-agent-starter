@@ -14,9 +14,12 @@ by the agent (and traced in the obligation ledger). No hardcoded principals (CON
 """
 from __future__ import annotations
 
+import glob
 import json
 import os
 import re
+import subprocess
+import sys
 import time
 from pathlib import Path
 
@@ -101,10 +104,6 @@ def produce():
     it reads the transcript + manuscript and posts grouped diffs to /proposals (proposals only; the
     operator still accepts in the diff-review). Not an autonomous daemon — fires only on this request.
     """
-    import subprocess
-    import sys
-    from pathlib import Path
-
     body = request.get_json(silent=True) or {}
     oid = (body.get("obligation_id") or "").strip()
     if not oid:
@@ -191,9 +190,6 @@ def processing():
 def recompile():
     """recompile — HUMAN-TRIGGERED. Rebuild a book's PDF from the (just-edited) manuscript so KM can
     re-load it in the viewer and see the applied changes. Spawns the book's build script."""
-    import re
-    import subprocess
-    import sys
 
     body = request.get_json(silent=True) or {}
     book = (body.get("book") or "").strip()
@@ -244,7 +240,6 @@ def book_artifacts():
 def book_pdf():
     """Serve a book's built interior PDF. Resolution reads the Helix file-management registry first
     (memory/book_artifacts_registry.json); falls back to a vault glob if the registry is stale/absent."""
-    import glob
     from flask import send_file
 
     book = (request.args.get("book") or "").strip()
@@ -272,7 +267,6 @@ def book_pdf():
 def _artifact_path(book: str, kind: str):
     """Resolve a book's artifact (pdf|epub|cover) → (abs_path|None, bid|None). Registry-first, glob fallback
     (mirrors /book_pdf; the registry is the source of truth, the glob is robustness)."""
-    import glob
     bid = _resolve_book_id(book)
     if not bid or "/" in bid or ".." in bid:
         return None, None
@@ -397,10 +391,6 @@ def proposals_apply(proposal_id: str):
     gates *who* fires; this gates *whether a decision exists*. The old behaviour spawned the apply
     agent without ever loading the proposal, and atrium_apply defaulted undecided groups to 'accept' —
     reducing Propose→Decide(Accept)→Execute to Propose→Execute. Both holes are now closed."""
-    import subprocess
-    import sys
-    from pathlib import Path
-
     body = request.get_json(silent=True) or {}
     gids = body.get("group_ids")
 

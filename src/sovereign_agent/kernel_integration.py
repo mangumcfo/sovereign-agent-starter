@@ -17,9 +17,12 @@ This directly fulfills the "Kernel Primitives" section previously marked as futu
 """
 
 from __future__ import annotations
+import logging
 import sys
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Callable, Optional
+
+logger = logging.getLogger(__name__)
 
 # --- Lazy bootstrap (same pattern as breathline_primitives and RoleBinder) ---
 
@@ -58,11 +61,24 @@ def _ensure_kernel_primitives() -> bool:
 
 # --- Safe accessors (never raise on missing primitives) ---
 
-def get_kernel_critic() -> Any | None:
-    """Returns a Critic instance or None."""
+def _get_primitive(name: str, builder: Callable[[], Any]) -> Any | None:
+    """ONE safe-accessor path (audit 2026-06-13d #27): the three get_kernel_* accessors each repeated the
+    ensure → import+construct → swallow-to-None shape. Centralize it, and log at debug on both miss paths
+    (primitives-absent vs construct-failed) so an optional-substrate degradation is observable when
+    diagnosing instead of vanishing silently — without noising the graceful base case."""
     if not _ensure_kernel_primitives():
+        logger.debug("kernel primitive '%s' unavailable: primitives tree not on path", name)
         return None
     try:
+        return builder()
+    except Exception as e:
+        logger.debug("kernel primitive '%s' failed to construct: %s", name, e)
+        return None
+
+
+def get_kernel_critic() -> Any | None:
+    """Returns a Critic instance or None."""
+    def _build():
         from kernel.primitives.critic import Critic
         from kernel.primitives.spec import SpecRegistry
         # Minimal registry for Phase 1 — real specs can be registered by callers later
@@ -70,34 +86,27 @@ def get_kernel_critic() -> Any | None:
         # The role prompt is read from the seed at real boot; we use a reference here
         prompt = "You are the Critic. (kernel primitive)"
         return Critic(registry, prompt)
-    except Exception:
-        return None
+    return _get_primitive("critic", _build)
 
 
 def get_kernel_governor() -> Any | None:
     """Returns a Governor instance or None."""
-    if not _ensure_kernel_primitives():
-        return None
-    try:
+    def _build():
         from kernel.primitives.governor import Governor
         prompt = "You are the Governor. (kernel primitive)"
         return Governor(prompt)
-    except Exception:
-        return None
+    return _get_primitive("governor", _build)
 
 
 def get_kernel_auditor() -> Any | None:
     """Returns an Auditor instance (with USN-backed adapter) or None."""
-    if not _ensure_kernel_primitives():
-        return None
-    try:
+    def _build():
         from kernel.primitives.auditor import Auditor
         prompt = "You are the Auditor. (kernel primitive)"
         # Use a minimal USN-aware adapter so we stay sovereign (no external shell required in base case)
         adapter = _USNAuditAdapter()
         return Auditor(adapter, prompt)
-    except Exception:
-        return None
+    return _get_primitive("auditor", _build)
 
 
 # --- Minimal sovereign audit adapter (records into existing USN mechanisms) ---

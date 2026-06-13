@@ -80,6 +80,22 @@ def _chapter_index() -> dict:
     return {}
 
 
+def _load_tracker(path: Path) -> dict | None:
+    """ONE yaml-optional tracker read (audit 2026-06-13d #22) the three overlay lenses share, instead of
+    each re-implementing the import-guard + read + (OSError,ValueError) swallow. Returns the parsed mapping,
+    {} for an empty/non-mapping file, or None when yaml is absent or the file can't be read — so a caller
+    can `continue` to the next candidate on None and treat {} as 'present but empty'."""
+    try:
+        import yaml  # noqa: PLC0415 — local import keeps the lenses yaml-optional
+    except ImportError:
+        return None
+    try:
+        data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    return data if isinstance(data, dict) else {}
+
+
 def _asin_cands() -> list:
     explicit = os.environ.get("ASIN_TRACKER")
     pdir = config.get_playbooks_dir()   # per-call (audit 2026-06-13d #34) — honors a re-pointed vault
@@ -93,17 +109,12 @@ def _publishing_index() -> dict:
     Pipeline reflects real KDP status AUTOMATICALLY — no manual roadmap edits, never stale. Roadmap stays
     lean + GB-sole-writer. Mirrors the _chapter_index() read-only merge (Path B). ASIN_TRACKER env overrides;
     default = the agentic_playbooks tracker. Memoized on the tracker's (mtime,size) (audit W5 #4/#15)."""
-    try:
-        import yaml  # noqa: PLC0415 — local import keeps the lens yaml-optional
-    except ImportError:
-        return {}
     cands = _asin_cands()
     _MAP = {"live": "published", "pre_order_live": "pre_order_live",
             "pre_order_in_review": "pre_order", "pre_order_publishing": "pre_order_live"}
     for p in cands:
-        try:
-            data = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
-        except (OSError, ValueError):
+        data = _load_tracker(p)
+        if data is None:
             continue
         import logging  # noqa: PLC0415
         out = {}
@@ -142,15 +153,10 @@ def _channel_index() -> dict:
     already carries) so the Series Pipeline shows the WHOLE federation's truth automatically — never stale,
     never hand-edited. Mirrors _publishing_index. CHANNEL_TRACKER env overrides; absence no-ops the overlay.
     Memoized on the tracker's (mtime,size) (audit 2026-06-13 W5 #4/#15)."""
-    try:
-        import yaml  # noqa: PLC0415 — local import keeps the lens yaml-optional
-    except ImportError:
-        return {}
     cands = _channel_cands()
     for p in cands:
-        try:
-            data = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
-        except (OSError, ValueError):
+        data = _load_tracker(p)
+        if data is None:
             continue
         out = {}
         for section in ("books", "executive_series"):
@@ -188,14 +194,8 @@ def _stage_labels() -> dict:
     """Canonical stage vocabulary (GB sole-write artifacts/pipeline_stage_labels.yaml). Renderers LABEL from
     this — never the raw slug (pilot #3); an unknown slug must render LOUD, never blank (pilot #4 / Error Voice §4).
     Memoized on the file's (mtime,size) (audit 2026-06-13 W5 #4/#15)."""
-    try:
-        import yaml  # noqa: PLC0415
-    except ImportError:
-        return {}
-    p = _stage_labels_path()
-    try:
-        data = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
-    except (OSError, ValueError):
+    data = _load_tracker(_stage_labels_path())
+    if not data:
         return {}
     return data.get("stages", {}) if isinstance(data, dict) else {}
 
