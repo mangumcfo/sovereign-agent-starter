@@ -36,6 +36,19 @@ def client(app):
     return app.test_client()
 
 
+@pytest.fixture
+def owner_client(monkeypatch, tmp_path):
+    """Loopback OWNER (not dev) — for the owner-gated breath-gate routes (audit 2026-06-13c #6)."""
+    monkeypatch.delenv("BREATHLINE_NODE_API_DEV", raising=False)
+    monkeypatch.setenv("BREATHLINE_NODE_LOOPBACK_OWNER", "KM-1176")
+    monkeypatch.setenv("OBLIGATION_LEDGER_ROOT", str(tmp_path / "obligations"))
+    from sovereign_agent.node_api import deps
+    deps.reset_node()
+    from sovereign_agent.node_api.server import create_app
+    yield create_app().test_client()
+    deps.reset_node()
+
+
 # --- Index + service envelope ----------------------------------------------
 
 def test_index_envelope(client):
@@ -157,14 +170,20 @@ def test_breath_gate_pending_shape(client):
     assert "pending" in body and "count" in body and "note" in body
 
 
-def test_breath_gate_approve_unknown_404(client):
-    rv = client.post("/api/v1/breath_gate/no_such_gate/approve")
+def test_breath_gate_dispose_rejects_non_owner(client):
+    """audit 2026-06-13c #6: a breath-gate disposition is owner-only; dev/non-owner → 403."""
+    assert client.post("/api/v1/breath_gate/x/approve").status_code == 403
+    assert client.post("/api/v1/breath_gate/x/deny").status_code == 403
+
+
+def test_breath_gate_approve_unknown_404(owner_client):
+    rv = owner_client.post("/api/v1/breath_gate/no_such_gate/approve")
     assert rv.status_code == 404
     assert rv.get_json()["code"] == "GATE_NOT_FOUND"
 
 
-def test_breath_gate_deny_unknown_404(client):
-    rv = client.post("/api/v1/breath_gate/no_such_gate/deny")
+def test_breath_gate_deny_unknown_404(owner_client):
+    rv = owner_client.post("/api/v1/breath_gate/no_such_gate/deny")
     assert rv.status_code == 404
     assert rv.get_json()["code"] == "GATE_NOT_FOUND"
 

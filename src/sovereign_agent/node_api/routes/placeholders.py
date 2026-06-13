@@ -30,7 +30,7 @@ import uuid
 
 from flask import Blueprint, jsonify, request
 
-from ..auth import current_principal, require_principal
+from ..auth import current_principal, require_owner, require_principal
 from ..deps import get_approval_gate, get_node
 from ..errors import build_error, kernel_exception
 
@@ -209,8 +209,11 @@ def breath_gate_pending():
 
 @bp.post("/breath_gate/<gate_id>/approve")
 @require_principal
+@require_owner
 def breath_gate_approve(gate_id: str):
-    """breath_gate.{id}/approve — explicit human approval (the witness act)."""
+    """breath_gate.{id}/approve — explicit human approval (the witness act).
+    Owner-gated (audit 2026-06-13c #6): a breath-gate disposition is a constitutional human act and must
+    carry the same authority as the sibling disposition routes (obligations/feedback/proposals)."""
     gate = get_approval_gate()
     result = gate.simulate_approval(gate_id, approver=current_principal())
     if result.get("status") == "unknown_request":
@@ -225,8 +228,10 @@ def breath_gate_approve(gate_id: str):
 
 @bp.post("/breath_gate/<gate_id>/deny")
 @require_principal
+@require_owner
 def breath_gate_deny(gate_id: str):
-    """breath_gate.{id}/deny — explicit human denial (the refusal is the constitutional act)."""
+    """breath_gate.{id}/deny — explicit human denial (the refusal is the constitutional act).
+    Owner-gated (audit 2026-06-13c #6): the refusal is a constitutional human act, owner-only."""
     body = request.get_json(silent=True) or {}
     gate = get_approval_gate()
     result = gate.simulate_denial(gate_id, approver=current_principal(), reason=body.get("reason", ""))

@@ -138,12 +138,18 @@ def validate():
 
 def distribution():
     """Per-title propagation readiness from the roadmap (honest ◌ for untracked channels)."""
+    # Use the shared resilient loader (audit 2026-06-13c #16): the other roadmap readers adopted
+    # yaml_repair.load_roadmap, which tolerates GB's degraded-YAML tail — raw safe_load here emitted a
+    # parse-error row while the lens rendered the file fine (two truths about one file).
     try:
-        import yaml
-        d = yaml.safe_load(ROADMAP.read_text()) or {}
+        import sys as _sys
+        _sys.path.insert(0, str(REPO / "src"))
+        from sovereign_agent.node_api.yaml_repair import load_roadmap  # noqa: PLC0415
+        d, degraded, detail = load_roadmap(ROADMAP.read_text())
+        if degraded:
+            _sys.stderr.write(f"⚠ roadmap degraded: {detail}\n")
     except Exception as e:  # noqa: BLE001
-        # Audit 2026-06-13 (Error Voice §4): never swallow → a silent [] reads as "all channels covered"
-        # and can still report GATE: PASS. Surface a LOUD sentinel row instead.
+        # Error Voice §4: a TRUE failure (even the safe prefix unparseable) surfaces a LOUD sentinel row.
         return [{"book": "⚠ ROADMAP PARSE ERROR", "series": "?",
                  "kdp": f"unparseable ({e})", "social": "⚠", "federation": "⚠", "_error": str(e)}]
     rows = []

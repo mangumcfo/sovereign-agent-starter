@@ -636,7 +636,14 @@ class ObligationLedger:
         """
         Per-obligation materialized record incl. approval + close evidence/receipt — for
         read-only drilldowns (the Atrium book↔code / review lens). Newest first.
+
+        Memoized on _stat_key (audit 2026-06-13c #11) — the one un-memoized ledger view, backing the
+        polled GET /obligations/log; now caches like replay()/verify_chain(), re-deriving only on change.
         """
+        key = self._stat_key()
+        cache = getattr(self, "_full_log_cache", None)
+        if cache is not None and cache[0] == key:
+            return cache[1]
         entries = self._entries()
         obs = {e["id"]: dict(e) for e in entries if e.get("type") == "debit"}
         for e in entries:
@@ -662,6 +669,7 @@ class ObligationLedger:
             d.setdefault("status", "approved" if d.get("approved") else "draft")
             out.append(d)
         out.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
+        self._full_log_cache = (key, out)
         return out
 
     def verify_chain(self) -> bool:
