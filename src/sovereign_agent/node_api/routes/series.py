@@ -25,6 +25,7 @@ from pathlib import Path
 from flask import Blueprint, jsonify, request
 
 from ... import config
+from .._filecache import memoize_on
 from ..auth import require_principal
 
 bp = Blueprint("series", __name__, url_prefix="/api/v1")
@@ -54,18 +55,23 @@ def _roadmap_path() -> Path:
     return repo / "artifacts" / "series_roadmap.yaml"
 
 
+def _chapter_cands() -> list:
+    explicit = os.environ.get("CHAPTER_INDEX")
+    if explicit:
+        return [Path(explicit)]
+    repo = Path(__file__).resolve().parents[4]
+    return sorted(repo.glob("artifacts/extracted_chapter_outlines*.json"), reverse=True)
+
+
+@memoize_on(_chapter_cands)
 def _chapter_index() -> dict:
     """Extracted chapter TOCs keyed by book_id (Tiger extracts real '# Chapter N' headers from the
     manuscripts). The lens MERGES these at render time (Path B, KM ratify 2026-06-09) so the roadmap
     projection stays lean and chapters trace to the books by construction — no hand-copy, no drift.
     This is the 1M-book foundation: chapters source from the manuscripts, not a curated YAML.
-    CHAPTER_INDEX overrides; else newest artifacts/extracted_chapter_outlines*.json wins. Missing = {}."""
-    explicit = os.environ.get("CHAPTER_INDEX")
-    if explicit:
-        cands = [Path(explicit)]
-    else:
-        repo = Path(__file__).resolve().parents[4]
-        cands = sorted(repo.glob("artifacts/extracted_chapter_outlines*.json"), reverse=True)
+    CHAPTER_INDEX overrides; else newest artifacts/extracted_chapter_outlines*.json wins. Missing = {}.
+    Memoized on the source file's (mtime,size) (audit 2026-06-13 W5 #4/#15)."""
+    cands = _chapter_cands()
     for p in cands:
         try:
             data = json.loads(p.read_text(encoding="utf-8"))
@@ -75,19 +81,24 @@ def _chapter_index() -> dict:
     return {}
 
 
+def _asin_cands() -> list:
+    explicit = os.environ.get("ASIN_TRACKER")
+    return ([Path(explicit)] if explicit
+            else [_PLAYBOOKS_DIR / "ASIN_TRACKER.yaml"] if _PLAYBOOKS_DIR else [])
+
+
+@memoize_on(_asin_cands)
 def _publishing_index() -> dict:
     """KDP publishing status keyed by book_id, derived from the ASIN_TRACKER (the canonical KDP record
     Tiger maintains). The lens OVERLAYS publishing_state + asin + release at render time so the Series
     Pipeline reflects real KDP status AUTOMATICALLY — no manual roadmap edits, never stale. Roadmap stays
     lean + GB-sole-writer. Mirrors the _chapter_index() read-only merge (Path B). ASIN_TRACKER env overrides;
-    default = the agentic_playbooks tracker. yaml is imported locally so absence just no-ops the overlay."""
+    default = the agentic_playbooks tracker. Memoized on the tracker's (mtime,size) (audit W5 #4/#15)."""
     try:
         import yaml  # noqa: PLC0415 — local import keeps the lens yaml-optional
     except ImportError:
         return {}
-    explicit = os.environ.get("ASIN_TRACKER")
-    cands = ([Path(explicit)] if explicit
-             else [_PLAYBOOKS_DIR / "ASIN_TRACKER.yaml"] if _PLAYBOOKS_DIR else [])
+    cands = _asin_cands()
     _MAP = {"live": "published", "pre_order_live": "pre_order_live",
             "pre_order_in_review": "pre_order", "pre_order_publishing": "pre_order_live"}
     for p in cands:
@@ -119,18 +130,24 @@ def _publishing_index() -> dict:
     return {}
 
 
+def _channel_cands() -> list:
+    explicit = os.environ.get("CHANNEL_TRACKER")
+    return ([Path(explicit)] if explicit
+            else [_PLAYBOOKS_DIR / "CHANNEL_TRACKER.yaml"] if _PLAYBOOKS_DIR else [])
+
+
+@memoize_on(_channel_cands)
 def _channel_index() -> dict:
     """Distribution-federation state keyed by book_id, derived from CHANNEL_TRACKER.yaml (Tiger-owned,
     sibling of ASIN_TRACKER). The lens OVERLAYS per-channel state (beyond kdp_core, which _publishing_index
     already carries) so the Series Pipeline shows the WHOLE federation's truth automatically — never stale,
-    never hand-edited. Mirrors _publishing_index. CHANNEL_TRACKER env overrides; absence no-ops the overlay."""
+    never hand-edited. Mirrors _publishing_index. CHANNEL_TRACKER env overrides; absence no-ops the overlay.
+    Memoized on the tracker's (mtime,size) (audit 2026-06-13 W5 #4/#15)."""
     try:
         import yaml  # noqa: PLC0415 — local import keeps the lens yaml-optional
     except ImportError:
         return {}
-    explicit = os.environ.get("CHANNEL_TRACKER")
-    cands = ([Path(explicit)] if explicit
-             else [_PLAYBOOKS_DIR / "CHANNEL_TRACKER.yaml"] if _PLAYBOOKS_DIR else [])
+    cands = _channel_cands()
     for p in cands:
         try:
             data = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
@@ -163,14 +180,20 @@ def _dispatch_gate_summary(channel_index: dict) -> dict:
             "gate": "G1 — Dispatch Gate (batched)", "doctrine": "one look, one Accept, all channels"}
 
 
+def _stage_labels_path() -> Path:
+    return Path(__file__).resolve().parents[4] / "artifacts" / "pipeline_stage_labels.yaml"
+
+
+@memoize_on(lambda: [_stage_labels_path()])
 def _stage_labels() -> dict:
     """Canonical stage vocabulary (GB sole-write artifacts/pipeline_stage_labels.yaml). Renderers LABEL from
-    this — never the raw slug (pilot #3); an unknown slug must render LOUD, never blank (pilot #4 / Error Voice §4)."""
+    this — never the raw slug (pilot #3); an unknown slug must render LOUD, never blank (pilot #4 / Error Voice §4).
+    Memoized on the file's (mtime,size) (audit 2026-06-13 W5 #4/#15)."""
     try:
         import yaml  # noqa: PLC0415
     except ImportError:
         return {}
-    p = Path(__file__).resolve().parents[4] / "artifacts" / "pipeline_stage_labels.yaml"
+    p = _stage_labels_path()
     try:
         data = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
     except (OSError, ValueError):
@@ -178,11 +201,17 @@ def _stage_labels() -> dict:
     return data.get("stages", {}) if isinstance(data, dict) else {}
 
 
+def _review_dir() -> Path:
+    return Path(__file__).resolve().parents[4] / "artifacts" / "review_ready"
+
+
+@memoize_on(lambda: ([_review_dir()] + sorted(_review_dir().glob("*.json")) if _review_dir().is_dir() else []))
 def _review_index() -> dict:
     """Review-Ready contract truth per book (artifacts/review_ready/<book_id>.json) — the per-step overlay so
-    the /series checklist renders the live contract, never a hand-kept stage (pilot finding #1). Auto, never stale."""
+    the /series checklist renders the live contract, never a hand-kept stage (pilot finding #1). Auto, never
+    stale. Memoized on the dir + each json's (mtime,size) (audit 2026-06-13 W5 #4/#15)."""
     out = {}
-    base = Path(__file__).resolve().parents[4] / "artifacts" / "review_ready"
+    base = _review_dir()
     if not base.is_dir():
         return out
     for p in base.glob("*.json"):
@@ -199,6 +228,13 @@ def _review_index() -> dict:
 # loader the lens AND the roadmap derivers use, dropping series.py under the 500-line ceiling. `_load`
 # is kept as a thin alias so this module's call sites are unchanged.
 from ..yaml_repair import load_roadmap as _load  # noqa: E402
+
+
+@memoize_on(lambda path: [path])
+def _read_roadmap(path: Path):
+    """Read + parse the 112KB roadmap, memoized on its (mtime,size) — the dominant /series cost (audit
+    2026-06-13 W5 #4). Sole-write + rarely-changing → ~100% hit rate. Returns (data, degraded, detail)."""
+    return _load(path.read_text(encoding="utf-8"))
 
 
 def _title_card(t: dict, chapter_index: dict | None = None, publishing_index: dict | None = None,
@@ -277,8 +313,7 @@ def series_list():
                      "note": "series_roadmap.yaml not found — GB has not produced the projection yet."},
             "series": [],
         })
-    text = path.read_text(encoding="utf-8")
-    data, degraded, detail = _load(text)
+    data, degraded, detail = _read_roadmap(path)   # mtime-memoized parse (audit 2026-06-13 W5 #4)
     msr = data.get("multi_series_roadmap", {}) if isinstance(data, dict) else {}
     chapter_index = _chapter_index()  # Path B: chapters merged from the manuscripts' extracted TOCs
     publishing_index = _publishing_index()  # KDP status overlaid from the ASIN_TRACKER — auto, never stale

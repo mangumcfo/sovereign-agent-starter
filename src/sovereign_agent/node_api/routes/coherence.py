@@ -18,6 +18,7 @@ from pathlib import Path
 
 from flask import Blueprint, jsonify
 
+from .._filecache import memoize_on
 from ..auth import require_principal
 
 bp = Blueprint("coherence", __name__, url_prefix="/api/v1")
@@ -33,9 +34,22 @@ CAPABILITIES = Path(__file__).resolve().parents[4] / "memory" / "coherence_capab
 VALIDATION_STATE = Path(__file__).resolve().parents[4] / "memory" / "extrusion_validation_state.json"
 
 
+def _compute_paths(reg: dict, repo: Path) -> list:
+    """The files _compute()'s result depends on: the registry + every cited book file. When none change,
+    the ~948KB manuscript re-scan is skipped (audit 2026-06-13 W5 #5)."""
+    paths = [_registry_path()]
+    for e in reg.get("extrusions", []):
+        bf = e.get("book_file")
+        if bf:
+            paths.append(bf)
+    return paths
+
+
+@memoize_on(_compute_paths)
 def _compute(reg: dict, repo: Path):
     """Live per-extrusion coherence: re-read each cited passage from the book + re-check the code/hash.
-    Pure (no writes); shared by /coherence and /coherence/rollup so both tell the same truth."""
+    Pure (no writes); shared by /coherence and /coherence/rollup so both tell the same truth.
+    Memoized on the registry + book files' (mtime,size) (audit 2026-06-13 W5 #5) — re-reads only on change."""
     out, coherent, drift = [], 0, 0
     for e in reg.get("extrusions", []):
         bf = e.get("book_file", "")
