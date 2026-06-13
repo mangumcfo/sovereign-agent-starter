@@ -210,24 +210,43 @@ class ObligationLedger:
         self.attestor = attestor
 
     # ── chain primitives ──────────────────────────────────────────────
+    _ENTRIES_HEAD = 256   # bytes of the file head used to detect a rewrite vs a pure append
+
     def _entries(self) -> list[dict]:
-        # Parse-cache keyed by (st_mtime_ns, st_size) (audit perf fix): GET /obligations triggered
-        # 6 full NDJSON parses per request (replay/by_status/by_owner/verify_chain). Re-reads only when
-        # the file actually changes — so a multi-instance/append-by-another-process is still caught.
+        # Parse-cache keyed by (st_mtime_ns, st_size). Re-reads only when the file actually changes.
+        # APPEND-AWARE TAIL PARSE (audit 2026-06-13c H3/#18): the chain grows forever and every write
+        # invalidates the (mtime,size) cache, and `_append` calls `_entries()` INSIDE the write-flock —
+        # so each mutation re-parsed the whole 1.5 MB file under lock (O(n)/write). Since `_append` only
+        # ever APPENDS complete NDJSON lines, on a pure grow we seek to the previously-parsed byte offset
+        # and parse ONLY the new tail (O(Δ)). A head-fingerprint guard detects a rewrite (repair_chain
+        # rehashes every line → the head changes) and falls back to a full re-parse — never trusts a
+        # stale prefix. Cache tuple: (entries, key, parsed_byte_size, head_bytes).
         if not self.path.exists():
-            self._entries_cache = ([], None)
+            self._entries_cache = ([], None, 0, b"")
             return []
         st = self.path.stat()
         key = (st.st_mtime_ns, st.st_size)
         cache = getattr(self, "_entries_cache", None)
         if cache is not None and cache[1] == key:
             return cache[0]
-        out = []
-        for line in self.path.read_text().splitlines():
-            line = line.strip()
-            if line:
-                out.append(json.loads(line))
-        self._entries_cache = (out, key)
+        if cache is not None:
+            prev_entries, _prev_key, prev_size, prev_head = cache
+            if 0 < prev_size < st.st_size:   # the file only GREW — candidate for a tail parse
+                try:
+                    with self.path.open("rb") as f:
+                        head = f.read(self._ENTRIES_HEAD)
+                        if head == prev_head:           # head unchanged → pure append, not a rewrite
+                            f.seek(prev_size)
+                            tail = f.read().decode("utf-8")
+                            new = [json.loads(s) for s in tail.splitlines() if s.strip()]
+                            out = prev_entries + new
+                            self._entries_cache = (out, key, st.st_size, prev_head)
+                            return out
+                except (OSError, ValueError, UnicodeDecodeError):
+                    pass   # boundary/rewrite scramble → fall through to a full re-parse
+        raw = self.path.read_bytes()
+        out = [json.loads(s) for s in raw.decode("utf-8").splitlines() if s.strip()]
+        self._entries_cache = (out, key, len(raw), raw[: self._ENTRIES_HEAD])
         return out
 
     def _is_closed(self, obligation_id: str) -> bool:

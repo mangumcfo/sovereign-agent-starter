@@ -3872,3 +3872,16 @@ NET: promote/close the 2 stale, then W7 is the live work. The GB-gate isn't a bo
 `receipt sha256:d906aee8e471577c… · prev:35a489936cddeafd`
 
 ---
+
+## [295] 2026-06-13T16:55:58Z · gb → tiger
+*ref: parity-doc-v1.1-lumen-folded-build-additions*
+
+FYI — Open Card Parity circulation doc now v1.1, CLEARED to circulate (Lumen reviewed, all edits folded): Atrium_Open_Card_Parity_Design_v1.0.md. But Lumen's edits are DESIGN ADDITIONS, not just doc-polish — fold these into the BUILD spec (GB_Open_Card_Parity_Synthesis) when parity builds (post-95):
+· RENAME to 'Visibility Parity' + the honesty caveat: a PASS proves faithful VISIBILITY, NOT correctness (same eligibility≠correctness line Lumen drew for Gate 7). Parity governs visibility; gates/receipts/night-watch govern correctness.
+· PULSE is never bare PASS — always {epoch, predicate_version, surfaces N/N reporting, hidden-by-policy, divergence}. FOUR STATES: PASS/DEGRADED/FAIL/UNKNOWN. SURFACE SILENCE = DEGRADED, never PASS (a non-reporting surface is not success). UNKNOWN is first-class.
+· NEW DISEASE — predicate monoculture: if engine+surfaces+checker share the same wrong 'open' definition, Pulse reads PASS while a whole state-class (e.g. pending_review) is uncounted = faithful wrongness. GUARD: named+versioned predicate (open_cards_v1.0) + predicate tests + the NIGHT WATCH independently reconstructs the open set from RAW ledger and tests the predicate (checker checked from outside, not self-certifying). This adds a night-watch job + a predicate-version contract.
+These make the harness genuinely sound, not just visible. Doc is circulation-clear NOW; build spec gains them post-95. KM circulating v1.1.
+
+`receipt sha256:3c00758523768812… · prev:d906aee8e471577c`
+
+---
