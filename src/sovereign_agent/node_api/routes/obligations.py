@@ -17,7 +17,7 @@ from __future__ import annotations
 from flask import Blueprint, jsonify, request
 
 from ...obligations import AlreadyClosedError
-from ..auth import current_principal, require_principal
+from ..auth import current_principal, require_owner, require_principal
 from ..deps import get_obligation_ledger
 
 
@@ -98,8 +98,13 @@ def obligations_open():
 
 @bp.post("/obligations/<obligation_id>/approve")
 @require_principal
+@require_owner
 def obligations_approve(obligation_id: str):
-    """obligations.approve — clear the breath-gate (human disposition)."""
+    """obligations.approve — clear the breath-gate (human disposition).
+
+    Owner-gated (audit 2026-06-13 W5 #1): approve() clears KM's constitutional breath-gate and records
+    `approved_by`, so it must carry the SAME authority as /feedback/disposition, /proposals/decide,
+    /apply. A non-owner (dev/loopback/federation peer) can no longer dispose KM's material obligations."""
     body = request.get_json(silent=True) or {}
     led = get_obligation_ledger()
     try:
@@ -123,8 +128,12 @@ def obligations_approve(obligation_id: str):
 
 @bp.post("/obligations/<obligation_id>/close")
 @require_principal
+@require_owner
 def obligations_close(obligation_id: str):
-    """obligations.close — credit with evidence; mints a node receipt."""
+    """obligations.close — credit with evidence; mints a node receipt.
+
+    Owner-gated (audit 2026-06-13 W5 #1): close() mints a receipt + credit on the immutable chain and
+    records `closed_by`; owner-only, mirroring the sibling disposition routes."""
     body = request.get_json(silent=True) or {}
     evidence = (body.get("evidence") or "").strip()
     if not evidence:
