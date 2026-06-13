@@ -126,12 +126,28 @@ def _tolerant_regex(before: str):
     return re.compile(r"\s+".join(esc(p) for p in parts if p))
 
 
+def _confined(path: str) -> bool:
+    """A write target MUST resolve INSIDE a known REPOS root (audit 2026-06-13c #7). Proposal groups are
+    LLM-produced from a human transcript, so an injected/crafted `file` (e.g. /home/kmangum/.bashrc or a
+    credentials path) must never be written outside the managed repos — the human accept gate is not a
+    path-safety control. realpath-normalized so `..`/symlinks can't escape."""
+    rp = os.path.realpath(path)
+    for info in REPOS.values():
+        root = os.path.realpath(info["root"])
+        if rp == root or rp.startswith(root + os.sep):
+            return True
+    return False
+
+
 def _apply_group(g, dry_changes, created=None):
     file = g.get("file", "")
     repo_key, rel = _repo_of(file)
     path = _resolve(repo_key, rel)
     if path is None:
         return False, f"unresolvable/ambiguous path: {file}"
+    if not _confined(path):
+        return False, (f"refusing write OUTSIDE every repo root (path confinement): {path} — a proposal "
+                       f"may only edit files under the managed repos.")
     hunks = g.get("hunks") or [{"before": g.get("before", []), "after": g.get("after", [])}]
     # new file = a single hunk with empty `before`
     if len(hunks) == 1 and not hunks[0].get("before"):
@@ -284,18 +300,28 @@ def main() -> int:
         _log("  sealed cylinder")
     except Exception as exc:
         _log(f"  seal error: {exc}")
-    # close the obligation (E2) + clear the proposal
+    # close the obligation IN-PROCESS (audit 2026-06-13c H1, CONSTITUTION §3/§4). The old path POSTed an
+    # UNAUTHENTICATED close to the @require_owner /close route → 403 in normal config; the bare except
+    # swallowed it and the proposal was still marked 'applied' while the obligation stayed OPEN — seal
+    # chain vs ledger diverge, reported as success. Close directly on the SHARED ledger (no gate hop, no
+    # partial-state window), like atrium_executor; a close FAILURE is hard — status='apply_close_failed',
+    # never 'applied'. Principal is the authenticated apply-clicker (propagated via env), never 'tiger'.
     oid = p.get("obligation_id")
+    close_ok = True
     if oid:
         try:
-            body = json.dumps({"evidence": f"E2: auto-applied (KM accepted) — commits {', '.join(commits)}; sealed; tests green.",
-                               "evidence_tier": "E2", "closed_by": "tiger"}).encode()
-            req = urllib.request.Request(NODE + f"/obligations/{oid}/close", data=body, method="POST",
-                                         headers={"Content-Type": "application/json"})
-            urllib.request.urlopen(req, timeout=10)
-            _log(f"  closed obligation {oid}")
-        except Exception as exc:
-            _log(f"  close note: {exc}")
+            sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src"))
+            from sovereign_agent.obligations.ledger import ObligationLedger, get_ledger_root  # noqa: PLC0415
+            principal = (os.environ.get("BREATHLINE_APPLY_PRINCIPAL") or "").strip() or "system:apply"
+            led = ObligationLedger(root=str(get_ledger_root()), principal_id=principal)
+            led.close(oid, evidence=f"E2: auto-applied (KM accepted) — commits {', '.join(commits)}; sealed; tests green.",
+                      evidence_tier="E2", require_e1=False, closed_by=principal)
+            _log(f"  closed obligation {oid} in-process (by {principal})")
+        except Exception as exc:  # noqa: BLE001
+            close_ok = False
+            _log(f"  CLOSE FAILED for {oid}: {exc} — marking apply_close_failed (NOT applied; no false success)")
+            _mark_error(pid, f"applied + sealed but obligation close failed: {exc} — the obligation stays OPEN "
+                             f"and will resurface; reconcile the seal vs ledger.")
     # AUTO-RECOMPILE the affected book PDFs (KM: recompile once the diffs are dispositioned)
     import re as _re
     build_dirs = set()
@@ -313,6 +339,11 @@ def main() -> int:
     # Mark the proposal APPLIED (keep it, don't delete) so the Sealed card can still show the diff
     # that was applied (KM: "keep the diff on the sealed card"). The board routes it to Sealed via the
     # closed obligation, not the proposal — so keeping it here doesn't re-surface it in Diffs-ready.
+    # H1: ONLY mark applied when the obligation actually closed — a failed close already set
+    # 'apply_close_failed' via _mark_error; never overwrite that with a false 'applied'.
+    if not close_ok:
+        _log(f"DONE {pid} (apply_close_failed — obligation OPEN, not marked applied)")
+        return 4
     try:
         def _m(items):
             for x in items:

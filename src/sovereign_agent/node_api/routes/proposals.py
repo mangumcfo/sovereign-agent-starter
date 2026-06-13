@@ -445,6 +445,9 @@ def proposals_apply(proposal_id: str):
         args.append(",".join(gids))
     env = dict(os.environ)
     env["PYTHONPATH"] = str(repo / "src")
+    # Propagate the authenticated apply-clicker so atrium_apply's in-process close names the real
+    # operator, not a hardcoded 'tiger' (audit 2026-06-13c H1/#10, CONSTITUTION §1).
+    env["BREATHLINE_APPLY_PRINCIPAL"] = current_principal()
     subprocess.Popen(args, cwd=str(repo), env=env,
                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
     return jsonify({"status": "applying", "proposal_id": proposal_id,

@@ -15,6 +15,20 @@ def _git(repo, *args):
     subprocess.run(["git", *args], cwd=repo, check=True, capture_output=True)
 
 
+def test_confinement_rejects_writes_outside_repo_roots(tmp_path, monkeypatch):
+    """audit 2026-06-13c #7: a proposal group targeting a path outside every REPOS root is refused."""
+    repo = tmp_path / "starter"
+    repo.mkdir()
+    monkeypatch.setattr(A, "REPOS", {"starter": {"root": str(repo)}})
+    # inside a repo root → confined
+    assert A._confined(str(repo / "src" / "x.py")) is True
+    # outside every root (e.g. a dotfile / creds) → refused
+    assert A._confined(str(tmp_path / "evil" / ".bashrc")) is False
+    assert A._confined("/etc/passwd") is False
+    # a `..` escape attempt is realpath-normalized and refused
+    assert A._confined(str(repo / ".." / "escape.txt")) is False
+
+
 def test_revert_deletes_new_files_and_reverts_edits(tmp_path, monkeypatch):
     repo = tmp_path / "r"
     repo.mkdir()
