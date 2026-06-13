@@ -22,6 +22,7 @@ from pathlib import Path
 from flask import Blueprint, jsonify, request
 
 from ... import config
+from ...obligations.ledger import get_ledger_root
 from ..auth import current_principal, require_owner, require_principal
 
 bp = Blueprint("proposals", __name__, url_prefix="/api/v1")
@@ -533,8 +534,7 @@ def export_packet_route():
     ids = [x.strip() for x in (request.args.get("obl_ids") or "").split(",") if x.strip()]
     if not ids:
         return jsonify({"error": "missing_obl_ids", "what": "pass ?obl_ids=A,B,C (comma-separated)"}), 400
-    led_root = Path(os.environ.get("OBLIGATION_LEDGER_ROOT")
-                    or (repo / "memory" / "obligations" / "atrium_review"))
+    led_root = get_ledger_root()      # ONE resolver (audit 2026-06-13)
     try:
         bundle = _EP.build_packet(ids, led_root)
     except ValueError as e:
@@ -551,8 +551,7 @@ def actions_route():
     repo = Path(__file__).resolve().parents[4]
     _sys.path.insert(0, str(repo / "scripts"))
     import actions_projection as _AP  # noqa: PLC0415
-    led_root = Path(os.environ.get("OBLIGATION_LEDGER_ROOT")
-                    or (repo / "memory" / "obligations" / "atrium_review"))
+    led_root = get_ledger_root()      # ONE resolver (audit 2026-06-13)
     g = request.args.get
     return jsonify(_AP.query_actions(led_root, type=g("type"), principal=g("principal"),
                                      obligation=g("obligation"), since=g("since"), until=g("until")))

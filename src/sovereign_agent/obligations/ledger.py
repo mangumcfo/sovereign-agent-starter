@@ -84,6 +84,13 @@ def _default_root() -> Path:
     return repo / "memory" / "obligations"
 
 
+def _node_default_root() -> Path:
+    """The node's canonical ledger root: the live review queue (memory/obligations/atrium_review), where
+    the real cards live. The ONE default every node-side reader/writer falls back to when the env is
+    unset — so an env-unset API serves the real chain instead of an empty parent path."""
+    return _default_root() / "atrium_review"
+
+
 def _resolve_root(root: Optional[os.PathLike | str]) -> Path:
     if root is None:
         root = os.environ.get(ENV_ROOT)
@@ -97,6 +104,17 @@ def _resolve_root(root: Optional[os.PathLike | str]) -> Path:
                 f"Set {ENV_ROOT} to a node-local path."
             )
     return p
+
+
+def get_ledger_root(explicit: Optional[os.PathLike | str] = None,
+                    default: Optional[os.PathLike | str] = None) -> Path:
+    """THE single ledger-root resolver (audit 2026-06-13). Resolution order:
+        explicit arg → OBLIGATION_LEDGER_ROOT env → caller `default` → node canonical (atrium_review).
+    Every node-side site (API deps, bell executor, /export, /actions, review_ready) routes through this
+    so the API and the bell executor can NEVER resolve different roots — the split-brain that landed
+    approve in one chain and close in another. Boundary-checked exactly like _resolve_root."""
+    chosen = explicit or os.environ.get(ENV_ROOT) or default or _node_default_root()
+    return _resolve_root(chosen)
 
 
 def _assert_source_ref_resolves(source_ref: str) -> None:
@@ -507,7 +525,15 @@ class ObligationLedger:
 
     # ── replay + materialized views ───────────────────────────────────
     def replay(self) -> dict:
-        """Reconstruct state from the append-only chain."""
+        """Reconstruct state from the append-only chain.
+
+        Memoized on _stat_key (audit 2026-06-13 perf): GET /obligations derived open/status/by_owner
+        from up to 4 replays per request; now one materialization per chain-state, invalidated when the
+        file changes (the SAME trust key _entries/verify_chain use — no weaker than the parse cache)."""
+        key = self._stat_key()
+        cache = getattr(self, "_replay_cache", None)
+        if cache is not None and cache[0] == key:
+            return cache[1]
         entries = self._entries()
         debits = {e["id"]: e for e in entries if e.get("type") == "debit"}
         closed = {e["closes"] for e in entries if e.get("type") == "credit"}
@@ -529,7 +555,9 @@ class ObligationLedger:
                 debits[oid] = {**debits[oid], "draft": False, "approved": True}
         open_obs = [d for oid, d in debits.items() if oid not in closed]
         closed_obs = [d for oid, d in debits.items() if oid in closed]
-        return {"open": open_obs, "closed": closed_obs, "all": list(debits.values())}
+        result = {"open": open_obs, "closed": closed_obs, "all": list(debits.values())}
+        self._replay_cache = (key, result)
+        return result
 
     def open_obligations(self, owner: Optional[str] = None) -> list[dict]:
         obs = self.replay()["open"]
@@ -540,15 +568,18 @@ class ObligationLedger:
         return {"open": len(st["open"]), "closed": len(st["closed"]), "total": len(st["all"])}
 
     def by_owner(self) -> dict:
+        """Per-owner open/closed counts derived from the ORDER-AWARE replay (audit 2026-06-13).
+
+        The old impl derived 'closed' from raw `credit` entries, so a reopened-not-reclosed obligation
+        (after reopen()) was double-counted as closed — the per-owner counts lied after any reopen (the
+        Open Card Parity disease in miniature). Deriving from replay()'s reopen-aware open/closed sets
+        (one memoized pass) keeps the view in lockstep with the chain's true state."""
+        st = self.replay()
+        open_ids = {o["id"] for o in st["open"]}
         out: dict[str, dict] = {}
-        for o in self.replay()["all"]:
-            d = out.setdefault(o["owner"], {"open": 0, "closed": 0})
-            d["open"] += 1
-        closed_ids = {e["closes"] for e in self._entries() if e.get("type") == "credit"}
-        for o in self.replay()["all"]:
-            if o["id"] in closed_ids:
-                out[o["owner"]]["open"] -= 1
-                out[o["owner"]]["closed"] += 1
+        for o in st["all"]:
+            bucket = out.setdefault(o["owner"], {"open": 0, "closed": 0})
+            bucket["open" if o["id"] in open_ids else "closed"] += 1
         return out
 
     def full_log(self) -> list[dict]:

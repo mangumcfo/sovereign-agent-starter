@@ -63,8 +63,11 @@ def get_obligation_ledger():
     global _LEDGER
     if _LEDGER is None:
         from ..obligations.node_integration import wire_node_ledger
-        root = os.environ.get("OBLIGATION_LEDGER_ROOT")  # None -> ledger default (node-local)
-        _assert_root_not_starved(root)  # THREAD [245]: empty root beside an 811-card sibling must SCREAM
+        from ..obligations.ledger import get_ledger_root
+        # ONE resolver (audit 2026-06-13): env → canonical atrium_review. Never the empty parent default
+        # that produced the API↔executor split-brain (approve in one chain, close in another).
+        root = str(get_ledger_root())
+        _assert_root_not_starved(root)  # THREAD [245] + audit 2026-06-13: REFUSE an empty root beside a rich sibling
         _LEDGER = wire_node_ledger(
             root=root,
             node=get_node(),
@@ -75,15 +78,17 @@ def get_obligation_ledger():
 
 
 def _assert_root_not_starved(root):
-    """Loud guard (THREAD [245] principle 4): if the served ledger root holds far fewer packets
-    than a sibling root under memory/obligations/*, scream — never render a clean-looking empty
-    queue while real work sits in a sibling. The exact failure that silently hid KM's 42 cards."""
+    """Serve refusal (audit 2026-06-13, escalated from log-only; THREAD [245] principle 4): if the served
+    ledger root is EMPTY while a sibling root under memory/obligations/* holds real cards, REFUSE — never
+    render a clean-looking empty queue while real work sits in a sibling. The exact failure that silently
+    hid KM's 42 cards. A computation error in the guard never blocks boot; only a *confirmed* starvation
+    raises."""
     import logging
     from pathlib import Path
     log = logging.getLogger("breathline.ledger")
     try:
         served = Path(root).expanduser() if root else (Path(__file__).resolve().parents[3]
-                                                       / "memory" / "obligations")
+                                                       / "memory" / "obligations" / "atrium_review")
         sf = served / "obligations.ndjson"
         served_n = sum(1 for _ in sf.open()) if sf.exists() else 0
         base = served.parent if served.name != "obligations" else served
@@ -91,13 +96,15 @@ def _assert_root_not_starved(root):
                     for sib in base.glob("*/obligations.ndjson")
                     if sib.parent.resolve() != served.resolve()}
         richest = max(siblings.values(), default=0)
-        if served_n == 0 and richest > 10:
-            who = max(siblings, key=siblings.get)
-            log.error("LEDGER STARVED: served root %s is EMPTY while sibling '%s' holds %d packets. "
-                      "Node is pointed at the wrong root — the queue is silently empty. "
-                      "Set OBLIGATION_LEDGER_ROOT correctly.", served, who, richest)
-    except Exception as exc:  # never let the guard break boot
+    except Exception as exc:  # never let a guard-computation error break boot
         log.warning("ledger-starvation guard skipped: %s", exc)
+        return
+    if served_n == 0 and richest > 10:
+        who = max(siblings, key=siblings.get)
+        raise RuntimeError(
+            f"LEDGER STARVED: served root {served} is EMPTY while sibling '{who}' holds {richest} "
+            f"packets. Refusing to serve a silently-empty queue while real work sits in a sibling — "
+            f"set OBLIGATION_LEDGER_ROOT correctly.")
 
 
 def set_node(node: UniversalSovereignNode) -> None:

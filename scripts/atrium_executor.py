@@ -31,7 +31,10 @@ REPO = Path(__file__).resolve().parents[1]
 
 
 def _ledger_root() -> str:
-    return os.environ.get("OBLIGATION_LEDGER_ROOT") or str(REPO / "memory" / "obligations" / "atrium_review")
+    # Route through the ONE resolver (audit 2026-06-13) so the executor and the API can never disagree.
+    sys.path.insert(0, str(REPO / "src"))
+    from sovereign_agent.obligations.ledger import get_ledger_root  # noqa: PLC0415
+    return str(get_ledger_root())
 
 
 def _principal() -> str:

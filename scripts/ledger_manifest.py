@@ -19,14 +19,18 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-from sovereign_agent.obligations.ledger import ObligationLedger  # noqa: E402
+from sovereign_agent.obligations.ledger import ObligationLedger, get_ledger_root  # noqa: E402
 
+# This tool manifests the Tiger↔GB COORDINATION ledger by default (a deliberately different root from
+# the node's review queue). Audit 2026-06-13: route through the ONE resolver so a CLI arg or
+# OBLIGATION_LEDGER_ROOT env is honored, with tiger_coordination as this tool's documented fallback
+# (no longer a silent 4th default that ignored the env).
 DEFAULT_ROOT = Path(__file__).resolve().parents[1] / "memory" / "obligations" / "tiger_coordination"
 
 
 def _ledger(argv) -> ObligationLedger:
-    root = argv[2] if len(argv) > 2 else str(DEFAULT_ROOT)
-    return ObligationLedger(root=root)
+    cli = argv[2] if len(argv) > 2 else None
+    return ObligationLedger(root=str(get_ledger_root(explicit=cli, default=DEFAULT_ROOT)))
 
 
 def main() -> None:
