@@ -149,7 +149,7 @@ def execute(oid: str) -> int:
 def drain() -> int:
     """Backstop: execute every approved-but-still-open obligation (the session-start drain ritual)."""
     led = _ledger()
-    entries = led._entries()
+    entries = list(led.iter_entries())   # public read-gateway (audit 2026-06-13c #15)
     approved = {e["approves"] for e in entries
                 if e.get("type") == "approval" and e.get("disposition", "approved") == "approved"}
     open_ids = {o["id"] for o in led.replay()["open"]}

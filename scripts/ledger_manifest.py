@@ -43,7 +43,7 @@ def main() -> None:
     elif cmd == "verify":
         print("Chain OK:", led.verify_chain(), "·", led.by_status())
     elif cmd == "last":
-        entries = led._entries()
+        entries = list(led.iter_entries())   # public read-gateway (audit 2026-06-13c #15)
         print(json.dumps(entries[-1], indent=2, sort_keys=True) if entries else "empty")
     else:
         print("commands: manifest | verify | last  [ledger_root]")

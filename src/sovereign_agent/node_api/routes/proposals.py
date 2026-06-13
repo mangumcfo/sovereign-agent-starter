@@ -23,7 +23,7 @@ from flask import Blueprint, jsonify, request
 
 from ... import config
 from ...obligations.ledger import get_ledger_root
-from .._jsonstore import read_json, sidecar_store, update_json
+from .._jsonstore import read_json_cached, sidecar_store, update_json
 from ..auth import current_principal, require_owner, require_principal
 
 bp = Blueprint("proposals", __name__, url_prefix="/api/v1")
@@ -44,7 +44,7 @@ def _store_path() -> Path:
 
 
 def _read() -> list:
-    return read_json(_store_path())
+    return read_json_cached(_store_path())   # GET-only reads memoized (audit 2026-06-13c #17); mutators use _update
 
 
 def _update(mutate):

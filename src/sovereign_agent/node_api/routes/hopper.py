@@ -146,7 +146,7 @@ def _packeted_refs():
     dedup no-op'd and re-surfaced already-packeted cards (the exact pileup it exists to prevent)."""
     from ..deps import get_obligation_ledger  # noqa: PLC0415
     led = get_obligation_ledger()
-    return {e["ref"] for e in led._entries() if e.get("type") == "debit" and e.get("ref")}
+    return led.refs("debit")   # public read-gateway (audit 2026-06-13c #15)
 
 
 def _card_packeted(card: dict, packeted: set) -> bool:

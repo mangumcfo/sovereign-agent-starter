@@ -94,7 +94,7 @@ def check_parity(root, led=None) -> dict:
 
     # 5. sittings anti-hiding: no replay-OPEN feedback/finding card may be MISSING from what sittings
     #    surfaces (the 42-card disease was live work HIDDEN). Over-surfacing closed cards is by design.
-    surfaced = _sittings_would_surface(led._entries())
+    surfaced = _sittings_would_surface(list(led.iter_entries()))   # public read-gateway (audit 2026-06-13c #15)
     # open AND not-yet-disposed (replay-corrected approved) + keyword = what sittings MUST show.
     # An open-but-approved card is awaiting execution, not KM — correctly not surfaced.
     open_feedback = {o["id"] for o in st["open"]

@@ -249,6 +249,17 @@ class ObligationLedger:
         self._entries_cache = (out, key, len(raw), raw[: self._ENTRIES_HEAD])
         return out
 
+    def iter_entries(self):
+        """Public read-gateway over the chain (audit 2026-06-13c #15): yields a COPY of each raw entry.
+        Five sites previously reached into the private `_entries()` and hardcoded the entry-type
+        vocabulary (a shipped bug guessed 'open' vs 'debit'); they route through this instead."""
+        for e in self._entries():
+            yield dict(e)
+
+    def refs(self, type: str = "debit") -> set:
+        """The set of non-empty `ref` strings for entries of the given chain type (default 'debit')."""
+        return {e.get("ref") for e in self._entries() if e.get("type") == type and e.get("ref")}
+
     def _is_closed(self, obligation_id: str) -> bool:
         # Order-aware (THREAD [245]): the LAST close/reopen event governs. A corrective `reopen`
         # appended after a `credit` returns the obligation to open — consistent with replay().

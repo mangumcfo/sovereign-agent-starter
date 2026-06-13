@@ -52,6 +52,28 @@ def read_json(path, default=None):
         return fallback
 
 
+_READ_CACHE: dict = {}
+
+
+def read_json_cached(path, default=None):
+    """Memoized read for GET projections (audit 2026-06-13c #17): caches per-path on (mtime_ns, size),
+    re-reading only when the store changes. The LOCKED writers keep using read_json() inside the flock
+    (never the cache) so a write always re-reads fresh. GET handlers treat the result read-only — same
+    discipline as the ledger's _entries() parse-cache."""
+    p = Path(path)
+    try:
+        st = p.stat()
+        key = (st.st_mtime_ns, st.st_size)
+    except OSError:
+        key = (0, 0)
+    hit = _READ_CACHE.get(str(p))
+    if hit is not None and hit[0] == key:
+        return hit[1]
+    val = read_json(path, default)
+    _READ_CACHE[str(p)] = (key, val)
+    return val
+
+
 def write_json(path, data, *, ensure_ascii: bool = True) -> None:
     """Atomic write via tmp + os.replace. Call INSIDE `locked()` for a fenced RMW."""
     p = Path(path)
