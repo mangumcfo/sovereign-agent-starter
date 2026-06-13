@@ -73,6 +73,15 @@ def test_confinement_rejects_writes_outside_repo_roots(tmp_path, monkeypatch):
     assert A._confined(str(repo / ".." / "escape.txt")) is False
 
 
+def test_repos_seal_resolve_from_env_not_hardcoded(monkeypatch, tmp_path):
+    """#15 (audit 2026-06-13d): EXECUTE-half paths resolve from env/config, not operator literals."""
+    monkeypatch.setenv("BREATHLINE_BOOKS_ROOT", str(tmp_path / "vault"))
+    assert A._books_root() == str(tmp_path / "vault")          # env override honored
+    monkeypatch.delenv("BREATHLINE_BOOKS_ROOT", raising=False)
+    assert A._books_root()                                      # falls back (config/literal), never empty
+    assert A._STARTER_ROOT.endswith("sovereign-agent-starter")  # derived from __file__, not a /home literal
+
+
 def test_revert_deletes_new_files_and_reverts_edits(tmp_path, monkeypatch):
     repo = tmp_path / "r"
     repo.mkdir()

@@ -24,15 +24,37 @@ import urllib.request
 
 NODE = "http://127.0.0.1:8421/api/v1"
 LOG = os.path.expanduser("~/.breathline/atrium_apply.log")
-SEAL = "/home/kmangum/Tiger_1a/cylinders/seal.sh"
+# Runs-anywhere (audit 2026-06-13d #15): resolve operator-specific paths from env/config with the literals
+# as the LAST candidate, matching the rest of the stack's candidate-sweep portability. On a non-KM host
+# these were a hard write-refusal (_confined anchors on REPOS roots) or a seal failure.
+SEAL = os.environ.get("SEAL_SCRIPT") or "/home/kmangum/Tiger_1a/cylinders/seal.sh"
 
+
+def _books_root() -> str:
+    if os.environ.get("BREATHLINE_BOOKS_ROOT"):
+        return os.environ["BREATHLINE_BOOKS_ROOT"]
+    try:
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src"))
+        from sovereign_agent import config  # noqa: PLC0415
+        kdp = config.get_books_kdp_root()
+        if kdp:
+            return os.path.dirname(str(kdp))   # the vault root is the parent of the kdp dir
+    except Exception:  # noqa: BLE001
+        pass
+    return "/home/kmangum/work-repos/mangumcfo/breathline-books-vault"
+
+
+_STARTER_ROOT = os.environ.get("BREATHLINE_STARTER_ROOT") or os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_ID_NAME = os.environ.get("BREATHLINE_COMMIT_NAME", "KM-1176")
+_ID_EMAIL = os.environ.get("BREATHLINE_COMMIT_EMAIL", "kennmangum@gmail.com")
 REPOS = {
-    "starter": {"root": "/home/kmangum/work-repos/sovereign-agent-starter",
-                "name": "Kenn Mangum", "email": "kenn@mangumcfo.com", "trailer": True},
-    "ui":      {"root": "/home/kmangum/work-repos/mangumcfo/breathline-ui",
-                "name": "KM-1176", "email": "kennmangum@gmail.com", "trailer": False},
-    "books":   {"root": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault",
-                "name": "KM-1176", "email": "kennmangum@gmail.com", "trailer": False},
+    "starter": {"root": _STARTER_ROOT,
+                "name": os.environ.get("BREATHLINE_STARTER_NAME", "Kenn Mangum"),
+                "email": os.environ.get("BREATHLINE_STARTER_EMAIL", "kenn@mangumcfo.com"), "trailer": True},
+    "ui":      {"root": os.environ.get("BREATHLINE_UI_ROOT") or "/home/kmangum/work-repos/mangumcfo/breathline-ui",
+                "name": _ID_NAME, "email": _ID_EMAIL, "trailer": False},
+    "books":   {"root": _books_root(),
+                "name": _ID_NAME, "email": _ID_EMAIL, "trailer": False},
 }
 BOOK_DIRS = ["kdp/agentic_playbooks", "kdp/series_02_building_the_agentic_harness",
              "kdp/series_03_programmable_sovereign_erp"]
