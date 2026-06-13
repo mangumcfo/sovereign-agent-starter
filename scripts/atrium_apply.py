@@ -126,7 +126,7 @@ def _tolerant_regex(before: str):
     return re.compile(r"\s+".join(esc(p) for p in parts if p))
 
 
-def _apply_group(g, dry_changes):
+def _apply_group(g, dry_changes, created=None):
     file = g.get("file", "")
     repo_key, rel = _repo_of(file)
     path = _resolve(repo_key, rel)
@@ -135,10 +135,13 @@ def _apply_group(g, dry_changes):
     hunks = g.get("hunks") or [{"before": g.get("before", []), "after": g.get("after", [])}]
     # new file = a single hunk with empty `before`
     if len(hunks) == 1 and not hunks[0].get("before"):
+        is_new = not os.path.exists(path)   # track NEW (untracked) files so revert can delete them (W5 #8)
         os.makedirs(os.path.dirname(path), exist_ok=True)
         after = "\n".join(hunks[0].get("after", []))
         open(path, "w", encoding="utf-8").write(after + ("\n" if not after.endswith("\n") else ""))
         dry_changes.setdefault(repo_key, []).append(path)
+        if is_new and created is not None:
+            created.setdefault(repo_key, []).append(path)
         return True, repo_key
     if not os.path.isfile(path):
         return False, f"target missing for edit: {path}"
@@ -159,6 +162,24 @@ def _apply_group(g, dry_changes):
     open(path, "w", encoding="utf-8").write(txt)
     dry_changes.setdefault(repo_key, []).append(path)
     return True, repo_key
+
+
+def _revert(changed: dict, created: dict) -> None:
+    """Transactional undo of a failed apply (audit 2026-06-13 W5 #8). NEW (untracked) files are DELETED
+    (git checkout can't revert an untracked path, and batching one in a checkout pathspec aborts the whole
+    command — leaving tracked edits unreverted). Edited (tracked) files are checked out PER PATH so a
+    single bad pathspec can never strand the rest. The 'if red → REVERT all' guarantee now holds."""
+    for repo_key, files in changed.items():
+        root = REPOS[repo_key]["root"]
+        made = set(created.get(repo_key, []))
+        for f in files:
+            if f in made:
+                try:
+                    os.remove(f)
+                except OSError:
+                    _git(root, ["clean", "-f", "--", f])
+            else:
+                _git(root, ["checkout", "--", f])   # per-path: an untracked/bad pathspec can't abort the rest
 
 
 def _store_path() -> str:
@@ -218,13 +239,12 @@ def main() -> int:
         _log(f"no accepted groups to apply for {pid}")
         return 0
     _log(f"applying {pid}: {len(groups)} group(s)")
-    changed = {}
+    changed, created = {}, {}
     for g in groups:
-        ok, info = _apply_group(g, changed)
+        ok, info = _apply_group(g, changed, created)
         if not ok:
             _log(f"  ABORT — {info}")
-            for repo_key in changed:
-                _git(REPOS[repo_key]["root"], ["checkout", "--"] + changed[repo_key])
+            _revert(changed, created)   # delete new files + per-path checkout edits (audit W5 #8)
             _mark_error(pid, "couldn't apply: " + str(info) + " (the source text may have changed since this was proposed — Refine or re-process)")
             return 2
     # code groups → re-run tests in place; red → revert all + abort.
@@ -237,8 +257,7 @@ def main() -> int:
                              capture_output=True, text=True)
         if res.returncode not in (0, 5):
             _log("  TESTS RED on apply — reverting, no commit")
-            for repo_key in changed:
-                _git(REPOS[repo_key]["root"], ["checkout", "--"] + changed[repo_key])
+            _revert(changed, created)   # delete new files + per-path checkout edits (audit W5 #8)
             _mark_error(pid, "re-test red on apply: " + ((res.stdout or res.stderr or "").strip().splitlines() or ["pytest failed"])[-1][:160])
             return 3
         _log("  tests green in place: " + (res.stdout.strip().splitlines() or ["?"])[-1])
