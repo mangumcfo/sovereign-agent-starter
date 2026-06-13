@@ -162,3 +162,34 @@ def test_decide_rejects_non_owner(dev_client):
     """The accept disposition IS the human gate /apply executes — it must carry owner authority."""
     r = dev_client.post("/api/v1/proposals/prop_x/decide", json={"decisions": {"g1": "accept"}})
     assert r.status_code == 403 and r.get_json()["error"] == "forbidden"
+
+
+# ── /dismiss (audit 2026-06-13c #20) ─────────────────────────────────────────────────────────────
+def test_dismiss_rejects_non_owner(dev_client):
+    r = dev_client.post("/api/v1/proposals/prop_x/dismiss", json={})
+    assert r.status_code == 403 and r.get_json()["error"] == "forbidden"
+
+
+def test_dismiss_closes_linked_obligation(owner_client):
+    oid = owner_client.post("/api/v1/obligations", json={"title": "session work"}).get_json()["id"]
+    pid = owner_client.post("/api/v1/proposals",
+                            json={"info": True, "note": "no diff", "obligation_id": oid}).get_json()["id"]
+    r = owner_client.post(f"/api/v1/proposals/{pid}/dismiss", json={})
+    assert r.status_code == 200 and r.get_json()["status"] == "dismissed"
+    obs = owner_client.get("/api/v1/obligations").get_json()
+    assert not any(o["id"] == oid for o in obs["open"])          # obligation closed (by KM-1176)
+
+
+def test_dismiss_close_failure_keeps_obligation_open(owner_client, monkeypatch):
+    oid = owner_client.post("/api/v1/obligations", json={"title": "session work 2"}).get_json()["id"]
+    pid = owner_client.post("/api/v1/proposals",
+                            json={"info": True, "obligation_id": oid}).get_json()["id"]
+    from sovereign_agent.node_api import deps
+
+    def _boom(*a, **k):
+        raise RuntimeError("close failed")
+    monkeypatch.setattr(deps.get_obligation_ledger(), "close", _boom)
+    r = owner_client.post(f"/api/v1/proposals/{pid}/dismiss", json={})
+    assert r.status_code == 200 and r.get_json()["status"] == "dismissed_proposal_only"
+    obs = owner_client.get("/api/v1/obligations").get_json()
+    assert any(o["id"] == oid for o in obs["open"])              # obligation stays OPEN (resurfaces)

@@ -97,6 +97,49 @@ def test_thin_review_brief_flips_to_not_ready(ready_book):
     assert not rb["pass"]
 
 
+def _open_obl(root, **kw):
+    from sovereign_agent.obligations.ledger import ObligationLedger
+    return ObligationLedger(str(root), principal_id="KM-1176").open(**kw)
+
+
+def test_check_obligations_flips_red_on_open_blocking(ready_book):
+    """H5: an OPEN, non-deferred obligation for the book must BLOCK review-ready (the gate never flipped
+    red in any test before — a regression in _matches/_deferred could ship a false-green book)."""
+    _open_obl(rrc.LEDGER_ROOT, title="vol_01 cross-foot fix", intent="open work on vol_01", ref="vol_01")
+    res = rrc.evaluate("vol_01", [])
+    assert res["review_ready"] is False
+    oc = next(c for c in res["checks"] if c["check"] == "obligations_closed")
+    assert not oc["pass"] and oc["blocking_ids"]
+
+
+def test_check_obligations_deferred_does_not_block(ready_book):
+    """A 'defer'-tagged open obligation does NOT block (covers _deferred)."""
+    _open_obl(rrc.LEDGER_ROOT, title="vol_01 later", intent="defer this vol_01 item to v1.1", ref="vol_01")
+    res = rrc.evaluate("vol_01", [])
+    oc = next(c for c in res["checks"] if c["check"] == "obligations_closed")
+    assert oc["pass"], oc          # deferred → not blocking
+
+
+def test_check_obligations_review_packet_self_excluded(ready_book):
+    """The review_ready:<book> human-gate packet must NOT count against the book's own readiness
+    (covers the line-176 self-exclusion)."""
+    _open_obl(rrc.LEDGER_ROOT, title="sign off vol_01", intent="review", ref="review_ready:vol_01")
+    res = rrc.evaluate("vol_01", [])
+    oc = next(c for c in res["checks"] if c["check"] == "obligations_closed")
+    assert oc["pass"], oc
+
+
+def test_gate6_renderability_red_paths(ready_book):
+    """#19: Gate-6 (Receipt-box anchor) red paths — zero boxes and a partial (box-less 2nd section)."""
+    ms = ready_book / "manuscript_v1.0.md"
+    ms.write_text("# Chapter 1\n\nbody, no receipt box\n", encoding="utf-8")          # zero boxes
+    g6 = rrc._check_gate6_renderability(ready_book)
+    assert g6["status"] == "no-receipt-boxes" and not g6["pass"]
+    ms.write_text("# Chapter 1\n\n\U0001F4E6 Receipt Box\n\n# Chapter 2\n\nno box here\n", encoding="utf-8")
+    g6 = rrc._check_gate6_renderability(ready_book)
+    assert g6["status"].startswith("partial") and not g6["pass"]
+
+
 def test_mint_review_packet_opens_one_and_is_idempotent(ready_book):
     first = rrc.mint_review_packet("vol_01", "Vol 1", [])
     assert first is not None
