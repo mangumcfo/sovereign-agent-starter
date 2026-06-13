@@ -25,6 +25,7 @@ from flask import Blueprint, jsonify, request
 from ...obligations import AlreadyClosedError
 from .._jsonstore import read_json_cached, sidecar_store
 from ..auth import current_principal, require_principal, require_owner
+from ..errors import route_error
 from ..deps import get_obligation_ledger
 
 bp = Blueprint("feedback", __name__, url_prefix="/api/v1")
@@ -86,11 +87,11 @@ def feedback_intake():
     body = request.get_json(silent=True) or {}
     text = (body.get("text") or "").strip()
     if not text:
-        return jsonify({
-            "error": "missing_text",
-            "what": "Feedback needs text — what should change?",
-            "next_step": "POST /api/v1/feedback with JSON {\"text\": \"...\", \"type\": \"drift|viewer|general\", \"source\": \"...\"}.",
-        }), 400
+        return jsonify(route_error(
+            error="missing_text",
+            what="Feedback needs text — what should change?",
+            why="The request body had no non-empty 'text' to open a C2 obligation from.",
+            next_step="POST /api/v1/feedback with JSON {\"text\": \"...\", \"type\": \"drift|viewer|general\", \"source\": \"...\"}.")), 400
     kind = (body.get("type") or "general").lower()
     prefix = _KINDS.get(kind, _KINDS["general"])
     ref = _source_ref(body)
@@ -111,12 +112,11 @@ def feedback_intake():
             lane=route["lane"],
         )
     except ValueError as exc:  # resolve-at-entry on a path-like source ref (audit 2026-06-13 W5 #7)
-        return jsonify({
-            "error": "unresolvable_ref",
-            "what": str(exc),
-            "why": "The feedback `source` is path-like but does not resolve — a pointer is never written false.",
-            "next_step": "Point `source` at a real file, or omit it / use a symbolic tag.",
-        }), 422
+        return jsonify(route_error(
+            error="unresolvable_ref",
+            what=str(exc),
+            why="The feedback `source` is path-like but does not resolve — a pointer is never written false.",
+            next_step="Point `source` at a real file, or omit it / use a symbolic tag.")), 422
     return jsonify({"obligation": entry, "kind": kind, "source": ref,
                     "category": category, "lane": route["lane"],
                     "category_defaulted": defaulted}), 201
@@ -168,13 +168,20 @@ def review_brief():
     from pathlib import Path as _P  # noqa: PLC0415
     tok = (request.args.get("book") or "").strip()
     if not tok:
-        return jsonify({"error": "missing_book", "what": "Pass ?book=<id-or-token> (e.g. B12)."}), 400
+        return jsonify(route_error(
+            error="missing_book",
+            what="Pass ?book=<id-or-token> (e.g. B12).",
+            why="The request had no 'book' query parameter to resolve a Review Brief for.",
+            next_step="Add ?book=<id-or-token> to the request.")), 400
     art = _P(__file__).resolve().parents[4] / "artifacts"
     for p in sorted(art.glob("*[Rr]eview_[Bb]rief*")):
         if tok.lower() in p.name.lower():
             return jsonify({"book": tok, "file": p.name, "markdown": p.read_text(encoding="utf-8")})
-    return jsonify({"error": "not_found", "what": f"No Review Brief found for '{tok}'.",
-                    "next_step": "GB seals it in artifacts/<TOKEN>_*Review_Brief*.md."}), 404
+    return jsonify(route_error(
+        error="not_found",
+        what=f"No Review Brief found for '{tok}'.",
+        why="No artifacts/<token>_*Review_Brief*.md matched the requested book token.",
+        next_step="GB seals it in artifacts/<TOKEN>_*Review_Brief*.md.")), 404
 
 
 # Allowed document roots — a card may HAND any readable doc under these (GB A4: artifacts handed, not listed).
@@ -203,8 +210,11 @@ def doc():
     from pathlib import Path as _P  # noqa: PLC0415
     rel = (request.args.get("path") or "").strip()
     if not rel:
-        return jsonify({"error": "missing_path",
-                        "what": "Pass ?path=<doc path> (the path the card references)."}), 400
+        return jsonify(route_error(
+            error="missing_path",
+            what="Pass ?path=<doc path> (the path the card references).",
+            why="The request had no 'path' query parameter to resolve a document for.",
+            next_step="Add ?path=<doc path> (the card's path field).")), 400
     roots = [r.resolve() for r in _doc_roots()]
     raw = _P(rel)
     cands = [raw] if raw.is_absolute() else [r / rel for r in roots]
@@ -237,11 +247,17 @@ def doc():
             return jsonify({"path": rel, "file": rp.name,
                             "markdown": rp.read_text(encoding="utf-8", errors="replace")})
         if len(uniq) > 1:
-            return jsonify({"error": "ambiguous", "what": f"'{rel}' matches {len(uniq)} files.",
-                            "next_step": "Pass the full vault-relative path (the card's path field)."}), 409
+            return jsonify(route_error(
+                error="ambiguous",
+                what=f"'{rel}' matches {len(uniq)} files.",
+                why="A bare filename resolved to multiple documents across the doc roots.",
+                next_step="Pass the full vault-relative path (the card's path field).")), 409
 
-    return jsonify({"error": "not_found", "what": f"No readable document for '{rel}'.",
-                    "next_step": "Cards may hand .md/.yaml docs under artifacts/, scripts/, or the books vault kdp/."}), 404
+    return jsonify(route_error(
+        error="not_found",
+        what=f"No readable document for '{rel}'.",
+        why="The path did not resolve to a readable file under any allowed doc root.",
+        next_step="Cards may hand .md/.yaml docs under artifacts/, scripts/, or the books vault kdp/.")), 404
 
 
 def _ring_the_bell(obligation_id: str, principal: str = "system:bell") -> None:
@@ -304,11 +320,11 @@ def feedback_disposition(obligation_id: str):
     note = (body.get("note") or "").strip()
     led = get_obligation_ledger()
     if action not in ("accept", "reject"):
-        return jsonify({
-            "error": "bad_action",
-            "what": "Disposition needs an action: accept or reject.",
-            "next_step": "POST .../disposition with JSON {\"action\": \"accept|reject\", \"note\": \"...\"}.",
-        }), 400
+        return jsonify(route_error(
+            error="bad_action",
+            what="Disposition needs an action: accept or reject.",
+            why=f"The 'action' was '{action or 'empty'}', not one of accept|reject.",
+            next_step="POST .../disposition with JSON {\"action\": \"accept|reject\", \"note\": \"...\"}.")), 400
     # Mirror obligations.py error voice (audit fix): not-found → 404, already-closed → 409, denied → 403.
     try:
         if action == "accept":
@@ -325,10 +341,20 @@ def feedback_disposition(obligation_id: str):
         )
         return jsonify({"action": "reject", "obligation": entry})
     except KeyError:
-        return jsonify({"error": "obligation_not_found", "what": f"No obligation '{obligation_id}'.",
-                        "next_step": "Refresh the Awaiting-Me view — it may already be disposed."}), 404
+        return jsonify(route_error(
+            error="obligation_not_found",
+            what=f"No obligation '{obligation_id}'.",
+            why="The id did not resolve to any obligation on the ledger chain.",
+            next_step="Refresh the Awaiting-Me view — it may already be disposed.")), 404
     except AlreadyClosedError as exc:
-        return jsonify({"error": "already_closed", "what": str(exc),
-                        "next_step": "It already left the queue — no further action."}), 409
+        return jsonify(route_error(
+            error="already_closed",
+            what=str(exc),
+            why="The obligation already carries a credit; it has left the awaiting-me queue.",
+            next_step="It already left the queue — no further action.")), 409
     except PermissionError as exc:
-        return jsonify({"error": "breath_gate_denied", "what": str(exc)}), 403
+        return jsonify(route_error(
+            error="breath_gate_denied",
+            what=str(exc),
+            why="A material obligation cannot close without a recorded human approval (breath-gate).",
+            next_step="Approve it first (the human disposition), then close.")), 403

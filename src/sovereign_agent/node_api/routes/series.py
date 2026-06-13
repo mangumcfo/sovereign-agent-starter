@@ -27,6 +27,7 @@ from flask import Blueprint, jsonify, request
 from ... import config
 from .._filecache import memoize_on
 from ..auth import require_principal
+from ..errors import route_error
 
 bp = Blueprint("series", __name__, url_prefix="/api/v1")
 
@@ -477,7 +478,11 @@ def book_docs():
     across the S1 agentic_playbooks vault AND each Series-N folder; paths are returned vault-relative."""
     book = (request.args.get("book") or "").strip()
     if not book or "/" in book or ".." in book:
-        return jsonify({"error": "bad_book", "what": "Pass ?book=<book_id>."}), 400
+        return jsonify(route_error(
+            error="bad_book",
+            what="Pass ?book=<book_id>.",
+            why="The book param was empty or contained path-traversal chars.",
+            next_step="Pass a clean ?book=<book_id> (no '/' or '..').")), 400
     kdp = config.get_books_kdp_root()
     if not kdp:
         return jsonify({"book": book, "docs": []})

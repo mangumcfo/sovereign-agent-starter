@@ -78,6 +78,8 @@ def test_feedback_missing_text_is_loud_400(owner_client):
     body = r.get_json()
     assert body["error"] == "missing_text"
     assert "next_step" in body and "what" in body   # error voice: what + next step (§4)
+    # canonical shape (audit 2026-06-13d #9): machine code mirrors the slug + why + cylinder_ref present
+    assert body["code"] == "missing_text" and body["why"] and "cylinder_ref" in body
 
 
 def test_awaiting_km_lists_then_drops_on_accept(owner_client):

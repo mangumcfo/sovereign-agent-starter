@@ -30,6 +30,17 @@ def dev_client(tmp_path, monkeypatch):
     deps.reset_node()
 
 
+def test_close_unknown_obligation_carries_canonical_error_shape(client):
+    """audit 2026-06-13d #9: a 404 from /close routes through route_error — code mirrors the friendly
+    slug, plus why + next_step + cylinder_ref (Error Voice §4), not a bare ad-hoc dict."""
+    r = client.post("/api/v1/obligations/obl_does_not_exist/close",
+                    json={"evidence": "/x hash a1b2c3d4e5f60718"})
+    assert r.status_code == 404
+    b = r.get_json()
+    assert b["error"] == "obligation_not_found" and b["code"] == "obligation_not_found"
+    assert b["why"] and b["next_step"] and "cylinder_ref" in b
+
+
 def test_approve_and_close_reject_non_owner(dev_client):
     """W5 #1: approve/close dispose KM's chain — a non-owner (dev) principal is forbidden (403)."""
     oid = dev_client.post("/api/v1/obligations", json={"title": "x"}).get_json()["id"]

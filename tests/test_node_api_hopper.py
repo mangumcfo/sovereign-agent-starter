@@ -113,7 +113,12 @@ def test_send_to_packet_opens_real_obligation(client):
 
 
 def test_packet_requires_text(client):
-    assert client.post("/api/v1/hopper/packet", json={"card_id": "x"}).status_code == 400
+    r = client.post("/api/v1/hopper/packet", json={"card_id": "x"})
+    assert r.status_code == 400
+    # canonical error shape (audit 2026-06-13d #9): code mirrors slug + why + next_step + cylinder_ref
+    b = r.get_json()
+    assert b["error"] == "missing_text" and b["code"] == "missing_text"
+    assert b["why"] and b["next_step"] and "cylinder_ref" in b
 
 
 FEED = (

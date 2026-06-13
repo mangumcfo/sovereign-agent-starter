@@ -26,6 +26,7 @@ from pathlib import Path
 from flask import Blueprint, jsonify, request
 
 from ..auth import current_principal, require_principal
+from ..errors import route_error
 from ..deps import get_obligation_ledger
 
 bp = Blueprint("hopper", __name__, url_prefix="/api/v1")
@@ -212,11 +213,11 @@ def hopper_to_packet():
     text = str(body.get("text") or "").strip()
     card_id = str(body.get("card_id") or "").strip()
     if not text:
-        return jsonify({
-            "error": "missing_text",
-            "what": "A packet needs the delta text to seed the obligation.",
-            "next_step": "POST /api/v1/hopper/packet with {\"card_id\":\"…\",\"text\":\"…\"}.",
-        }), 400
+        return jsonify(route_error(
+            error="missing_text",
+            what="A packet needs the delta text to seed the obligation.",
+            why="The request body had no non-empty 'text' field.",
+            next_step="POST /api/v1/hopper/packet with {\"card_id\":\"…\",\"text\":\"…\"}.")), 400
     # Lane routing (from the iron-clad feed): a card already knows where it belongs, so the packet
     # lands in the right lane — book → processable Hopper packet; tooling → Tooling/Build (skips the
     # book producer); private-learning → its own lane (no Book-N mis-route). Generic when unknown.
@@ -252,12 +253,11 @@ def hopper_to_packet():
             next_gate="Human disposition (Atrium Review)",
         )
     except ValueError as exc:  # resolve-at-entry on a path-like feed ref (audit 2026-06-13 W5 #6)
-        return jsonify({
-            "error": "unresolvable_ref",
-            "what": str(exc),
-            "why": "The packet's source ref is path-like but its leading file token does not resolve.",
-            "next_step": "Fix the feed ref to point at a real file (the ' + …' provenance tail is fine), "
-                         "or use a symbolic ref.",
-        }), 422
+        return jsonify(route_error(
+            error="unresolvable_ref",
+            what=str(exc),
+            why="The packet's source ref is path-like but its leading file token does not resolve.",
+            next_step="Fix the feed ref to point at a real file (the ' + …' provenance tail is fine), "
+                      "or use a symbolic ref.")), 422
     return jsonify({"status": "opened", "obligation": entry,
                     "next_step": "It is now a DRAFT obligation on your node — disposition it in the loop."}), 201

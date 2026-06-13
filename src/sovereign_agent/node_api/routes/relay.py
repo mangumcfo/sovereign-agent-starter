@@ -29,6 +29,7 @@ from flask import Blueprint, jsonify, request
 from .. import thread_channel
 from .._jsonstore import read_json_cached, sidecar_store, update_json
 from ..auth import current_principal, require_owner, require_principal
+from ..errors import route_error
 
 bp = Blueprint("relay", __name__, url_prefix="/api/v1")
 
@@ -59,13 +60,19 @@ def relay_create():
     body = request.get_json(silent=True) or {}
     prompt = (body.get("prompt") or body.get("msg") or "").strip()
     if not prompt:
-        return jsonify({"error": "missing_prompt",
-                        "what": "A relay needs the prompt text to hand the other agent.",
-                        "next_step": "POST /api/v1/relay with {\"to\":\"tiger\",\"prompt\":\"...\"}."}), 400
+        return jsonify(route_error(
+            error="missing_prompt",
+            what="A relay needs the prompt text to hand the other agent.",
+            why="The request body had no non-empty 'prompt' field.",
+            next_step="POST /api/v1/relay with {\"to\":\"tiger\",\"prompt\":\"...\"}.")), 400
     frm = (body.get("from") or current_principal()).strip().lower()
     to = (body.get("to") or next((a for a in _AGENTS if a != frm), "tiger")).strip().lower()
     if to == frm:
-        return jsonify({"error": "same_agent", "what": "from and to are the same agent."}), 400
+        return jsonify(route_error(
+            error="same_agent",
+            what="from and to are the same agent.",
+            why="A relay hands a prompt between two DIFFERENT agents; from==to is a no-op loop.",
+            next_step="Set 'to' to the other agent (e.g. from KM to 'tiger').")), 400
     item = {
         "id": "relay_" + str(int(time.time() * 1000)),
         "from": frm, "to": to,
@@ -136,12 +143,18 @@ def relay_send(relay_id: str):
     def _send(items):
         item = next((x for x in items if x.get("id") == relay_id), None)
         if not item:
-            box["err"] = (404, {"error": "not_found", "what": f"No relay {relay_id}."})
+            box["err"] = (404, route_error(
+                error="not_found",
+                what=f"No relay {relay_id}.",
+                why="The relay id did not match any row in the relay store.",
+                next_step="Check the id against GET /api/v1/relays."))
             return items, None
         if item.get("status") != "pending":
-            box["err"] = (409, {"error": "already_relayed",
-                                "what": f"Relay {relay_id} is '{item.get('status')}'.",
-                                "next_step": "It already left the pending lane — watch for the reply."})
+            box["err"] = (409, route_error(
+                error="already_relayed",
+                what=f"Relay {relay_id} is '{item.get('status')}'.",
+                why="The relay already left the pending lane (relayed/answered/dismissed); re-relay would double-post.",
+                next_step="It already left the pending lane — watch for the reply."))
             return items, None
         entry = thread_channel.append(item["from"], item["to"], item.get("ref") or relay_id, item["prompt"])
         item["status"] = "relayed"
@@ -174,5 +187,9 @@ def relay_dismiss(relay_id: str):
                 x["status"] = "dismissed"; hit = True
         return items, hit
     if not _update(_dismiss):   # fenced RMW (audit 2026-06-13 W5 #3)
-        return jsonify({"error": "not_found", "what": f"No relay {relay_id}."}), 404
+        return jsonify(route_error(
+            error="not_found",
+            what=f"No relay {relay_id}.",
+            why="The relay id did not match any row in the relay store.",
+            next_step="Check the id against GET /api/v1/relays.")), 404
     return jsonify({"status": "dismissed", "id": relay_id})

@@ -54,7 +54,10 @@ def test_code_routes_reject_dev_anonymous(dev_client, path, payload):
 def test_owner_passes_require_owner_then_validates_input(owner_client):
     # Owner clears require_owner and REACHES the handler, which rejects a malformed id BEFORE subprocess.
     r = owner_client.post("/api/v1/produce", json={"obligation_id": "not-a-real-id"})
-    assert r.status_code == 400 and r.get_json()["error"] == "bad_obligation_id"
+    body = r.get_json()
+    assert r.status_code == 400 and body["error"] == "bad_obligation_id"
+    # canonical error shape (audit 2026-06-13d #9): code mirrors slug + why + next_step + cylinder_ref
+    assert body["code"] == "bad_obligation_id" and body["why"] and body["next_step"] and "cylinder_ref" in body
     # missing id is also a loud 400 (not a 403 — proves the owner got past the gate)
     r2 = owner_client.post("/api/v1/produce", json={})
     assert r2.status_code == 400 and r2.get_json()["error"] == "missing_obligation_id"

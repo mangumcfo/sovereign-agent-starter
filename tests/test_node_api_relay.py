@@ -48,7 +48,12 @@ def test_post_relay_creates_pending_card(owner_client):
 
 
 def test_missing_prompt_and_same_agent_are_400(owner_client):
-    assert owner_client.post("/api/v1/relay", json={"to": "tiger"}).status_code == 400
+    r = owner_client.post("/api/v1/relay", json={"to": "tiger"})
+    assert r.status_code == 400
+    # canonical error shape (audit 2026-06-13d #9): code == friendly slug, plus what/why/next_step.
+    b = r.get_json()
+    assert b["error"] == "missing_prompt" and b["code"] == "missing_prompt"
+    assert b["why"] and b["next_step"] and "cylinder_ref" in b
     assert owner_client.post("/api/v1/relay", json={"from": "gb", "to": "gb", "prompt": "x"}).status_code == 400
 
 

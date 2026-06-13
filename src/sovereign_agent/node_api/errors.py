@@ -38,6 +38,23 @@ def build_error(
     }
 
 
+def route_error(
+    error: str,
+    what: str,
+    why: str,
+    next_step: str,
+    cylinder_ref: Optional[str] = None,
+) -> dict:
+    """Route-handler error body (audit 2026-06-13d #9). The Atrium route modules historically returned
+    ad-hoc `{"error": "<slug>", ...}` bodies with inconsistent fields (some had `what`, none had `why`
+    or `code`). This unifies them onto the canonical shape WHILE preserving the friendly `error` slug the
+    Atrium banner copy + existing tests read: `code` mirrors the slug (machine-readable), `error` stays the
+    slug (back-compat). Every route error now carries code · error · what · why · next_step · cylinder_ref."""
+    body = build_error(code=error, what=what, why=why, next_step=next_step, cylinder_ref=cylinder_ref)
+    body["error"] = error
+    return body
+
+
 # ----------------------------------------------------------------------------
 # Canonical error catalogue. Keep names stable; they appear in audit logs and
 # Atrium UI banner copy. Adding new codes is fine; renaming existing codes

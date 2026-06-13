@@ -29,6 +29,7 @@ from ... import config
 from ...obligations.ledger import get_ledger_root
 from .._jsonstore import read_json_cached, sidecar_store, update_json
 from ..auth import current_principal, require_owner, require_principal
+from ..errors import route_error
 
 bp = Blueprint("proposals", __name__, url_prefix="/api/v1")
 
@@ -71,11 +72,11 @@ def proposals_create():
     groups = body.get("groups") or []
     is_info = bool(body.get("info"))   # info card = a 'no diff produced, here's why' result (no groups)
     if not groups and not is_info:
-        return jsonify({
-            "error": "missing_groups",
-            "what": "A proposal needs at least one grouped diff (or info:true for a no-diff feedback card).",
-            "next_step": "POST /api/v1/proposals with {\"session_ref\":\"...\",\"groups\":[…]} or {\"info\":true,\"note\":\"…\"}.",
-        }), 400
+        return jsonify(route_error(
+            error="missing_groups",
+            what="A proposal needs at least one grouped diff (or info:true for a no-diff feedback card).",
+            why="The request had neither a non-empty 'groups' list nor info:true.",
+            next_step="POST /api/v1/proposals with {\"session_ref\":\"...\",\"groups\":[…]} or {\"info\":true,\"note\":\"…\"}.")), 400
     prop = {
         "id": "prop_" + str(int(time.time() * 1000)),
         "session_ref": body.get("session_ref", ""),
@@ -107,17 +108,25 @@ def produce():
     body = request.get_json(silent=True) or {}
     oid = (body.get("obligation_id") or "").strip()
     if not oid:
-        return jsonify({"error": "missing_obligation_id",
-                        "what": "Tell me which session to process.",
-                        "next_step": "POST /api/v1/produce with {\"obligation_id\":\"obl_...\"}."}), 400
+        return jsonify(route_error(
+            error="missing_obligation_id",
+            what="Tell me which session to process.",
+            why="The request body had no 'obligation_id' to seed the producer.",
+            next_step="POST /api/v1/produce with {\"obligation_id\":\"obl_...\"}.")), 400
     if not re.fullmatch(r"obl_[0-9]{8,}_[0-9a-f]{4,}", oid):  # strict shape before subprocess/fs use (audit)
-        return jsonify({"error": "bad_obligation_id",
-                        "what": "obligation_id is not a valid obl_ identifier.",
-                        "next_step": "Use the exact id from /obligations (obl_<digits>_<hex>)."}), 400
+        return jsonify(route_error(
+            error="bad_obligation_id",
+            what="obligation_id is not a valid obl_ identifier.",
+            why="The id failed the strict obl_<digits>_<hex> shape required before any subprocess/fs use.",
+            next_step="Use the exact id from /obligations (obl_<digits>_<hex>).")), 400
     repo = Path(__file__).resolve().parents[4]
     script = repo / "scripts" / "atrium_producer.py"
     if not script.exists():
-        return jsonify({"error": "producer_missing", "what": f"No producer at {script}."}), 500
+        return jsonify(route_error(
+            error="producer_missing",
+            what=f"No producer at {script}.",
+            why="The atrium_producer.py script is absent from this checkout's scripts/ dir.",
+            next_step="Restore scripts/atrium_producer.py (it ships with the engine).")), 500
     env = dict(os.environ)
     env["PYTHONPATH"] = str(repo / "src")
     env["PYTHONUNBUFFERED"] = "1"   # so the agent's progress lines stream to the log live
@@ -196,12 +205,20 @@ def recompile():
     m = re.search(r"Book (\d+)", book)
     sub = _BOOK_NUM_TO_ID.get(m.group(1) if m else "")
     if not sub:
-        return jsonify({"error": "unknown_book", "what": f"No build mapping for '{book}'."}), 400
+        return jsonify(route_error(
+            error="unknown_book",
+            what=f"No build mapping for '{book}'.",
+            why="The book label did not match a 'Book <N>' entry in _BOOK_NUM_TO_ID.",
+            next_step="Pass a known book label (e.g. 'Book 12').")), 400
     vault = os.path.join(_VAULT, "agentic_playbooks")
     cwd = os.path.join(vault, sub, "v1.0")
     script = os.path.join(cwd, "build_v1.0.py")
     if not os.path.isfile(script):
-        return jsonify({"error": "no_build_script", "what": f"No build_v1.0.py for {book}."}), 500
+        return jsonify(route_error(
+            error="no_build_script",
+            what=f"No build_v1.0.py for {book}.",
+            why="The resolved book dir has no build_v1.0.py to rebuild the PDF from.",
+            next_step="Ensure the book's v1.0/build_v1.0.py exists in the vault.")), 500
     subprocess.Popen([sys.executable, script], cwd=cwd,
                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
     return jsonify({"status": "recompiling", "book": book,
@@ -246,7 +263,11 @@ def book_pdf():
     vault = _VAULT
     bid = _resolve_book_id(book)
     if not bid or "/" in bid or ".." in bid:
-        return jsonify({"error": "unknown_book", "what": f"No id resolvable from '{book}'."}), 400
+        return jsonify(route_error(
+            error="unknown_book",
+            what=f"No id resolvable from '{book}'.",
+            why="The book token did not resolve to a safe book id (empty or path-traversal chars).",
+            next_step="Pass a known book id/token (e.g. B12).")), 400
     # 1) REGISTRY (source of truth)
     e = _book_registry().get(bid)
     if e and e.get("pdf"):
@@ -259,7 +280,11 @@ def book_pdf():
     interiors = [p for p in found if "cover" not in os.path.basename(p).lower()]
     pdfs = sorted(interiors or found, key=os.path.getmtime, reverse=True)
     if not pdfs:
-        return jsonify({"error": "no_pdf", "what": f"No built PDF found for '{bid}' under the kdp vault."}), 404
+        return jsonify(route_error(
+            error="no_pdf",
+            what=f"No built PDF found for '{bid}' under the kdp vault.",
+            why="Neither the registry entry nor the vault glob located a built interior PDF.",
+            next_step="Build the book (POST /api/v1/recompile) so the final PDF exists.")), 404
     return send_file(pdfs[0], mimetype="application/pdf", max_age=0)
 
 
@@ -309,9 +334,17 @@ def book_epub():
     from flask import send_file
     p, bid = _artifact_path(request.args.get("book") or "", "epub")
     if not bid:
-        return jsonify({"error": "unknown_book"}), 400
+        return jsonify(route_error(
+            error="unknown_book",
+            what="No book id resolvable from the ?book param.",
+            why="The book token was empty or did not resolve to a safe book id.",
+            next_step="Pass a known book id/token (e.g. B12).")), 400
     if not p:
-        return jsonify({"error": "no_epub", "what": f"No EPUB for '{bid}'."}), 404
+        return jsonify(route_error(
+            error="no_epub",
+            what=f"No EPUB for '{bid}'.",
+            why="Neither the registry nor the vault glob located a built EPUB for this book.",
+            next_step="Build the book's EPUB so the artifact exists.")), 404
     return send_file(p, mimetype="application/epub+zip", max_age=0)
 
 
@@ -325,10 +358,19 @@ def book_cover():
     kind = {"ebook": "cover_ebook", "paperback": "cover_paperback", "hardcover": "cover_hardcover"}.get(variant, "cover_ebook")
     p, bid = _artifact_path(request.args.get("book") or "", kind)
     if not bid:
-        return jsonify({"error": "unknown_book"}), 400
+        return jsonify(route_error(
+            error="unknown_book",
+            what="No book id resolvable from the ?book param.",
+            why="The book token was empty or did not resolve to a safe book id.",
+            next_step="Pass a known book id/token (e.g. B12).")), 400
     if not p:
-        return jsonify({"error": "no_cover", "variant": variant,
-                        "what": f"No {variant} cover for '{bid}' — needs generation (use the cover-tweak channel)."}), 404
+        body = route_error(
+            error="no_cover",
+            what=f"No {variant} cover for '{bid}' — needs generation (use the cover-tweak channel).",
+            why=f"No {variant} cover artifact exists yet for this book in the vault.",
+            next_step="Generate it via the cover-tweak channel, then retry.")
+        body["variant"] = variant
+        return jsonify(body), 404
     ext = p.lower().rsplit(".", 1)[-1]
     mt = {"pdf": "application/pdf", "png": "image/png"}.get(ext, "image/jpeg")
     return send_file(p, mimetype=mt, max_age=0)
@@ -345,7 +387,11 @@ def book_kdp():
     book = (request.args.get("book") or "").strip()
     bid = _resolve_book_id(book)
     if not bid or "/" in bid or ".." in bid:
-        return jsonify({"error": "unknown_book", "what": f"No id resolvable from '{book}'."}), 400
+        return jsonify(route_error(
+            error="unknown_book",
+            what=f"No id resolvable from '{book}'.",
+            why="The book token did not resolve to a safe book id (empty or path-traversal chars).",
+            next_step="Pass a known book id/token (e.g. B12).")), 400
     e = _book_registry().get(bid) or {}
     pdf_p, _ = _artifact_path(book, "pdf")
     epub_p, _ = _artifact_path(book, "epub")
@@ -397,32 +443,43 @@ def proposals_apply(proposal_id: str):
     # Decision-existence gate — the gate cannot pass on a proposal it never read.
     prop = next((x for x in _read() if x.get("id") == proposal_id), None)
     if prop is None:
-        return jsonify({"error": "not_found",
-                        "what": f"No proposal '{proposal_id}'.",
-                        "next_step": "Refresh the Diffs-ready view — it may already be applied."}), 404
+        return jsonify(route_error(
+            error="not_found",
+            what=f"No proposal '{proposal_id}'.",
+            why="The proposal id did not match any row in the proposals store.",
+            next_step="Refresh the Diffs-ready view — it may already be applied.")), 404
     if prop.get("status") not in ("decided", "partially decided"):
-        return jsonify({"error": "not_decided",
-                        "what": "Propose → Decide → Execute: this proposal has not been decided.",
-                        "why": f"status is '{prop.get('status') or 'undecided'}', not 'decided'.",
-                        "next_step": "POST .../decide with per-group accept/reject first, then apply."}), 409
+        return jsonify(route_error(
+            error="not_decided",
+            what="Propose → Decide → Execute: this proposal has not been decided.",
+            why=f"status is '{prop.get('status') or 'undecided'}', not 'decided'.",
+            next_step="POST .../decide with per-group accept/reject first, then apply.")), 409
     decisions = prop.get("decisions") or {}
     accepted = {g.get("id") for g in prop.get("groups", []) if decisions.get(g.get("id")) == "accept"}
     if not accepted:
-        return jsonify({"error": "no_accepted_groups",
-                        "what": "A decision exists but no group was accepted — nothing to execute.",
-                        "next_step": "Accept ≥1 group in /decide, or dismiss the proposal."}), 422
+        return jsonify(route_error(
+            error="no_accepted_groups",
+            what="A decision exists but no group was accepted — nothing to execute.",
+            why="Every group in the decision was rejected or left undecided.",
+            next_step="Accept ≥1 group in /decide, or dismiss the proposal.")), 422
     if gids:
         # a passed group id applies only if it was ALSO explicitly accepted (undecided/rejected never apply)
         gids = [g for g in gids if g in accepted]
         if not gids:
-            return jsonify({"error": "no_accepted_in_selection",
-                            "what": "None of the passed group_ids were accepted in /decide.",
-                            "next_step": "Pass only accepted group ids, or omit group_ids to apply all accepted."}), 422
+            return jsonify(route_error(
+                error="no_accepted_in_selection",
+                what="None of the passed group_ids were accepted in /decide.",
+                why="The selection intersected zero accepted groups (undecided/rejected never apply).",
+                next_step="Pass only accepted group ids, or omit group_ids to apply all accepted.")), 422
 
     repo = Path(__file__).resolve().parents[4]
     script = repo / "scripts" / "atrium_apply.py"
     if not script.exists():
-        return jsonify({"error": "apply_agent_missing"}), 500
+        return jsonify(route_error(
+            error="apply_agent_missing",
+            what="The apply agent (scripts/atrium_apply.py) is absent.",
+            why="This checkout has no scripts/atrium_apply.py to perform the git-apply + seal.",
+            next_step="Restore scripts/atrium_apply.py (it ships with the engine).")), 500
     args = [sys.executable, str(script), proposal_id]
     if gids:
         args.append(",".join(gids))
@@ -489,7 +546,11 @@ def proposals_decide(proposal_id: str):
 
     found = _update(_decide)   # fenced RMW (audit 2026-06-13 W5 #2): no lost decision under concurrency
     if not found:
-        return jsonify({"error": "not_found", "what": f"No proposal {proposal_id}."}), 404
+        return jsonify(route_error(
+            error="not_found",
+            what=f"No proposal {proposal_id}.",
+            why="The proposal id did not match any row during the fenced read-modify-write.",
+            next_step="Refresh the Diffs-ready view — it may already be applied or dismissed.")), 404
     return jsonify(found)
 
 
@@ -523,12 +584,20 @@ def export_packet_route():
     import export_packet as _EP  # noqa: PLC0415
     ids = [x.strip() for x in (request.args.get("obl_ids") or "").split(",") if x.strip()]
     if not ids:
-        return jsonify({"error": "missing_obl_ids", "what": "pass ?obl_ids=A,B,C (comma-separated)"}), 400
+        return jsonify(route_error(
+            error="missing_obl_ids",
+            what="pass ?obl_ids=A,B,C (comma-separated)",
+            why="The request had no 'obl_ids' to assemble an evidence packet from.",
+            next_step="Add ?obl_ids=A,B,C (comma-separated obligation ids).")), 400
     led_root = get_ledger_root()      # ONE resolver (audit 2026-06-13)
     try:
         bundle = _EP.build_packet(ids, led_root)
     except ValueError as e:
-        return jsonify({"error": "no_entries", "what": str(e)}), 404
+        return jsonify(route_error(
+            error="no_entries",
+            what=str(e),
+            why="None of the requested obl_ids resolved to entries on the ledger chain.",
+            next_step="Check the obl_ids against GET /api/v1/obligations.")), 404
     return jsonify(bundle)
 
 
