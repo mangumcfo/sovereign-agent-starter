@@ -27,6 +27,7 @@ from pathlib import Path
 from flask import Blueprint, jsonify, request
 
 from .. import thread_channel
+from .._jsonstore import read_json, update_json
 from ..auth import current_principal, require_owner, require_principal
 
 bp = Blueprint("relay", __name__, url_prefix="/api/v1")
@@ -46,19 +47,14 @@ def _store_path() -> Path:
 
 
 def _read() -> list:
-    p = _store_path()
-    if not p.exists():
-        return []
-    try:
-        return json.loads(p.read_text(encoding="utf-8")) or []
-    except (OSError, ValueError):
-        return []
+    return read_json(_store_path())
 
 
-def _write(items: list) -> None:
-    p = _store_path()
-    p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(json.dumps(items, indent=2, ensure_ascii=False), encoding="utf-8")
+def _update(mutate):
+    """Fenced read-modify-write on relays.json (audit 2026-06-13 W5 #3): lock spans read→mutate→write so
+    a /relays poll or a concurrent create can't clobber a freshly-created/relayed card. ensure_ascii=False
+    preserves the prompt's unicode."""
+    return update_json(_store_path(), mutate, ensure_ascii=False)
 
 
 @bp.post("/relay")
@@ -86,9 +82,7 @@ def relay_create():
         "created_by": current_principal(),   # who actually authenticated (audit; never the body)
         "created_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
     }
-    items = _read()
-    items.append(item)
-    _write(items)
+    _update(lambda items: (items + [item], None))   # fenced append (audit 2026-06-13 W5 #3)
     return jsonify(item), 201
 
 
@@ -110,22 +104,23 @@ def _fold_reply(item: dict) -> dict:
 def relays_list():
     """The Agent Channel: every relay card + its live state. Answered cards fold the reply off the THREAD.
     Persists a status flip to 'answered' so the reply is captured once and the card stops re-scanning."""
-    items = _read()
-    out, dirty = [], False
-    for it in items:
+    out, flips = [], {}
+    for it in _read():
         if it.get("status") == "dismissed":
             continue
         folded = _fold_reply(it)
         if folded is not it and folded.get("status") != it.get("status"):
-            # write the answered state + reply back so it's sticky
-            for i, x in enumerate(items):
-                if x.get("id") == it["id"]:
-                    items[i] = folded
-                    dirty = True
-            it = folded
+            flips[it["id"]] = folded     # an answered-state flip to persist
         out.append(folded)
-    if dirty:
-        _write(items)
+    if flips:
+        # Persist the sticky 'answered' flips through the FENCED writer, re-reading inside the lock so a
+        # concurrent create isn't clobbered (audit 2026-06-13 W5 #3 — a GET must not do an unfenced write).
+        def _apply(items):
+            for i, x in enumerate(items):
+                if x.get("id") in flips:
+                    items[i] = flips[x["id"]]
+            return items, None
+        _update(_apply)
     out.sort(key=lambda x: x.get("created_at", ""), reverse=True)
     counts = {s: sum(1 for x in out if x.get("status") == s) for s in ("pending", "relayed", "answered")}
     return jsonify({"meta": {"counts": counts, "doctrine": "KM gates every relay; performs none"},
@@ -138,22 +133,37 @@ def relays_list():
 def relay_send(relay_id: str):
     """KM's Relay click (the gate). Appends the prompt to the receipted THREAD — KM authorizes, the node
     performs the ferry. Owner-only: only KM relays between his agents (fence intact)."""
-    items = _read()
-    item = next((x for x in items if x.get("id") == relay_id), None)
-    if not item:
-        return jsonify({"error": "not_found", "what": f"No relay {relay_id}."}), 404
-    if item.get("status") != "pending":
-        return jsonify({"error": "already_relayed", "what": f"Relay {relay_id} is '{item.get('status')}'.",
-                        "next_step": "It already left the pending lane — watch for the reply."}), 409
-    entry = thread_channel.append(item["from"], item["to"], item.get("ref") or relay_id, item["prompt"])
-    item["status"] = "relayed"
-    item["thread_n"] = entry.get("n")
-    item["thread_receipt"] = str(entry.get("hash", ""))[:16]
-    item["relayed_by"] = current_principal()
-    item["relayed_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-    _write(items)
+    # Atomic check-and-relay under the lock (audit 2026-06-13 W5 #3): the pending→relayed flip and the
+    # one-time THREAD append happen together so a double-click can't double-post. thread_channel.append
+    # is itself flock-fenced.
+    box = {}
+
+    def _send(items):
+        item = next((x for x in items if x.get("id") == relay_id), None)
+        if not item:
+            box["err"] = (404, {"error": "not_found", "what": f"No relay {relay_id}."})
+            return items, None
+        if item.get("status") != "pending":
+            box["err"] = (409, {"error": "already_relayed",
+                                "what": f"Relay {relay_id} is '{item.get('status')}'.",
+                                "next_step": "It already left the pending lane — watch for the reply."})
+            return items, None
+        entry = thread_channel.append(item["from"], item["to"], item.get("ref") or relay_id, item["prompt"])
+        item["status"] = "relayed"
+        item["thread_n"] = entry.get("n")
+        item["thread_receipt"] = str(entry.get("hash", ""))[:16]
+        item["relayed_by"] = current_principal()
+        item["relayed_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+        box["item"] = item
+        return items, None
+
+    _update(_send)
+    if "err" in box:
+        code, body = box["err"]
+        return jsonify(body), code
+    item = box["item"]
     return jsonify({"status": "relayed", "id": relay_id, "to": item["to"],
-                    "thread_n": entry.get("n"), "receipt": item["thread_receipt"],
+                    "thread_n": item["thread_n"], "receipt": item["thread_receipt"],
                     "next_step": f"Posted to the THREAD for {item['to']}; the reply surfaces back on this card."})
 
 
@@ -161,13 +171,12 @@ def relay_send(relay_id: str):
 @require_principal
 def relay_dismiss(relay_id: str):
     """Archive a relay card (handled out-of-band, or no longer needed)."""
-    items = _read()
-    found = False
-    for x in items:
-        if x.get("id") == relay_id:
-            x["status"] = "dismissed"
-            found = True
-    if not found:
+    def _dismiss(items):
+        hit = False
+        for x in items:
+            if x.get("id") == relay_id:
+                x["status"] = "dismissed"; hit = True
+        return items, hit
+    if not _update(_dismiss):   # fenced RMW (audit 2026-06-13 W5 #3)
         return jsonify({"error": "not_found", "what": f"No relay {relay_id}."}), 404
-    _write(items)
     return jsonify({"status": "dismissed", "id": relay_id})

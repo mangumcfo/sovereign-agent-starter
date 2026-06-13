@@ -23,6 +23,7 @@ from flask import Blueprint, jsonify, request
 
 from ... import config
 from ...obligations.ledger import get_ledger_root
+from .._jsonstore import read_json, update_json
 from ..auth import current_principal, require_owner, require_principal
 
 bp = Blueprint("proposals", __name__, url_prefix="/api/v1")
@@ -48,19 +49,13 @@ def _store_path() -> Path:
 
 
 def _read() -> list:
-    p = _store_path()
-    if not p.exists():
-        return []
-    try:
-        return json.loads(p.read_text(encoding="utf-8")) or []
-    except (OSError, ValueError):
-        return []
+    return read_json(_store_path())
 
 
-def _write(items: list) -> None:
-    p = _store_path()
-    p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(json.dumps(items, indent=2), encoding="utf-8")
+def _update(mutate):
+    """Fenced read-modify-write on proposals.json (audit 2026-06-13 W5 #2): the lock spans read→mutate→
+    write so concurrent create/decide/dismiss (threaded=True + the apply subprocess) can't lose a write."""
+    return update_json(_store_path(), mutate)
 
 
 @bp.get("/proposals")
@@ -82,7 +77,6 @@ def proposals_create():
             "what": "A proposal needs at least one grouped diff (or info:true for a no-diff feedback card).",
             "next_step": "POST /api/v1/proposals with {\"session_ref\":\"...\",\"groups\":[…]} or {\"info\":true,\"note\":\"…\"}.",
         }), 400
-    items = _read()
     prop = {
         "id": "prop_" + str(int(time.time() * 1000)),
         "session_ref": body.get("session_ref", ""),
@@ -99,8 +93,7 @@ def proposals_create():
         "status": "proposed",
         "created_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
     }
-    items.append(prop)
-    _write(items)
+    _update(lambda items: (items + [prop], None))   # fenced append (audit 2026-06-13 W5 #2)
     return jsonify(prop), 201
 
 
@@ -460,18 +453,22 @@ def proposals_apply(proposal_id: str):
 
 @bp.post("/proposals/<proposal_id>/dismiss")
 @require_principal
+@require_owner
 def proposals_dismiss(proposal_id: str):
-    """dismiss — clear an info / no-diff proposal + close its session obligation (nothing to apply)."""
-    items = _read()
-    prop = next((x for x in items if x.get("id") == proposal_id), None)
-    _write([x for x in items if x.get("id") != proposal_id])
+    """dismiss — clear an info / no-diff proposal + close its session obligation (nothing to apply).
+
+    Owner-gated + principal-bound (audit 2026-06-13 W5 #2 fence + #9): it closes KM's session obligation,
+    so it carries the same authority as /decide and /apply; the fenced RMW removes the proposal atomically;
+    and `closed_by` is the AUTHENTICATED principal, never a hardcoded 'tiger' (CONSTITUTION §1)."""
+    prop = _update(lambda items: ([x for x in items if x.get("id") != proposal_id],
+                                  next((x for x in items if x.get("id") == proposal_id), None)))
     oid = (prop or {}).get("obligation_id")
     if oid:
         try:
             from ..deps import get_obligation_ledger
             get_obligation_ledger().close(
                 oid, evidence="E1: dismissed — " + str((prop or {}).get("note", "no diff produced"))[:120],
-                evidence_tier="E1", closed_by="tiger")
+                evidence_tier="E1", closed_by=current_principal())
         except Exception as exc:  # noqa: BLE001 — dismissal must never ERROR the UI, but must not fail SILENTLY
             import logging
             logging.getLogger("breathline.obligations").warning(
@@ -494,18 +491,19 @@ def proposals_decide(proposal_id: str):
     apply then runs."""
     body = request.get_json(silent=True) or {}
     decisions = body.get("decisions") or {}  # {group_id: "accept"|"reject"}
-    items = _read()
-    found = None
-    for it in items:
-        if it.get("id") == proposal_id:
-            it.setdefault("decisions", {}).update(decisions)
-            it["decided_by"] = current_principal()
-            it["status"] = "decided"
-            found = it
-            break
+
+    def _decide(items):
+        for it in items:
+            if it.get("id") == proposal_id:
+                it.setdefault("decisions", {}).update(decisions)
+                it["decided_by"] = current_principal()
+                it["status"] = "decided"
+                return items, it
+        return items, None
+
+    found = _update(_decide)   # fenced RMW (audit 2026-06-13 W5 #2): no lost decision under concurrency
     if not found:
         return jsonify({"error": "not_found", "what": f"No proposal {proposal_id}."}), 404
-    _write(items)
     return jsonify(found)
 
 

@@ -161,19 +161,34 @@ def _apply_group(g, dry_changes):
     return True, repo_key
 
 
+def _store_path() -> str:
+    explicit = os.environ.get("PROPOSALS_STORE")
+    if explicit:
+        return explicit
+    led = os.environ.get("OBLIGATION_LEDGER_ROOT")
+    base = os.path.dirname(led) if led else os.path.expanduser("~/.breathline")
+    return os.path.join(base, "proposals.json")
+
+
+def _update_store(mutate):
+    """Fenced RMW on proposals.json shared with the node (audit 2026-06-13 W5 #2/#11): this subprocess
+    races the node's own writes, so it must use the SAME flock as node_api._jsonstore."""
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src"))
+    from sovereign_agent.node_api._jsonstore import update_json  # noqa: PLC0415
+    return update_json(_store_path(), mutate)
+
+
 def _mark_error(pid: str, reason: str) -> None:
     """RCCM CM1: surface an apply failure ON the proposal so the UI shows it — no more silent stuck
     card. Sets status='apply_failed' + apply_error=<reason> instead of leaving the card unexplained."""
     try:
-        explicit = os.environ.get("PROPOSALS_STORE")
-        led = os.environ.get("OBLIGATION_LEDGER_ROOT")
-        store = explicit or os.path.join(os.path.dirname(led) if led else os.path.expanduser("~/.breathline"), "proposals.json")
-        items = json.loads(open(store, encoding="utf-8").read())
-        for x in items:
-            if x.get("id") == pid:
-                x["apply_error"] = str(reason)[:300]
-                x["status"] = "apply_failed"
-        open(store, "w", encoding="utf-8").write(json.dumps(items, indent=2))
+        def _m(items):
+            for x in items:
+                if x.get("id") == pid:
+                    x["apply_error"] = str(reason)[:300]
+                    x["status"] = "apply_failed"
+            return items, None
+        _update_store(_m)
         _log(f"  marked apply_error on {pid}: {reason}")
     except Exception as exc:  # noqa: BLE001
         _log(f"  mark-error note: {exc}")
@@ -280,15 +295,13 @@ def main() -> int:
     # that was applied (KM: "keep the diff on the sealed card"). The board routes it to Sealed via the
     # closed obligation, not the proposal — so keeping it here doesn't re-surface it in Diffs-ready.
     try:
-        explicit = os.environ.get("PROPOSALS_STORE")
-        led = os.environ.get("OBLIGATION_LEDGER_ROOT")
-        store = explicit or os.path.join(os.path.dirname(led) if led else os.path.expanduser("~/.breathline"), "proposals.json")
-        items = json.loads(open(store, encoding="utf-8").read())
-        for x in items:
-            if x.get("id") == pid:
-                x["status"] = "applied"
-                x["applied_commits"] = commits
-        open(store, "w", encoding="utf-8").write(json.dumps(items, indent=2))
+        def _m(items):
+            for x in items:
+                if x.get("id") == pid:
+                    x["status"] = "applied"
+                    x["applied_commits"] = commits
+            return items, None
+        _update_store(_m)   # fenced RMW (audit 2026-06-13 W5 #2/#11)
         _log("  marked proposal applied (diff kept for the sealed card)")
     except Exception as exc:
         _log(f"  store-mark note: {exc}")
