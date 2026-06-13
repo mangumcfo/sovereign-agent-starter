@@ -96,3 +96,69 @@ def test_list_returns_created_proposals(owner_client):
     owner_client.post("/api/v1/proposals", json={"session_ref": "s", "groups": [{"id": "g1"}]})
     r = owner_client.get("/api/v1/proposals")
     assert r.status_code == 200 and len(r.get_json()["proposals"]) >= 1
+
+
+# ── CONSTITUTIONAL GATE: Propose → Decide → Execute (audit 2026-06-13 CRIT-1) ─────────────────────
+@pytest.fixture
+def no_spawn(monkeypatch):
+    """Record subprocess.Popen calls so a spawn (ignition) is observable and never actually runs."""
+    calls = []
+
+    class _FakePopen:
+        def __init__(self, args, *a, **k):
+            calls.append(list(args))
+
+    import subprocess
+    monkeypatch.setattr(subprocess, "Popen", _FakePopen)
+    return calls
+
+
+def _new_proposal(client):
+    return client.post("/api/v1/proposals", json={
+        "session_ref": "s", "groups": [{"id": "g1", "diff": "..."}, {"id": "g2", "diff": "..."}],
+    }).get_json()["id"]
+
+
+def test_apply_on_undecided_is_409_and_never_spawns(owner_client, no_spawn):
+    """The CRITICAL: an undecided proposal must NOT be applied — Propose→Execute is barred."""
+    pid = _new_proposal(owner_client)
+    r = owner_client.post(f"/api/v1/proposals/{pid}/apply", json={})
+    assert r.status_code == 409 and r.get_json()["error"] == "not_decided"
+    assert no_spawn == []          # the gate fired BEFORE any ignition
+
+
+def test_apply_on_decided_but_all_rejected_is_422(owner_client, no_spawn):
+    pid = _new_proposal(owner_client)
+    owner_client.post(f"/api/v1/proposals/{pid}/decide", json={"decisions": {"g1": "reject", "g2": "reject"}})
+    r = owner_client.post(f"/api/v1/proposals/{pid}/apply", json={})
+    assert r.status_code == 422 and r.get_json()["error"] == "no_accepted_groups"
+    assert no_spawn == []
+
+
+def test_apply_on_accepted_spawns_with_proposal_id(owner_client, no_spawn):
+    pid = _new_proposal(owner_client)
+    owner_client.post(f"/api/v1/proposals/{pid}/decide", json={"decisions": {"g1": "accept", "g2": "reject"}})
+    r = owner_client.post(f"/api/v1/proposals/{pid}/apply", json={})
+    assert r.status_code == 202 and r.get_json()["status"] == "applying"
+    assert len(no_spawn) == 1 and pid in no_spawn[0]      # ignition carried the proposal id
+
+
+def test_apply_group_ids_intersect_accepted_only(owner_client, no_spawn):
+    """A passed group_id only applies if it was ALSO explicitly accepted; a rejected gid → 422."""
+    pid = _new_proposal(owner_client)
+    owner_client.post(f"/api/v1/proposals/{pid}/decide", json={"decisions": {"g1": "accept", "g2": "reject"}})
+    r = owner_client.post(f"/api/v1/proposals/{pid}/apply", json={"group_ids": ["g2"]})
+    assert r.status_code == 422 and r.get_json()["error"] == "no_accepted_in_selection"
+    assert no_spawn == []
+
+
+def test_apply_on_missing_proposal_is_404(owner_client, no_spawn):
+    r = owner_client.post("/api/v1/proposals/prop_nope/apply", json={})
+    assert r.status_code == 404 and r.get_json()["error"] == "not_found"
+    assert no_spawn == []
+
+
+def test_decide_rejects_non_owner(dev_client):
+    """The accept disposition IS the human gate /apply executes — it must carry owner authority."""
+    r = dev_client.post("/api/v1/proposals/prop_x/decide", json={"decisions": {"g1": "accept"}})
+    assert r.status_code == 403 and r.get_json()["error"] == "forbidden"

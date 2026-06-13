@@ -191,8 +191,14 @@ def main() -> int:
         _log(f"proposal {pid} not found")
         return 1
     decisions = p.get("decisions", {})
-    groups = [g for g in p.get("groups", [])
-              if (only and g["id"] in only) or (not only and decisions.get(g["id"], "accept") == "accept")]
+    # CONSTITUTION (audit 2026-06-13 CRIT-1): undecided ⇒ REJECT, never the old accept-default.
+    # The dangerous line was `decisions.get(g["id"], "accept") == "accept"` (undecided → accept) and a
+    # passed group id applied regardless of any decision. Now: only explicitly-accepted groups apply,
+    # and a passed `only` set is INTERSECTED with the accepted set (a named gid can't apply an undecided
+    # group). The route also pre-verifies a decision exists, so this is defence-in-depth.
+    accepted = {g["id"] for g in p.get("groups", []) if decisions.get(g["id"]) == "accept"}
+    wanted = (only & accepted) if only else accepted
+    groups = [g for g in p.get("groups", []) if g["id"] in wanted]
     if not groups:
         _log(f"no accepted groups to apply for {pid}")
         return 0

@@ -399,13 +399,46 @@ def book_kdp():
 @require_owner
 def proposals_apply(proposal_id: str):
     """apply — HUMAN-TRIGGERED by KM's Accept. Spawns the apply agent: land accepted+tested diffs →
-    re-test code (abort on red) → commit (local) + seal + close. Execute-after-Approve; reversible."""
+    re-test code (abort on red) → commit (local) + seal + close. Execute-after-Approve; reversible.
+
+    CONSTITUTIONAL GATE (audit 2026-06-13 CRIT-1, CONSTITUTION §2): Propose → Decide → Execute. This
+    route VERIFIES a decision exists before it ignites — it LOADS the proposal, requires
+    status 'decided'/'partially decided', and requires ≥1 group explicitly accepted. `require_owner`
+    gates *who* fires; this gates *whether a decision exists*. The old behaviour spawned the apply
+    agent without ever loading the proposal, and atrium_apply defaulted undecided groups to 'accept' —
+    reducing Propose→Decide(Accept)→Execute to Propose→Execute. Both holes are now closed."""
     import subprocess
     import sys
     from pathlib import Path
 
     body = request.get_json(silent=True) or {}
     gids = body.get("group_ids")
+
+    # Decision-existence gate — the gate cannot pass on a proposal it never read.
+    prop = next((x for x in _read() if x.get("id") == proposal_id), None)
+    if prop is None:
+        return jsonify({"error": "not_found",
+                        "what": f"No proposal '{proposal_id}'.",
+                        "next_step": "Refresh the Diffs-ready view — it may already be applied."}), 404
+    if prop.get("status") not in ("decided", "partially decided"):
+        return jsonify({"error": "not_decided",
+                        "what": "Propose → Decide → Execute: this proposal has not been decided.",
+                        "why": f"status is '{prop.get('status') or 'undecided'}', not 'decided'.",
+                        "next_step": "POST .../decide with per-group accept/reject first, then apply."}), 409
+    decisions = prop.get("decisions") or {}
+    accepted = {g.get("id") for g in prop.get("groups", []) if decisions.get(g.get("id")) == "accept"}
+    if not accepted:
+        return jsonify({"error": "no_accepted_groups",
+                        "what": "A decision exists but no group was accepted — nothing to execute.",
+                        "next_step": "Accept ≥1 group in /decide, or dismiss the proposal."}), 422
+    if gids:
+        # a passed group id applies only if it was ALSO explicitly accepted (undecided/rejected never apply)
+        gids = [g for g in gids if g in accepted]
+        if not gids:
+            return jsonify({"error": "no_accepted_in_selection",
+                            "what": "None of the passed group_ids were accepted in /decide.",
+                            "next_step": "Pass only accepted group ids, or omit group_ids to apply all accepted."}), 422
+
     repo = Path(__file__).resolve().parents[4]
     script = repo / "scripts" / "atrium_apply.py"
     if not script.exists():
@@ -448,7 +481,13 @@ def proposals_dismiss(proposal_id: str):
 
 @bp.post("/proposals/<proposal_id>/decide")
 @require_principal
+@require_owner
 def proposals_decide(proposal_id: str):
+    """decide — record the operator's per-group accept/reject decisions. The accept disposition IS the
+    human gate that the owner-gated /apply executes, so it must carry the SAME authority as /apply,
+    /produce, /recompile, /feedback-disposition (audit 2026-06-13 HIGH): @require_owner below
+    @require_principal. A non-owner federation/dev/loopback peer can no longer set the decisions that
+    apply then runs."""
     body = request.get_json(silent=True) or {}
     decisions = body.get("decisions") or {}  # {group_id: "accept"|"reject"}
     items = _read()
