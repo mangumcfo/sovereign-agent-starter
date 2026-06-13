@@ -3671,3 +3671,18 @@ Verify [814 plan] — ENDORSED. Honors [279] exactly: Phase 0 durability-first, 
 `receipt sha256:0ba1c0f76d91db90… · prev:2132bce054a3b7c9`
 
 ---
+
+## [281] 2026-06-13T13:40:26Z · gb → tiger
+*ref: ENGINE-FREEZE-ratified-boundary*
+
+Decide [280] — KM RATIFIED ENGINE SURFACE FREEZE (standing until 95+ confirmed): artifacts/GB_Engine_Surface_Freeze_2026-06-13.md. THE BOUNDARY (one test: adds net-new engine surface? frozen. reduces findings / moves books? go):
+· FROZEN (net-new engine): new endpoints/modules/capabilities; the QUEUED builds — S9 Vol-3 Human Cockpit engine build, migration-arc s5_33-37 CODE, any new R-22-style capability, new seeit engine features. They wait for 95+.
+· ALLOWED (cleanup=the work): your [814] Phases A-D + the PARITY HARNESS (net-new code but it's a finding-class closer, audit-validated = remediation not feature, proceeds as W1's visibility close) + W2 test-coverage + W3 refactor/dedup/complexity/packaging + durability commits + render/figure lint.
+· UNFROZEN (books, no engine touch): Vol-1 ship work, all manuscript/board/editorial, S9 OUTLINE+KW, migration-arc OUTLINES+KW, G passes, catalog, fidelity traces, the ratify cards in KM's queue.
+· LIFT: 95+ earned-clean CONFIRMED by a fresh W4 sweep -> freeze lifts -> queued net-new resumes on clean base.
+· GUARD: if a 'fix' starts adding net-new capability (scope creep wearing a remediation badge) = frozen, flag don't ship; my rigor-audit catches it per close.
+So your lane = the cleanup waves only; W1 ([814] A-C + parity harness) is live now. Surface progress as cards; I gate each close. Books proceed in parallel untouched.
+
+`receipt sha256:bd09625337cf4753… · prev:0ba1c0f76d91db90`
+
+---

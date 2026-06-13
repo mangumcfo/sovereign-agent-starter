@@ -91,12 +91,18 @@ def rigor_check_md(path_or_text: str) -> dict:
     region holding the same {findings, section_coverage} schema rigor_check validates. One artifact, both
     human + machine. If the path has no rigor block, returns a structural failure (the board must embed it)."""
     text = path_or_text
-    p = Path(path_or_text)
-    if p.is_file():
+    # `path_or_text` may be raw board text — Path(text).is_file() raises OSError on long/newline content,
+    # so probe defensively (audit 2026-06-13: the function must accept text without crashing).
+    try:
+        p = Path(path_or_text)
+        is_file = p.is_file()
+    except OSError:
+        p, is_file = None, False
+    if is_file:
         text = p.read_text(encoding="utf-8")
     m = re.search(r"```rigor\s*\n(.*?)\n```", text, re.S)
     if not m:
-        return {"board": p.name if p.is_file() else "?", "pass": False, "rules": {},
+        return {"board": p.name if is_file else "?", "pass": False, "rules": {},
                 "gaps": ["no embedded ```rigor``` block in the board .md"], "n_findings": 0, "n_sections": 0}
     try:
         data = json.loads(m.group(1))

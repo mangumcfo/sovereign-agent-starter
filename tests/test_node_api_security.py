@@ -26,6 +26,20 @@ def owner_client(tmp_path, monkeypatch):
 
 
 @pytest.fixture
+def dev_client(tmp_path, monkeypatch):
+    """Dev/anonymous — authenticates (require_principal) but is NOT the node owner."""
+    monkeypatch.setenv("BREATHLINE_NODE_API_DEV", "1")
+    monkeypatch.delenv("BREATHLINE_NODE_LOOPBACK_OWNER", raising=False)
+    monkeypatch.delenv("BREATHLINE_NODE_OWNER", raising=False)
+    monkeypatch.setenv("OBLIGATION_LEDGER_ROOT", str(tmp_path / "obligations"))
+    from sovereign_agent.node_api import deps
+    deps.reset_node()
+    from sovereign_agent.node_api.server import create_app
+    yield create_app().test_client()
+    deps.reset_node()
+
+
+@pytest.fixture
 def no_spawn(monkeypatch):
     calls = []
 
@@ -90,6 +104,26 @@ def test_bell_carries_authenticated_principal(owner_client, no_spawn):
     assert r.status_code == 200 and r.get_json()["executor"] == "spawned"
     assert len(no_spawn) == 1
     assert no_spawn[0]["env"].get("BREATHLINE_BELL_PRINCIPAL") == "KM-1176"
+
+
+def test_bell_disposition_rejects_non_owner(dev_client):
+    """Accept ignites code execution + chain mutation — must be owner-only (night-watch HIGH)."""
+    r = dev_client.post("/api/v1/feedback/obl_x/disposition", json={"action": "accept"})
+    assert r.status_code == 403 and r.get_json()["error"] == "forbidden"
+
+
+def test_bell_spawn_failure_does_not_break_the_gate(owner_client, monkeypatch):
+    """'The bell must never break the human gate' — a spawn exception is swallowed+logged, disposition 200."""
+    import subprocess
+
+    def _boom(*a, **k):
+        raise OSError("simulated spawn failure")
+
+    monkeypatch.setattr(subprocess, "Popen", _boom)
+    oid = owner_client.post("/api/v1/feedback", json={
+        "text": "judge this", "category": "judgment"}).get_json()["obligation"]["id"]
+    r = owner_client.post(f"/api/v1/feedback/{oid}/disposition", json={"action": "accept"})
+    assert r.status_code == 200 and r.get_json()["action"] == "accept"
 
 
 # ── 4. Dev-mode host guard ─────────────────────────────────────────────────────────────────────────

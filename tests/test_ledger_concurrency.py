@@ -4,6 +4,7 @@ The audit reproduced the fork empirically: 8 threads x 25 open() calls produced 
 prev_hash entries and verify_chain()==False; two instances on one shared root also corrupted the chain.
 These tests are the green evidence for the fcntl.flock fix in _append + the repair_chain() command.
 """
+import multiprocessing as mp
 import threading
 
 from sovereign_agent.obligations import ObligationLedger
@@ -11,6 +12,32 @@ from sovereign_agent.obligations import ObligationLedger
 
 def _prev_hashes(led):
     return [e["prev_hash"] for e in led._entries()]
+
+
+def _mp_worker(root: str, tag: str, n: int) -> None:
+    """Top-level (picklable) worker — a SEPARATE OS process appending to the shared root."""
+    led = ObligationLedger(root, principal_id="node")
+    for i in range(n):
+        led.open(title=f"{tag}-{i}", classification="C2")
+
+
+def test_separate_processes_do_not_fork_the_chain(tmp_path):
+    """The real cross-PROCESS race (audit 2026-06-13): fcntl.flock semantics differ across separate OS
+    processes, but the in-process thread tests can't prove it. 3 processes x 30 opens on one shared root
+    → count==sum, unique prev_hash, verify_chain True."""
+    procs = [mp.Process(target=_mp_worker, args=(str(tmp_path), f"P{p}", 30)) for p in range(3)]
+    for p in procs:
+        p.start()
+    for p in procs:
+        p.join(timeout=60)
+    assert all(p.exitcode == 0 for p in procs), [p.exitcode for p in procs]
+
+    led = ObligationLedger(str(tmp_path), principal_id="node")
+    entries = led._entries()
+    assert len(entries) == 90, f"lost/duplicated cross-process writes: {len(entries)}"
+    ph = _prev_hashes(led)
+    assert len(ph) == len(set(ph)), "duplicate prev_hash across processes → the chain forked"
+    assert led.verify_chain() is True, "chain broke under concurrent cross-process appends"
 
 
 def test_in_process_threads_do_not_fork_the_chain(tmp_path):
