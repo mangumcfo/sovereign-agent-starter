@@ -37,7 +37,14 @@ def mark(stage):
 
 
 def main():
-    data = yaml.safe_load(SRC.read_text())
+    # Resilient shared loader (audit 2026-06-13): degrade like the lens, never crash on a malformed tail.
+    _sys_path = str(pathlib.Path(__file__).resolve().parent.parent / "src")
+    if _sys_path not in sys.path:
+        sys.path.insert(0, _sys_path)
+    from sovereign_agent.node_api.yaml_repair import load_roadmap
+    data, degraded, detail = load_roadmap(SRC.read_text())
+    if degraded:
+        sys.stderr.write(f"⚠ roadmap degraded: {detail}\n")
     series = data.get("series", [])
     out = [
         "# Series Outlines - Drill-Down Digest",

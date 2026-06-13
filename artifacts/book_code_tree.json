@@ -1307,15 +1307,97 @@
           "book_id": "vol_01_immutable_core",
           "title": "The Immutable Core: Receipts, Cylinders & Constitutional Truth",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "vol_01_immutable_core#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "vol_01_immutable_core#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "vol_01_immutable_core#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "vol_01_immutable_core#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "vol_01_immutable_core#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "vol_01_immutable_core#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "vol_01_immutable_core#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "vol_01_immutable_core#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "vol_02_programmable_governance_skin",
           "title": "Programmable Governance Skin: YAML Roles, Action Classes & Breath-Gates",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "vol_02_programmable_governance_skin#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "vol_02_programmable_governance_skin#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "vol_02_programmable_governance_skin#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "vol_02_programmable_governance_skin#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "vol_02_programmable_governance_skin#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "vol_02_programmable_governance_skin#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "vol_02_programmable_governance_skin#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "vol_02_programmable_governance_skin#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "vol_03_helix_book_writes_backend",
@@ -1698,225 +1780,1777 @@
           "book_id": "s5_01_immutable_core",
           "title": "The Immutable Core — Receipts, Cylinders & Constitutional Truth",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_01_immutable_core#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_01_immutable_core#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_01_immutable_core#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_01_immutable_core#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_01_immutable_core#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_01_immutable_core#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_01_immutable_core#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_01_immutable_core#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_02_governance_skin",
           "title": "Programmable Governance Skin — Roles, Action Classes & Breath-Gates",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_02_governance_skin#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_02_governance_skin#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_02_governance_skin#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_02_governance_skin#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_02_governance_skin#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_02_governance_skin#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_02_governance_skin#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_02_governance_skin#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_03_helix",
           "title": "Helix — When the Book Literally Writes the Backend",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_03_helix#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_03_helix#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_03_helix#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_03_helix#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_03_helix#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_03_helix#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_03_helix#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_03_helix#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_04_coherence_ledger",
           "title": "Coherence as Living Ledger — Real-Time Drift Detection & Integrity",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_04_coherence_ledger#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_04_coherence_ledger#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_04_coherence_ledger#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_04_coherence_ledger#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_04_coherence_ledger#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_04_coherence_ledger#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_04_coherence_ledger#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_04_coherence_ledger#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_05_sovereign_object_model",
           "title": "Sovereign Object Model — Registry, Manifests & Merkle Integrity",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_05_sovereign_object_model#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_05_sovereign_object_model#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_05_sovereign_object_model#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_05_sovereign_object_model#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_05_sovereign_object_model#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_05_sovereign_object_model#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_05_sovereign_object_model#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_05_sovereign_object_model#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_06_distribution_matrix_gov",
           "title": "Distribution Matrix Governance — Books as the Authoritative Join",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_06_distribution_matrix_gov#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_06_distribution_matrix_gov#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_06_distribution_matrix_gov#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_06_distribution_matrix_gov#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_06_distribution_matrix_gov#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_06_distribution_matrix_gov#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_06_distribution_matrix_gov#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_06_distribution_matrix_gov#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_07_sovereign_financials",
           "title": "Sovereign Financials — General Ledger, Controlling & Reporting",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_07_sovereign_financials#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_07_sovereign_financials#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_07_sovereign_financials#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_07_sovereign_financials#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_07_sovereign_financials#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_07_sovereign_financials#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_07_sovereign_financials#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_07_sovereign_financials#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_08_treasury_cash",
           "title": "Treasury & Cash Management — Liquidity, Forecasting & Compliance",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_08_treasury_cash#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_08_treasury_cash#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_08_treasury_cash#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_08_treasury_cash#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_08_treasury_cash#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_08_treasury_cash#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_08_treasury_cash#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_08_treasury_cash#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_09_supply_chain",
           "title": "Supply Chain Execution — Procurement, Logistics & Inventory",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_09_supply_chain#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_09_supply_chain#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_09_supply_chain#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_09_supply_chain#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_09_supply_chain#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_09_supply_chain#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_09_supply_chain#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_09_supply_chain#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_10_manufacturing_quality",
           "title": "Manufacturing & Quality — Production, MES & Traceability",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_10_manufacturing_quality#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_10_manufacturing_quality#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_10_manufacturing_quality#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_10_manufacturing_quality#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_10_manufacturing_quality#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_10_manufacturing_quality#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_10_manufacturing_quality#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_10_manufacturing_quality#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_11_project_portfolio",
           "title": "Project & Portfolio Management — Planning, Execution & Governance",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_11_project_portfolio#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_11_project_portfolio#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_11_project_portfolio#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_11_project_portfolio#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_11_project_portfolio#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_11_project_portfolio#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_11_project_portfolio#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_11_project_portfolio#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_12_asset_maintenance",
           "title": "Asset & Maintenance Management — Lifecycle & Reliability",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_12_asset_maintenance#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_12_asset_maintenance#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_12_asset_maintenance#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_12_asset_maintenance#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_12_asset_maintenance#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_12_asset_maintenance#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_12_asset_maintenance#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_12_asset_maintenance#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_13_human_capital_payroll",
           "title": "Human Capital & Sovereign Payroll — Roles, Compensation & Continuity",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_13_human_capital_payroll#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_13_human_capital_payroll#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_13_human_capital_payroll#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_13_human_capital_payroll#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_13_human_capital_payroll#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_13_human_capital_payroll#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_13_human_capital_payroll#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_13_human_capital_payroll#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_14_compliance_audit",
           "title": "Compliance & Audit Automation — Standards Ingestion & Evidence",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_14_compliance_audit#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_14_compliance_audit#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_14_compliance_audit#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_14_compliance_audit#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_14_compliance_audit#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_14_compliance_audit#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_14_compliance_audit#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_14_compliance_audit#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_15_revenue_o2c",
           "title": "Revenue & Order-to-Cash — Contracts, Billing & Recognition",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_15_revenue_o2c#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_15_revenue_o2c#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_15_revenue_o2c#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_15_revenue_o2c#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_15_revenue_o2c#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_15_revenue_o2c#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_15_revenue_o2c#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_15_revenue_o2c#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_16_procure_to_pay",
           "title": "Procurement-to-Pay — Sourcing, Contracts & Supplier Governance",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_16_procure_to_pay#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_16_procure_to_pay#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_16_procure_to_pay#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_16_procure_to_pay#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_16_procure_to_pay#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_16_procure_to_pay#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_16_procure_to_pay#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_16_procure_to_pay#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_17_analytics_decision",
           "title": "Analytics & Decision Intelligence — Real-Time Insights with Provenance",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_17_analytics_decision#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_17_analytics_decision#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_17_analytics_decision#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_17_analytics_decision#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_17_analytics_decision#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_17_analytics_decision#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_17_analytics_decision#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_17_analytics_decision#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_18_multi_entity_consolidation",
           "title": "Multi-Entity & Consolidation — Global Structures & Intercompany",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_18_multi_entity_consolidation#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_18_multi_entity_consolidation#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_18_multi_entity_consolidation#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_18_multi_entity_consolidation#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_18_multi_entity_consolidation#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_18_multi_entity_consolidation#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_18_multi_entity_consolidation#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_18_multi_entity_consolidation#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_19_manufacturing_erp",
           "title": "Manufacturing Sovereign ERP — Discrete & Process Operations",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_19_manufacturing_erp#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_19_manufacturing_erp#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_19_manufacturing_erp#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_19_manufacturing_erp#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_19_manufacturing_erp#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_19_manufacturing_erp#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_19_manufacturing_erp#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_19_manufacturing_erp#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_20_distribution_wholesale",
           "title": "Distribution & Wholesale — Inventory, Logistics & Channel Management",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_20_distribution_wholesale#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_20_distribution_wholesale#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_20_distribution_wholesale#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_20_distribution_wholesale#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_20_distribution_wholesale#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_20_distribution_wholesale#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_20_distribution_wholesale#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_20_distribution_wholesale#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_21_professional_services",
           "title": "Professional Services — Project Billing, Resource & Knowledge",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_21_professional_services#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_21_professional_services#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_21_professional_services#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_21_professional_services#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_21_professional_services#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_21_professional_services#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_21_professional_services#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_21_professional_services#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_22_energy_resources",
           "title": "Energy & Resources — Asset-Intensive Operations & Compliance",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_22_energy_resources#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_22_energy_resources#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_22_energy_resources#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_22_energy_resources#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_22_energy_resources#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_22_energy_resources#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_22_energy_resources#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_22_energy_resources#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_23_construction_projects",
           "title": "Construction & Projects — Job Costing, Subcontractor & Safety",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_23_construction_projects#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_23_construction_projects#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_23_construction_projects#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_23_construction_projects#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_23_construction_projects#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_23_construction_projects#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_23_construction_projects#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_23_construction_projects#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_24_regulated_industries",
           "title": "Regulated Industries — Traceability, Quality & Audit Readiness",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_24_regulated_industries#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_24_regulated_industries#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_24_regulated_industries#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_24_regulated_industries#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_24_regulated_industries#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_24_regulated_industries#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_24_regulated_industries#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_24_regulated_industries#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_25_multi_standard_ingestion",
-          "title": "Multi-Standard Ingestion — Mapping External Boards into Sovereign Rules",
+          "title": "Multi-Standard Ingestion — Mapping External Boards into Sovereign Form",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_25_multi_standard_ingestion#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_25_multi_standard_ingestion#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_25_multi_standard_ingestion#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_25_multi_standard_ingestion#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_25_multi_standard_ingestion#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_25_multi_standard_ingestion#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_25_multi_standard_ingestion#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_25_multi_standard_ingestion#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_26_federation_node_gov",
           "title": "Federation Node Governance — Cross-Node Validation & Sharing",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_26_federation_node_gov#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_26_federation_node_gov#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_26_federation_node_gov#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_26_federation_node_gov#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_26_federation_node_gov#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_26_federation_node_gov#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_26_federation_node_gov#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_26_federation_node_gov#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_27_generational_continuity",
           "title": "Generational Continuity — Private Series, Handoff Rituals & Legacy",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_27_generational_continuity#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_27_generational_continuity#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_27_generational_continuity#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_27_generational_continuity#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_27_generational_continuity#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_27_generational_continuity#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_27_generational_continuity#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_27_generational_continuity#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_28_private_series_templates",
           "title": "Private Series Templates — Family & Enterprise Constitutions",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_28_private_series_templates#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_28_private_series_templates#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_28_private_series_templates#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_28_private_series_templates#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_28_private_series_templates#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_28_private_series_templates#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_28_private_series_templates#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_28_private_series_templates#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_29_exception_gov_workflows",
           "title": "Exception & Governance Workflows — Human Gate Patterns at Scale",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_29_exception_gov_workflows#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_29_exception_gov_workflows#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_29_exception_gov_workflows#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_29_exception_gov_workflows#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_29_exception_gov_workflows#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_29_exception_gov_workflows#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_29_exception_gov_workflows#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_29_exception_gov_workflows#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_30_social_external_distribution",
           "title": "Social & External Distribution — Content Propagation with Provenance",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_30_social_external_distribution#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_30_social_external_distribution#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_30_social_external_distribution#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_30_social_external_distribution#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_30_social_external_distribution#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_30_social_external_distribution#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_30_social_external_distribution#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_30_social_external_distribution#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_31_federation_marketplace",
           "title": "Federation Marketplace — Shared Patterns & Verified Blueprints",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_31_federation_marketplace#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_31_federation_marketplace#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_31_federation_marketplace#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_31_federation_marketplace#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_31_federation_marketplace#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_31_federation_marketplace#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_31_federation_marketplace#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_31_federation_marketplace#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s5_32_erp_operations_console",
-          "title": "Sovereign ERP Operations Console — Atrium as the Single Operating Surface",
+          "title": "Sovereign ERP Operations Console — Atrium as the Single Operator Surface",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_32_erp_operations_console#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_32_erp_operations_console#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_32_erp_operations_console#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_32_erp_operations_console#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_32_erp_operations_console#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_32_erp_operations_console#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_32_erp_operations_console#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_32_erp_operations_console#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
+        },
+        {
+          "book_id": "s5_33_migration_primitive",
+          "title": "The Migration Primitive — Receipted Ingestion, Reconciliation & Sovereign Cutover",
+          "publishing_state": null,
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_33_migration_primitive#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_33_migration_primitive#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_33_migration_primitive#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_33_migration_primitive#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_33_migration_primitive#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_33_migration_primitive#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_33_migration_primitive#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_33_migration_primitive#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
+        },
+        {
+          "book_id": "s5_34_escaping_quickbooks",
+          "title": "Escaping QuickBooks — Mid-Market Finance to Sovereign Ledger",
+          "publishing_state": null,
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_34_escaping_quickbooks#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_34_escaping_quickbooks#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_34_escaping_quickbooks#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_34_escaping_quickbooks#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_34_escaping_quickbooks#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_34_escaping_quickbooks#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_34_escaping_quickbooks#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_34_escaping_quickbooks#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
+        },
+        {
+          "book_id": "s5_35_unbinding_salesforce",
+          "title": "Unbinding Salesforce — CRM to Governed Mandates",
+          "publishing_state": null,
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_35_unbinding_salesforce#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_35_unbinding_salesforce#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_35_unbinding_salesforce#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_35_unbinding_salesforce#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_35_unbinding_salesforce#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_35_unbinding_salesforce#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_35_unbinding_salesforce#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_35_unbinding_salesforce#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
+        },
+        {
+          "book_id": "s5_36_consuming_the_giants",
+          "title": "Consuming the Giants — SAP, NetSuite & Acumatica Carve-Ins",
+          "publishing_state": null,
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_36_consuming_the_giants#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_36_consuming_the_giants#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_36_consuming_the_giants#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_36_consuming_the_giants#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_36_consuming_the_giants#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_36_consuming_the_giants#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_36_consuming_the_giants#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_36_consuming_the_giants#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
+        },
+        {
+          "book_id": "s5_37_the_clean_exit",
+          "title": "The Clean Exit — PE Carve-Outs, Verifiable Diligence Packages & Generational Handoff",
+          "publishing_state": null,
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s5_37_the_clean_exit#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s5_37_the_clean_exit#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s5_37_the_clean_exit#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s5_37_the_clean_exit#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s5_37_the_clean_exit#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s5_37_the_clean_exit#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s5_37_the_clean_exit#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s5_37_the_clean_exit#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         }
       ]
     },
@@ -1930,36 +3564,241 @@
           "book_id": "vol_01_receipted_inter_node_messaging",
           "title": "Receipted Inter-Node Messaging",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "vol_01_receipted_inter_node_messaging#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "vol_01_receipted_inter_node_messaging#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "vol_01_receipted_inter_node_messaging#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "vol_01_receipted_inter_node_messaging#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "vol_01_receipted_inter_node_messaging#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "vol_01_receipted_inter_node_messaging#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "vol_01_receipted_inter_node_messaging#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "vol_01_receipted_inter_node_messaging#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "vol_02_sovereign_collaboration",
           "title": "Sovereign Collaboration",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "vol_02_sovereign_collaboration#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "vol_02_sovereign_collaboration#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "vol_02_sovereign_collaboration#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "vol_02_sovereign_collaboration#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "vol_02_sovereign_collaboration#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "vol_02_sovereign_collaboration#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "vol_02_sovereign_collaboration#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "vol_02_sovereign_collaboration#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "vol_03_distributed_sovereign_compute",
           "title": "Distributed Sovereign Compute",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "vol_03_distributed_sovereign_compute#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "vol_03_distributed_sovereign_compute#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "vol_03_distributed_sovereign_compute#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "vol_03_distributed_sovereign_compute#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "vol_03_distributed_sovereign_compute#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "vol_03_distributed_sovereign_compute#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "vol_03_distributed_sovereign_compute#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "vol_03_distributed_sovereign_compute#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "vol_04_resonance_coordination",
           "title": "Resonance Coordination (not central control)",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "vol_04_resonance_coordination#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "vol_04_resonance_coordination#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "vol_04_resonance_coordination#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "vol_04_resonance_coordination#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "vol_04_resonance_coordination#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "vol_04_resonance_coordination#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "vol_04_resonance_coordination#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "vol_04_resonance_coordination#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "vol_05_inter_node_trust_boundaries_handoff",
           "title": "Inter-Node Trust Boundaries & Handoff",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "vol_05_inter_node_trust_boundaries_handoff#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "vol_05_inter_node_trust_boundaries_handoff#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "vol_05_inter_node_trust_boundaries_handoff#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "vol_05_inter_node_trust_boundaries_handoff#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "vol_05_inter_node_trust_boundaries_handoff#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "vol_05_inter_node_trust_boundaries_handoff#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "vol_05_inter_node_trust_boundaries_handoff#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "vol_05_inter_node_trust_boundaries_handoff#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         }
       ]
     },
@@ -1973,43 +3812,289 @@
           "book_id": "vol_01_zero_trust_node_architecture",
           "title": "Zero-Trust Node Architecture",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "vol_01_zero_trust_node_architecture#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "vol_01_zero_trust_node_architecture#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "vol_01_zero_trust_node_architecture#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "vol_01_zero_trust_node_architecture#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "vol_01_zero_trust_node_architecture#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "vol_01_zero_trust_node_architecture#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "vol_01_zero_trust_node_architecture#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "vol_01_zero_trust_node_architecture#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "vol_02_shields_protective_layers",
           "title": "Shields as Protective Layers",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "vol_02_shields_protective_layers#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "vol_02_shields_protective_layers#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "vol_02_shields_protective_layers#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "vol_02_shields_protective_layers#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "vol_02_shields_protective_layers#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "vol_02_shields_protective_layers#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "vol_02_shields_protective_layers#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "vol_02_shields_protective_layers#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "vol_03_sovereign_data_storage",
           "title": "Sovereign Data Storage Model",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "vol_03_sovereign_data_storage#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "vol_03_sovereign_data_storage#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "vol_03_sovereign_data_storage#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "vol_03_sovereign_data_storage#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "vol_03_sovereign_data_storage#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "vol_03_sovereign_data_storage#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "vol_03_sovereign_data_storage#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "vol_03_sovereign_data_storage#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "vol_04_verified_data_flows",
           "title": "Verified Data Flows Across Nodes",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "vol_04_verified_data_flows#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "vol_04_verified_data_flows#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "vol_04_verified_data_flows#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "vol_04_verified_data_flows#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "vol_04_verified_data_flows#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "vol_04_verified_data_flows#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "vol_04_verified_data_flows#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "vol_04_verified_data_flows#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "vol_05_private_shared_storage_governance",
           "title": "Private vs Shared Storage Governance",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "vol_05_private_shared_storage_governance#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "vol_05_private_shared_storage_governance#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "vol_05_private_shared_storage_governance#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "vol_05_private_shared_storage_governance#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "vol_05_private_shared_storage_governance#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "vol_05_private_shared_storage_governance#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "vol_05_private_shared_storage_governance#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "vol_05_private_shared_storage_governance#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "vol_06_resilience_recovery_shields",
           "title": "Resilience & Recovery Shields",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "vol_06_resilience_recovery_shields#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "vol_06_resilience_recovery_shields#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "vol_06_resilience_recovery_shields#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "vol_06_resilience_recovery_shields#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "vol_06_resilience_recovery_shields#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "vol_06_resilience_recovery_shields#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "vol_06_resilience_recovery_shields#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "vol_06_resilience_recovery_shields#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         }
       ]
     },
@@ -2023,57 +4108,385 @@
           "book_id": "s8_01_sovereign_lens",
           "title": "The Sovereign Lens — Content-Agnostic Rendering & Honest Views",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s8_01_sovereign_lens#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s8_01_sovereign_lens#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s8_01_sovereign_lens#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s8_01_sovereign_lens#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s8_01_sovereign_lens#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s8_01_sovereign_lens#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s8_01_sovereign_lens#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s8_01_sovereign_lens#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s8_02_breath_gated_interfaces",
           "title": "Breath-Gated Interfaces — Human Primacy in Every Pixel",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s8_02_breath_gated_interfaces#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s8_02_breath_gated_interfaces#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s8_02_breath_gated_interfaces#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s8_02_breath_gated_interfaces#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s8_02_breath_gated_interfaces#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s8_02_breath_gated_interfaces#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s8_02_breath_gated_interfaces#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s8_02_breath_gated_interfaces#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s8_03_aesthetic_resonance",
           "title": "Aesthetic Resonance — Beauty as Functional Attention",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s8_03_aesthetic_resonance#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s8_03_aesthetic_resonance#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s8_03_aesthetic_resonance#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s8_03_aesthetic_resonance#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s8_03_aesthetic_resonance#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s8_03_aesthetic_resonance#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s8_03_aesthetic_resonance#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s8_03_aesthetic_resonance#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s8_04_atrium_living_os",
           "title": "Atrium as Living OS — The Sovereign Decision Cockpit",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s8_04_atrium_living_os#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s8_04_atrium_living_os#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s8_04_atrium_living_os#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s8_04_atrium_living_os#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s8_04_atrium_living_os#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s8_04_atrium_living_os#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s8_04_atrium_living_os#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s8_04_atrium_living_os#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s8_05_generational_ux",
           "title": "Generational UX — Interfaces That Heirs Actually Want to Inherit",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s8_05_generational_ux#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s8_05_generational_ux#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s8_05_generational_ux#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s8_05_generational_ux#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s8_05_generational_ux#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s8_05_generational_ux#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s8_05_generational_ux#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s8_05_generational_ux#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s8_06_federation_ux",
           "title": "Federation UX — Resonance Across Sovereign Nodes",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s8_06_federation_ux#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s8_06_federation_ux#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s8_06_federation_ux#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s8_06_federation_ux#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s8_06_federation_ux#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s8_06_federation_ux#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s8_06_federation_ux#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s8_06_federation_ux#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s8_07_zero_trust_ux",
           "title": "Zero-Trust UX — Shields, Verification & Adversarial Clarity",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s8_07_zero_trust_ux#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s8_07_zero_trust_ux#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s8_07_zero_trust_ux#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s8_07_zero_trust_ux#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s8_07_zero_trust_ux#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s8_07_zero_trust_ux#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s8_07_zero_trust_ux#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s8_07_zero_trust_ux#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         },
         {
           "book_id": "s8_08_ux_executable_covenant",
           "title": "UX as Executable Covenant — The Living Proof",
           "publishing_state": null,
-          "chapter_count": 0,
-          "chapters": []
+          "chapter_count": 8,
+          "chapters": [
+            {
+              "id": "s8_08_ux_executable_covenant#ch1",
+              "n": 1,
+              "title": ""
+            },
+            {
+              "id": "s8_08_ux_executable_covenant#ch2",
+              "n": 2,
+              "title": ""
+            },
+            {
+              "id": "s8_08_ux_executable_covenant#ch3",
+              "n": 3,
+              "title": ""
+            },
+            {
+              "id": "s8_08_ux_executable_covenant#ch4",
+              "n": 4,
+              "title": ""
+            },
+            {
+              "id": "s8_08_ux_executable_covenant#ch5",
+              "n": 5,
+              "title": ""
+            },
+            {
+              "id": "s8_08_ux_executable_covenant#ch6",
+              "n": 6,
+              "title": ""
+            },
+            {
+              "id": "s8_08_ux_executable_covenant#ch7",
+              "n": 7,
+              "title": ""
+            },
+            {
+              "id": "s8_08_ux_executable_covenant#ch8",
+              "n": 8,
+              "title": ""
+            }
+          ]
         }
       ]
     }
@@ -2086,7 +4499,7 @@
     },
     {
       "path": "src/sovereign_agent/bootstrap.py",
-      "size": 10452,
+      "size": 10463,
       "purpose": "Pure Python Bootstrap for breathline_primitives."
     },
     {
@@ -2111,27 +4524,27 @@
     },
     {
       "path": "src/sovereign_agent/compliance/compliance_engine.py",
-      "size": 19365,
+      "size": 19637,
       "purpose": "ComplianceEngine + VerifiableInference — Sovereign bridge to Playbook 6 + SIX patterns."
     },
     {
       "path": "src/sovereign_agent/compliance/human_approval_gate.py",
-      "size": 2990,
+      "size": 3995,
       "purpose": "HumanApprovalGate + EscalationPolicy — lightweight, sovereign, configurable."
     },
     {
       "path": "src/sovereign_agent/compliance/policy_loader.py",
-      "size": 7251,
+      "size": 7305,
       "purpose": "PolicyLoader — Rich, dynamic loader for Playbook 6-style governance policies."
     },
     {
       "path": "src/sovereign_agent/config.py",
-      "size": 6331,
+      "size": 7962,
       "purpose": "Sovereign System Configuration & Root Resolution"
     },
     {
       "path": "src/sovereign_agent/core.py",
-      "size": 12289,
+      "size": 12335,
       "purpose": "SovereignAgent - Robust Generational Agent Core"
     },
     {
@@ -2160,23 +4573,43 @@
       "purpose": "Data-Room Classifier — extruded from AI Agents for M&A (Book 11), Ch 2:"
     },
     {
+      "path": "src/sovereign_agent/inference/primitives.py",
+      "size": 3724,
+      "purpose": "Sealed-primitives adapter (TA-1 path (a), KM 2026-06-11)."
+    },
+    {
+      "path": "src/sovereign_agent/inference/receipts.py",
+      "size": 5507,
+      "purpose": "Inference Receipts — the constitutional anchor (co-extrusion of *Sovereign Inference & Memory* Ch 3)."
+    },
+    {
+      "path": "src/sovereign_agent/inference/six.py",
+      "size": 5496,
+      "purpose": "SIX — the Sovereign Inference Exchange (co-extrusion of *Sovereign Inference & Memory* Ch 2)."
+    },
+    {
       "path": "src/sovereign_agent/kdp_metadata.py",
-      "size": 3951,
+      "size": 6125,
       "purpose": "kdp_metadata.py — parse a book's `metadata_v1.0.md` into KDP-ready fields."
     },
     {
       "path": "src/sovereign_agent/kernel_integration.py",
-      "size": 4740,
+      "size": 5008,
       "purpose": "Kernel Primitives Integration — Sovereign bridge to breathline-federation/platform/kernel/primitives."
     },
     {
+      "path": "src/sovereign_agent/memory/b51.py",
+      "size": 4867,
+      "purpose": "B51 — the human-memory attention stream (co-extrusion of *Sovereign Inference & Memory* Ch 4)."
+    },
+    {
       "path": "src/sovereign_agent/node_api/auth.py",
-      "size": 6151,
+      "size": 9707,
       "purpose": "principal_id-bearer auth middleware."
     },
     {
       "path": "src/sovereign_agent/node_api/deps.py",
-      "size": 2927,
+      "size": 5267,
       "purpose": "Singleton wiring of the Python core for the Node API process."
     },
     {
@@ -2195,8 +4628,13 @@
       "purpose": "Section — Book↔Code Coherence (Step D)."
     },
     {
+      "path": "src/sovereign_agent/node_api/routes/feedback.py",
+      "size": 16698,
+      "purpose": "Section — Feedback & Awaiting-KM (Atrium Loop-Closure R2, Wave 1 — the B12 Pilot Kit)."
+    },
+    {
       "path": "src/sovereign_agent/node_api/routes/hopper.py",
-      "size": 12595,
+      "size": 12602,
       "purpose": "Section — Hopper lane (read → one-gate write)."
     },
     {
@@ -2206,18 +4644,23 @@
     },
     {
       "path": "src/sovereign_agent/node_api/routes/obligations.py",
-      "size": 5017,
+      "size": 5973,
       "purpose": "Section — Obligations (R-23 Phase 3)."
     },
     {
       "path": "src/sovereign_agent/node_api/routes/placeholders.py",
-      "size": 17238,
+      "size": 17331,
       "purpose": "Contract sections B, D, E, F — real thin handlers (Track E1, 2026-05-30)."
     },
     {
       "path": "src/sovereign_agent/node_api/routes/proposals.py",
-      "size": 21441,
+      "size": 27278,
       "purpose": "Section — Proposals (Step C: diff-review)."
+    },
+    {
+      "path": "src/sovereign_agent/node_api/routes/relay.py",
+      "size": 7635,
+      "purpose": "Section — Agent Channel relay (A1, GB meta-review #1: \"KM is the message bus\")."
     },
     {
       "path": "src/sovereign_agent/node_api/routes/roles.py",
@@ -2226,13 +4669,18 @@
     },
     {
       "path": "src/sovereign_agent/node_api/routes/series.py",
-      "size": 18759,
+      "size": 29150,
       "purpose": "Section — Series Pipeline (ATR-7 lens, read-only)."
     },
     {
       "path": "src/sovereign_agent/node_api/server.py",
-      "size": 6868,
+      "size": 8803,
       "purpose": "Flask app factory + CLI entry for the Node API."
+    },
+    {
+      "path": "src/sovereign_agent/node_api/thread_channel.py",
+      "size": 4662,
+      "purpose": "Agent Channel — node-side adapter onto the receipted Tiger↔GB THREAD (A1)."
     },
     {
       "path": "src/sovereign_agent/obligations/arc_guardrail.py",
@@ -2241,17 +4689,17 @@
     },
     {
       "path": "src/sovereign_agent/obligations/ledger.py",
-      "size": 16606,
+      "size": 38142,
       "purpose": "ObligationLedger — node-local B32 obligation ledger (R-23 Phase 1)."
     },
     {
       "path": "src/sovereign_agent/obligations/node_integration.py",
-      "size": 5229,
+      "size": 5472,
       "purpose": "Wire the node's real governance into the ObligationLedger (R-23 Phase 2)."
     },
     {
       "path": "src/sovereign_agent/playbook_loader.py",
-      "size": 12690,
+      "size": 12744,
       "purpose": "PlaybookLoader - Enhanced for Universal Sovereign Node"
     },
     {
@@ -2375,19 +4823,26 @@
       "src/sovereign_agent/core.py",
       "src/sovereign_agent/demo_roles/federation_procurement_coordinator/role.py",
       "src/sovereign_agent/demo_roles/general_sovereign_demo/role.py",
+      "src/sovereign_agent/inference/primitives.py",
+      "src/sovereign_agent/inference/receipts.py",
+      "src/sovereign_agent/inference/six.py",
       "src/sovereign_agent/kernel_integration.py",
+      "src/sovereign_agent/memory/b51.py",
       "src/sovereign_agent/node_api/auth.py",
       "src/sovereign_agent/node_api/deps.py",
       "src/sovereign_agent/node_api/errors.py",
       "src/sovereign_agent/node_api/json_provider.py",
       "src/sovereign_agent/node_api/routes/coherence.py",
+      "src/sovereign_agent/node_api/routes/feedback.py",
       "src/sovereign_agent/node_api/routes/hopper.py",
       "src/sovereign_agent/node_api/routes/node.py",
       "src/sovereign_agent/node_api/routes/obligations.py",
       "src/sovereign_agent/node_api/routes/placeholders.py",
       "src/sovereign_agent/node_api/routes/proposals.py",
+      "src/sovereign_agent/node_api/routes/relay.py",
       "src/sovereign_agent/node_api/routes/roles.py",
       "src/sovereign_agent/node_api/server.py",
+      "src/sovereign_agent/node_api/thread_channel.py",
       "src/sovereign_agent/playbook_loader.py",
       "src/sovereign_agent/role_binder.py"
     ],
@@ -2565,6 +5020,382 @@
       "12_agentic_enterprise#ch7",
       "12_agentic_enterprise#ch8",
       "12_agentic_enterprise#ch9",
+      "s5_01_immutable_core#ch1",
+      "s5_01_immutable_core#ch2",
+      "s5_01_immutable_core#ch3",
+      "s5_01_immutable_core#ch4",
+      "s5_01_immutable_core#ch5",
+      "s5_01_immutable_core#ch6",
+      "s5_01_immutable_core#ch7",
+      "s5_01_immutable_core#ch8",
+      "s5_02_governance_skin#ch1",
+      "s5_02_governance_skin#ch2",
+      "s5_02_governance_skin#ch3",
+      "s5_02_governance_skin#ch4",
+      "s5_02_governance_skin#ch5",
+      "s5_02_governance_skin#ch6",
+      "s5_02_governance_skin#ch7",
+      "s5_02_governance_skin#ch8",
+      "s5_03_helix#ch1",
+      "s5_03_helix#ch2",
+      "s5_03_helix#ch3",
+      "s5_03_helix#ch4",
+      "s5_03_helix#ch5",
+      "s5_03_helix#ch6",
+      "s5_03_helix#ch7",
+      "s5_03_helix#ch8",
+      "s5_04_coherence_ledger#ch1",
+      "s5_04_coherence_ledger#ch2",
+      "s5_04_coherence_ledger#ch3",
+      "s5_04_coherence_ledger#ch4",
+      "s5_04_coherence_ledger#ch5",
+      "s5_04_coherence_ledger#ch6",
+      "s5_04_coherence_ledger#ch7",
+      "s5_04_coherence_ledger#ch8",
+      "s5_05_sovereign_object_model#ch1",
+      "s5_05_sovereign_object_model#ch2",
+      "s5_05_sovereign_object_model#ch3",
+      "s5_05_sovereign_object_model#ch4",
+      "s5_05_sovereign_object_model#ch5",
+      "s5_05_sovereign_object_model#ch6",
+      "s5_05_sovereign_object_model#ch7",
+      "s5_05_sovereign_object_model#ch8",
+      "s5_06_distribution_matrix_gov#ch1",
+      "s5_06_distribution_matrix_gov#ch2",
+      "s5_06_distribution_matrix_gov#ch3",
+      "s5_06_distribution_matrix_gov#ch4",
+      "s5_06_distribution_matrix_gov#ch5",
+      "s5_06_distribution_matrix_gov#ch6",
+      "s5_06_distribution_matrix_gov#ch7",
+      "s5_06_distribution_matrix_gov#ch8",
+      "s5_07_sovereign_financials#ch1",
+      "s5_07_sovereign_financials#ch2",
+      "s5_07_sovereign_financials#ch3",
+      "s5_07_sovereign_financials#ch4",
+      "s5_07_sovereign_financials#ch5",
+      "s5_07_sovereign_financials#ch6",
+      "s5_07_sovereign_financials#ch7",
+      "s5_07_sovereign_financials#ch8",
+      "s5_08_treasury_cash#ch1",
+      "s5_08_treasury_cash#ch2",
+      "s5_08_treasury_cash#ch3",
+      "s5_08_treasury_cash#ch4",
+      "s5_08_treasury_cash#ch5",
+      "s5_08_treasury_cash#ch6",
+      "s5_08_treasury_cash#ch7",
+      "s5_08_treasury_cash#ch8",
+      "s5_09_supply_chain#ch1",
+      "s5_09_supply_chain#ch2",
+      "s5_09_supply_chain#ch3",
+      "s5_09_supply_chain#ch4",
+      "s5_09_supply_chain#ch5",
+      "s5_09_supply_chain#ch6",
+      "s5_09_supply_chain#ch7",
+      "s5_09_supply_chain#ch8",
+      "s5_10_manufacturing_quality#ch1",
+      "s5_10_manufacturing_quality#ch2",
+      "s5_10_manufacturing_quality#ch3",
+      "s5_10_manufacturing_quality#ch4",
+      "s5_10_manufacturing_quality#ch5",
+      "s5_10_manufacturing_quality#ch6",
+      "s5_10_manufacturing_quality#ch7",
+      "s5_10_manufacturing_quality#ch8",
+      "s5_11_project_portfolio#ch1",
+      "s5_11_project_portfolio#ch2",
+      "s5_11_project_portfolio#ch3",
+      "s5_11_project_portfolio#ch4",
+      "s5_11_project_portfolio#ch5",
+      "s5_11_project_portfolio#ch6",
+      "s5_11_project_portfolio#ch7",
+      "s5_11_project_portfolio#ch8",
+      "s5_12_asset_maintenance#ch1",
+      "s5_12_asset_maintenance#ch2",
+      "s5_12_asset_maintenance#ch3",
+      "s5_12_asset_maintenance#ch4",
+      "s5_12_asset_maintenance#ch5",
+      "s5_12_asset_maintenance#ch6",
+      "s5_12_asset_maintenance#ch7",
+      "s5_12_asset_maintenance#ch8",
+      "s5_13_human_capital_payroll#ch1",
+      "s5_13_human_capital_payroll#ch2",
+      "s5_13_human_capital_payroll#ch3",
+      "s5_13_human_capital_payroll#ch4",
+      "s5_13_human_capital_payroll#ch5",
+      "s5_13_human_capital_payroll#ch6",
+      "s5_13_human_capital_payroll#ch7",
+      "s5_13_human_capital_payroll#ch8",
+      "s5_14_compliance_audit#ch1",
+      "s5_14_compliance_audit#ch2",
+      "s5_14_compliance_audit#ch3",
+      "s5_14_compliance_audit#ch4",
+      "s5_14_compliance_audit#ch5",
+      "s5_14_compliance_audit#ch6",
+      "s5_14_compliance_audit#ch7",
+      "s5_14_compliance_audit#ch8",
+      "s5_15_revenue_o2c#ch1",
+      "s5_15_revenue_o2c#ch2",
+      "s5_15_revenue_o2c#ch3",
+      "s5_15_revenue_o2c#ch4",
+      "s5_15_revenue_o2c#ch5",
+      "s5_15_revenue_o2c#ch6",
+      "s5_15_revenue_o2c#ch7",
+      "s5_15_revenue_o2c#ch8",
+      "s5_16_procure_to_pay#ch1",
+      "s5_16_procure_to_pay#ch2",
+      "s5_16_procure_to_pay#ch3",
+      "s5_16_procure_to_pay#ch4",
+      "s5_16_procure_to_pay#ch5",
+      "s5_16_procure_to_pay#ch6",
+      "s5_16_procure_to_pay#ch7",
+      "s5_16_procure_to_pay#ch8",
+      "s5_17_analytics_decision#ch1",
+      "s5_17_analytics_decision#ch2",
+      "s5_17_analytics_decision#ch3",
+      "s5_17_analytics_decision#ch4",
+      "s5_17_analytics_decision#ch5",
+      "s5_17_analytics_decision#ch6",
+      "s5_17_analytics_decision#ch7",
+      "s5_17_analytics_decision#ch8",
+      "s5_18_multi_entity_consolidation#ch1",
+      "s5_18_multi_entity_consolidation#ch2",
+      "s5_18_multi_entity_consolidation#ch3",
+      "s5_18_multi_entity_consolidation#ch4",
+      "s5_18_multi_entity_consolidation#ch5",
+      "s5_18_multi_entity_consolidation#ch6",
+      "s5_18_multi_entity_consolidation#ch7",
+      "s5_18_multi_entity_consolidation#ch8",
+      "s5_19_manufacturing_erp#ch1",
+      "s5_19_manufacturing_erp#ch2",
+      "s5_19_manufacturing_erp#ch3",
+      "s5_19_manufacturing_erp#ch4",
+      "s5_19_manufacturing_erp#ch5",
+      "s5_19_manufacturing_erp#ch6",
+      "s5_19_manufacturing_erp#ch7",
+      "s5_19_manufacturing_erp#ch8",
+      "s5_20_distribution_wholesale#ch1",
+      "s5_20_distribution_wholesale#ch2",
+      "s5_20_distribution_wholesale#ch3",
+      "s5_20_distribution_wholesale#ch4",
+      "s5_20_distribution_wholesale#ch5",
+      "s5_20_distribution_wholesale#ch6",
+      "s5_20_distribution_wholesale#ch7",
+      "s5_20_distribution_wholesale#ch8",
+      "s5_21_professional_services#ch1",
+      "s5_21_professional_services#ch2",
+      "s5_21_professional_services#ch3",
+      "s5_21_professional_services#ch4",
+      "s5_21_professional_services#ch5",
+      "s5_21_professional_services#ch6",
+      "s5_21_professional_services#ch7",
+      "s5_21_professional_services#ch8",
+      "s5_22_energy_resources#ch1",
+      "s5_22_energy_resources#ch2",
+      "s5_22_energy_resources#ch3",
+      "s5_22_energy_resources#ch4",
+      "s5_22_energy_resources#ch5",
+      "s5_22_energy_resources#ch6",
+      "s5_22_energy_resources#ch7",
+      "s5_22_energy_resources#ch8",
+      "s5_23_construction_projects#ch1",
+      "s5_23_construction_projects#ch2",
+      "s5_23_construction_projects#ch3",
+      "s5_23_construction_projects#ch4",
+      "s5_23_construction_projects#ch5",
+      "s5_23_construction_projects#ch6",
+      "s5_23_construction_projects#ch7",
+      "s5_23_construction_projects#ch8",
+      "s5_24_regulated_industries#ch1",
+      "s5_24_regulated_industries#ch2",
+      "s5_24_regulated_industries#ch3",
+      "s5_24_regulated_industries#ch4",
+      "s5_24_regulated_industries#ch5",
+      "s5_24_regulated_industries#ch6",
+      "s5_24_regulated_industries#ch7",
+      "s5_24_regulated_industries#ch8",
+      "s5_25_multi_standard_ingestion#ch1",
+      "s5_25_multi_standard_ingestion#ch2",
+      "s5_25_multi_standard_ingestion#ch3",
+      "s5_25_multi_standard_ingestion#ch4",
+      "s5_25_multi_standard_ingestion#ch5",
+      "s5_25_multi_standard_ingestion#ch6",
+      "s5_25_multi_standard_ingestion#ch7",
+      "s5_25_multi_standard_ingestion#ch8",
+      "s5_26_federation_node_gov#ch1",
+      "s5_26_federation_node_gov#ch2",
+      "s5_26_federation_node_gov#ch3",
+      "s5_26_federation_node_gov#ch4",
+      "s5_26_federation_node_gov#ch5",
+      "s5_26_federation_node_gov#ch6",
+      "s5_26_federation_node_gov#ch7",
+      "s5_26_federation_node_gov#ch8",
+      "s5_27_generational_continuity#ch1",
+      "s5_27_generational_continuity#ch2",
+      "s5_27_generational_continuity#ch3",
+      "s5_27_generational_continuity#ch4",
+      "s5_27_generational_continuity#ch5",
+      "s5_27_generational_continuity#ch6",
+      "s5_27_generational_continuity#ch7",
+      "s5_27_generational_continuity#ch8",
+      "s5_28_private_series_templates#ch1",
+      "s5_28_private_series_templates#ch2",
+      "s5_28_private_series_templates#ch3",
+      "s5_28_private_series_templates#ch4",
+      "s5_28_private_series_templates#ch5",
+      "s5_28_private_series_templates#ch6",
+      "s5_28_private_series_templates#ch7",
+      "s5_28_private_series_templates#ch8",
+      "s5_29_exception_gov_workflows#ch1",
+      "s5_29_exception_gov_workflows#ch2",
+      "s5_29_exception_gov_workflows#ch3",
+      "s5_29_exception_gov_workflows#ch4",
+      "s5_29_exception_gov_workflows#ch5",
+      "s5_29_exception_gov_workflows#ch6",
+      "s5_29_exception_gov_workflows#ch7",
+      "s5_29_exception_gov_workflows#ch8",
+      "s5_30_social_external_distribution#ch1",
+      "s5_30_social_external_distribution#ch2",
+      "s5_30_social_external_distribution#ch3",
+      "s5_30_social_external_distribution#ch4",
+      "s5_30_social_external_distribution#ch5",
+      "s5_30_social_external_distribution#ch6",
+      "s5_30_social_external_distribution#ch7",
+      "s5_30_social_external_distribution#ch8",
+      "s5_31_federation_marketplace#ch1",
+      "s5_31_federation_marketplace#ch2",
+      "s5_31_federation_marketplace#ch3",
+      "s5_31_federation_marketplace#ch4",
+      "s5_31_federation_marketplace#ch5",
+      "s5_31_federation_marketplace#ch6",
+      "s5_31_federation_marketplace#ch7",
+      "s5_31_federation_marketplace#ch8",
+      "s5_32_erp_operations_console#ch1",
+      "s5_32_erp_operations_console#ch2",
+      "s5_32_erp_operations_console#ch3",
+      "s5_32_erp_operations_console#ch4",
+      "s5_32_erp_operations_console#ch5",
+      "s5_32_erp_operations_console#ch6",
+      "s5_32_erp_operations_console#ch7",
+      "s5_32_erp_operations_console#ch8",
+      "s5_33_migration_primitive#ch1",
+      "s5_33_migration_primitive#ch2",
+      "s5_33_migration_primitive#ch3",
+      "s5_33_migration_primitive#ch4",
+      "s5_33_migration_primitive#ch5",
+      "s5_33_migration_primitive#ch6",
+      "s5_33_migration_primitive#ch7",
+      "s5_33_migration_primitive#ch8",
+      "s5_34_escaping_quickbooks#ch1",
+      "s5_34_escaping_quickbooks#ch2",
+      "s5_34_escaping_quickbooks#ch3",
+      "s5_34_escaping_quickbooks#ch4",
+      "s5_34_escaping_quickbooks#ch5",
+      "s5_34_escaping_quickbooks#ch6",
+      "s5_34_escaping_quickbooks#ch7",
+      "s5_34_escaping_quickbooks#ch8",
+      "s5_35_unbinding_salesforce#ch1",
+      "s5_35_unbinding_salesforce#ch2",
+      "s5_35_unbinding_salesforce#ch3",
+      "s5_35_unbinding_salesforce#ch4",
+      "s5_35_unbinding_salesforce#ch5",
+      "s5_35_unbinding_salesforce#ch6",
+      "s5_35_unbinding_salesforce#ch7",
+      "s5_35_unbinding_salesforce#ch8",
+      "s5_36_consuming_the_giants#ch1",
+      "s5_36_consuming_the_giants#ch2",
+      "s5_36_consuming_the_giants#ch3",
+      "s5_36_consuming_the_giants#ch4",
+      "s5_36_consuming_the_giants#ch5",
+      "s5_36_consuming_the_giants#ch6",
+      "s5_36_consuming_the_giants#ch7",
+      "s5_36_consuming_the_giants#ch8",
+      "s5_37_the_clean_exit#ch1",
+      "s5_37_the_clean_exit#ch2",
+      "s5_37_the_clean_exit#ch3",
+      "s5_37_the_clean_exit#ch4",
+      "s5_37_the_clean_exit#ch5",
+      "s5_37_the_clean_exit#ch6",
+      "s5_37_the_clean_exit#ch7",
+      "s5_37_the_clean_exit#ch8",
+      "s8_01_sovereign_lens#ch1",
+      "s8_01_sovereign_lens#ch2",
+      "s8_01_sovereign_lens#ch3",
+      "s8_01_sovereign_lens#ch4",
+      "s8_01_sovereign_lens#ch5",
+      "s8_01_sovereign_lens#ch6",
+      "s8_01_sovereign_lens#ch7",
+      "s8_01_sovereign_lens#ch8",
+      "s8_02_breath_gated_interfaces#ch1",
+      "s8_02_breath_gated_interfaces#ch2",
+      "s8_02_breath_gated_interfaces#ch3",
+      "s8_02_breath_gated_interfaces#ch4",
+      "s8_02_breath_gated_interfaces#ch5",
+      "s8_02_breath_gated_interfaces#ch6",
+      "s8_02_breath_gated_interfaces#ch7",
+      "s8_02_breath_gated_interfaces#ch8",
+      "s8_03_aesthetic_resonance#ch1",
+      "s8_03_aesthetic_resonance#ch2",
+      "s8_03_aesthetic_resonance#ch3",
+      "s8_03_aesthetic_resonance#ch4",
+      "s8_03_aesthetic_resonance#ch5",
+      "s8_03_aesthetic_resonance#ch6",
+      "s8_03_aesthetic_resonance#ch7",
+      "s8_03_aesthetic_resonance#ch8",
+      "s8_04_atrium_living_os#ch1",
+      "s8_04_atrium_living_os#ch2",
+      "s8_04_atrium_living_os#ch3",
+      "s8_04_atrium_living_os#ch4",
+      "s8_04_atrium_living_os#ch5",
+      "s8_04_atrium_living_os#ch6",
+      "s8_04_atrium_living_os#ch7",
+      "s8_04_atrium_living_os#ch8",
+      "s8_05_generational_ux#ch1",
+      "s8_05_generational_ux#ch2",
+      "s8_05_generational_ux#ch3",
+      "s8_05_generational_ux#ch4",
+      "s8_05_generational_ux#ch5",
+      "s8_05_generational_ux#ch6",
+      "s8_05_generational_ux#ch7",
+      "s8_05_generational_ux#ch8",
+      "s8_06_federation_ux#ch1",
+      "s8_06_federation_ux#ch2",
+      "s8_06_federation_ux#ch3",
+      "s8_06_federation_ux#ch4",
+      "s8_06_federation_ux#ch5",
+      "s8_06_federation_ux#ch6",
+      "s8_06_federation_ux#ch7",
+      "s8_06_federation_ux#ch8",
+      "s8_07_zero_trust_ux#ch1",
+      "s8_07_zero_trust_ux#ch2",
+      "s8_07_zero_trust_ux#ch3",
+      "s8_07_zero_trust_ux#ch4",
+      "s8_07_zero_trust_ux#ch5",
+      "s8_07_zero_trust_ux#ch6",
+      "s8_07_zero_trust_ux#ch7",
+      "s8_07_zero_trust_ux#ch8",
+      "s8_08_ux_executable_covenant#ch1",
+      "s8_08_ux_executable_covenant#ch2",
+      "s8_08_ux_executable_covenant#ch3",
+      "s8_08_ux_executable_covenant#ch4",
+      "s8_08_ux_executable_covenant#ch5",
+      "s8_08_ux_executable_covenant#ch6",
+      "s8_08_ux_executable_covenant#ch7",
+      "s8_08_ux_executable_covenant#ch8",
+      "vol_01_immutable_core#ch1",
+      "vol_01_immutable_core#ch2",
+      "vol_01_immutable_core#ch3",
+      "vol_01_immutable_core#ch4",
+      "vol_01_immutable_core#ch5",
+      "vol_01_immutable_core#ch6",
+      "vol_01_immutable_core#ch7",
+      "vol_01_immutable_core#ch8",
+      "vol_01_receipted_inter_node_messaging#ch1",
+      "vol_01_receipted_inter_node_messaging#ch2",
+      "vol_01_receipted_inter_node_messaging#ch3",
+      "vol_01_receipted_inter_node_messaging#ch4",
+      "vol_01_receipted_inter_node_messaging#ch5",
+      "vol_01_receipted_inter_node_messaging#ch6",
+      "vol_01_receipted_inter_node_messaging#ch7",
+      "vol_01_receipted_inter_node_messaging#ch8",
       "vol_01_sovereign_inference_and_memory#ch1",
       "vol_01_sovereign_inference_and_memory#ch2",
       "vol_01_sovereign_inference_and_memory#ch3",
@@ -2582,6 +5413,14 @@
       "vol_01_sovereign_token_substrate#ch6",
       "vol_01_sovereign_token_substrate#ch7",
       "vol_01_sovereign_token_substrate#ch8",
+      "vol_01_zero_trust_node_architecture#ch1",
+      "vol_01_zero_trust_node_architecture#ch2",
+      "vol_01_zero_trust_node_architecture#ch3",
+      "vol_01_zero_trust_node_architecture#ch4",
+      "vol_01_zero_trust_node_architecture#ch5",
+      "vol_01_zero_trust_node_architecture#ch6",
+      "vol_01_zero_trust_node_architecture#ch7",
+      "vol_01_zero_trust_node_architecture#ch8",
       "vol_02_governed_token_mechanics#ch1",
       "vol_02_governed_token_mechanics#ch2",
       "vol_02_governed_token_mechanics#ch3",
@@ -2590,6 +5429,30 @@
       "vol_02_governed_token_mechanics#ch6",
       "vol_02_governed_token_mechanics#ch7",
       "vol_02_governed_token_mechanics#ch8",
+      "vol_02_programmable_governance_skin#ch1",
+      "vol_02_programmable_governance_skin#ch2",
+      "vol_02_programmable_governance_skin#ch3",
+      "vol_02_programmable_governance_skin#ch4",
+      "vol_02_programmable_governance_skin#ch5",
+      "vol_02_programmable_governance_skin#ch6",
+      "vol_02_programmable_governance_skin#ch7",
+      "vol_02_programmable_governance_skin#ch8",
+      "vol_02_shields_protective_layers#ch1",
+      "vol_02_shields_protective_layers#ch2",
+      "vol_02_shields_protective_layers#ch3",
+      "vol_02_shields_protective_layers#ch4",
+      "vol_02_shields_protective_layers#ch5",
+      "vol_02_shields_protective_layers#ch6",
+      "vol_02_shields_protective_layers#ch7",
+      "vol_02_shields_protective_layers#ch8",
+      "vol_02_sovereign_collaboration#ch1",
+      "vol_02_sovereign_collaboration#ch2",
+      "vol_02_sovereign_collaboration#ch3",
+      "vol_02_sovereign_collaboration#ch4",
+      "vol_02_sovereign_collaboration#ch5",
+      "vol_02_sovereign_collaboration#ch6",
+      "vol_02_sovereign_collaboration#ch7",
+      "vol_02_sovereign_collaboration#ch8",
       "vol_02_the_primacy_cockpit#ch1",
       "vol_02_the_primacy_cockpit#ch10",
       "vol_02_the_primacy_cockpit#ch11",
@@ -2602,6 +5465,14 @@
       "vol_02_the_primacy_cockpit#ch7",
       "vol_02_the_primacy_cockpit#ch8",
       "vol_02_the_primacy_cockpit#ch9",
+      "vol_03_distributed_sovereign_compute#ch1",
+      "vol_03_distributed_sovereign_compute#ch2",
+      "vol_03_distributed_sovereign_compute#ch3",
+      "vol_03_distributed_sovereign_compute#ch4",
+      "vol_03_distributed_sovereign_compute#ch5",
+      "vol_03_distributed_sovereign_compute#ch6",
+      "vol_03_distributed_sovereign_compute#ch7",
+      "vol_03_distributed_sovereign_compute#ch8",
       "vol_03_governed_dev_loop_and_self_building_harness#ch1",
       "vol_03_governed_dev_loop_and_self_building_harness#ch2",
       "vol_03_governed_dev_loop_and_self_building_harness#ch3",
@@ -2615,6 +5486,14 @@
       "vol_03_helix_book_writes_backend#ch6",
       "vol_03_helix_book_writes_backend#ch7",
       "vol_03_helix_book_writes_backend#ch8",
+      "vol_03_sovereign_data_storage#ch1",
+      "vol_03_sovereign_data_storage#ch2",
+      "vol_03_sovereign_data_storage#ch3",
+      "vol_03_sovereign_data_storage#ch4",
+      "vol_03_sovereign_data_storage#ch5",
+      "vol_03_sovereign_data_storage#ch6",
+      "vol_03_sovereign_data_storage#ch7",
+      "vol_03_sovereign_data_storage#ch8",
       "vol_03_yield_organism_integration#ch1",
       "vol_03_yield_organism_integration#ch2",
       "vol_03_yield_organism_integration#ch3",
@@ -2652,6 +5531,38 @@
       "vol_04_legal_hardening_forkability_generational#ch7",
       "vol_04_legal_hardening_forkability_generational#ch8",
       "vol_04_legal_hardening_forkability_generational#ch9",
+      "vol_04_resonance_coordination#ch1",
+      "vol_04_resonance_coordination#ch2",
+      "vol_04_resonance_coordination#ch3",
+      "vol_04_resonance_coordination#ch4",
+      "vol_04_resonance_coordination#ch5",
+      "vol_04_resonance_coordination#ch6",
+      "vol_04_resonance_coordination#ch7",
+      "vol_04_resonance_coordination#ch8",
+      "vol_04_verified_data_flows#ch1",
+      "vol_04_verified_data_flows#ch2",
+      "vol_04_verified_data_flows#ch3",
+      "vol_04_verified_data_flows#ch4",
+      "vol_04_verified_data_flows#ch5",
+      "vol_04_verified_data_flows#ch6",
+      "vol_04_verified_data_flows#ch7",
+      "vol_04_verified_data_flows#ch8",
+      "vol_05_inter_node_trust_boundaries_handoff#ch1",
+      "vol_05_inter_node_trust_boundaries_handoff#ch2",
+      "vol_05_inter_node_trust_boundaries_handoff#ch3",
+      "vol_05_inter_node_trust_boundaries_handoff#ch4",
+      "vol_05_inter_node_trust_boundaries_handoff#ch5",
+      "vol_05_inter_node_trust_boundaries_handoff#ch6",
+      "vol_05_inter_node_trust_boundaries_handoff#ch7",
+      "vol_05_inter_node_trust_boundaries_handoff#ch8",
+      "vol_05_private_shared_storage_governance#ch1",
+      "vol_05_private_shared_storage_governance#ch2",
+      "vol_05_private_shared_storage_governance#ch3",
+      "vol_05_private_shared_storage_governance#ch4",
+      "vol_05_private_shared_storage_governance#ch5",
+      "vol_05_private_shared_storage_governance#ch6",
+      "vol_05_private_shared_storage_governance#ch7",
+      "vol_05_private_shared_storage_governance#ch8",
       "vol_05_yield_organism_and_generational_prosperity#ch1",
       "vol_05_yield_organism_and_generational_prosperity#ch10",
       "vol_05_yield_organism_and_generational_prosperity#ch2",
@@ -2661,15 +5572,23 @@
       "vol_05_yield_organism_and_generational_prosperity#ch6",
       "vol_05_yield_organism_and_generational_prosperity#ch7",
       "vol_05_yield_organism_and_generational_prosperity#ch8",
-      "vol_05_yield_organism_and_generational_prosperity#ch9"
+      "vol_05_yield_organism_and_generational_prosperity#ch9",
+      "vol_06_resilience_recovery_shields#ch1",
+      "vol_06_resilience_recovery_shields#ch2",
+      "vol_06_resilience_recovery_shields#ch3",
+      "vol_06_resilience_recovery_shields#ch4",
+      "vol_06_resilience_recovery_shields#ch5",
+      "vol_06_resilience_recovery_shields#ch6",
+      "vol_06_resilience_recovery_shields#ch7",
+      "vol_06_resilience_recovery_shields#ch8"
     ],
     "intentional_unrendered": [
       "01_investor_guide#ch10",
       "01_investor_guide#ch11",
       "01_investor_guide#ch9"
     ],
-    "orphan_count": 25,
-    "unrendered_count": 270,
+    "orphan_count": 32,
+    "unrendered_count": 734,
     "intentional_unrendered_count": 3
   },
   "meta": {
@@ -2682,17 +5601,17 @@
       "git ls-tree src/",
       "book_code_map.yaml"
     ],
-    "generated_at": "2026-06-10T16:23:55Z",
+    "generated_at": "2026-06-13T13:55:25Z",
     "n_series": 12,
-    "n_chapters": 273,
-    "n_modules": 37,
+    "n_chapters": 737,
+    "n_modules": 44,
     "edge_count": 12,
     "derived_edge_count": 12,
-    "orphan_count": 25,
-    "unrendered_count": 270,
+    "orphan_count": 32,
+    "unrendered_count": 734,
     "intentional_unrendered_count": 3,
     "map_present": true,
-    "content_hash": "6a76e6ae88fff130",
+    "content_hash": "256490202b4b2cbb",
     "note": "Edges READ from book_code_map.yaml (GB sole-write). Absent map → audit shell (all code orphan / all chapters unrendered) — findings mode working, not an error."
   }
 }

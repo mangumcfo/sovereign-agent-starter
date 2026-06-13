@@ -56,9 +56,15 @@ def _book_tree(chapter_index: dict) -> tuple[list, list, dict]:
     """Series → titles → chapters from the roadmap (chapters merged from the index, Path B).
     Returns (tree, chapter_node_ids, book_series) — chapter ids are '<book_id>#chN';
     book_series maps book_id → '<series_slug> <series_name>' (lowercased, for silence-matching)."""
-    yaml = _yaml()
-    text = ROADMAP.read_text(encoding="utf-8")
-    data = yaml.safe_load(text) or {}
+    # Resilient shared loader (audit 2026-06-13): parse the degraded roadmap the SAME way the lens does
+    # (auto-repair unquoted ':'-values / safe-prefix fallback) instead of crashing on raw safe_load.
+    import sys as _sys
+    if str(REPO / "src") not in _sys.path:
+        _sys.path.insert(0, str(REPO / "src"))
+    from sovereign_agent.node_api.yaml_repair import load_roadmap
+    data, degraded, detail = load_roadmap(ROADMAP.read_text(encoding="utf-8"))
+    if degraded:
+        _sys.stderr.write(f"⚠ roadmap degraded: {detail}\n")
     tree, chapter_ids, book_series = [], [], {}
     for s in data.get("series") or []:
         if not isinstance(s, dict):
