@@ -82,6 +82,21 @@ def test_safe_cross_site_get_not_blocked(owner_client):
     assert r.status_code == 200
 
 
+def test_dns_rebinding_host_is_refused(owner_client):
+    """audit 2026-06-13d #2: a non-loopback Host header (DNS-rebinding) cannot use the loopback-owner
+    shortcut, even with loopback remote_addr + same-origin Sec-Fetch-Site."""
+    r = owner_client.post("/api/v1/proposals/prop_x/apply", json={},
+                          headers={"Host": "evil.example", "Sec-Fetch-Site": "same-origin"})
+    assert r.status_code == 403 and r.get_json()["error"] == "forbidden_host"
+
+
+def test_loopback_host_still_passes(owner_client):
+    """A genuine loopback Host (the test client default) still reaches the handler (404 = past auth)."""
+    r = owner_client.post("/api/v1/proposals/prop_nope/apply", json={},
+                          headers={"Host": "127.0.0.1:8421"})
+    assert r.status_code == 404
+
+
 # ── 2. CORS ─────────────────────────────────────────────────────────────────────────────────────--
 def test_cors_echoes_only_allowlisted_origin(owner_client):
     r = owner_client.get("/api/v1/proposals", headers={"Origin": "http://127.0.0.1:8421"})

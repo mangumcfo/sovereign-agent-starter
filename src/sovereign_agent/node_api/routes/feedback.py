@@ -178,10 +178,18 @@ def review_brief():
 
 # Allowed document roots — a card may HAND any readable doc under these (GB A4: artifacts handed, not listed).
 def _doc_roots():
+    # Runs-anywhere (audit 2026-06-13d #3, §1 SOURCE): the vault root flows through config (honors
+    # BREATHLINE_BOOKS_VAULT) like every other vault consumer — not a hardcoded operator literal that
+    # made /doc serve nothing on any other host / when the vault is repointed. get_books_kdp_root()
+    # already returns the kdp root (no `/ "kdp"` suffix).
     from pathlib import Path as _P  # noqa: PLC0415
+    from ... import config  # noqa: PLC0415
     repo = _P(__file__).resolve().parents[4]
-    vault = _P("/home/kmangum/work-repos/mangumcfo/breathline-books-vault")
-    return [repo / "artifacts", repo / "scripts", vault / "kdp"]
+    roots = [repo / "artifacts", repo / "scripts"]
+    kdp = config.get_books_kdp_root()
+    if kdp:
+        roots.append(_P(kdp))
+    return roots
 
 
 @bp.get("/doc")

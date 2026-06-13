@@ -104,6 +104,19 @@ def _is_loopback() -> bool:
     return ra in {"127.0.0.1", "::1", "::ffff:127.0.0.1", "localhost"}
 
 
+def _host_is_loopback() -> bool:
+    """The Host header must name a loopback host (audit 2026-06-13d #2 — DNS-rebinding defense). An
+    attacker page on evil.example that rebinds the domain to 127.0.0.1 makes `remote_addr` loopback (so
+    `_is_loopback()` passes) while the browser still stamps `Sec-Fetch-Site: same-origin` (so the CSRF
+    guard misses) — but the Host header stays `evil.example`. Requiring a loopback Host closes that gap."""
+    h = (request.host or "").strip().lower()
+    if h.startswith("["):                       # [::1] or [::1]:port
+        h = h[1:h.index("]")] if "]" in h else h[1:]
+    elif h.count(":") == 1:                      # host:port (ipv4 / hostname)
+        h = h.rsplit(":", 1)[0]
+    return h in {"127.0.0.1", "localhost", "::1"}
+
+
 _SAFE_METHODS = {"GET", "HEAD", "OPTIONS"}
 
 
@@ -156,6 +169,17 @@ def require_principal(fn: Callable):
         # any request that DOES present a token fall through to real verification.
         loop_owner = _loopback_owner()
         if loop_owner and _is_loopback() and not token:
+            # DNS-rebinding defense (audit 2026-06-13d #2): the loopback shortcut requires a loopback
+            # remote_addr AND a loopback Host header. A rebinding attacker makes remote_addr loopback while
+            # the Host stays evil.example — refuse before granting owner authority.
+            if not _host_is_loopback():
+                return jsonify({
+                    "error": "forbidden_host",
+                    "what": "The loopback-owner shortcut requires a loopback Host header.",
+                    "why": "This request's Host is not 127.0.0.1/localhost/[::1] — the DNS-rebinding "
+                           "vector against a local-first node.",
+                    "next_step": "Reach the node by its loopback address, or present the owner bearer token.",
+                }), 403
             # CSRF defense (audit 2026-06-13 HIGH): the token-less loopback shortcut is the operator's
             # own-machine convenience — but it must NOT bless a cross-site browser write (drive-by CSRF
             # to code execution). Block that one case; everything else keeps the shortcut.

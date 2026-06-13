@@ -125,7 +125,11 @@ def _node_default_root() -> Path:
 def _resolve_root(root: Optional[os.PathLike | str]) -> Path:
     if root is None:
         root = os.environ.get(ENV_ROOT)
-    p = Path(root).expanduser().resolve() if root else _default_root().resolve()
+    # ONE default (audit 2026-06-13d #12): a bare ObligationLedger() (no root, no env) resolves to the
+    # node canonical root (atrium_review, where the cards live) — NOT the empty parent. The empty-parent
+    # default was the "starved root" split-brain (a bare constructor served an empty chain beside the rich
+    # sibling), the exact bug that once hid KM's cards; the raw constructor never runs deps' starve-guard.
+    p = Path(root).expanduser().resolve() if root else _node_default_root().resolve()
     s = str(p)
     for frag in FORBIDDEN_ROOT_FRAGMENTS:
         if frag in s:
