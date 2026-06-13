@@ -1,0 +1,51 @@
+{
+  "book_id": "vol_01_sovereign_inference_and_memory",
+  "review_ready": false,
+  "checks": [
+    {
+      "check": "boards_executed",
+      "pass": true,
+      "detail": "editorial_round1=rigor-pass \u00b7 editorial_round2=rigor-pass \u00b7 editorial_round3=rigor-pass \u00b7 book_to_ux=present \u00b7 technical=rigor-pass",
+      "statuses": {
+        "editorial_round1": "rigor-pass",
+        "editorial_round2": "rigor-pass",
+        "editorial_round3": "rigor-pass",
+        "book_to_ux": "present",
+        "technical": "rigor-pass"
+      },
+      "gap": ""
+    },
+    {
+      "check": "obligations_closed",
+      "pass": false,
+      "detail": "3 open for book (1 blocking, 2 deferred)",
+      "gap": "close or defer-with-reason: obl_20260611200250_28ae0e1d",
+      "blocking_ids": [
+        "obl_20260611200250_28ae0e1d"
+      ]
+    },
+    {
+      "check": "fidelity_passed",
+      "pass": false,
+      "detail": "verdict: fail",
+      "gap": "GB fidelity trace must record PASS (semantic source-trace)"
+    },
+    {
+      "check": "review_brief_sealed",
+      "pass": false,
+      "detail": "no Review Brief found",
+      "gap": "GB seals one-page Review Brief w/ 3\u20137 judgment calls"
+    }
+  ],
+  "gaps": [
+    "close or defer-with-reason: obl_20260611200250_28ae0e1d",
+    "GB fidelity trace must record PASS (semantic source-trace)",
+    "GB seals one-page Review Brief w/ 3\u20137 judgment calls"
+  ],
+  "meta": {
+    "contract": "Review-Ready Rail R1 v1.0",
+    "spec": "artifacts/GB_ReviewReady_Rail_Spec_2026-06-10.md",
+    "book_dir": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/series_02_building_the_agentic_harness/vol_01_sovereign_inference_and_memory/v1.0",
+    "evaluated_at": "2026-06-11T20:22:20Z"
+  }
+}

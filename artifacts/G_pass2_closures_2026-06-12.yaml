@@ -1,0 +1,27 @@
+# G's PASS 2 — five small closures (G via KM relay 2026-06-12)
+# CAPTURE COUNTS: s5_19 re-key 8 chapter-KW sets · S3 V4 ch3-5 full (3 promise/beats/KW) · S3 V3+V4 title-KW 7+7 + markets · 1 jargon swap pair · 2 title confirms
+# STATUS: staged_pending_gb_fold
+s5_19_rekey:
+  chapters:
+    - {n: 1, keywords: ["vertical manufacturing patterns","industry ERP configuration","regulated adaptation frameworks","sovereign vertical templates"]}
+    - {n: 2, keywords: ["manufacturing pattern application","discrete process configuration","regulated industry templates","enterprise vertical governance"]}
+    - {n: 3, keywords: ["process manufacturing patterns","vertical production adaptation","permissioned industry workflows","compliant manufacturing configuration"]}
+    - {n: 4, keywords: ["quality pattern adaptation","regulated vertical quality","sovereign industry templates","enterprise pattern customization"]}
+    - {n: 5, keywords: ["material flow patterns","vertical resource configuration","regulated manufacturing adaptation","permissioned industry models"]}
+    - {n: 6, keywords: ["compliance pattern application","vertical regulatory templates","governed industry configuration","compliant manufacturing patterns"]}
+    - {n: 7, keywords: ["vertical ERP comparison","industry pattern advantages","regulated adaptation comparison","sovereign manufacturing customization"]}
+    - {n: 8, keywords: ["generational vertical patterns","long term industry adaptation","regulated manufacturing legacy","sovereign vertical continuity"]}
+s3_v4_ch3_5:
+  - {n: 3, chapter_title: "Manufacturing Pattern Application", promise: "You will apply reusable sovereign patterns to generate manufacturing-specific ERP functionality.", beats: ["Core manufacturing flows","Helix rendering of patterns","Receipted specialization","Atrium manufacturing lens","Honest adaptation limits","LGP vertical continuity"], keywords: ["manufacturing ERP patterns","vertical production configuration","regulated manufacturing adaptation","sovereign industry templates"]}
+  - {n: 4, chapter_title: "Electronics & High-Tech Pattern Application", promise: "You will apply patterns for serial-tracked, warranty-heavy electronics manufacturing.", beats: ["Serial and warranty governance","Supply chain traceability","Returns and service flows","Atrium electronics lens","Honest high-tech generalization","LGP tech continuity"], keywords: ["electronics manufacturing ERP","regulated serial traceability","permissioned warranty management","compliant high-tech patterns"]}
+  - {n: 5, chapter_title: "Family Business & Multi-Generational ERP Patterns", promise: "You will apply patterns optimized for family-owned and multi-generational businesses.", beats: ["Family compact structures","Succession governance","Multi-mandate support","Atrium family lens","Honest family-business fit","LGP generational handoff"], keywords: ["family business ERP patterns","multi generational configuration","regulated family governance","sovereign succession templates"]}
+s3_v3_refresh:
+  title: "Helix — When the Book Literally Writes the Backend"
+  market: "Book-to-Code & Deterministic ERP Automation"
+  keywords: ["book to code ERP","deterministic rendering engine","living book backend","governed code generation","configurable ERP automation","prose to production","sovereign render system"]
+s3_v4_refresh:
+  title: "Industry Sovereign ERPs & Generational Continuity"
+  market: "Vertical Industry ERP Patterns & Generational Business Systems"
+  keywords: ["vertical industry ERP","manufacturing sovereign patterns","generational business ERP","regulated industry configuration","family office ERP templates","sovereign vertical adaptation","compliant generational ERP"]
+merkle_swap: {old_title_kw: "Merkle ERP integrity", new_title_kw: "verifiable data integrity layer", new_ch4_kw: "immutable proof structures"}
+title_confirms: {s5_25: "into Sovereign Form", s5_32: "Single Operator Surface"}

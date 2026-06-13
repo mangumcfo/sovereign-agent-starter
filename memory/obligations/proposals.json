@@ -1,0 +1,1748 @@
+[
+  {
+    "id": "prop_1780589077728",
+    "session_ref": "Book 11 \u00b7 p90",
+    "obligation_id": "obl_20260604160403_d939f687",
+    "book": "Book 11",
+    "note": "KM asked to tighten the single seeded passage (the re-seating discipline paragraph, line 886). No recurrence signal \u2014 scoped to this one spot. 1 instance, 1 pattern.",
+    "info": false,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [
+      {
+        "id": "g1",
+        "title": "Tighten re-seating discipline passage \u2014 1 place",
+        "kind": "prose",
+        "scope": "GREEN",
+        "rationale": "Trim padding (\"putting\", \"actually\", \"ever\", \"already\", \"at which point\") and collapse the second sentence so the timing caution lands harder, without sanding the voice.",
+        "file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/11_ma_due_diligence/v1.0/manuscript_v1.5.md",
+        "hunks": [
+          {
+            "before": [
+              "It also pairs naturally with the *re-seating* discipline from Chapter 5 \u2014 putting a named human sign-off on each side of a synergy, so a double-count is caught at the line level by the people who actually own those resources, before it ever reaches the board model. One caution on timing: re-seating is far easier to install before close than to retrofit afterward, once the integration is underway and the \u201celiminated\u201d team is already gone \u2014 at which point the contradiction is no longer a modeling error you can fix, but an operational hole you have to live with."
+            ],
+            "after": [
+              "It also pairs naturally with the *re-seating* discipline from Chapter 5 \u2014 a named human sign-off on each side of a synergy, so a double-count is caught at the line level by the people who own those resources, before it reaches the board model. One caution on timing: re-seating is far easier to install before close than to retrofit after \u2014 once the integration is underway and the \u201celiminated\u201d team is gone, the contradiction is no longer a modeling error you can fix but an operational hole you have to live with."
+            ]
+          }
+        ]
+      }
+    ],
+    "status": "applied",
+    "created_at": "2026-06-04T16:04:37Z",
+    "apply_error": "couldn't apply: before-text not found exactly in manuscript_v1.5.md (one hunk) (the source text may have changed since this was proposed \u2014 Refine or re-process)",
+    "applied_commits": [
+      "books:c69f321"
+    ]
+  },
+  {
+    "id": "prop_1780593915577",
+    "session_ref": "Book 11 \u00b7 p68",
+    "obligation_id": "obl_20260604172445_8851db00",
+    "book": "Book 11",
+    "note": "Formatting request: bold the short key message inside the Ch. 8 Ciphernutz Industry Signal blockquote without changing wording. The punchy takeaway is the 6-month\u2192100-day compression. 1 place.",
+    "info": false,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [
+      {
+        "id": "g1",
+        "title": "Bold key message in Industry Signal \u2014 1 place",
+        "kind": "prose",
+        "scope": "GREEN",
+        "rationale": "KM asked to find and bold the short key message within the seed signal text without changing wording. The payoff phrase is the compression claim; wrapping it in ** highlights it while preserving the existing '**Industry Signal:**' lead and all wording.",
+        "file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/11_ma_due_diligence/v1.0/manuscript_v1.5.md",
+        "hunks": [
+          {
+            "before": [
+              "> **Industry Signal:** Leading M&A practitioners in 2026 are using AI agents to begin integration planning before deal close \u2014 with agentic systems producing Day 1 readiness plans, cultural assessments, systems integration roadmaps, and retention risk analyses that compress the traditional 6-month integration ramp into a 100-day execution plan. *Source: Ciphernutz, \"Top AI Platforms for Post-Merger Integration,\" February 2026.* [ciphernutz.com](https://ciphernutz.com/blog/best-ai-tools-for-merger-integration-2026)"
+            ],
+            "after": [
+              "> **Industry Signal:** Leading M&A practitioners in 2026 are using AI agents to begin integration planning before deal close \u2014 with agentic systems producing Day 1 readiness plans, cultural assessments, systems integration roadmaps, and retention risk analyses that **compress the traditional 6-month integration ramp into a 100-day execution plan**. *Source: Ciphernutz, \"Top AI Platforms for Post-Merger Integration,\" February 2026.* [ciphernutz.com](https://ciphernutz.com/blog/best-ai-tools-for-merger-integration-2026)"
+            ]
+          }
+        ]
+      }
+    ],
+    "status": "applied",
+    "created_at": "2026-06-04T17:25:15Z",
+    "applied_commits": [
+      "books:0e7cfdf"
+    ]
+  },
+  {
+    "id": "prop_1780594384404",
+    "session_ref": "Book 11 \u00b7 p84",
+    "obligation_id": "obl_20260604173238_6a1408db",
+    "book": "Book 11",
+    "note": "KM asked to bold the key message of the chapter-opening paragraph (p84, line 842). Bolding the single structural-insight sentence that carries the paragraph's core point. 1 instance.",
+    "info": false,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [
+      {
+        "id": "g1",
+        "title": "Bold key message of case-studies intro \u2014 1 place",
+        "kind": "prose",
+        "scope": "GREEN",
+        "rationale": "KM requested bolding the paragraph's key message. The structural-failure sentence is the paragraph's central takeaway (it's what every case study below is meant to teach). Wrapping it in ** makes it the visual anchor.",
+        "file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/11_ma_due_diligence/v1.0/manuscript_v1.5.md",
+        "hunks": [
+          {
+            "before": [
+              "Underneath, the real failure is structural \u2014 a scoping decision, a missing cross-check, an assumption nobody owned \u2014 and that deeper cause is the one you can actually design against."
+            ],
+            "after": [
+              "**Underneath, the real failure is structural \u2014 a scoping decision, a missing cross-check, an assumption nobody owned \u2014 and that deeper cause is the one you can actually design against.**"
+            ]
+          }
+        ]
+      }
+    ],
+    "status": "applied",
+    "created_at": "2026-06-04T17:33:04Z",
+    "applied_commits": [
+      "books:0cf8901"
+    ]
+  },
+  {
+    "id": "prop_1780599695880",
+    "session_ref": "Book 11 \u00b7 p104",
+    "obligation_id": "obl_20260604190110_dc07ff13",
+    "book": "Book 11",
+    "note": "Concrete formatting edit: highlight (bold) the key message inside the Chapter 11 Consero Industry Signal blockquote. 1 instance.",
+    "info": false,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [
+      {
+        "id": "g1",
+        "title": "Bold the key result metrics in Ch.11 Industry Signal \u2014 1 place",
+        "kind": "prose",
+        "scope": "GREEN",
+        "reflection_mode": "direct_mechanics",
+        "rationale": "KM asked to highlight the key message of the Industry Signal. The payload is the quantified outcome; bolding the timeline-compression and synergy-realization figures makes the takeaway scannable without altering content.",
+        "file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/11_ma_due_diligence/v1.0/manuscript_v1.5.md",
+        "hunks": [
+          {
+            "before": [
+              "> **Industry Signal:** Organizations deploying structured M&A agent programs with phased implementation \u2014 starting with screening and financial DD, then expanding to synergy modeling and integration planning \u2014 are achieving the fastest ROI in corporate development, with deal teams reporting 40-60% timeline compression and 20-30% improvement in post-deal synergy realization. *Source: Consero Global, \"AI in M&A Due Diligence,\" April 2026.* [conseroglobal.com](https://conseroglobal.com/resources/ai-ma-due-diligence/)"
+            ],
+            "after": [
+              "> **Industry Signal:** Organizations deploying structured M&A agent programs with phased implementation \u2014 starting with screening and financial DD, then expanding to synergy modeling and integration planning \u2014 are achieving the fastest ROI in corporate development, with deal teams reporting **40-60% timeline compression and 20-30% improvement in post-deal synergy realization**. *Source: Consero Global, \"AI in M&A Due Diligence,\" April 2026.* [conseroglobal.com](https://conseroglobal.com/resources/ai-ma-due-diligence/)"
+            ]
+          }
+        ]
+      }
+    ],
+    "status": "applied",
+    "created_at": "2026-06-04T19:01:35Z",
+    "applied_commits": [
+      "books:c9657f9"
+    ]
+  },
+  {
+    "id": "prop_1780600308791",
+    "session_ref": "Book 11 \u00b7 p29",
+    "obligation_id": "obl_20260604191124_6966eca2",
+    "book": "Book 11",
+    "note": "KM wants the negative framing ('does not skip \u2026 does not get tired') reframed to state what the agent positively DOES. 1 instance located at the tagged seed.",
+    "info": false,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [
+      {
+        "id": "g1",
+        "title": "Reframe negative phrasing to positive \u2014 1 place",
+        "kind": "prose",
+        "scope": "GREEN",
+        "reflection_mode": "direct_mechanics",
+        "rationale": "KM's note: 'Call out what it should do rather than what it shouldn't.' The seed sentence describes the agent by what it avoids (skipping, tiring). Reframe to assert the positive behavior \u2014 reading every line, holding constant focus \u2014 which reads stronger and keeps the bold emphasis and em-dash payoff intact.",
+        "file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/11_ma_due_diligence/v1.0/manuscript_v1.5.md",
+        "hunks": [
+          {
+            "before": [
+              "**It does not skip, and it does not get tired** \u2014 which is exactly what financial due diligence demands."
+            ],
+            "after": [
+              "**It reads every line, and it holds the same focus from first page to last** \u2014 which is exactly what financial due diligence demands."
+            ]
+          }
+        ]
+      }
+    ],
+    "status": "applied",
+    "created_at": "2026-06-04T19:11:48Z",
+    "applied_commits": [
+      "books:a6f7fed"
+    ]
+  },
+  {
+    "id": "prop_1780600750658",
+    "session_ref": "Book 11 \u00b7 p7",
+    "obligation_id": "obl_20260604191831_ea3a7d63",
+    "book": "Book 11",
+    "note": "KM asked to insert a figure right after the book states the agents the playbook will cover. The clearest enumeration is the 'What This Playbook Covers' sentence in Chapter 1 listing every M&A-lifecycle agent. 1 insertion, 1 place.",
+    "info": false,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [
+      {
+        "id": "g1",
+        "title": "Insert figure after the agent-list statement \u2014 1 place",
+        "kind": "prose",
+        "scope": "GREEN",
+        "reflection_mode": "direct_mechanics",
+        "rationale": "KM could not locate where the book lists all the agents it covers and wants a figure inserted immediately after that statement. The 'What This Playbook Covers' sentence in Chapter 1 enumerates every agent/phase the playbook builds (screening, financial DD, synergy, risk, valuation, integration, monitoring) \u2014 the literal 'agents we'll be covering' list. Inserting a figure marker there using the book's standard [VISUAL: ...] convention (Ch.1 already has Figure 1.1, so this is Figure 1.2) places the figure exactly where KM asked, right after the statement.",
+        "file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/11_ma_due_diligence/v1.0/manuscript_v1.5.md",
+        "hunks": [
+          {
+            "before": [
+              "**This playbook builds AI agents for every phase of the M&A lifecycle**: deal screening, financial due diligence, synergy modeling, risk detection, valuation, integration planning, and post-deal monitoring."
+            ],
+            "after": [
+              "**This playbook builds AI agents for every phase of the M&A lifecycle**: deal screening, financial due diligence, synergy modeling, risk detection, valuation, integration planning, and post-deal monitoring.\n\n[VISUAL: Figure 1.2 -- The M&A Agent Suite Across the Deal Lifecycle -- see images]"
+            ]
+          }
+        ]
+      }
+    ],
+    "status": "applied",
+    "created_at": "2026-06-04T19:19:10Z",
+    "applied_commits": [
+      "books:c82519d"
+    ]
+  },
+  {
+    "id": "prop_1780602262491",
+    "session_ref": "Book 11 \u00b7 p38",
+    "obligation_id": "obl_20260604194342_1e66d3f1",
+    "book": "Book 11",
+    "note": "KM wants the haircut-framework intro softened: call out that it is common practice and an agent default, not an 'always-on' absolute rule. 1 instance \u2014 the p38 intro sentence.",
+    "info": false,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [
+      {
+        "id": "g1",
+        "title": "Frame haircut framework as common-practice default, not always-on rule \u2014 1 place",
+        "kind": "prose",
+        "scope": "GREEN",
+        "reflection_mode": "direct_mechanics",
+        "rationale": "KM: 'this segment should call out that this is just common practice but not an always on situation.' The current sentence states the agent applies the correction 'to every synergy model,' which reads as an absolute. The edit keeps the framework as the default behavior while flagging it as common practice that the deal team can adjust or waive, before the bullet list.",
+        "file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/11_ma_due_diligence/v1.0/manuscript_v1.5.md",
+        "hunks": [
+          {
+            "before": [
+              "To counter the three predictable biases above, the agent applies a simple, evidence-based correction to every synergy model \u2014 a *haircut framework* that you will see referenced throughout this chapter:"
+            ],
+            "after": [
+              "To counter the three predictable biases above, the agent applies a simple, evidence-based correction to the synergy model \u2014 a *haircut framework* that you will see referenced throughout this chapter. This is common practice rather than an always-on rule: the agent applies it by default, but the deal team can adjust or waive it when a particular model is already conservatively built:"
+            ]
+          }
+        ]
+      }
+    ],
+    "reflection_mode": null,
+    "principle": null,
+    "route": null,
+    "status": "applied",
+    "created_at": "2026-06-04T19:44:22Z",
+    "applied_commits": [
+      "books:7179114"
+    ]
+  },
+  {
+    "id": "prop_1780888759052",
+    "session_ref": "s5_12_asset_maintenance \u00b7 p?",
+    "obligation_id": "obl_20260608031910_9ca8407c",
+    "book": "s5_12_asset_maintenance",
+    "note": "KM is validating/asking whether certain standards (the S5 Full Production ERP concept seed) are an essential part of the books \u2014 a question carried over from the hopper after approval, not a request for any manuscript edit.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": "direct_mechanics",
+    "principle": null,
+    "route": "observation",
+    "status": "dismissed",
+    "created_at": "2026-06-08T03:19:19Z"
+  },
+  {
+    "id": "prop_1781019495593",
+    "session_ref": "01_cfos_finance \u2014 outline cards",
+    "obligation_id": "obl_20260609153756_b43336e5",
+    "book": "01_cfos_finance",
+    "note": "KM is asking to populate/load detailed per-chapter outline data into the outline-card design (Series 1 books 1-12), preserving G's keyword/viral targeting data \u2014 a data-population + card-schema/build ask, not a manuscript prose edit. The manuscript already contains all 12 chapters; nothing in manuscript_v1.0.md is being changed.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "tooling",
+    "status": "dismissed",
+    "created_at": "2026-06-09T15:38:15Z"
+  },
+  {
+    "id": "prop_1781026397189",
+    "session_ref": "Book 11 (M&A Due Diligence) \u00b7 s5_12_asset_maintenance \u00b7 p?",
+    "obligation_id": "obl_20260609173303_84e98e3e",
+    "book": "s5_12_asset_maintenance",
+    "note": "No manuscript edit requested. KM is asking about Atrium queue mechanics \u2014 why a card he already approved (a spec-validation question confirming these standards are a significant part of the books) reappeared in the 'needs me' queue with no suggestions to approve. Pure question/observation about review-system state, not a book change.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "observation",
+    "status": "dismissed",
+    "created_at": "2026-06-09T17:33:17Z"
+  },
+  {
+    "id": "prop_1781120587204",
+    "session_ref": "12_agentic_enterprise \u00b7 p5 (applied to Book 11)",
+    "obligation_id": "obl_20260610194201_4c79987b",
+    "book": "Misc",
+    "note": "TOC audit of manuscript_v1.5.md: all 21 listed entries match real headers verbatim and in order. Found 1 missing entry \u2014 the back-matter section 'Book at a Glance' exists in the book (after Sources & Further Reading, before About the Author) but is absent from the TOC. 1 pattern, 1 instance.",
+    "info": false,
+    "cross_book": [
+      "Book 10",
+      "Book 12"
+    ],
+    "produced_by": "KM-1176",
+    "groups": [
+      {
+        "id": "g1",
+        "title": "TOC missing 'Book at a Glance' back-matter entry \u2014 1 place",
+        "kind": "prose",
+        "scope": "GREEN",
+        "reflection_mode": "direct_mechanics",
+        "rationale": "The manuscript contains a '## Book at a Glance' section (line 1559) placed between 'Sources & Further Reading' (line 1525) and 'About the Author' (line 1585), but the Table of Contents does not list it. Every other TOC entry resolves to an existing header with an exact name match. Adding the entry in its correct physical position makes the TOC complete and accurate.",
+        "file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/11_ma_due_diligence/v1.0/manuscript_v1.5.md",
+        "hunks": [
+          {
+            "before": [
+              "- Sources & Further Reading",
+              "- About the Author"
+            ],
+            "after": [
+              "- Sources & Further Reading",
+              "- Book at a Glance",
+              "- About the Author"
+            ]
+          }
+        ]
+      }
+    ],
+    "reflection_mode": null,
+    "principle": null,
+    "route": null,
+    "status": "applied",
+    "created_at": "2026-06-10T19:43:07Z",
+    "applied_commits": [
+      "books:446115d"
+    ]
+  },
+  {
+    "id": "prop_1781122759182",
+    "session_ref": "12_agentic_enterprise \u00b7 p16 (file: 11_ma_due_diligence/v1.5)",
+    "obligation_id": "obl_20260610201751_523b3d6c",
+    "book": "Misc",
+    "note": "KM asked to hyperlink the bare 'six-sov.com' references to the seeit walkthrough page. Swept the manuscript: 3 bare '**six-sov.com**' instances in 'See it work' walkthrough notes (lines 565, 825, 1040) should become hyperlinks to six-sov.com/seeit. (Lines 366 and 933 are already hyperlinks pointing to the homepage; left untouched since the ask was to *make* a hyperlink.)",
+    "info": false,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [
+      {
+        "id": "g1",
+        "title": "Hyperlink bare six-sov.com walkthrough refs to /seeit \u2014 3 places",
+        "kind": "prose",
+        "scope": "GREEN",
+        "reflection_mode": "direct_mechanics",
+        "rationale": "The 'See it work' notes describe the no-terminal walkthrough, which lives at six-sov.com/seeit, but render the URL as bare bold text. Making them hyperlinks to the seeit page matches KM's request and the already-linked seeit references elsewhere in the book (e.g. lines 80, 82, 1442).",
+        "file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/11_ma_due_diligence/v1.0/manuscript_v1.5.md",
+        "hunks": [
+          {
+            "before": [
+              "That receipt is the answer to *\u201cif I trusted an AI agent for due diligence, who is defensible in a deposition?\u201d* **You do not need to run anything to use this book.** This is what \u201cthe book writes the backend\u201d looks like in practice. If you want to see it: a no-terminal walkthrough is at **six-sov.com**, and the full step-by-step (setup, the command, and a field-by-field reading of the receipt) is in **Appendix RX: Hands-On Demonstrations**."
+            ],
+            "after": [
+              "That receipt is the answer to *\u201cif I trusted an AI agent for due diligence, who is defensible in a deposition?\u201d* **You do not need to run anything to use this book.** This is what \u201cthe book writes the backend\u201d looks like in practice. If you want to see it: a no-terminal walkthrough is at **[six-sov.com/seeit](https://six-sov.com/seeit)**, and the full step-by-step (setup, the command, and a field-by-field reading of the receipt) is in **Appendix RX: Hands-On Demonstrations**."
+            ]
+          },
+          {
+            "before": [
+              "not reconstructed retrospectively once the miss got large enough to notice. **You do not need to run anything to use this book.** This is what \u201cthe book writes the backend\u201d looks like in practice. If you want to see it: a no-terminal walkthrough is at **six-sov.com**, and the full step-by-step is in **Appendix RX: Hands-On Demonstrations**."
+            ],
+            "after": [
+              "not reconstructed retrospectively once the miss got large enough to notice. **You do not need to run anything to use this book.** This is what \u201cthe book writes the backend\u201d looks like in practice. If you want to see it: a no-terminal walkthrough is at **[six-sov.com/seeit](https://six-sov.com/seeit)**, and the full step-by-step is in **Appendix RX: Hands-On Demonstrations**."
+            ]
+          },
+          {
+            "before": [
+              "your deal team moves from *reading about* agent governance to *producing* attested receipts that survive independent review. **You do not need to run anything to use this book.** This is what \u201cthe book writes the backend\u201d looks like in practice. If you want to see it: a no-terminal walkthrough is at **six-sov.com**, and the full step-by-step is in **Appendix RX: Hands-On Demonstrations**."
+            ],
+            "after": [
+              "your deal team moves from *reading about* agent governance to *producing* attested receipts that survive independent review. **You do not need to run anything to use this book.** This is what \u201cthe book writes the backend\u201d looks like in practice. If you want to see it: a no-terminal walkthrough is at **[six-sov.com/seeit](https://six-sov.com/seeit)**, and the full step-by-step is in **Appendix RX: Hands-On Demonstrations**."
+            ]
+          }
+        ]
+      }
+    ],
+    "reflection_mode": null,
+    "principle": null,
+    "route": null,
+    "status": "applied",
+    "created_at": "2026-06-10T20:19:19Z",
+    "applied_commits": [
+      "books:40ed7e9"
+    ]
+  },
+  {
+    "id": "prop_1781125817435",
+    "session_ref": "11_ma_due_diligence \u00b7 p49 (seed tagged 12_agentic_enterprise p49)",
+    "obligation_id": "obl_20260610210946_fda27b5c",
+    "book": "Misc",
+    "note": "KM tagged 'bold' on the seed 'structurally, not procedurally'. Exact seed phrase is not verbatim in the file; the one place that states this structural-vs-procedural contrast is line 541 ('structurally impossible at the runtime layer, not just procedurally discouraged'). Bolding that clause. 1 instance.",
+    "info": false,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [
+      {
+        "id": "g1",
+        "title": "Bold the structural-not-procedural contrast \u2014 1 place",
+        "kind": "prose",
+        "scope": "GREEN",
+        "reflection_mode": "direct_mechanics",
+        "rationale": "KM's 'bold' tag on the seed 'structurally, not procedurally' targets the deliberate structural-vs-procedural contrast; line 541 is the only place that voices it. Bold the clause so the structural-enforcement claim lands.",
+        "file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/11_ma_due_diligence/v1.0/manuscript_v1.5.md",
+        "hunks": [
+          {
+            "before": [
+              "- **Bypassing the Compliance Guardian peer-role's review on a material publication.** Charter V.7 makes this structurally impossible at the runtime layer, not just procedurally discouraged."
+            ],
+            "after": [
+              "- **Bypassing the Compliance Guardian peer-role's review on a material publication.** Charter V.7 makes this **structurally impossible at the runtime layer, not just procedurally discouraged.**"
+            ]
+          }
+        ]
+      }
+    ],
+    "reflection_mode": null,
+    "principle": null,
+    "route": null,
+    "status": "applied",
+    "created_at": "2026-06-10T21:10:17Z",
+    "applied_commits": [
+      "books:9754e69"
+    ]
+  },
+  {
+    "id": "prop_1781190047002",
+    "session_ref": "cross-book \u00b7 Book 12",
+    "obligation_id": "obl_20260611145941_64e52864",
+    "book": "Book 12",
+    "note": "Cross-book: same issue swept in Book 12. KM is musing ('Maybe call these softer savings') about labeling the Layer 2 / Operational Improvement values as 'softer savings'. 1 concrete edit: fold the 'softer savings' framing into the Layer 2 intro line so the seed sentence's hard-to-attribute Layer 2 value reads as the softer savings category. Hedged suggestion \u2014 surfaced as an optional diff.",
+    "info": false,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [
+      {
+        "id": "g1",
+        "title": "Label Layer 2 as 'softer savings' \u2014 1 place",
+        "kind": "prose",
+        "scope": "GREEN",
+        "reflection_mode": "direct_mechanics",
+        "rationale": "KM's seed is the Layer 2 'difficult to attribute directly to agents' sentence; the note suggests naming this category the 'softer savings.' The Layer 2 intro line is the natural anchor for that label, framing the three operational-improvement items (decision speed, information quality, learning velocity) as the softer savings. Tentative ('Maybe') \u2014 produced so KM can accept or reject.",
+        "file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/12_agentic_enterprise/v1.0/manuscript_v1.5.md",
+        "hunks": [
+          {
+            "before": [
+              "**This is harder to measure but often larger than Layer 1:**"
+            ],
+            "after": [
+              "**These are the softer savings \u2014 harder to measure but often larger than Layer 1:**"
+            ]
+          }
+        ]
+      }
+    ],
+    "reflection_mode": null,
+    "principle": null,
+    "route": null,
+    "status": "applied",
+    "created_at": "2026-06-11T15:00:47Z",
+    "applied_commits": [
+      "books:db5c9f1"
+    ]
+  },
+  {
+    "id": "prop_1781191450800",
+    "session_ref": "cross-book \u00b7 Book 12",
+    "obligation_id": "obl_20260611152313_30590086",
+    "book": "Book 12",
+    "note": "Cross-book: same issue swept in Book 12. 1 instance: move bold from the two source citations to the in-paragraph argument; keep book titles italicized.",
+    "info": false,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [
+      {
+        "id": "g1",
+        "title": "Bold the argument, italicize sources \u2014 1 place",
+        "kind": "prose",
+        "scope": "GREEN",
+        "reflection_mode": "direct_mechanics",
+        "rationale": "KM: bold the claim within the paragraph instead of the cited sources; sources should be italicized (book titles) per tech-writer convention. Seed selection is the argument clause.",
+        "file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/12_agentic_enterprise/v1.0/manuscript_v1.5.md",
+        "hunks": [
+          {
+            "before": [
+              "This insight is the operational realization of cognitive-complementarity scholarship developed in **Brynjolfsson & McAfee's *The Second Machine Age*** (2014) and **Daugherty & Wilson's *Human + Machine: Reimagining Work in the Age of AI*** (2018) \u2014 both argued that AI\u2019s economic value comes from augmenting human judgment, not replacing it."
+            ],
+            "after": [
+              "This insight is the operational realization of cognitive-complementarity scholarship developed in Brynjolfsson & McAfee's *The Second Machine Age* (2014) and Daugherty & Wilson's *Human + Machine: Reimagining Work in the Age of AI* (2018) \u2014 both argued that **AI\u2019s economic value comes from augmenting human judgment, not replacing it**."
+            ]
+          }
+        ]
+      }
+    ],
+    "reflection_mode": null,
+    "principle": null,
+    "route": null,
+    "status": "applied",
+    "created_at": "2026-06-11T15:24:10Z",
+    "applied_commits": [
+      "books:e7f1d89"
+    ]
+  },
+  {
+    "id": "prop_1781191484241",
+    "session_ref": "11_ma_due_diligence \u00b7 p81 (review tagged 12_agentic_enterprise p81)",
+    "obligation_id": "obl_20260611152402_fb60b590",
+    "book": "Misc",
+    "note": "Make bare six-sov.com walkthrough links resolve to the /seeit page. 2 instances in walkthrough contexts (ch4 See-it-work note + roadmap guided-walkthrough aside) point to bare six-sov.com while the book's other See-it-work notes use /seeit; left the line-1628 homepage reference bare.",
+    "info": false,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [
+      {
+        "id": "g1",
+        "title": "Walkthrough links should resolve to /seeit \u2014 2 places",
+        "kind": "prose",
+        "scope": "GREEN",
+        "reflection_mode": "direct_mechanics",
+        "rationale": "KM selected 'six-sov.com' and asked to resolve it to the seeit page. The no-terminal/guided walkthrough is hosted at six-sov.com/seeit (used consistently elsewhere \u2014 pp.81,83,566,826,1041). These two walkthrough references still point to the bare domain.",
+        "file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/11_ma_due_diligence/v1.0/manuscript_v1.5.md",
+        "hunks": [
+          {
+            "before": [
+              "a no-terminal walkthrough is at **[six-sov.com](https://six-sov.com)**, and the full step-by-step is in **Appendix RX: Hands-On Demonstrations**."
+            ],
+            "after": [
+              "a no-terminal walkthrough is at **[six-sov.com/seeit](https://six-sov.com/seeit)**, and the full step-by-step is in **Appendix RX: Hands-On Demonstrations**."
+            ]
+          },
+          {
+            "before": [
+              "trust the latest output the tools produce (or the guided walkthrough at [six-sov.com](https://six-sov.com)) over the page."
+            ],
+            "after": [
+              "trust the latest output the tools produce (or the guided walkthrough at [six-sov.com/seeit](https://six-sov.com/seeit)) over the page."
+            ]
+          }
+        ]
+      }
+    ],
+    "reflection_mode": null,
+    "principle": null,
+    "route": null,
+    "status": "applied",
+    "created_at": "2026-06-11T15:24:44Z",
+    "applied_commits": [
+      "books:86d90d4"
+    ]
+  },
+  {
+    "id": "prop_1781192106979",
+    "session_ref": "cross-book \u00b7 Book 12",
+    "obligation_id": "obl_20260611152945_a2aa6813",
+    "book": "Book 12",
+    "note": "Cross-book: same issue swept in Book 12. 1 pattern, 20 instances: every prompt in Appendix A (the 'Twenty strategic prompts' toolkit) is hand-wrapped mid-phrase inside its code fence. The build CSS uses white-space:pre-wrap, so those manual line breaks render literally as ragged, ugly lines. Fix = reflow each prompt into continuous flowing lines (preserving the intentional blank-line break before the 'Output:' sub-spec in prompts 6/12/14/18) and let pre-wrap soft-wrap cleanly \u2014 the same fix used in B11. Fences themselves unchanged.",
+    "info": false,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [
+      {
+        "id": "g1",
+        "title": "Appendix A prompt code blocks hard-wrapped mid-phrase \u2014 20 places",
+        "kind": "prose",
+        "scope": "GREEN",
+        "reflection_mode": "direct_mechanics",
+        "rationale": "Prompts are manually wrapped at ~60 chars; with the build's white-space:pre-wrap + overflow-wrap, the manual breaks render as literal ragged lines. Reflowing each prompt to flowing text lets the renderer wrap to page width cleanly (the B11 fix). Blank-line paragraph breaks inside prompts 6/12/14/18 are preserved so the 'Output:' spec stays visually separated.",
+        "file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/12_agentic_enterprise/v1.0/manuscript_v1.5.md",
+        "hunks": [
+          {
+            "before": [
+              "Generate a one-page agentic enterprise vision document for ",
+              "my organization. Context: [industry], [revenue], [employees], ",
+              "[current agent deployments], [maturity stage]. Answer the 5 ",
+              "questions: Where are we? Where do we want to be in 12 months? ",
+              "Why does this matter? What are the risks of inaction? What is ",
+              "the first step this week?"
+            ],
+            "after": [
+              "Generate a one-page agentic enterprise vision document for my organization. Context: [industry], [revenue], [employees], [current agent deployments], [maturity stage]. Answer the 5 questions: Where are we? Where do we want to be in 12 months? Why does this matter? What are the risks of inaction? What is the first step this week?"
+            ]
+          },
+          {
+            "before": [
+              "Walk me through the 20-question organizational readiness ",
+              "assessment for agentic AI. For each question I answer, score ",
+              "me 1-5, explain why, and suggest one specific action to ",
+              "improve by one point. At the end, give me my total score, ",
+              "readiness level, and top 3 priority actions."
+            ],
+            "after": [
+              "Walk me through the 20-question organizational readiness assessment for agentic AI. For each question I answer, score me 1-5, explain why, and suggest one specific action to improve by one point. At the end, give me my total score, readiness level, and top 3 priority actions."
+            ]
+          },
+          {
+            "before": [
+              "Help me inventory every AI agent deployed or in development ",
+              "across my organization. For each agent: name, department, ",
+              "model used, data accessed, governance status, monthly cost, ",
+              "business value. Flag any ungoverned agents, unknown costs, ",
+              "or security gaps."
+            ],
+            "after": [
+              "Help me inventory every AI agent deployed or in development across my organization. For each agent: name, department, model used, data accessed, governance status, monthly cost, business value. Flag any ungoverned agents, unknown costs, or security gaps."
+            ]
+          },
+          {
+            "before": [
+              "Calculate our enterprise agent portfolio ROI. Investments: ",
+              "[list all costs]. Returns by agent: [list each agent's ",
+              "documented value]. Produce: total investment, total return, ",
+              "portfolio ROI ratio, per-agent ROI, underperforming agents ",
+              "to optimize or retire, and projected 12-month value."
+            ],
+            "after": [
+              "Calculate our enterprise agent portfolio ROI. Investments: [list all costs]. Returns by agent: [list each agent's documented value]. Produce: total investment, total return, portfolio ROI ratio, per-agent ROI, underperforming agents to optimize or retire, and projected 12-month value."
+            ]
+          },
+          {
+            "before": [
+              "Generate a 5-slide board presentation on our agentic AI ",
+              "program. Include: executive summary, portfolio ROI, strategic ",
+              "value created, risk posture, and investment request for ",
+              "next phase. Tone: data-driven, honest, action-oriented. ",
+              "Our data: [provide current metrics]."
+            ],
+            "after": [
+              "Generate a 5-slide board presentation on our agentic AI program. Include: executive summary, portfolio ROI, strategic value created, risk posture, and investment request for next phase. Tone: data-driven, honest, action-oriented. Our data: [provide current metrics]."
+            ]
+          },
+          {
+            "before": [
+              "Design an enterprise agent ecosystem map for my organization. ",
+              "Current agents: [list by department]. For each pair of agents ",
+              "that should share intelligence, define: what output the ",
+              "producer shares, what format, what governance applies, and ",
+              "the business value of the connection. Prioritize by impact.",
+              "",
+              "Output: table of producer\u2013consumer pairs with columns for output ",
+              "format, governance constraint, data freshness requirement, and ",
+              "business value score (1\u201310). Highlight the top-5 connections."
+            ],
+            "after": [
+              "Design an enterprise agent ecosystem map for my organization. Current agents: [list by department]. For each pair of agents that should share intelligence, define: what output the producer shares, what format, what governance applies, and the business value of the connection. Prioritize by impact.",
+              "",
+              "Output: table of producer\u2013consumer pairs with columns for output format, governance constraint, data freshness requirement, and business value score (1\u201310). Highlight the top-5 connections."
+            ]
+          },
+          {
+            "before": [
+              "Design a comprehensive governance framework for our agent ",
+              "ecosystem. Industry: [sector]. Regulatory requirements: ",
+              "[list]. Risk tolerance: [level]. Include: must always/never/",
+              "escalate policies, risk classification, approval workflows, ",
+              "RACI for each agent type, and incident response procedures."
+            ],
+            "after": [
+              "Design a comprehensive governance framework for our agent ecosystem. Industry: [sector]. Regulatory requirements: [list]. Risk tolerance: [level]. Include: must always/never/escalate policies, risk classification, approval workflows, RACI for each agent type, and incident response procedures."
+            ]
+          },
+          {
+            "before": [
+              "Prioritize our agent investment pipeline. Candidate projects: ",
+              "[list with estimated cost and business impact]. Evaluation ",
+              "criteria: business impact, implementation complexity, data ",
+              "readiness, organizational readiness, risk. Produce a ranked ",
+              "list with recommended sequencing and dependencies."
+            ],
+            "after": [
+              "Prioritize our agent investment pipeline. Candidate projects: [list with estimated cost and business impact]. Evaluation criteria: business impact, implementation complexity, data readiness, organizational readiness, risk. Produce a ranked list with recommended sequencing and dependencies."
+            ]
+          },
+          {
+            "before": [
+              "Conduct a comprehensive risk assessment for our agent program ",
+              "across 5 dimensions: technical, operational, regulatory, ",
+              "ethical, strategic. For each risk: probability (1-5), ",
+              "severity (1-5), score, specific mitigation, and owner. ",
+              "Our current state: [describe agent fleet and governance]."
+            ],
+            "after": [
+              "Conduct a comprehensive risk assessment for our agent program across 5 dimensions: technical, operational, regulatory, ethical, strategic. For each risk: probability (1-5), severity (1-5), score, specific mitigation, and owner. Our current state: [describe agent fleet and governance]."
+            ]
+          },
+          {
+            "before": [
+              "Design a change management plan for scaling AI agents ",
+              "across [number] departments. Address: communication strategy, ",
+              "training program, resistance management, role evolution, ",
+              "success metrics at 30/60/90 days. Reference the trust ",
+              "calibration framework from Book 3."
+            ],
+            "after": [
+              "Design a change management plan for scaling AI agents across [number] departments. Address: communication strategy, training program, resistance management, role evolution, success metrics at 30/60/90 days. Reference the trust calibration framework from Book 3."
+            ]
+          },
+          {
+            "before": [
+              "Generate a customized 12-month implementation roadmap. ",
+              "Current state: [maturity stage, agents deployed, budget]. ",
+              "Target state: [agents, departments, capabilities]. ",
+              "Constraints: [blockers, political issues, technical debt]. ",
+              "Produce quarterly plans with tasks, milestones, decision ",
+              "gates, and budget by quarter."
+            ],
+            "after": [
+              "Generate a customized 12-month implementation roadmap. Current state: [maturity stage, agents deployed, budget]. Target state: [agents, departments, capabilities]. Constraints: [blockers, political issues, technical debt]. Produce quarterly plans with tasks, milestones, decision gates, and budget by quarter."
+            ]
+          },
+          {
+            "before": [
+              "Evaluate our current AI infrastructure against the sovereignty ",
+              "spectrum (Level 1-4). Assess: data sovereignty (where does ",
+              "data go?), governance sovereignty (who controls the rules?), ",
+              "audit sovereignty (who owns the trail?), inference sovereignty ",
+              "(who runs the models?). Recommend target sovereignty level ",
+              "and migration path.",
+              "",
+              "Output: assessment report with (a) current-state scoring on each ",
+              "sovereignty axis (1\u20134), (b) target-level recommendation with ",
+              "rationale, (c) phased migration plan with dependencies and ",
+              "estimated cost per phase."
+            ],
+            "after": [
+              "Evaluate our current AI infrastructure against the sovereignty spectrum (Level 1-4). Assess: data sovereignty (where does data go?), governance sovereignty (who controls the rules?), audit sovereignty (who owns the trail?), inference sovereignty (who runs the models?). Recommend target sovereignty level and migration path.",
+              "",
+              "Output: assessment report with (a) current-state scoring on each sovereignty axis (1\u20134), (b) target-level recommendation with rationale, (c) phased migration plan with dependencies and estimated cost per phase."
+            ]
+          },
+          {
+            "before": [
+              "Design the cross-functional agent coordination architecture ",
+              "for our organization. Departments: [list with current agents]. ",
+              "For each cross-functional data flow: define the insight output ",
+              "format, governance constraints, data freshness requirements, ",
+              "and the human review gate. Use the \"insights not data\" ",
+              "principle from Book 10."
+            ],
+            "after": [
+              "Design the cross-functional agent coordination architecture for our organization. Departments: [list with current agents]. For each cross-functional data flow: define the insight output format, governance constraints, data freshness requirements, and the human review gate. Use the \"insights not data\" principle from Book 10."
+            ]
+          },
+          {
+            "before": [
+              "Create a maturity progression plan from Stage [current] to ",
+              "Stage [target]. For each stage transition, define: what must ",
+              "be built, what organizational changes are required, estimated ",
+              "investment, timeline, and the 3 metrics that confirm the ",
+              "transition is complete. Reference the 5-stage model from ",
+              "Book 10, Chapter 7.",
+              "",
+              "Output: structured progression table \u2014 for each stage transition: ",
+              "build items, organizational changes, investment ($), timeline ",
+              "(months), and the 3 confirmation metrics."
+            ],
+            "after": [
+              "Create a maturity progression plan from Stage [current] to Stage [target]. For each stage transition, define: what must be built, what organizational changes are required, estimated investment, timeline, and the 3 metrics that confirm the transition is complete. Reference the 5-stage model from Book 10, Chapter 7.",
+              "",
+              "Output: structured progression table \u2014 for each stage transition: build items, organizational changes, investment ($), timeline (months), and the 3 confirmation metrics."
+            ]
+          },
+          {
+            "before": [
+              "Analyze our competitive position in agentic AI adoption. ",
+              "Industry: [sector]. Known competitor deployments: [any ",
+              "intelligence available]. Assess: are we ahead, at pace, or ",
+              "behind our competitive set? What capabilities would create ",
+              "the greatest competitive advantage? What is the cost of ",
+              "falling 12 months behind?"
+            ],
+            "after": [
+              "Analyze our competitive position in agentic AI adoption. Industry: [sector]. Known competitor deployments: [any intelligence available]. Assess: are we ahead, at pace, or behind our competitive set? What capabilities would create the greatest competitive advantage? What is the cost of falling 12 months behind?"
+            ]
+          },
+          {
+            "before": [
+              "Generate a comprehensive enterprise AI agent strategy ",
+              "document for board approval. Organization: [details]. ",
+              "Include: vision, maturity roadmap (3-year), investment plan, ",
+              "governance model, organizational model (CoE), measurement ",
+              "framework, risk analysis, and first 90-day action plan."
+            ],
+            "after": [
+              "Generate a comprehensive enterprise AI agent strategy document for board approval. Organization: [details]. Include: vision, maturity roadmap (3-year), investment plan, governance model, organizational model (CoE), measurement framework, risk analysis, and first 90-day action plan."
+            ]
+          },
+          {
+            "before": [
+              "Evaluate [3-5 enterprise agent platforms] against 10 criteria: ",
+              "multi-model support, governance, cost management, security, ",
+              "monitoring, integration, scalability, TCO, time-to-value, ",
+              "vendor viability. Score 1-10 each. Produce comparison matrix ",
+              "with recommendation."
+            ],
+            "after": [
+              "Evaluate [3-5 enterprise agent platforms] against 10 criteria: multi-model support, governance, cost management, security, monitoring, integration, scalability, TCO, time-to-value, vendor viability. Score 1-10 each. Produce comparison matrix with recommendation."
+            ]
+          },
+          {
+            "before": [
+              "If I were starting my agentic AI program from scratch today, ",
+              "design my Day 1 playbook. Week 1 actions, Week 2-4 milestones, ",
+              "Month 2-3 targets. Budget: $[X] for first 90 days. Team: ",
+              "[available headcount]. Constraints: [list]. Make it specific, ",
+              "actionable, and honest about what can realistically be ",
+              "achieved in 90 days.",
+              "",
+              "Output: dated week-by-week plan with specific decisions, ",
+              "ownership per decision, dependencies, and go/no-go decision ",
+              "gates at Day 30 and Day 60."
+            ],
+            "after": [
+              "If I were starting my agentic AI program from scratch today, design my Day 1 playbook. Week 1 actions, Week 2-4 milestones, Month 2-3 targets. Budget: $[X] for first 90 days. Team: [available headcount]. Constraints: [list]. Make it specific, actionable, and honest about what can realistically be achieved in 90 days.",
+              "",
+              "Output: dated week-by-week plan with specific decisions, ownership per decision, dependencies, and go/no-go decision gates at Day 30 and Day 60."
+            ]
+          },
+          {
+            "before": [
+              "Optimize our current agent portfolio. For each agent: ",
+              "[name, monthly cost, monthly value, error rate, adoption]. ",
+              "Identify: agents to continue, optimize (with specific ",
+              "actions), or retire. Calculate the portfolio impact of ",
+              "each recommendation. Target: 20% cost reduction while ",
+              "maintaining or improving total value delivered."
+            ],
+            "after": [
+              "Optimize our current agent portfolio. For each agent: [name, monthly cost, monthly value, error rate, adoption]. Identify: agents to continue, optimize (with specific actions), or retire. Calculate the portfolio impact of each recommendation. Target: 20% cost reduction while maintaining or improving total value delivered."
+            ]
+          },
+          {
+            "before": [
+              "Model three scenarios for our organization's agentic AI ",
+              "position in 2028. Scenario A: we execute the 12-month plan ",
+              "aggressively. Scenario B: we execute conservatively. ",
+              "Scenario C: we pause investment. For each: projected agent ",
+              "fleet, organizational capability, competitive position, ",
+              "and financial impact. Use this to justify the investment ",
+              "decision today."
+            ],
+            "after": [
+              "Model three scenarios for our organization's agentic AI position in 2028. Scenario A: we execute the 12-month plan aggressively. Scenario B: we execute conservatively. Scenario C: we pause investment. For each: projected agent fleet, organizational capability, competitive position, and financial impact. Use this to justify the investment decision today."
+            ]
+          }
+        ]
+      }
+    ],
+    "reflection_mode": null,
+    "principle": null,
+    "route": null,
+    "status": "applied",
+    "created_at": "2026-06-11T15:35:06Z",
+    "applied_commits": [
+      "books:eaede1e"
+    ]
+  },
+  {
+    "id": "prop_1781193951218",
+    "session_ref": "Book 11 \u2014 Atrium meta",
+    "obligation_id": "obl_20260609214922_75ad6c37",
+    "book": "Book 11",
+    "note": "No concrete manuscript edit requested. KM is stating a governing principle for how the Atrium review system should behave \u2014 human stays at the stillpoint, agents do coding/alignment in the background, and only meaningful, grouped decisions surface to him.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": "embodied_principle",
+    "principle": "The Atrium stays lightweight and honest: the human holds the stillpoint while agents do coding/alignment in the background, and only meaningful, grouped decisions are surfaced for human review.",
+    "route": "principle",
+    "status": "proposed",
+    "created_at": "2026-06-11T16:05:51Z"
+  },
+  {
+    "id": "prop_1781193976282",
+    "session_ref": "Book 11 \u2014 session (no page tag)",
+    "obligation_id": "obl_20260610181216_a7cd970d",
+    "book": "Book 11",
+    "note": "No concrete manuscript edit requested. KM is stating a governing principle for how the Atrium review system should behave \u2014 human stays at the stillpoint, agents do coding/alignment in the background, only meaningful grouped decisions surface. Routed to principle/drift-watch, not a book diff.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": "embodied_principle",
+    "principle": "Keep the human at the stillpoint: agents do the coding/alignment work in the background and only meaningful, grouped decisions are surfaced to the human for review.",
+    "route": "principle",
+    "status": "proposed",
+    "created_at": "2026-06-11T16:06:16Z"
+  },
+  {
+    "id": "prop_1781229202136",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p4",
+    "obligation_id": "obl_20260612015256_07a2965c",
+    "book": "Enhance language",
+    "note": "Seed 'what the constitution is doing' (clarity/bump-out edit for p4 of Sovereign Inference & Memory) cannot be grounded: the provided manuscript file is Book 11 (11_ma_due_diligence/manuscript_v1.5.md) and contains no instance of the seed phrase or its variants. Page reference (vol_01) and supplied file path (book 11) mismatch; no verbatim target to diff against here.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "observation",
+    "status": "proposed",
+    "created_at": "2026-06-12T01:53:22Z"
+  },
+  {
+    "id": "prop_1781229229290",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p3",
+    "obligation_id": "obl_20260612015321_dc27d9da",
+    "book": "Misc",
+    "note": "Concrete formatting ask (bold/underline the phrase 'governed dev loop'), but the seed text does not exist anywhere in the named manuscript file \u2014 confirmed via case-insensitive grep for 'governed dev loop', 'governed dev', and 'dev loop' (0 hits). The page tag points to vol_01_sovereign_inference_and_memory p3, a DIFFERENT book than the supplied manuscript path. Target text cannot be located in this file, so no groundable diff; likely misrouted to Book 11.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "observation",
+    "status": "proposed",
+    "created_at": "2026-06-12T01:53:49Z"
+  },
+  {
+    "id": "prop_1781229463548",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p5",
+    "obligation_id": "obl_20260612015645_3ed1013c",
+    "book": "Misc",
+    "note": "KM's seed 'page count' guidance targets vol_01 ('8-to-12-page'); that text is NOT in this M&A manuscript and the book makes no specific claim about its own page length, so there is no groundable literal edit here. Captured as a governing editorial principle.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": "embodied_principle",
+    "principle": "Don't state specific page counts in book-facing copy \u2014 page count changes between printings/editions; describe length qualitatively instead.",
+    "route": "principle",
+    "status": "proposed",
+    "created_at": "2026-06-12T01:57:43Z"
+  },
+  {
+    "id": "prop_1781229579736",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p4",
+    "obligation_id": "obl_20260612015919_aa65fcc5",
+    "book": "Misc",
+    "note": "Pure question/observation \u2014 KM wonders whether a sophisticated reader would dispute the 'We didn't import OpenSSL... built the root of trust' claim and is unsure what 'importing OpenSSL' means. No concrete edit named. Note also: the seed text and page reference vol_01, but the manuscript file provided is Book 11 (M&A) \u2014 the seed text does not appear in it, so no diff can be grounded here.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "observation",
+    "status": "proposed",
+    "created_at": "2026-06-12T01:59:39Z"
+  },
+  {
+    "id": "prop_1781229663065",
+    "session_ref": "Book 11 (AI Agents for M&A) \u00b7 vol_01_sovereign_inference_and_memory p6",
+    "obligation_id": "obl_20260612015953_4d9a90eb",
+    "book": "Misc",
+    "note": "KM flagged a placeholder-looking title on the executive brief and asked for a real, keyword-optimized one. The flagged 'Bold Executive Brief' is the brief's heading line, which currently reads as internal BNA pipeline jargon ('Bold Narrative Framework v2.4 Gate 6 -- Executive Brief'). 1 instance \u2014 retitle with the book's M&A keywords. Target is in bold_executive_brief.md, not the manuscript (the manuscript title is already keyword-optimized).",
+    "info": false,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [
+      {
+        "id": "g1",
+        "title": "Placeholder brief title \u2192 keyword-optimized title \u2014 1 place",
+        "kind": "prose",
+        "scope": "GREEN",
+        "reflection_mode": "direct_mechanics",
+        "rationale": "The heading exposes internal pipeline jargon (BNF/Gate 6) instead of a reader-facing, search-optimized title. Replacing it with the book's M&A keyword cluster (due diligence, synergy modeling, valuation, risk detection) makes it a real title rather than a placeholder.",
+        "file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/11_ma_due_diligence/v1.0/bold_executive_brief.md",
+        "hunks": [
+          {
+            "before": [
+              "# Bold Narrative Framework v2.4 Gate 6 -- Executive Brief"
+            ],
+            "after": [
+              "# AI Agents for M&A \u2014 Executive Brief: Faster Due Diligence, Disciplined Synergy Modeling, and Earlier Risk Detection"
+            ]
+          }
+        ]
+      }
+    ],
+    "reflection_mode": null,
+    "principle": null,
+    "route": null,
+    "status": "applied",
+    "created_at": "2026-06-12T02:01:03Z",
+    "applied_commits": [
+      "books:1785b19"
+    ]
+  },
+  {
+    "id": "prop_1781230125570",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p82 (manuscript file given: Book 11 M&A v1.5)",
+    "obligation_id": "obl_20260612020758_35d1a329",
+    "book": "Flag for AI",
+    "note": "Bare '[Flag for AI]' with no explicit edit instruction. The seed selection (cryptographic substrate / human-primacy / bl-verify / vendor-maintained release cadences) is from vol_01 Sovereign Inference and Memory p82, NOT from the Book 11 M&A manuscript provided \u2014 the seed text does not appear anywhere in manuscript_v1.5.md (verified via grep + full-file scan). No concrete change was requested and no groundable target text exists in the named file. The LGP hint 'route a judgment call into the governed loop' marks this as a judgment call to surface, not a literal edit.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "observation",
+    "status": "proposed",
+    "created_at": "2026-06-12T02:08:45Z"
+  },
+  {
+    "id": "prop_1781230385218",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p11",
+    "obligation_id": "obl_20260612021225_4716fac8",
+    "book": "Misc",
+    "note": "KM is raising a question, not directing an edit: whether the 'sealed, public, runnable' cryptographic primitives are safe if hand-rolled, and what disclosure the book owes. The seed text is NOT present in the provided Book 11 M&A file \u2014 it lives in vol_01_sovereign_inference_and_memory p11, a different manuscript \u2014 so no target text is groundable here. 0 groundable instances in this file.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "observation",
+    "status": "proposed",
+    "created_at": "2026-06-12T02:13:05Z"
+  },
+  {
+    "id": "prop_1781230559393",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p11",
+    "obligation_id": "obl_20260612021512_4d6156e5",
+    "book": "Misc",
+    "note": "No concrete edit. KM flags the empirical claim 'Operators shipping the sovereign inference and memory stack report three changes within the first 90 days' as unsubstantiated ('no one has yet to make this claim') and explicitly DEFERS action ('tread lightly...maybe some point in the future'). The seed text is from Series 2 Vol 1 p11, not from this manuscript (11_ma_due_diligence/manuscript_v1.5.md) \u2014 verified absent here. Nothing to ground in this file; this is a deferral/observation, not a now-edit.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "observation",
+    "status": "proposed",
+    "created_at": "2026-06-12T02:15:59Z"
+  },
+  {
+    "id": "prop_1781230662810",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p11",
+    "obligation_id": "obl_20260612021721_8878b3f4",
+    "book": "Misc",
+    "note": "Request is 'more laymans please' (simplify the jargon-y B51 curation/federation-events/100\u00d7 compression line). But the seed text and page (vol_01 Sovereign Inference and Memory, p11) belong to a DIFFERENT book than the manuscript file provided (Book 11 M&A Due Diligence). Grep confirms no 'federation events', 'B51', '1%', or '100\u00d7' line exists in this file \u2014 the only 'compression' hits are M&A timeline-compression stats, which are unrelated. Target text cannot be grounded in this file; the edit should be produced against the vol_01 manuscript, not this one.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "observation",
+    "status": "proposed",
+    "created_at": "2026-06-12T02:17:42Z"
+  },
+  {
+    "id": "prop_1781230704278",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p11",
+    "obligation_id": "obl_20260612021750_42c65e3d",
+    "book": "Misc",
+    "note": "Mismatch: the seed 'bl-verify them' and the 'plain terms please' request are tagged to vol_01 (Sovereign Inference and Memory) page 11, but the manuscript file provided is Book 11 (M&A Due Diligence). 'bl-verify' / 'verify them' appears nowhere in this M&A manuscript (0 matches), so there is no groundable target here \u2014 the edit belongs to the vol_01 manuscript, processed separately.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "observation",
+    "status": "proposed",
+    "created_at": "2026-06-12T02:18:24Z"
+  },
+  {
+    "id": "prop_1781230753478",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p11",
+    "obligation_id": "obl_20260612021826_eb814e63",
+    "book": "Misc",
+    "note": "Formatting (bold) request, but the seed selection \"trust-by-verification\" does not occur verbatim anywhere in manuscript_v1.5.md (searched the full file: no literal match for the phrase or close variants). The concept appears diffusely (e.g. line 186 'rather than trusting the summary', line 1568 'something they can verify, not just trust'), but no single verbatim target matches the seed, so a bold diff cannot be grounded without guessing the wrong span. Needs KM to point at the exact on-page phrase.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "observation",
+    "status": "proposed",
+    "created_at": "2026-06-12T02:19:13Z"
+  },
+  {
+    "id": "prop_1781230803650",
+    "session_ref": "Book 11 (M&A Due Diligence) \u00b7 p11",
+    "obligation_id": "obl_20260612021925_8ccdfb46",
+    "book": "Misc",
+    "note": "Misc note asking to 'define extraction to help the reader understand what we're driving'; seed 'not extraction' and page tag reference a DIFFERENT book (Sovereign Inference & Memory vol_01 p11) \u2014 the phrase 'not extraction' does not appear verbatim anywhere in the named M&A manuscript (manuscript_v1.5.md), so no diff can be grounded here. Closest related term is 'information extraction' (line 371). Likely a session tagged to the wrong manuscript; surfacing rather than fabricating a diff.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "observation",
+    "status": "proposed",
+    "created_at": "2026-06-12T02:20:03Z"
+  },
+  {
+    "id": "prop_1781230880304",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p13 (seed applied against Book 11)",
+    "obligation_id": "obl_20260612022056_72858cc1",
+    "book": "Misc",
+    "note": "Seed term 'inference' does not appear as a taught/used concept anywhere in Book 11's manuscript \u2014 its only occurrence is the brand name 'Sovereign Inference Exchange' in the Connect footer (line 1628), where a definition would be inappropriate. The instruction was conditional ('define/describe IF we haven't yet in this book'); since 'inference' is never introduced or relied on as a term in this M&A book, there is no grounded in-text location to define it without inventing unrelated content. No concrete edit.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "observation",
+    "status": "proposed",
+    "created_at": "2026-06-12T02:21:20Z"
+  },
+  {
+    "id": "prop_1781231713787",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p17",
+    "obligation_id": "obl_20260612023450_ccc4af10",
+    "book": "Misc",
+    "note": "KM is musing aloud whether the 'public anchor' concept reads like a Notary Public analogy ('if you think that applies') \u2014 a question/observation, not an edit instruction. The seed text 'public anchor' belongs to vol_01 p17, not this Book 11 manuscript (grep confirms it is absent here), so there is no groundable target text to format or change.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "observation",
+    "status": "proposed",
+    "created_at": "2026-06-12T02:35:13Z"
+  },
+  {
+    "id": "prop_1781231933231",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p18",
+    "obligation_id": "obl_20260612023826_ab7c5a5d",
+    "book": "Misc",
+    "note": "Concrete formatting request (bold + add laymans parenthetical) on the phrase 'dev loop that lets the operator extend the trust layer under constitutional witness' \u2014 but the seed text is from vol_01_sovereign_inference_and_memory p18 and does NOT appear anywhere in the provided manuscript file (11_ma_due_diligence/v1.0/manuscript_v1.5.md, which is the M&A book). Target text genuinely cannot be located in this file; the edit must be applied against the vol_01 manuscript, not Book 11. Routing as observation due to file/transcript mismatch.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "observation",
+    "status": "proposed",
+    "created_at": "2026-06-12T02:38:53Z"
+  },
+  {
+    "id": "prop_1781232364558",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p20",
+    "obligation_id": "obl_20260612024534_68e28d66",
+    "book": "Misc",
+    "note": "Concrete edit request ('add a callout on what we are doing with the end-of-chapter artifacts'), but the seed text 'Spec \u2192 Role \u2192 Atrium Surface' and the page tag point to vol_01 (Sovereign Inference and Memory), NOT the M&A manuscript_v1.5.md provided. The seed phrase is absent from this file (0 matches), so the diff cannot be grounded here \u2014 file/page mismatch. Route to the correct manuscript before producing diffs.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": "direct_mechanics",
+    "principle": null,
+    "route": "observation",
+    "status": "proposed",
+    "created_at": "2026-06-12T02:46:04Z"
+  },
+  {
+    "id": "prop_1781232699055",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p23",
+    "obligation_id": "obl_20260612025056_d3ee69b4",
+    "book": "Insert figure/goal",
+    "note": "Seed is a figure-insertion/visual-ingestion goal ('Figure 2.1 \u2013 the three SIX sensitivity classes with lane-to-platform mapping', one diagram per chapter) for vol_01_sovereign_inference_and_memory p23. That content does not exist in the M&A manuscript I was pointed at \u2014 its only Figure 2.1 is the unrelated 'M&A Agent Architecture (5 Layers)'. No groundable verbatim prose edit; this is a diagram-build/ingestion ask, not a manuscript text change.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "tooling",
+    "status": "proposed",
+    "created_at": "2026-06-12T02:51:39Z"
+  },
+  {
+    "id": "prop_1781232699250",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p23",
+    "obligation_id": "obl_20260612025048_79ff1186",
+    "book": "Misc",
+    "note": "FILE/PAGE MISMATCH: the seed text and page reference vol_01_sovereign_inference_and_memory p23, but the MANUSCRIPT FILE handed to me is Book 11 (11_ma_due_diligence/v1.0/manuscript_v1.5.md). The seed phrase ('structural refusal produces its own audit-chain receipt; an attempted RED-to-external routing is itself a constitutional anomaly') does not appear anywhere in the M&A file (grep for 'RED-to-external', 'constitutional anomaly', 'structural refusal', 'audit-chain receipt' = 0 hits), so no verbatim diff can be grounded here. KM's ask \u2014 reinforce that a human who receives a RED may use their discretion thereafter \u2014 is a real edit but targets vol_01, which must be processed against its own manuscript. Empty groups; routed as principle + cross_book to the correct book.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": "embodied_principle",
+    "principle": "The structural refusal blocks automated RED-to-external ROUTING, not human judgment: a human who receives a RED-classified item retains full discretion to act on it thereafter.",
+    "route": "principle",
+    "status": "proposed",
+    "created_at": "2026-06-12T02:51:39Z"
+  },
+  {
+    "id": "prop_1781233246593",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p28",
+    "obligation_id": "obl_20260612030021_35cccf52",
+    "book": "Insert figure/goal",
+    "note": "Seed is a VISUAL figure placeholder (signal.signal_ch2_six_routing \u2014 SIX-Routing Signal) tied to vol_01 p28 with LGP hint 'visual ingestion (one diagram per chapter)'. This is a diagram-ingestion/build task, not a prose edit; the token does not exist in the Book 11 manuscript (it belongs to vol_01), so there is nothing to ground here. Routes to tooling (image/diagram pipeline), not a manuscript diff.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "tooling",
+    "status": "proposed",
+    "created_at": "2026-06-12T03:00:46Z"
+  },
+  {
+    "id": "prop_1781233264676",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p28 (target file: Book 11 M&A v1.5)",
+    "obligation_id": "obl_20260612030044_e9c0ff73",
+    "book": "Misc",
+    "note": "KM is asking for a QA/verification pass \u2014 confirm every chapter's [VISUAL: Figure \u2026] markers are present and that referenced figures actually exist by chapter. This is a build/verification ask, not a concrete prose edit; no manuscript text change is requested. KM explicitly says he'll keep highlighting and wants a double-check, so this routes to tooling/verification rather than producing diffs.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": "direct_mechanics",
+    "principle": null,
+    "route": "tooling",
+    "status": "proposed",
+    "created_at": "2026-06-12T03:01:04Z"
+  },
+  {
+    "id": "prop_1781233417065",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p31",
+    "obligation_id": "obl_20260612030314_70200189",
+    "book": "Insert figure/goal",
+    "note": "Seed is a VISUAL figure ingestion item (Figure 3.1 \u2013 the 9 structural fields of an inference receipt) for vol_01, flagged under the LGP 'visual ingestion (one diagram per chapter)' hint \u2014 a diagram intake/build task, not a prose edit. The provided manuscript file (11_ma_due_diligence) is a different book and contains no 'inference receipt' / '9 structural fields' text to ground a diff against; the figure belongs to vol_01 and the ask is to ingest/render the diagram, which is a tooling/build operation to hand off rather than a manuscript text change.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "tooling",
+    "status": "proposed",
+    "created_at": "2026-06-12T03:03:37Z"
+  },
+  {
+    "id": "prop_1781233913987",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p33",
+    "obligation_id": "obl_20260612031124_eb5a3b62",
+    "book": "Insert figure/goal",
+    "note": "Visual-ingestion seed for Figure 3.2 (receipt chain: cylinder N-1\u2192N\u2192N+1 with Merkle anchor) \u2014 Sovereign Inference & Memory content, page-tagged to S2 Vol 1 p33, but the manuscript file supplied is Book 11 (M&A), which has no receipt-chain/cylinder material to anchor it to. Cannot ground a diff in this file; this is a diagram-generation/visual-ingestion ask routed to the visual pipeline. Book/page mismatch flagged.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "tooling",
+    "status": "proposed",
+    "created_at": "2026-06-12T03:11:53Z"
+  },
+  {
+    "id": "prop_1781234003065",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p33",
+    "obligation_id": "obl_20260612031252_1d91dc4a",
+    "book": "Insert figure/goal",
+    "note": "Visual-ingestion seed (one-diagram-per-chapter) for Figure 3.2 'receipt chain: cylinder N-1 \u2192 N \u2192 N+1 with Merkle anchor to public root' on vol_01 p33 \u2014 but the manuscript handed to me is Book 11 (M&A), whose Ch3 has only Figure 3.1 and no receipt-chain/cylinder content. Figure placement is a visual-plan/image-pipeline build task, and the target page is a different book; no groundable prose edit in this file.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "tooling",
+    "status": "proposed",
+    "created_at": "2026-06-12T03:13:23Z"
+  },
+  {
+    "id": "prop_1781234005031",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p33 (producing against Book 11)",
+    "obligation_id": "obl_20260612031235_45f75332",
+    "book": "Misc",
+    "note": "KM requests a short, plain-language definition of a Merkle chain. The seed 'Merkle-anchored' is from vol_01 p33 and does not appear verbatim in Book 11; in Book 11 the concept is introduced as 'cryptographically chained' / 'Merkle leaves' in the Reader Cylinder appendix with no reader-facing gloss. 1 insertion at the concept's first plain introduction (line 1473). The vol_01 source page is a separate book \u2014 flagged cross-book.",
+    "info": false,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [
+      {
+        "id": "g1",
+        "title": "Add plain-language Merkle-chain definition at first introduction \u2014 1 place",
+        "kind": "prose",
+        "scope": "GREEN",
+        "reflection_mode": "direct_mechanics",
+        "rationale": "KM asks for the smallest amount of text that effectively and simply describes a Merkle chain to a human. The cylinder's chaining is introduced here as 'cryptographically chained' with no gloss; inserting a one-clause definition at this point names and explains the mechanism right where the reader first meets it, before the later technical mentions ('Merkle leaves', 'Merkle-chained').",
+        "file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/11_ma_due_diligence/v1.0/manuscript_v1.5.md",
+        "hunks": [
+          {
+            "before": [
+              "The cylinder is local-only, cryptographically chained, immutable in chain integrity, and portable across machines."
+            ],
+            "after": [
+              "The cylinder is local-only, cryptographically chained, immutable in chain integrity, and portable across machines. (A **Merkle chain** simply means each record is hashed together with the one before it, so changing any earlier entry breaks every link that follows \u2014 tampering is immediately and mathematically detectable.)"
+            ]
+          }
+        ]
+      }
+    ],
+    "reflection_mode": null,
+    "principle": null,
+    "route": null,
+    "status": "proposed",
+    "created_at": "2026-06-12T03:13:25Z"
+  },
+  {
+    "id": "prop_1781237953345",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p36",
+    "obligation_id": "obl_20260612041839_f880534a",
+    "book": "Misc",
+    "note": "Misrouted: transcript targets vol_01 p36 (bold 'attestation' + 'cryptographic proof', add a table contrasting them). Book 11 contains 'attestation' but has NO 'cryptographic proof' and no attestation-vs-proof distinction to bold/table \u2014 target text not groundable in this file. Edit belongs to vol_01, not Book 11.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "observation",
+    "status": "proposed",
+    "created_at": "2026-06-12T04:19:13Z"
+  },
+  {
+    "id": "prop_1781237956501",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p36",
+    "obligation_id": "obl_20260612041854_eb0865be",
+    "book": "Insert figure/goal",
+    "note": "Visual-ingestion seed for figure signal_ch3_receipt_chain (Receipt-Chain Signal) in vol_01_sovereign_inference_and_memory p36; not a prose edit, and the figure belongs to a different book than the supplied M&A manuscript. No groundable manuscript change. Routes to visual-ingestion tooling.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": "direct_mechanics",
+    "principle": null,
+    "route": "tooling",
+    "status": "proposed",
+    "created_at": "2026-06-12T04:19:16Z"
+  },
+  {
+    "id": "prop_1781238351295",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p40",
+    "obligation_id": "obl_20260612042522_33c1e1b9",
+    "book": "Insert figure/goal",
+    "note": "Visual-ingestion ask: create Figure 4.1 'B51 curation flow' (federation events \u2192 curator role \u2192 B51 entries \u2192 operator). This is a diagram-generation task, not a prose edit. Two blockers: (1) it targets vol_01_sovereign_inference_and_memory, but the manuscript file provided is Book 11 (AI Agents for M&A) \u2014 Figure 4.1 there is 'Cross-Functional Due Diligence Lens'; (2) the B51 curation-flow content is absent from this file (grep confirms NO_MATCH). Cannot ground a verbatim diff here; routes to tooling for image/diagram generation against the correct vol_01 manuscript.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": "direct_mechanics",
+    "principle": null,
+    "route": "tooling",
+    "status": "proposed",
+    "created_at": "2026-06-12T04:25:51Z"
+  },
+  {
+    "id": "prop_1781238662618",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p42",
+    "obligation_id": "obl_20260612043043_e78f1634",
+    "book": "Insert figure/goal",
+    "note": "Seed is a VISUAL figure marker (signal.signal_ch4_b51_attention \u2014 Attention-Curation Signal) tagged for visual ingestion (one diagram per chapter), not a request to change manuscript prose. No concrete text edit is named, and the referenced figure/page belongs to vol_01 while the supplied manuscript file is Book 11 (M&A) \u2014 the figure ID does not appear there. This is a diagram-generation/ingestion task for the image pipeline, not a groundable prose or formatting edit.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": "direct_mechanics",
+    "principle": null,
+    "route": "tooling",
+    "status": "proposed",
+    "created_at": "2026-06-12T04:31:02Z"
+  },
+  {
+    "id": "prop_1781238956417",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p45",
+    "obligation_id": "obl_20260612043509_f5e76115",
+    "book": "Misc",
+    "note": "File/page mismatch: the request (swap P1\u2013P5 layer labels for paired component names to aid reader comprehension without trading determinism) is a concrete edit, but the seed text 'P1 ECC + P2 consensus + P3 libp2p/Kademlia + P4 verifiable compute + P5 Merkle/ZK/homomorphic' does NOT appear anywhere in the supplied Book 11 manuscript_v1.5.md (verified by grep for every distinct token: P1\u2013P5, ECC, consensus-as-layer, libp2p, Kademlia, verifiable compute, Merkle/ZK, homomorphic \u2014 0 hits in context). The page tag and content both belong to Series 2 Vol 1 (Sovereign Inference and Memory). No groundable diff in this file.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": "direct_mechanics",
+    "principle": null,
+    "route": "observation",
+    "status": "proposed",
+    "created_at": "2026-06-12T04:35:56Z"
+  },
+  {
+    "id": "prop_1781239190422",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p46",
+    "obligation_id": "obl_20260612043904_e9988c5b",
+    "book": "Insert figure/goal",
+    "note": "BOOK/FILE MISMATCH \u2014 the seed asks to insert a VISUAL figure (Figure 5.1, \"The three verification loops: Primitives \u2192 Receipt Chain \u2192 Living Books\") on vol_01 Sovereign Inference and Memory p46, but the manuscript file provided is Book 11 (AI Agents for M&A / 11_ma_due_diligence). Those concepts (Primitives, Receipt Chain, Living Books, verification loops) are Series 2 vol_01 material and appear nowhere in the M&A manuscript; the M&A Chapter 5 is on synergy modeling and its figures are 5.2 (Synergy Waterfall) and the signal figure. No groundable diff exists in the provided file, so 0 edits produced here. This visual-ingestion request needs to be run against the vol_01 manuscript, not this one.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "observation",
+    "status": "proposed",
+    "created_at": "2026-06-12T04:39:50Z"
+  },
+  {
+    "id": "prop_1781239442434",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p48",
+    "obligation_id": "obl_20260612044346_f5eed143",
+    "book": "Insert figure/goal",
+    "note": "Seed is a pure VISUAL/figure selection (signal_ch5_living_books \u2013 Living-Books Signal) tagged on vol_01 p48 with an LGP 'visual ingestion (one diagram per chapter)' hint; it names no concrete manuscript text change. No groundable text edit, so no diff is fabricated \u2014 routed as a visual-ingestion/build ask.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "tooling",
+    "status": "proposed",
+    "created_at": "2026-06-12T04:44:02Z"
+  },
+  {
+    "id": "prop_1781239725037",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p52",
+    "obligation_id": "obl_20260612044825_59f98553",
+    "book": "Insert figure/goal",
+    "note": "Transcript is a VISUAL figure request (Figure 6.1 \u2014 Inference + Memory coherence: receipts in audit chain, B51 as curated projection, shared cryptographic substrate) under the LGP 'visual ingestion / one diagram per chapter' hint. It asks for a diagram to be created, not any prose change to the manuscript. The seed text also targets vol_01_sovereign_inference_and_memory, not the Book 11 M&A file supplied \u2014 there is no groundable text edit in this manuscript. Routes to tooling (figure generation / visual plan).",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "tooling",
+    "status": "proposed",
+    "created_at": "2026-06-12T04:48:45Z"
+  },
+  {
+    "id": "prop_1781239769415",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p52",
+    "obligation_id": "obl_20260612044904_7f1afdb7",
+    "book": "Insert figure/goal",
+    "note": "Visual-ingestion ask: generate/insert a diagram (Figure 6.1 \u2014 Inference + Memory coherence: audit-chain receipts, B51 as curated projection, shared cryptographic substrate). This is image/diagram production, not a manuscript prose edit. Additionally the seed content belongs to Series 2 vol_01 (inference/memory/B51), while the supplied file is Book 11 (M&A) whose Figure 6.1 is the 'M&A Risk Scoring Matrix' \u2014 the seed text appears nowhere in this file, so no verbatim `before` target exists. No groundable text edit. Route to tooling/diagram generation.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "tooling",
+    "status": "proposed",
+    "created_at": "2026-06-12T04:49:29Z"
+  },
+  {
+    "id": "prop_1781239800963",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p52",
+    "obligation_id": "obl_20260612044943_2b82850a",
+    "book": "Misc",
+    "note": "KM asks to redesign Figure 6.1 ('Inference + Memory coherence') as a yin/yang symbol \u2014 a visual/figure-generation ask, not a manuscript text edit. Note: the seed page belongs to vol_01 Sovereign Inference and Memory, but the manuscript file provided is 11_ma_due_diligence (whose Figure 6.1 is the 'M&A Risk Scoring Matrix'); the seed text is not present in this file. Either way, regenerating a figure as a yin/yang design routes to the visual/build tooling.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "tooling",
+    "status": "proposed",
+    "created_at": "2026-06-12T04:50:00Z"
+  },
+  {
+    "id": "prop_1781240085592",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p53",
+    "obligation_id": "obl_20260612045415_d52719ef",
+    "book": "Insert figure/goal",
+    "note": "Visual-ingestion seed: a figure tag (signal.signal_ch6_coherence \u2013 Coherence Signal) for one-diagram-per-chapter ingestion in vol_01 p53. No concrete prose/formatting edit requested. The pointed manuscript file is Book 11 (M&A) and contains no such figure (its ch6 visuals are Figure 6.1 and signal_ch6_consero), so nothing is groundable here \u2014 this is a diagram-pipeline/feasibility item for the figure generation tooling, not a manuscript edit.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "tooling",
+    "status": "proposed",
+    "created_at": "2026-06-12T04:54:45Z"
+  },
+  {
+    "id": "prop_1781312368216",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p75 (manuscript: 11_ma_due_diligence v1.5)",
+    "obligation_id": "obl_20260613005913_45c34652",
+    "book": "Misc",
+    "note": "KM is asking a clarifying question \u2014 whether the book claims a company could complete a full annual/quarterly financial audit in under an hour \u2014 seeded on 'Total'. No manuscript change is requested; it is a question/observation about the scope of a claim, not an edit instruction.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "observation",
+    "status": "proposed",
+    "created_at": "2026-06-13T00:59:28Z"
+  },
+  {
+    "id": "prop_1781312712839",
+    "session_ref": "Book 11 \u2014 AI Agents for M&A \u00b7 p78 (transcript page-tag read 'vol_01'; grounded to the provided book-11 file)",
+    "obligation_id": "obl_20260613010345_6830f44f",
+    "book": "Misc",
+    "note": "1 concrete addition: a quick comparison contrasting traditional system-to-system software cutovers (clarity traded for scale) with the agentic layer's continuity-preserving cutover. Anchored to the existing ERP-migration paragraph in Ch.8 'Agentic System as Integration Infrastructure'. Seed 'substrate' not literal in file; theme matches this passage. Note: transcript page-tag named vol_01 but the manuscript file supplied is Book 11 \u2014 edit grounded to the supplied file.",
+    "info": false,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [
+      {
+        "id": "g1",
+        "title": "Add cutover-continuity comparison to integration-infrastructure passage \u2014 1 place",
+        "kind": "prose",
+        "scope": "GREEN",
+        "reflection_mode": "direct_mechanics",
+        "rationale": "KM asked whether we might add a quick comparison: traditional software deployments migrating from one system to another lose clarity in the new system (a clarity-for-scale tradeoff), whereas the agentic tools make the cutover relatively seamless so the next-generation system maintains continuity without sacrificing newer/faster/more robust tech. The Ch.8 paragraph already invokes the SAP/ERP migration analogy, making it the coherent anchor; the addition extends that analogy into the explicit contrast KM described, in the book's declarative executive voice.",
+        "file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/11_ma_due_diligence/v1.0/manuscript_v1.5.md",
+        "hunks": [
+          {
+            "before": [
+              "The agentic system is becoming an equivalent class of infrastructure \u2014 **the AI layer can be as important to a PE portfolio company as its ERP**, because it is what reads, reconciles, and monitors across both organizations while the underlying systems are still being merged."
+            ],
+            "after": [
+              "The agentic system is becoming an equivalent class of infrastructure \u2014 **the AI layer can be as important to a PE portfolio company as its ERP**, because it is what reads, reconciles, and monitors across both organizations while the underlying systems are still being merged.\n\nThere is a sharper contrast worth drawing. Most software deployments trade clarity for scale: cutting over from one system to the next means the new environment knows less about the business than the system it replaced \u2014 institutional memory is left behind in the platform being retired, and the organization spends months rebuilding context it already had. The agentic layer inverts that tradeoff. Because it carries a receipted, reconciled record of how both organizations actually operate, the cutover preserves continuity rather than spending it \u2014 **the next-generation system inherits the prior system's clarity *and* gains the newer, faster, more robust foundation.** Continuity stops being the price of modernization."
+            ]
+          }
+        ]
+      }
+    ],
+    "reflection_mode": null,
+    "principle": null,
+    "route": null,
+    "status": "applied",
+    "created_at": "2026-06-13T01:05:12Z",
+    "applied_commits": [
+      "books:2644186"
+    ]
+  },
+  {
+    "id": "prop_1781312930708",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p80",
+    "obligation_id": "obl_20260613010828_95a49f26",
+    "book": "Misc",
+    "note": "Bold-formatting request, but the seed selection \"the next steward's literacy in reading the substrate\" is from vol_01_sovereign_inference_and_memory (p80), not the Book 11 manuscript provided. Grep for 'steward', 'substrate', 'literacy in reading' returns zero matches in manuscript_v1.5.md \u2014 target text genuinely cannot be located in this file. The page tag and the manuscript path disagree; this edit belongs to Series 2 Vol 1, processed separately.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "observation",
+    "status": "proposed",
+    "created_at": "2026-06-13T01:08:50Z"
+  },
+  {
+    "id": "prop_1781313022462",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p81",
+    "obligation_id": "obl_20260613010958_5352d7c2",
+    "book": "Misc",
+    "note": "Bold-formatting request on the seed 'a substrate that does not change between teacher and learner' \u2014 but that page (vol_01 p81) belongs to Series 2 Vol 1, while the manuscript file provided is Book 11 (M&A Due Diligence). The target text is not present in the supplied file, so it cannot be grounded here; 0 instances located.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "observation",
+    "status": "proposed",
+    "created_at": "2026-06-13T01:10:22Z"
+  },
+  {
+    "id": "prop_1781313133374",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p82",
+    "obligation_id": "obl_20260613011145_8f5b21e6",
+    "book": "Misc",
+    "note": "Bold-formatting request seeded on text \"...he constitutional literacy of the next steward\" \u2014 but that page reference is to a DIFFERENT book (Series 2 vol_01_sovereign_inference_and_memory, p82), and the phrase does not appear anywhere in the supplied Book 11 manuscript_v1.5.md (greps for 'constitutional literacy', 'steward', and the full seed string all return nothing). Target text genuinely not locatable in this file \u2014 likely a book/page routing mismatch. No groundable diff in Book 11.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "observation",
+    "status": "proposed",
+    "created_at": "2026-06-13T01:12:13Z"
+  },
+  {
+    "id": "prop_1781313146737",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p82",
+    "obligation_id": "obl_20260613011157_51ff663c",
+    "book": "Misc",
+    "note": "Concrete bold-formatting ask, but the seed text \"...the dominant determinant of multi-generational survival of family economic infrastructure\" does not appear anywhere in the assigned manuscript (manuscript_v1.5.md). The page tag points to a DIFFERENT book \u2014 vol_01_sovereign_inference_and_memory p82 \u2014 not 11_ma_due_diligence. Page-tag/manuscript-file mismatch; target text ungroundable in this file, so no diff can be produced here. The edit likely belongs to Book vol_01 and should be routed to that book's review.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": "direct_mechanics",
+    "principle": null,
+    "route": "observation",
+    "status": "proposed",
+    "created_at": "2026-06-13T01:12:26Z"
+  },
+  {
+    "id": "prop_1781313417693",
+    "session_ref": "AI Agents for M&A (Book 11) \u00b7 p78",
+    "obligation_id": "obl_20260613011629_921f3100",
+    "book": "Add section/topic",
+    "note": "The capture is an '[Add section/topic]' action with seed 'terms' and an LGP hint about 'completeness of the executive narrative' \u2014 i.e., a request to add a new terms/glossary section. No specific terms, content, or insertion point are supplied, and there is no existing target text to format or modify, so there is nothing to ground a verbatim diff against. Fabricating a glossary would invent content. Routed as an observation/section-request for KM to specify scope (which terms, where) before a grounded diff can be produced.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "observation",
+    "status": "proposed",
+    "created_at": "2026-06-13T01:16:57Z"
+  },
+  {
+    "id": "prop_1781313589664",
+    "session_ref": "AI Agents for M&A (Book 11) \u00b7 transcript-tagged vol_01_sovereign_inference_and_memory p78",
+    "obligation_id": "obl_20260613011843_d323bd7e",
+    "book": "Misc",
+    "note": "KM wants a brief, soft callout alluding to the author's private long-arc driving force \u2014 'Lasting Generational Prosperity' / the long view of a thriving humanity (Charter v.7 spirit), landing where the reader has already absorbed the work. One concrete addition: a soft blockquote callout at the close of 'About the Author'. (Note: the transcript page tag points at a different title \u2014 vol_01 Sovereign Inference & Memory p78 \u2014 but the manuscript file supplied is Book 11; edit produced against the supplied file. If the intent was vol_01, route there instead.)",
+    "info": false,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [
+      {
+        "id": "g1",
+        "title": "Soft long-arc 'generational prosperity' callout \u2014 1 place",
+        "kind": "prose",
+        "scope": "GREEN",
+        "reflection_mode": "direct_mechanics",
+        "rationale": "KM asked for a brief callout that softly alludes to the author's private driving force \u2014 lasting generational prosperity and the long-arc view of a thriving humanity (Charter v.7 spirit) \u2014 placed where the reader has 'hopefully already found evidence through the works.' The close of 'About the Author' is the natural landing point: the reader has finished the playbook. Kept understated per 'allude softly' \u2014 does not name Charter V.7 explicitly to preserve the soft tone. Anchored on the verbatim final paragraph of About the Author; the new blockquote is appended after it.",
+        "file": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/agentic_playbooks/11_ma_due_diligence/v1.0/manuscript_v1.5.md",
+        "hunks": [
+          {
+            "before": [
+              "Kenneth is the author of the **Mangum Executive Series** (*Strategic Finance For Growth*, *Harnessing Artificial Intelligence*, *Blueprint for Brilliance*, *Cryptocurrency Decoded*) and the **Agentic AI Playbooks for Executives** series, which provides week-by-week deployment guides for AI agents across every major business function. He holds an MBA from the University of Michigan and a Bachelor of Science from Brigham Young University, and has led finance teams ranging from startups to Fortune 500 organizations."
+            ],
+            "after": [
+              "Kenneth is the author of the **Mangum Executive Series** (*Strategic Finance For Growth*, *Harnessing Artificial Intelligence*, *Blueprint for Brilliance*, *Cryptocurrency Decoded*) and the **Agentic AI Playbooks for Executives** series, which provides week-by-week deployment guides for AI agents across every major business function. He holds an MBA from the University of Michigan and a Bachelor of Science from Brigham Young University, and has led finance teams ranging from startups to Fortune 500 organizations.",
+              "",
+              "> *Beneath every framework in these pages runs a longer arc than any one deal or quarter: the conviction that the tools we build now should compound \u2014 patiently, across generations \u2014 into lasting prosperity, and serve the long view of a thriving humanity. That is the quiet objective to which this work is dedicated.*"
+            ]
+          }
+        ]
+      }
+    ],
+    "reflection_mode": null,
+    "principle": null,
+    "route": null,
+    "status": "applied",
+    "created_at": "2026-06-13T01:19:49Z",
+    "applied_commits": [
+      "books:314bfa3"
+    ]
+  },
+  {
+    "id": "prop_1781313651733",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p83",
+    "obligation_id": "obl_20260613011958_02d9b0b4",
+    "book": "Misc",
+    "note": "KM is establishing a standing editorial invariant \u2014 'Your Next Steps' must always be the very last section of each chapter where present, across all books and series, monitored during editorial review. Verified all 11 chapters in this book (Ch 1\u201311) and the invariant ALREADY HOLDS: every 'Your Next Steps' is the final section before \\newpage, with each chapter's 'See it work' note correctly placed before it. No literal edit needed here; routing as a governing principle/drift-watch invariant.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": "embodied_principle",
+    "principle": "'Your Next Steps' must always be the final section of every chapter where present \u2014 nothing (including 'See it work' notes, Industry Signals, or scholarly anchors) may follow it before the chapter's \\newpage. Standardize across all books and series; enforce as an editorial-review checklist gate.",
+    "route": "principle",
+    "status": "proposed",
+    "created_at": "2026-06-13T01:20:51Z"
+  },
+  {
+    "id": "prop_1781313815200",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p85",
+    "obligation_id": "obl_20260613012250_5c2c4fec",
+    "book": "Misc",
+    "note": "File/seed mismatch: the seed 'Artifacts this chapter authorizes' and the page tag belong to Series 2 Vol 1 (Sovereign Inference and Memory), not the Book 11 manuscript I was given. Book 11 has no 'Artifacts this chapter authorizes' section \u2014 chapters end with 'Your Next Steps' (11 instances). The ask is a structural ordering decision (which of 'Next Steps' vs the 'Artifacts' section should be the chapter's last block, weighing reader attention since readers may skip the technical artifacts) for that other book. No groundable edit exists in this file; 0 hunks.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "observation",
+    "status": "proposed",
+    "created_at": "2026-06-13T01:23:35Z"
+  },
+  {
+    "id": "prop_1781313888259",
+    "session_ref": "vol_01_sovereign_inference_and_memory \u00b7 p85",
+    "obligation_id": "obl_20260613012434_2d60a7ac",
+    "book": "Misc",
+    "note": "KM asks a structural question ('is this the conclusion of the book or an appendix item?') about 'The Forward Pointer \u2014 Continue to Vol 2'. No concrete edit requested; seed text is not present in the named manuscript file. Pure question/observation.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": "direct_mechanics",
+    "principle": null,
+    "route": "observation",
+    "status": "proposed",
+    "created_at": "2026-06-13T01:24:48Z"
+  },
+  {
+    "id": "prop_1781314366628",
+    "session_ref": "Book 11 \u2014 vol_01_sovereign_inference_and_memory \u00b7 p78",
+    "obligation_id": "obl_20260613013203_a6627761",
+    "book": "Misc",
+    "note": "KM loves the existing closing personal-statement blockquote in About the Author exactly as-is (manuscript_v1.5.md line 1596) and asks it become a permanent fixture in his bio across every title. No literal edit requested \u2014 'just as it is' = no change to current text; this is a governing invariant, not a one-spot diff.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": "embodied_principle",
+    "principle": "The closing personal-statement blockquote ('Beneath every framework\u2026 lasting prosperity\u2026 the long view of a thriving humanity\u2026 the quiet objective to which this work is dedicated') is a permanent fixture of Kenneth's bio \u2014 it must always be included as the closing line of the About the Author section in every title, verbatim and unchanged.",
+    "route": "principle",
+    "status": "proposed",
+    "created_at": "2026-06-13T01:32:46Z"
+  }
+]

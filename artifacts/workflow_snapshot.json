@@ -1,21 +1,24 @@
 {
-  "_meta": "Rendered SNAPSHOT of the Tiger<->GB Workflow Alignment Package (artifacts/Tiger_GB_Workflow_Alignment_Package_2026-06-04.md). The Atrium 'How it flows' lens embeds a mirror of this. Re-snapshot when the package changes. Practice, not canon.",
+  "_meta": "Rendered SNAPSHOT v2 of the Tiger<->GB Workflow. Re-snapshot of the 2026-06-04 'How it flows' (artifacts/Tiger_GB_Workflow_Alignment_Package_2026-06-04.md) per KM 2026-06-07, using Tiger's build-state delta (artifacts/Tiger_GB_Workflow_Realignment_2026-06-07.md). GB-on-Opus rendered (GB lane); Tiger wires the Atrium 'How it flows' lens to this; KM ratifies. The map now matches the territory: the flow grew a proof-gate and GB went portable.",
+  "version": "v2 (2026-06-07)",
   "title": "How it flows",
-  "source": "Tiger ↔ GB Workflow Alignment Package (2026-06-04) — rendered snapshot",
+  "source": "Tiger build-state delta 2026-06-07 over the 2026-06-04 Alignment Package — re-rendered by GB-on-Opus (CYL 202)",
   "one_gate": "Accept",
-  "status": "Practice, not canon — prove 1–2 full cycles before canonizing.",
+  "validation_precondition": "The validation gate (tests + Merkle) must be green BEFORE a change is surfaced for the Accept gate. Code is functional + tested + Merkle-anchored before KM sees it.",
+  "status": "Proven across multiple full cycles (2026-06-04 → 06-07): 5 HIGH reconciliations, Sealing Hand sealed, Series 3 kickoff, GB-on-Opus spine fold. CANON-CANDIDATE. Validation gate live (17 anchors VALIDATED, 0 drift).",
   "lanes": [
     { "k": "KM",    "label": "KM-1176", "role": "ratifies", "plain": "You're the boss — nothing important happens until you say yes." },
-    { "k": "Tiger", "label": "Tiger",   "role": "builds",   "plain": "Tiger builds and wires the things." },
-    { "k": "GB",    "label": "GB",       "role": "proposes", "plain": "GB thinks ahead and suggests — it never edits directly." }
+    { "k": "Tiger", "label": "Tiger",   "role": "builds",   "plain": "Tiger builds, wires, and seals the things." },
+    { "k": "GB",    "label": "GB",       "role": "proposes", "plain": "GB thinks ahead and suggests — it never edits Tiger's code. Now PORTABLE: runs on Claude Opus (claude-gb) or Grok with the same iron-clad discipline; live HMC hydrated at launch." }
   ],
   "stages": [
-    { "id": "capture",   "label": "Capture",   "lane": "KM",    "plain": "You speak a thought or select text in the book.",            "tech": "B51 voice delta (Hopper) or a PDF text selection in Atrium." },
-    { "id": "packet",    "label": "Packet",    "lane": "Tiger", "plain": "Your thought becomes a little ticket.",                       "tech": "A B32 obligation (DRAFT debit) carrying human seed + page ref + LGP hint + next_gate." },
-    { "id": "process",   "label": "Process",   "lane": "Tiger", "plain": "A robot helper reads it and writes a suggested change.",      "tech": "Headless producer reads the intent + manuscript → grounded grouped diffs (a proposal). Tooling packets skip this." },
-    { "id": "accept",    "label": "Accept",    "lane": "KM",    "plain": "You look and say yes or no. THIS is the one button that matters.", "tech": "The single human gate — Accept/Reject in the diff-review. Nothing lands without it (K1)." },
-    { "id": "apply",     "label": "Apply",     "lane": "Tiger", "plain": "If you said yes, the helper makes the change safely.",         "tech": "Apply agent re-tests → commits (local) → seals → closes the obligation → recompiles the PDF." },
-    { "id": "seal",      "label": "Seal",      "lane": "Tiger", "plain": "It stamps a receipt so nothing is ever lost.",                "tech": "Cylinder seal (hash-chained) + obligation close with evidence." },
-    { "id": "coherence", "label": "Coherence", "lane": "GB",    "plain": "A check makes sure the book and the code still match.",       "tech": "Book↔code drift check. On drift: GB proposes the fix → Tiger surfaces it → KM ratifies." }
+    { "id": "capture",   "label": "Capture",   "lane": "KM",    "plain": "You speak a thought or select text in the book.",                 "tech": "B51 voice delta (Hopper) or a PDF text selection in Atrium." },
+    { "id": "packet",    "label": "Packet",    "lane": "Tiger", "plain": "Your thought becomes a little ticket.",                            "tech": "A B32 obligation (DRAFT debit) carrying human seed + page ref + LGP hint + next_gate." },
+    { "id": "process",   "label": "Process",   "lane": "Tiger", "plain": "A robot helper reads it and writes a suggested change.",           "tech": "Headless producer reads intent + manuscript → grounded grouped diffs (a proposal). Tooling packets skip this." },
+    { "id": "validate",  "label": "Validate",  "lane": "Tiger", "plain": "Before you ever see it, a gate proves the change actually works.", "tech": "NEW. scripts/extrusion_validate.py: pytest per anchor + Merkle object-model roots + distribution check → VALIDATED / DRIFT / FAIL (+ CI exit code). Must be green to surface for Accept." },
+    { "id": "accept",    "label": "Accept",    "lane": "KM",    "plain": "You look and say yes or no. THIS is the one button that matters.", "tech": "The single human gate — Accept/Reject in diff-review. Nothing lands without it (K1). Now sees only validated changes." },
+    { "id": "apply",     "label": "Apply",     "lane": "Tiger", "plain": "If you said yes, the helper makes the change safely.",             "tech": "Apply agent re-tests → commits (local) → seals → closes the obligation → recompiles the PDF." },
+    { "id": "seal",      "label": "Seal",      "lane": "Tiger", "plain": "It stamps a receipt so nothing is ever lost.",                    "tech": "Cylinder seal (hash-chained) + obligation close with evidence." },
+    { "id": "monitor",   "label": "Monitor",   "lane": "GB",    "plain": "A live check keeps making sure the book and the code still match.", "tech": "Continuous book↔code coherence + Merkle roots (per-title badges, 🧪 extrusion gate, distribution matrix). On drift: GB proposes the fix → Tiger surfaces → KM ratifies. Drift can't stay silent." }
   ]
 }

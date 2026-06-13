@@ -1,11 +1,11 @@
-# Series Pipeline Snapshot — 2026-06-09
+# Series Pipeline Snapshot — 2026-06-10
 # Immutable point-in-time capture of the FULL merged pipeline (Atrium lens output). Drop-off protection.
-# content_hash: e8ce377f629d076ff34a2229e8c42d5059a9a1dca70231f5073d43830a79681b
+# content_hash: ed17eda519ef621d6c25ec5f7d8489521b29e9fde7a2401089d19e2341d436d6
 # coverage: series=12 titles=84 chapters=273 chapters_with_kw=270 titles_with_outline=28 degraded=False
 # source: derived from series_roadmap.yaml + extracted_chapter_outlines (lens merge). NOT a build source.
 # diff vs another day:  diff <this> artifacts/pipeline_snapshots/series_pipeline_<other>.yaml
-snapshot_date: '2026-06-09'
-content_hash: e8ce377f629d076ff34a2229e8c42d5059a9a1dca70231f5073d43830a79681b
+snapshot_date: '2026-06-10'
+content_hash: ed17eda519ef621d6c25ec5f7d8489521b29e9fde7a2401089d19e2341d436d6
 coverage:
   series: 12
   titles: 84
@@ -3662,8 +3662,8 @@ series:
       coherence_pin: null
     chapters_source: extracted-index
   - book_id: 10_scaling_enterprise
-    title: Scaling the Agentic Enterprise
-    subtitle: Playbooks for Operators Who Actually Ship
+    title: Scaling AI Agents
+    subtitle: Center of Excellence Models, Cost Management, Security, Maturity Frameworks, and Enterprise-Wide Deployment
     stage: phase_2_iteration
     phase: '2'
     reader_order: 10
@@ -3960,7 +3960,9 @@ series:
       coherence_pin: null
     chapters_source: extracted-index
   - book_id: 11_ma_due_diligence
-    title: M&A Due Diligence in the Agentic Era
+    title: AI Agents for M&A
+    subtitle: Deal Screening, Due Diligence, Synergy Modeling, Valuation, Risk Detection, and 100-Day Integration Plans Powered
+      by Agents
     stage: phase_2_iteration
     phase: '2'
     reader_order: 11
@@ -4255,11 +4257,11 @@ series:
     chapters_source: extracted-index
   - book_id: 12_agentic_enterprise
     title: The Agentic Enterprise
-    stage: phase_2_iteration
+    stage: review_ready
     phase: '2'
     reader_order: 12
     lgp_alignment_score: high (Series 1 closer — the integrated agentic enterprise; canonical-term locks)
-    next_gate: KM verbal feedback (Atrium Review, chapter+page) → revise → sign-off → awaiting_seal
+    next_gate: 'KM in-Atrium review (Wave-1 kit, J4 ruled 2026-06-10) → sign-off → seal → KDP dispatch | Brief: artifacts/B12_Fold_Report_Review_Brief_2026-06-10.md'
     drill_down: 'In human review; Series 1 closer; canonical-term locks; author-imposition lens. Manuscript: kdp/agentic_playbooks/12_agentic_enterprise/v1.0/.'
     chapters:
     - n: 1
@@ -5998,17 +6000,17 @@ series:
   name: Programmable Sovereign ERP (Series 3) — The Business Operating System Governed by Living Constitutional Code
   visibility: public
   status: 'CONCEPT/LOCKED (canonical concept v2 2026-05-31). The 4-volume constitutional ROOT of the ERP arc — the foundation
-    Series 5 (Full Production ERP) expands into 32 titles. Vol 1 SEALED (9-element extrusion + live drift tests + coherence
-    pin); Vol 2 in handoff. Concept doc: kdp/series_03_programmable_sovereign_erp/SERIES_3_CONCEPT_v2_2026-05-31.md. GB-on-Opus
-    RESTORED this entry CYL 201 (was missing from the roadmap — drop-risk caught). ROOT NOW: V1 sealed · V2 handoff · V3 (Helix)
-    outline_locked 2026-06-08 (8ch folded) · V4 (Industry ERPs & Generational) outline_PARTIAL 2026-06-08 (5/8ch folded; Ch3-5
-    Manufacturing/Electronics/3rd-pattern STUBBED by G — surfaced to Atrium for G completion). Constitutional root ~complete;
-    S5 expansion unblocks once V4 fills.'
+    Series 5 (Full Production ERP) expands into 32 titles. Vol 1 IN PHASE 1 (active build-forward per KM 2026-06-06; pipeline/active.yaml
+    is the source-of-truth — earlier ''sealed'' was stale, corrected 2026-06-10); Vol 2 in handoff. Concept doc: kdp/series_03_programmable_sovereign_erp/SERIES_3_CONCEPT_v2_2026-05-31.md.
+    GB-on-Opus RESTORED this entry CYL 201 (was missing from the roadmap — drop-risk caught). ROOT NOW: V1 phase_1 (active
+    build) · V2 handoff · V3 (Helix) outline_locked 2026-06-08 (8ch folded) · V4 (Industry ERPs & Generational) outline_PARTIAL
+    2026-06-08 (5/8ch folded; Ch3-5 Manufacturing/Electronics/3rd-pattern STUBBED by G — surfaced to Atrium for G completion).
+    Constitutional root ~complete; S5 expansion unblocks once V4 fills.'
   title_count: 4
   titles:
   - book_id: vol_01_immutable_core
     title: 'The Immutable Core: Receipts, Cylinders & Constitutional Truth'
-    stage: sealed
+    stage: phase_1
     reader_order: 1
   - book_id: vol_02_programmable_governance_skin
     title: 'Programmable Governance Skin: YAML Roles, Action Classes & Breath-Gates'

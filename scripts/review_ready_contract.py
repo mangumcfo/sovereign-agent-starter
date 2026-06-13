@@ -58,6 +58,28 @@ def _book_dir(book_id: str) -> Path | None:
     return None
 
 
+def _check_gate6_renderability(bdir: Path) -> dict:
+    """Tech/Arch GATE 6 — Renderability (Deterministic-Render Writing Standard v1.0, GB-sealed 2026-06-12).
+    Binding. The structural floor checked here: every major section ends with a Receipt box (the Helix
+    validation anchor — Gate 6's explicit success criterion). Full Gate-6 rigor (one-truth · every promise
+    has a render target · zero dishonest stubs) lives in the tech_arch board's rigor block; this bars the
+    box-less manuscript that can never extrude deterministically."""
+    mss = sorted(p for p in bdir.glob("manuscript_v*.md")
+                 if re.match(r"manuscript_v[0-9.]+\.md$", p.name))  # exclude changelog/sidecars
+    if not mss:
+        return {"pass": False, "status": "no-manuscript", "detail": "no manuscript to render-check"}
+    text = mss[-1].read_text(encoding="utf-8", errors="ignore")
+    boxes = text.count("\U0001F4E6 Receipt Box")
+    sections = len(re.findall(r"^# (?:Chapter \d+|Appendix )", text, re.M))
+    if boxes == 0:
+        return {"pass": False, "status": "no-receipt-boxes",
+                "detail": "Gate 6 RED — manuscript has no Receipt boxes (Helix anchor missing)"}
+    if sections and boxes < sections:
+        return {"pass": False, "status": f"partial({boxes}/{sections})",
+                "detail": f"Gate 6 PARTIAL — {boxes} Receipt boxes for {sections} sections"}
+    return {"pass": True, "status": f"green({boxes}-boxes)", "detail": ""}
+
+
 def _check_boards(bdir: Path | None) -> dict:
     """The canonical Series-Pipeline boards (ratified mapping GB [207]+[209]): Editorial R1/R2/R3 each
     rigor-pass via their embedded ```rigor``` block; Book-to-UX present; Tech/Arch present + rigor-pass.
@@ -110,6 +132,16 @@ def _check_boards(bdir: Path | None) -> dict:
             statuses["technical"] = "present-no-rigor"
     else:
         ok.append("technical"); statuses["technical"] = "present"
+
+    # 4) Tech/Arch GATE 6 — Renderability (Deterministic-Render Standard v1.0). Binding: review_ready never
+    #    flips without the Receipt-box anchor. Only enforced once a Tech/Arch board exists (Gate 6 lives in it).
+    if ta:
+        g6 = _check_gate6_renderability(bdir)
+        statuses["renderability_gate6"] = g6["status"]
+        if g6["pass"]:
+            ok.append("renderability_gate6")
+        else:
+            issues.append(f"renderability_gate6: {g6['detail']}")
 
     return {"check": "boards_executed", "pass": not issues,
             "detail": " · ".join(f"{k}={v}" for k, v in statuses.items()),

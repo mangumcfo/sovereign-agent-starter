@@ -1,0 +1,77 @@
+# S5 Full Production ERP — Pass C (Industry Verticals, Vols 19–24) — G via KM relay 2026-06-11
+# Tiger-validated (keywords: IP-jargon scan + cross-title dup + count). Spine capture (series/title/market/
+# keywords + per-chapter chapter_title+keywords); full beats/promise in G's reply transcript. GB folds; KM ratifies.
+titles:
+  - {series: 5, title: "Manufacturing Sovereign ERP — Discrete & Process Operations", market: "Regulated Manufacturing ERP Systems",
+     keywords: [regulated manufacturing ERP, governed production management, verifiable manufacturing system, permissioned MES ERP, enterprise production governance, compliant manufacturing operations, sovereign production ERP],
+     chapters: [
+       {n: 1, chapter_title: "Manufacturing Operations Challenges", keywords: ["manufacturing ERP problems","regulated MES challenges","production visibility issues","enterprise manufacturing control"]},
+       {n: 2, chapter_title: "Governed Production Planning & Scheduling", keywords: ["governed manufacturing planning","regulated production scheduling","permissioned MES planning","compliant manufacturing control"]},
+       {n: 3, chapter_title: "Shop Floor Execution & Work Orders", keywords: ["regulated shop floor control","governed work orders","permissioned manufacturing execution","verifiable production records"]},
+       {n: 4, chapter_title: "Quality Management & Process Control", keywords: ["regulated quality management","verifiable manufacturing traceability","compliant quality control","enterprise quality ERP"]},
+       {n: 5, chapter_title: "Material & Resource Coordination", keywords: ["regulated BOM management","governed material flow","permissioned resource planning","manufacturing resource control"]},
+       {n: 6, chapter_title: "Manufacturing Compliance & Reporting", keywords: ["manufacturing compliance automation","regulated production reporting","governed MES audit","compliant manufacturing records"]},
+       {n: 7, chapter_title: "Manufacturing ERP vs Legacy Systems", keywords: ["sovereign manufacturing vs legacy","regulated MES comparison","permissioned production advantages","verifiable manufacturing control"]},
+       {n: 8, chapter_title: "Manufacturing as Generational Capability", keywords: ["long term manufacturing ERP","generational production system","regulated manufacturing legacy","sovereign production continuity"]}]}
+
+  - {series: 5, title: "Distribution & Wholesale — Inventory, Logistics & Channel Management", market: "Regulated Distribution & Wholesale ERP",
+     keywords: [regulated distribution ERP, governed wholesale management, verifiable inventory logistics, permissioned channel control, enterprise distribution governance, compliant wholesale ERP, sovereign logistics system],
+     chapters: [
+       {n: 1, chapter_title: "Distribution & Wholesale Challenges", keywords: ["distribution management problems","regulated wholesale challenges","enterprise logistics visibility","governed distribution control"]},
+       {n: 2, chapter_title: "Governed Inventory & Warehouse Operations", keywords: ["regulated inventory management","verifiable warehouse control","permissioned stock operations","compliant distribution inventory"]},
+       {n: 3, chapter_title: "Logistics & Fulfillment Execution", keywords: ["regulated logistics execution","governed fulfillment","permissioned shipment control","compliant distribution flows"]},
+       {n: 4, chapter_title: "Channel Management & Pricing Governance", keywords: ["governed channel management","regulated pricing control","permissioned wholesale channels","compliant distribution pricing"]},
+       {n: 5, chapter_title: "Demand & Supply Coordination", keywords: ["distribution demand planning","regulated supply coordination","enterprise wholesale forecasting","compliant distribution planning"]},
+       {n: 6, chapter_title: "Distribution Compliance & Traceability", keywords: ["distribution compliance automation","regulated traceability ERP","verifiable logistics records","compliant wholesale audit"]},
+       {n: 7, chapter_title: "Distribution vs Legacy Systems", keywords: ["sovereign distribution vs legacy","regulated wholesale comparison","permissioned logistics advantages","verifiable distribution control"]},
+       {n: 8, chapter_title: "Distribution as Generational Supply Infrastructure", keywords: ["long term distribution ERP","generational wholesale system","regulated logistics legacy","sovereign distribution continuity"]}]}
+
+  - {series: 5, title: "Professional Services — Project Billing, Resource & Knowledge", market: "Regulated Professional Services & Project ERP",
+     keywords: [regulated professional services ERP, governed project billing, verifiable resource management, permissioned services governance, enterprise PSA system, compliant project ERP, sovereign services management],
+     chapters: [
+       {n: 1, chapter_title: "Professional Services Challenges", keywords: ["professional services problems","regulated PSA challenges","enterprise project billing issues","governed services control"]},
+       {n: 2, chapter_title: "Governed Project & Engagement Management", keywords: ["governed project management","regulated professional services","permissioned engagement control","compliant project setup"]},
+       {n: 3, chapter_title: "Resource Planning & Utilization", keywords: ["regulated resource planning","governed utilization management","permissioned professional services","enterprise resource control"]},
+       {n: 4, chapter_title: "Project Billing & Revenue Recognition", keywords: ["governed project billing","regulated revenue recognition","permissioned services invoicing","compliant PSA billing"]},
+       {n: 5, chapter_title: "Knowledge & Deliverables Management", keywords: ["regulated knowledge management","governed project deliverables","permissioned services knowledge","verifiable professional records"]},
+       {n: 6, chapter_title: "Professional Services Compliance", keywords: ["professional services compliance","regulated PSA audit","governed services reporting","compliant project records"]},
+       {n: 7, chapter_title: "Professional Services vs Legacy PSA Tools", keywords: ["sovereign PSA vs legacy","regulated professional services comparison","permissioned services advantages","verifiable project control"]},
+       {n: 8, chapter_title: "Professional Services as Generational Capability", keywords: ["long term services ERP","generational professional system","regulated services legacy","sovereign services continuity"]}]}
+
+  - {series: 5, title: "Energy & Resources — Asset-Intensive Operations & Compliance", market: "Regulated Energy & Asset-Intensive ERP",
+     keywords: [regulated energy ERP, governed asset intensive operations, verifiable resource management, permissioned energy compliance, enterprise asset heavy ERP, compliant resources system, sovereign energy operations],
+     chapters: [
+       {n: 1, chapter_title: "Energy & Resources Operations Challenges", keywords: ["energy management problems","regulated asset intensive challenges","enterprise resources visibility","governed energy control"]},
+       {n: 2, chapter_title: "Asset-Intensive Registry & Lifecycle", keywords: ["regulated asset registry","verifiable energy assets","permissioned lifecycle management","compliant resource records"]},
+       {n: 3, chapter_title: "Production & Operations Governance", keywords: ["governed energy production","regulated operations control","permissioned resource extraction","compliant energy workflows"]},
+       {n: 4, chapter_title: "Maintenance & Reliability Management", keywords: ["regulated maintenance energy","governed asset reliability","permissioned maintenance control","verifiable operations records"]},
+       {n: 5, chapter_title: "Regulatory Compliance & Environmental Management", keywords: ["energy compliance automation","regulated environmental management","governed audit trails","compliant resources reporting"]},
+       {n: 6, chapter_title: "Supply Chain & Logistics for Resources", keywords: ["regulated resource logistics","governed supply chain energy","permissioned asset logistics","compliant operations flow"]},
+       {n: 7, chapter_title: "Energy & Resources vs Legacy Systems", keywords: ["sovereign energy ERP vs legacy","regulated asset intensive comparison","permissioned resources advantages","verifiable energy control"]},
+       {n: 8, chapter_title: "Energy & Resources as Generational Infrastructure", keywords: ["long term energy ERP","generational resource system","regulated asset legacy","sovereign energy continuity"]}]}
+
+  - {series: 5, title: "Construction & Projects — Job Costing, Subcontractor & Safety", market: "Regulated Construction & Project ERP",
+     keywords: [regulated construction ERP, governed job costing, verifiable project safety, permissioned subcontractor control, enterprise construction governance, compliant project ERP, sovereign construction system],
+     chapters: [
+       {n: 1, chapter_title: "Construction Project Challenges", keywords: ["construction management problems","regulated job costing challenges","enterprise project visibility","governed construction control"]},
+       {n: 2, chapter_title: "Governed Project Setup & Job Costing", keywords: ["governed job costing","regulated construction budgeting","permissioned project setup","compliant cost control"]},
+       {n: 3, chapter_title: "Subcontractor & Supplier Governance", keywords: ["regulated subcontractor management","governed supplier control","permissioned construction partners","compliant project procurement"]},
+       {n: 4, chapter_title: "Site Safety & Compliance Management", keywords: ["regulated construction safety","governed site compliance","permissioned safety management","verifiable project safety"]},
+       {n: 5, chapter_title: "Progress Billing & Change Management", keywords: ["governed progress billing","regulated change management","permissioned construction variations","compliant project billing"]},
+       {n: 6, chapter_title: "Construction Compliance & Audit", keywords: ["construction compliance automation","regulated project audit","governed construction records","compliant job audit"]},
+       {n: 7, chapter_title: "Construction vs Legacy Systems", keywords: ["sovereign construction vs legacy","regulated project comparison","permissioned construction advantages","verifiable job control"]},
+       {n: 8, chapter_title: "Construction as Generational Project Infrastructure", keywords: ["long term construction ERP","generational project system","regulated construction legacy","sovereign project continuity"]}]}
+
+  - {series: 5, title: "Regulated Industries — Traceability, Quality & Audit Readiness", market: "Highly Regulated Industry ERP (Pharma, Food, etc.)",
+     keywords: [regulated industry ERP, governed traceability system, verifiable quality management, permissioned audit readiness, enterprise compliance ERP, compliant regulated operations, sovereign regulated ERP],
+     chapters: [
+       {n: 1, chapter_title: "Highly Regulated Industry Challenges", keywords: ["regulated industry problems","compliance heavy ERP challenges","traceability management issues","enterprise regulated control"]},
+       {n: 2, chapter_title: "End-to-End Traceability Foundation", keywords: ["regulated traceability ERP","verifiable supply chain records","permissioned batch tracking","compliant product traceability"]},
+       {n: 3, chapter_title: "Quality Management & Release Control", keywords: ["regulated quality management","governed product release","permissioned quality control","compliant manufacturing quality"]},
+       {n: 4, chapter_title: "Audit Readiness & Evidence Management", keywords: ["regulated audit readiness","governed evidence management","permissioned compliance records","verifiable audit trails"]},
+       {n: 5, chapter_title: "Multi-Standard & Multi-Jurisdiction Compliance", keywords: ["multi standard compliance","regulated multi jurisdiction ERP","permissioned standards management","enterprise regulated governance"]},
+       {n: 6, chapter_title: "Regulated Operations Governance", keywords: ["regulated operations control","governed compliance workflows","permissioned industry processes","compliant regulated ERP"]},
+       {n: 7, chapter_title: "Regulated Industries vs Legacy Systems", keywords: ["sovereign regulated ERP vs legacy","compliance heavy comparison","permissioned industry advantages","verifiable regulated control"]},
+       {n: 8, chapter_title: "Regulated Industries as Generational Compliance Strength", keywords: ["long term regulated ERP","generational compliance system","regulated industry legacy","sovereign regulated continuity"]}]}
+
+# ∞Δ∞ S5 Pass C — 6 titles / 48 chapters captured. ∞Δ∞

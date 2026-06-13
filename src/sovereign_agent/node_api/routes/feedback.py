@@ -23,7 +23,7 @@ import os
 from flask import Blueprint, jsonify, request
 
 from ...obligations import AlreadyClosedError
-from ..auth import current_principal, require_principal
+from ..auth import current_principal, require_principal, require_owner
 from ..deps import get_obligation_ledger
 
 bp = Blueprint("feedback", __name__, url_prefix="/api/v1")
@@ -120,7 +120,10 @@ def _awaiting(led) -> list:
         # Awaiting KM = gated on a human AND not yet disposed. Once accepted (approved) it leaves this
         # view — it's now awaiting the owning agent's execution, not the human's decision. Rejected
         # items are closed and already drop out of open_obligations().
-        if (o.get("next_gate") or "") == HUMAN_GATE and not o.get("approved"):
+        # Prefix match, not exact: a human gate may carry a context suffix (e.g.
+        # "Human disposition (Atrium Review)"). Exact-== silently hid those, leaving real
+        # human-gated feedback stale + invisible to KM. Any "Human disposition…" gate is KM's.
+        if (o.get("next_gate") or "").startswith(HUMAN_GATE) and not o.get("approved"):
             out.append({
                 "id": o.get("id"),
                 "title": o.get("title"),
@@ -203,6 +206,23 @@ def doc():
         if rp.is_file():
             return jsonify({"path": rel, "file": rp.name,
                             "markdown": rp.read_text(encoding="utf-8", errors="replace")})
+
+    # Bare-filename fallback: a card may hand just a filename (e.g. 'manuscript_v1.4.md' named in card text).
+    # Search the doc roots for an exact, unique filename match; serve it if found (safe: still under a root,
+    # allowed suffix; ambiguous matches refuse loudly so we never serve the wrong book's doc).
+    if "/" not in rel and _P(rel).suffix.lower() in (".md", ".txt", ".yaml", ".yml"):
+        hits = []
+        for root in roots:
+            hits += [p for p in root.rglob(rel) if p.is_file()]
+        uniq = sorted({str(p.resolve()) for p in hits})
+        if len(uniq) == 1:
+            rp = _P(uniq[0])
+            return jsonify({"path": rel, "file": rp.name,
+                            "markdown": rp.read_text(encoding="utf-8", errors="replace")})
+        if len(uniq) > 1:
+            return jsonify({"error": "ambiguous", "what": f"'{rel}' matches {len(uniq)} files.",
+                            "next_step": "Pass the full vault-relative path (the card's path field)."}), 409
+
     return jsonify({"error": "not_found", "what": f"No readable document for '{rel}'.",
                     "next_step": "Cards may hand .md/.yaml docs under artifacts/, scripts/, or the books vault kdp/."}), 404
 
@@ -252,9 +272,15 @@ def handshakes():
 
 @bp.post("/feedback/<obligation_id>/disposition")
 @require_principal
+@require_owner
 def feedback_disposition(obligation_id: str):
     """disposition — KM acts inline: accept (approve/clear gate) or reject (close, rejected). Clones
-    obligations.approve / obligations.close so the packet visibly leaves the Awaiting-KM view."""
+    obligations.approve / obligations.close so the packet visibly leaves the Awaiting-KM view.
+
+    SECURITY (night-watch HIGH 2026-06-12): @require_owner — Accept ignites the executor (_ring_the_bell)
+    which mutates the hash-chained ledger and can spawn BREATHLINE_EXECUTOR_AGENT, so it is owner-only,
+    mirroring the code-executing /produce, /apply, /recompile routes. KM-1176 (loopback owner) still acts;
+    federation peers / non-owner principals are barred from triggering execution + chain mutation."""
     body = request.get_json(silent=True) or {}
     action = (body.get("action") or "").lower()
     note = (body.get("note") or "").strip()

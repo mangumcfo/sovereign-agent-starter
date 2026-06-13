@@ -1,0 +1,111 @@
+# book_code_map.yaml — Book↔Code derivation edges (GB sole-write)
+# Spec: artifacts/GB_BookCode_Tree_Derivation_Spec_2026-06-10.md (§3)
+# v0.1 — R2 structural-identity SEED. R1 explicit-anchor edges are machine-extracted
+# by Tiger's deriver (docstring/Seal cites) and merged at build, NOT hand-listed here.
+# TRUTH rule: every edge carries a resolving anchor. Where chapter-level pinning is
+# not yet verified, target stays at series/volume granularity with pin: pending —
+# honest coarse edge over invented fine edge.
+version: 0.1
+sealed: 2026-06-10
+spec: GB_BookCode_Tree_Derivation_Spec_2026-06-10.md
+edge_classes: [derived, inspired, pending]
+rules: {R1: explicit-anchor (deriver-extracted), R2: structural-identity (this file), R3: kw-resonance (deriver, thin)}
+
+edges:
+  - book: agentic_harness            # S2 — Building the Agentic Harness
+    code: src/sovereign_agent/compliance/human_approval_gate.py
+    class: derived
+    rule: R2
+    anchor: "Constitution §2 Approval Gates: Propose→Approve→Execute — module implements the gate flow by construction"
+    pin: pending   # chapter-level pin via S2 outline pass
+
+  - book: agentic_harness
+    code: src/sovereign_agent/obligations/ledger.py
+    class: derived
+    rule: R2
+    anchor: "Constitution §3 TRUTH / receipts discipline — ledger is the receipts organ"
+    pin: pending
+
+  - book: agentic_harness
+    code: src/sovereign_agent/obligations/arc_guardrail.py
+    class: derived
+    rule: R2
+    anchor: "Constitution §2/§4 INTEGRITY + Error Voice — guardrail enforces gated state + loud failure"
+    pin: pending
+
+  - book: agentic_playbooks/11_ai_agents_for_ma   # B11 — AI Agents for M&A
+    code: src/sovereign_agent/demo_roles/ma_data_room/
+    class: derived
+    rule: R2
+    anchor: "demo role is the rendered form of B11's M&A data-room playbooks"
+    pin: pending
+
+  - book: agentic_playbooks/01_cfos_finance
+    code: src/sovereign_agent/demo_roles/corporate_cfo_demo/role.py
+    class: derived
+    rule: R2
+    anchor: "CFO demo role renders S1 B01 CFO/finance playbooks"
+    pin: pending
+
+  - book: agentic_playbooks/01_cfos_finance
+    code: src/sovereign_agent/demo_roles/family_cfo_demo/role.py
+    class: derived
+    rule: R2
+    anchor: "family-CFO variant of the S1 finance playbooks"
+    pin: pending
+
+  - book: agentic_playbooks
+    code: src/sovereign_agent/kdp_metadata.py
+    class: derived
+    rule: R2
+    anchor: "publishing-pipeline organ — renders KDP metadata for the series the books describe shipping"
+    pin: pending
+
+  - book: agentic_harness
+    code: src/sovereign_agent/node_api/routes/series.py
+    class: derived
+    rule: R2
+    anchor: "the lens rendering the books — recursion shown, not hidden (spec §3 R2 seed)"
+    pin: pending
+
+  - book: sovereign_token_economic_organism      # S4
+    code: src/sovereign_agent/capabilities/economics.py
+    class: derived
+    rule: R2
+    anchor: "economic-organism mechanics rendered as capability module"
+    pin: pending
+
+  - book: inter_node_sovereignty                 # S6
+    code: src/sovereign_agent/obligations/node_integration.py
+    class: derived
+    rule: R2
+    anchor: "inter-node communication/coordination structure rendered as obligation module"
+    pin: pending
+
+  - book: zero_trust_sovereignty                 # S7
+    code: src/sovereign_agent/compliance/compliance_engine.py
+    class: derived
+    rule: R2
+    anchor: "zero-trust verification/shields rendered as compliance engine"
+    pin: pending
+
+  - book: agentic_harness
+    code: src/sovereign_agent/universal_sovereign_node.py
+    class: derived
+    rule: R2
+    anchor: "the node itself — the harness the S2 books describe building"
+    pin: pending
+
+intentional_unrendered:
+  # chapters/series that need no code form — silenced loudly, per spec §3 R4
+  - book: metalayer_companion
+    reason: "n/a: narrative — altitude companion, renders as text surfaces only"
+  - book: quadroof
+    reason: "n/a: private investor narrative"
+  - book: quantum_unveiled_private
+    reason: "n/a: private learning narrative"
+
+notes:
+  - "v0.2 task: pin chapter-level targets from extracted_chapter_outlines_2026-06-08.json (mechanical; Opus-subagent or deriver pass — not hand-judgment)."
+  - "Deriver merges: R1 (extracted) > R2 (this file) > R3 (resonance); conflicts resolve to higher rule per spec."
+# ∞Δ∞ SEAL: complete — coarse and honest beats fine and invented.

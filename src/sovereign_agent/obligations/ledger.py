@@ -99,6 +99,35 @@ def _resolve_root(root: Optional[os.PathLike | str]) -> Path:
     return p
 
 
+def _assert_source_ref_resolves(source_ref: str) -> None:
+    """R22-3 provenance rule (GB): a path-like `source_ref` MUST resolve — the file exists, and if a
+    `#"quoted text"` passage is appended, that text is present — else raise. A citation is never written
+    false. Symbolic refs (no path separator + extension, e.g. 'B11:veto-chapter') are accepted as-is
+    (not a file claim, so not falsifiable here)."""
+    head, _, tail = source_ref.partition("#")
+    path_part = head.strip()
+    passage = tail.strip().strip('"') if tail else None
+    last = path_part.rsplit("/", 1)[-1]
+    if "/" not in path_part or "." not in last:
+        return  # symbolic ref — not a file claim
+    roots = [
+        Path.cwd(),
+        Path("/home/kmangum/work-repos/mangumcfo/breathline-books-vault"),
+        Path("/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp"),
+        Path(__file__).resolve().parents[3],  # repo root
+    ]
+    resolved = next((r / path_part for r in roots if (r / path_part).is_file()), None)
+    if resolved is None:
+        raise ValueError(
+            f"R22-3 provenance: source_ref '{path_part}' does not resolve to a file under known "
+            f"roots — a citation is never written false."
+        )
+    if passage and passage not in resolved.read_text(encoding="utf-8", errors="ignore"):
+        raise ValueError(
+            f"R22-3 provenance: cited passage not present in '{path_part}' — the source must say it."
+        )
+
+
 class ObligationLedger:
     """Append-only, hash-chained dr/cr obligation ledger on a node-local root."""
 
@@ -143,8 +172,15 @@ class ObligationLedger:
         return out
 
     def _is_closed(self, obligation_id: str) -> bool:
-        return any(e.get("type") == "credit" and e.get("closes") == obligation_id
-                   for e in self._entries())
+        # Order-aware (THREAD [245]): the LAST close/reopen event governs. A corrective `reopen`
+        # appended after a `credit` returns the obligation to open — consistent with replay().
+        state = None
+        for e in self._entries():
+            if e.get("type") == "credit" and e.get("closes") == obligation_id:
+                state = "closed"
+            elif e.get("type") == "reopen" and e.get("reopens") == obligation_id:
+                state = "open"
+        return state == "closed"
 
     def _stat_key(self) -> tuple:
         """Identity of the on-disk chain: (mtime_ns, size). This is the SAME trust key `_entries()`
@@ -223,7 +259,8 @@ class ObligationLedger:
              classification: str = "C2", intent: Optional[str] = None,
              ref: Optional[str] = None, material: bool = False,
              lgp: Optional[dict] = None, next_gate: Optional[str] = None,
-             category: Optional[str] = None, lane: Optional[str] = None) -> dict:
+             category: Optional[str] = None, lane: Optional[str] = None,
+             requires_attestation: Optional[list] = None, veto_window: Optional[str] = None) -> dict:
         """Open an obligation = a DRAFT action-proposal (debit). CYL-006: starts draft.
 
         material=True ⇒ a gated ledger requires human approval (breath-gate) before close.
@@ -252,6 +289,10 @@ class ObligationLedger:
         }
         if lgp:
             entry["lgp"] = lgp          # P0-2: LGP travels with the obligation
+        if requires_attestation:        # R22-4: joint-attestation action class (≥N roles must attest)
+            entry["requires_attestation"] = list(requires_attestation)
+        if veto_window:
+            entry["veto_window"] = veto_window
         if next_gate:
             entry["next_gate"] = next_gate
         if category:
@@ -306,14 +347,24 @@ class ObligationLedger:
 
     def close(self, obligation_id: str, evidence: str,
               evidence_tier: Optional[str] = None, require_e1: bool = True,
-              closed_by: Optional[str] = None, rejected: bool = False) -> dict:
+              closed_by: Optional[str] = None, rejected: bool = False,
+              source_ref: Optional[str] = None, method: Optional[str] = None,
+              authorized_by_spec: Optional[str] = None) -> dict:
         """Close an obligation = credit, with evidence + a minted receipt.
 
         Rejects E0 (claim-only) when require_e1 is True (the default for material obligations).
         rejected=True ⇒ this close is a human REFUSAL, not an execution. The breath-gate guards
         execution (work done), not refusal — a rejection is itself a valid human disposition, so a
         material obligation may be rejected without a prior approve() (human primacy: 'no' needs no gate).
+
+        R22-3 (source-citation lineage): optional `source_ref` (the book passage / file that authorized
+        the action), `method`, and `authorized_by_spec` carry *why / from-what* onto the receipt — not just
+        *what*. Provenance rule (GB): a path-like `source_ref` MUST resolve (file exists; if `#"text"` is
+        appended, that text is present) or close() raises — a pointer is never written false. These fields
+        are additive + forward-compatible: receipts without them are unchanged and still valid.
         """
+        if source_ref:
+            _assert_source_ref_resolves(source_ref)
         ob = self._get(obligation_id)  # existence/closed guards FIRST — 'not found' beats 'bad evidence' (audit)
         if ob is None:
             raise KeyError(f"obligation '{obligation_id}' does not exist")
@@ -333,6 +384,20 @@ class ObligationLedger:
                 f"'{obligation_id}' is material and has not cleared the breath-gate; "
                 f"call approve() (human disposition) before close."
             )
+        # R22-4: a joint-attestation action cannot EXECUTE until all required roles attest AND no
+        # standing veto (default-deny). A rejection (refusal) is exempt — 'no' needs no attestation.
+        if ob and ob.get("requires_attestation") and not rejected:
+            st = self.attestation_status(obligation_id)
+            if st["vetoed"]:
+                raise PermissionError(
+                    f"'{obligation_id}' is VETOED by {st['standing_vetoes']} ({st['veto_reasons']}); "
+                    f"default-deny — cannot execute. Close as rejected to record the denial."
+                )
+            if st["missing"]:
+                raise PermissionError(
+                    f"'{obligation_id}' requires attestation from {st['missing']} "
+                    f"(have {st['attested']}); cannot execute on partial attestation."
+                )
         receipt = {
             "receipt_id": _receipt_id(),
             "obligation_id": obligation_id,
@@ -343,6 +408,11 @@ class ObligationLedger:
             "principal_id": closed_by or self.principal_id,
             "timestamp": _now(),
         }
+        # R22-3: provenance lineage — additive, only when supplied (resolves-or-absent, never false).
+        for _k, _v in (("source_ref", source_ref), ("method", method),
+                       ("authorized_by_spec", authorized_by_spec)):
+            if _v:
+                receipt[_k] = _v
         # Mint a real NODE receipt (USN Merkle attestation / SOX-style chain-of-custody) when a
         # node attestor is wired — the close then carries a node-attested, E2-grade receipt.
         if self.attestor is not None:
@@ -366,12 +436,90 @@ class ObligationLedger:
         }
         return self._append(entry)
 
+    def reopen(self, obligation_id: str, reason: str, reopened_by: Optional[str] = None) -> dict:
+        """Corrective reopen — append a `reopen` event citing WHY a previously-closed obligation
+        must return to the open/undisposed state. Preserves the original obligation's id + receipts
+        (it is NOT re-minted): the chain confesses the correction rather than hiding it. THREAD [245]:
+        used to formally reopen the 42 KM comments that were closed without disposition, so the ledger
+        and the derived sittings view speak one truth."""
+        ob = self._get(obligation_id)
+        if ob is None:
+            raise KeyError(f"obligation '{obligation_id}' does not exist")
+        entry = {
+            "type": "reopen",
+            "id": _entry_id(),
+            "reopens": obligation_id,
+            "reason": reason,
+            "reopened_by": reopened_by or self.principal_id,
+            "principal_id": self.principal_id,
+            "timestamp": _now(),
+        }
+        return self._append(entry)
+
+    # ── R22-4: joint attestation + cross-role veto ────────────────────
+    def attest(self, obligation_id: str, role: str, attested_by: Optional[str] = None) -> dict:
+        """A role attests a joint-attestation action. Composes toward `requires_attestation`."""
+        if self._get(obligation_id) is None:
+            raise KeyError(f"obligation '{obligation_id}' does not exist")
+        return self._append({"type": "attest", "attests": obligation_id, "role": role,
+                             "attested_by": attested_by or self.principal_id, "timestamp": _now()})
+
+    def veto(self, obligation_id: str, role: str, reason: str,
+             vetoed_by: Optional[str] = None) -> dict:
+        """Any qualified role structurally VETOES before execute. Default-deny while unresolved (loud)."""
+        if self._get(obligation_id) is None:
+            raise KeyError(f"obligation '{obligation_id}' does not exist")
+        if not reason:
+            raise ValueError("veto requires a reason (loud, recorded)")
+        return self._append({"type": "veto", "vetoes": obligation_id, "role": role, "reason": reason,
+                             "vetoed_by": vetoed_by or self.principal_id, "timestamp": _now()})
+
+    def clear_veto(self, obligation_id: str, role: str, cleared_by: Optional[str] = None) -> dict:
+        """Withdraw a veto (the vetoing role stands down). Order-aware: last veto/clear governs."""
+        return self._append({"type": "veto_clear", "clears_veto": obligation_id, "role": role,
+                            "cleared_by": cleared_by or self.principal_id, "timestamp": _now()})
+
+    def attestation_status(self, obligation_id: str) -> dict:
+        """Replay attestations + vetoes for an obligation (ORDER-AWARE: the last veto/clear per role
+        governs — mirrors the reopen/_is_closed fix). Returns the veto reconstruction + can_execute.
+        Default-deny: any standing veto ⇒ vetoed=True ⇒ cannot execute."""
+        ob = self._get(obligation_id) or {}
+        required = set(ob.get("requires_attestation") or [])
+        attested, veto_state = set(), {}   # role -> 'veto'/'clear' (last wins, in chain order)
+        veto_reasons = {}
+        for e in self._entries():
+            t = e.get("type")
+            if t == "attest" and e.get("attests") == obligation_id:
+                attested.add(e.get("role"))
+            elif t == "veto" and e.get("vetoes") == obligation_id:
+                veto_state[e.get("role")] = "veto"; veto_reasons[e.get("role")] = e.get("reason")
+            elif t == "veto_clear" and e.get("clears_veto") == obligation_id:
+                veto_state[e.get("role")] = "clear"
+        standing_vetoes = [r for r, s in veto_state.items() if s == "veto"]
+        missing = sorted(required - attested)
+        vetoed = bool(standing_vetoes)
+        return {
+            "required": sorted(required), "attested": sorted(attested), "missing": missing,
+            "vetoed": vetoed, "standing_vetoes": sorted(standing_vetoes),
+            "veto_reasons": {r: veto_reasons[r] for r in standing_vetoes},
+            "can_execute": (not vetoed) and (not missing),
+        }
+
     # ── replay + materialized views ───────────────────────────────────
     def replay(self) -> dict:
         """Reconstruct state from the append-only chain."""
         entries = self._entries()
         debits = {e["id"]: e for e in entries if e.get("type") == "debit"}
         closed = {e["closes"] for e in entries if e.get("type") == "credit"}
+        # Corrective reopens (THREAD [245]): a reopen event after a close returns the obligation to
+        # the open set. Order-aware so a later re-close still wins (last close/reopen per id governs).
+        last_state: dict[str, str] = {}
+        for e in entries:
+            if e.get("type") == "credit":
+                last_state[e["closes"]] = "closed"
+            elif e.get("type") == "reopen":
+                last_state[e["reopens"]] = "open"
+        closed = {oid for oid in closed if last_state.get(oid) != "open"}
         # Only approvals actually DISPOSITIONED 'approved' count (audit fix): a denied/pending
         # approval entry must not flip a draft to approved in the replay view. Mirrors _is_approved.
         approved = {e["approves"] for e in entries

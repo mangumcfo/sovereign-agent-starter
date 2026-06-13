@@ -1,0 +1,13 @@
+{
+  "status": "clean",
+  "diff": {
+    "added": [],
+    "removed": [],
+    "changed": [],
+    "drift": false
+  },
+  "manifest_hash": "9366b0b9d96db3342981c5d84a530d8bda8e98f3dde0a6c71b83460bbdacc84b",
+  "baseline_hash": "9366b0b9d96db3342981c5d84a530d8bda8e98f3dde0a6c71b83460bbdacc84b",
+  "n_files": 31,
+  "critical_card": null
+}

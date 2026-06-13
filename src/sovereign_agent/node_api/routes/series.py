@@ -555,10 +555,12 @@ def book_docs():
                     ("round3", "Editorial R3 — scholarly / research"),
                     ("virality_to_ux", "Book-to-UX Translation"),
                     ("tech_arch", "Tech / Architectural Review (5 gates)"),
+                    ("renderability_audit", "Renderability Audit (Gate 6)"),
+                    ("changelog", "Manuscript Changelog"),
                     ("review_brief", "Review Brief")]
         seen = set()
         for pat in ("*editorial_board_review*.md", "*virality_to_ux*.md", "*tech_arch_review*.md",
-                    "*[Rr]eview_[Bb]rief*.md"):
+                    "*renderability_audit*.md", "*manuscript_v*_changelog.md", "*[Rr]eview_[Bb]rief*.md"):
             for p in sorted(bdir.glob(pat)):
                 if p.name in seen:
                     continue
@@ -566,4 +568,27 @@ def book_docs():
                 rel = str(p).split("/breathline-books-vault/")[-1]  # vault-relative → servable by /doc
                 lab = next((l for k, l in labelmap if k in p.name.lower()), p.name)
                 docs.append({"label": lab, "file": p.name, "path": rel})
+        # newest manuscript only (so KM can read the updated book from the card; older versions stay out)
+        mss = sorted(p for p in bdir.glob("manuscript_v*.md") if "changelog" not in p.name.lower())
+        if mss:
+            p = mss[-1]
+            docs.append({"label": f"📖 Manuscript ({p.stem.split('_')[-1]})", "file": p.name,
+                         "path": str(p).split("/breathline-books-vault/")[-1]})
     return jsonify({"book": book, "docs": docs})
+
+
+@bp.get("/crypto_assurance")
+@require_principal
+def crypto_assurance():
+    """The daily crypto-assurance status (GREEN/RED · last run · Merkle root) — the simple card G asked for.
+    Read-only projection of the deterministic daily math (vector + reference cross-verify + seal tripwire).
+    Green is just a chip; a RED here means a gating CRITICAL card already sits in the Awaiting-Me queue."""
+    repo = Path(__file__).resolve().parents[4]
+    f = repo / "artifacts" / "crypto" / "assurance_status.json"
+    if not f.is_file():
+        return jsonify({"status": "not-run", "what": "crypto_assurance has not run yet"})
+    import json as _json  # noqa: PLC0415
+    try:
+        return jsonify(_json.loads(f.read_text(encoding="utf-8")))
+    except Exception as e:  # noqa: BLE001
+        return jsonify({"status": "ERROR", "what": str(e)}), 500

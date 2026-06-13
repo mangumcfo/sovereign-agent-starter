@@ -1,0 +1,23 @@
+You are running the ONE-TIME DEEP CRYPTO BASELINE AUDIT of the Breathline sealed primitives — the floor
+that the daily/weekly cadence then holds forever (G: "baseline once, then never wonder"). This is the
+multi-agent, exhaustive pass; surface its report like the engine audit, SEALED, for seeit.
+
+SCOPE (be exhaustive — this sets the trust floor the books cite):
+A. FULL VECTOR CONFORMANCE — run the sealed P1/P5 against the COMPLETE Wycheproof + NIST CAVP suites where
+   available offline (ecdsa_secp256k1_sha256, sha256 KATs); cross-verify every case against `cryptography`.
+   Report pass/fail counts per vector file; list any deviation with the exact vector.
+B. FORGERY BATTERY — exhaustive existential/selective forgery attempts; public-key substitution; weak-key
+   and edge-scalar cases (1, n-1, n+1, 0).
+C. INVALID-CURVE & TWIST — full point-validation matrix; small-subgroup; invalid encodings; twist security.
+D. MALLEABILITY — low-s enforcement, DER canonicality, replay-under-malleation against the receipt chain.
+E. NONCE/RFC6979 — determinism proof + nonce-reuse key-recovery attempt + entropy-source audit for keygen.
+F. CONSTANT-TIME — audit scalar multiplication + comparison paths for secret-dependent timing.
+G. ADAPTER + bl-verify — confirm the adapter + bl-verify faithfully exercise the sealed stack (no masking).
+
+METHOD: decompose across sub-agents by section A–G; each writes exploit/conformance scripts, RUNS them
+against the real primitives, cites file:line. A synthesis agent reconciles + scores the floor.
+
+OUTPUT: artifacts/audit_reports/deep_crypto_baseline_<date>.md — executive verdict + per-section findings +
+the conformance table + the honest claim the books may print. Open B32 obligations for any material finding
+(ref deep_crypto_baseline:<finding>). Then SEAL the report (cylinders/seal.sh) and register it for seeit so
+KM reviews one sealed artifact. One human gate.

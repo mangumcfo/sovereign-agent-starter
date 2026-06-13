@@ -57,18 +57,30 @@ def _render_md(entries: list[dict]) -> None:
 
 
 def append(frm: str, to: str, ref: str, msg: str) -> dict:
-    """Append a receipted entry to the THREAD and return it. Same chain math as scripts/thread.py."""
+    """Append a receipted entry to the THREAD and return it. Same chain math as scripts/thread.py.
+
+    Night-watch LOW fix (2026-06-12): the read-prev → compute-hash → write sequence is fenced under an
+    exclusive file lock. Without it, two concurrent appends could both read the same `prev` and fork the
+    hash chain (TOCTOU). The lock makes the critical section atomic across processes."""
+    import fcntl  # noqa: PLC0415 — POSIX advisory lock (node + cross-process scripts share this thread)
     p = _thread_path()
     p.parent.mkdir(parents=True, exist_ok=True)
-    entries = load()
-    prev = entries[-1]["hash"] if entries else "GENESIS"
-    ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    h = _hash(prev, frm, to, ref, msg)
-    e = {"n": len(entries) + 1, "ts": ts, "from": frm, "to": to, "ref": ref, "msg": msg, "prev": prev, "hash": h}
-    with p.open("a", encoding="utf-8") as f:
-        f.write(json.dumps(e, ensure_ascii=False) + "\n")
-    _render_md(load())
-    return e
+    lock = p.with_name(p.name + ".lock")
+    with lock.open("w", encoding="utf-8") as lf:
+        fcntl.flock(lf.fileno(), fcntl.LOCK_EX)
+        try:
+            entries = load()
+            prev = entries[-1]["hash"] if entries else "GENESIS"
+            ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+            h = _hash(prev, frm, to, ref, msg)
+            e = {"n": len(entries) + 1, "ts": ts, "from": frm, "to": to, "ref": ref, "msg": msg,
+                 "prev": prev, "hash": h}
+            with p.open("a", encoding="utf-8") as f:
+                f.write(json.dumps(e, ensure_ascii=False) + "\n")
+            _render_md(load())
+            return e
+        finally:
+            fcntl.flock(lf.fileno(), fcntl.LOCK_UN)
 
 
 def find_reply(to_agent: str, from_agent: str, after_n: int, ref_contains: str = "") -> dict | None:

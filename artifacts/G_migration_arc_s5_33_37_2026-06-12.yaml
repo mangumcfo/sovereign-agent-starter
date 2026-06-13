@@ -1,0 +1,686 @@
+# G's Migration Arc s5_33-37 full delivery (G via KM relay + HMC [588-596], extracted 2026-06-12)
+# CAPTURE COUNTS: titles: 5 · chapters: 40 · promise: 40 · keywords: 195
+# STATUS: staged_pending_gb_fold
+titles:
+- series: 5
+  title: The Migration Primitive — Receipted Ingestion, Reconciliation & Sovereign
+    Cutover
+  market: Legacy-to-Sovereign Migration & Hybrid Run
+  market_rationale: Strong 2026 searches for "ERP migration tools", "legacy system
+    cutover", and "regulated data ingestion" as companies seek clean exits from vendor
+    lock-in.
+  keywords:
+  - legacy to sovereign migration
+  - regulated data ingestion
+  - governed reconciliation process
+  - permissioned hybrid ERP run
+  - enterprise cutover management
+  - compliant migration engine
+  - verifiable system transition
+  chapters:
+  - n: 1
+    chapter_title: Why Most Migrations Fail
+    promise: You will clearly understand the common failure modes of legacy-to-new
+      ERP transitions and how receipted ingestion solves them.
+    beats:
+    - Data loss and reconciliation nightmares
+    - Compliance gaps during cutover
+    - Vendor lock-in inheritance
+    - The sovereign primitive opportunity
+    - LGP migration risk
+    keywords:
+    - ERP migration failures
+    - legacy system risks
+    - regulated transition challenges
+    - enterprise cutover problems
+  - n: 2
+    chapter_title: Receipted Ingestion Pipeline
+    promise: You will design a governed pipeline that turns legacy data into verifiable
+      sovereign receipts.
+    beats:
+    - Legacy feed to B32 packet
+    - Classification and evidence tiers
+    - Human-gated validation
+    - Atrium ingestion lens
+    - LGP data truth foundation
+    keywords:
+    - receipted data ingestion
+    - regulated legacy import
+    - permissioned data pipeline
+    - compliant migration intake
+  - n: 3
+    chapter_title: Governed Reconciliation & Dual-Ledger Run
+    promise: You will run legacy and sovereign systems in parallel with governed reconciliation.
+    beats:
+    - Side-by-side ledger views
+    - Automated variance detection
+    - Breath-gated reconciliation
+    - Atrium dual-ledger surface
+    - LGP truth alignment
+    keywords:
+    - governed reconciliation
+    - regulated hybrid run
+    - permissioned dual ledger
+    - compliant migration parallel
+  - n: 4
+    chapter_title: Module-by-Module Cutover Governance
+    promise: You will execute phased, governed cutover with rollback always available
+      as a fork.
+    beats:
+    - Per-module migration plans
+    - Breath-gated go-live
+    - Rollback as fork
+    - Atrium cutover cockpit
+    - LGP safe transition
+    keywords:
+    - regulated cutover governance
+    - permissioned module migration
+    - compliant system transition
+    - enterprise go-live control
+  - n: 5
+    chapter_title: The Migration Lens in Atrium
+    promise: You will monitor and govern the entire migration from a unified sovereign
+      cockpit.
+    beats:
+    - Connector status dashboard
+    - Drift and reconciliation views
+    - Cutover progress tracking
+    - Atrium migration surface
+    - LGP operational visibility
+    keywords:
+    - migration cockpit
+    - regulated transition dashboard
+    - permissioned migration monitoring
+    - compliant cutover visibility
+  - n: 6
+    chapter_title: Data Cleansing & Enrichment Governance
+    promise: You will cleanse and enrich legacy data under human primacy and constitutional
+      rules.
+    beats:
+    - Cleansing proposal flows
+    - Breath-gated enrichment
+    - Audit trail for changes
+    - Atrium cleansing tools
+    - LGP data quality
+    keywords:
+    - governed data cleansing
+    - regulated legacy enrichment
+    - permissioned data quality
+    - compliant migration preparation
+  - n: 7
+    chapter_title: Migration Primitive vs Traditional Tools
+    promise: You will compare the sovereign migration primitive against traditional
+      ETL and migration consultants.
+    beats:
+    - Legacy tool weaknesses
+    - Sovereign decisive wins
+    - Cost and risk realism
+    - Self-service patterns
+    - LGP framing
+    keywords:
+    - sovereign migration vs traditional
+    - regulated cutover comparison
+    - permissioned migration advantages
+    - verifiable transition control
+  - n: 8
+    chapter_title: Migration Primitive as Foundation for Sovereign Continuity
+    promise: You will see how a well-executed migration primitive becomes the bridge
+      to generational sovereignty.
+    beats:
+    - Full primitive synthesis
+    - Integration with core modules
+    - Generational handoff readiness
+    - Atrium migration cockpit
+    - Strong LGP call to action
+    keywords:
+    - long term migration engine
+    - generational transition system
+    - regulated migration legacy
+    - sovereign continuity foundation
+  book_id: s5_33_migration_primitive
+- series: 5
+  title: Escaping QuickBooks — Mid-Market Finance to Sovereign Ledger
+  market: QuickBooks Migration & Mid-Market Finance Sovereignty
+  market_rationale: Very high 2026 search volume around "escape QuickBooks", "QuickBooks
+    to ERP migration", and "mid-market accounting sovereignty" — especially among
+    growing family businesses and SMBs hitting limits.
+  keywords:
+  - escape QuickBooks
+  - QuickBooks to sovereign ERP
+  - mid-market finance migration
+  - regulated QuickBooks exit
+  - permissioned accounting transition
+  - verifiable QuickBooks replacement
+  - sovereign mid-market ledger
+  chapters:
+  - n: 1
+    chapter_title: Why Growing Businesses Outgrow QuickBooks
+    promise: You will clearly understand the limitations that trap mid-market companies
+      in QuickBooks and how sovereign migration solves them.
+    beats:
+    - Scalability and multi-user constraints
+    - Compliance and audit gaps
+    - Customization and reporting pain
+    - The sovereign opportunity
+    - LGP growth risk
+    keywords:
+    - QuickBooks limitations 2026
+    - mid-market accounting problems
+    - regulated QuickBooks exit
+    - growing business migration
+  - n: 2
+    chapter_title: Receipted Ingestion from QuickBooks
+    promise: You will safely extract and turn QuickBooks data into verifiable sovereign
+      receipts.
+    beats:
+    - Export and connector strategy
+    - Data classification
+    - Human-gated validation
+    - Atrium QuickBooks ingestion lens
+    - LGP data truth foundation
+    keywords:
+    - QuickBooks data migration
+    - regulated ingestion from QuickBooks
+    - permissioned accounting import
+    - verifiable QuickBooks transition
+  - n: 3
+    chapter_title: Parallel Run & Reconciliation Strategy
+    promise: You will run QuickBooks and the sovereign ledger side-by-side with governed
+      reconciliation.
+    beats:
+    - Dual-ledger setup
+    - Automated variance detection
+    - Breath-gated reconciliation
+    - Atrium side-by-side views
+    - LGP truth alignment
+    keywords:
+    - QuickBooks parallel run
+    - regulated reconciliation strategy
+    - permissioned hybrid finance
+    - compliant migration parallel
+  - n: 4
+    chapter_title: Governed Cutover from QuickBooks
+    promise: You will execute a clean, phased cutover with rollback always available
+      as a fork.
+    beats:
+    - Module-by-module migration
+    - Breath-gated go-live
+    - Data finalization
+    - Atrium cutover cockpit
+    - LGP safe transition
+    keywords:
+    - QuickBooks cutover governance
+    - regulated migration go-live
+    - permissioned accounting transition
+    - compliant QuickBooks exit
+  - n: 5
+    chapter_title: Chart of Accounts & Financial Mapping
+    promise: You will map and govern your QuickBooks chart of accounts into the sovereign
+      immutable ledger.
+    beats:
+    - Mapping governance
+    - Breath-gated approvals
+    - Historical data conversion
+    - Atrium mapping surface
+    - LGP financial continuity
+    keywords:
+    - QuickBooks chart mapping
+    - regulated account governance
+    - permissioned financial migration
+    - compliant ledger transition
+  - n: 6
+    chapter_title: Atrium QuickBooks Migration Lens
+    promise: You will monitor and govern the entire migration from a unified sovereign
+      cockpit.
+    beats:
+    - Connector status dashboard
+    - Reconciliation progress
+    - Cutover readiness
+    - Atrium migration surface
+    - LGP operational visibility
+    keywords:
+    - QuickBooks migration dashboard
+    - regulated transition monitoring
+    - permissioned migration cockpit
+    - compliant finance switch
+  - n: 7
+    chapter_title: Escaping QuickBooks vs Traditional Paths
+    promise: You will compare the sovereign migration path against traditional ERP
+      implementations or staying on QuickBooks.
+    beats:
+    - Traditional migration weaknesses
+    - Sovereign decisive wins
+    - Cost and risk realism
+    - Self-service patterns
+    - LGP framing
+    keywords:
+    - sovereign QuickBooks escape
+    - regulated migration comparison
+    - permissioned QuickBooks exit
+    - verifiable accounting transition
+  - n: 8
+    chapter_title: QuickBooks Escape as Generational Foundation
+    promise: You will see how a clean escape from QuickBooks becomes the foundation
+      for multi-generational financial sovereignty.
+    beats:
+    - Full migration synthesis
+    - Integration with sovereign financials
+    - Generational handoff readiness
+    - Atrium finance cockpit
+    - Strong LGP call to action
+    keywords:
+    - generational QuickBooks exit
+    - long term mid-market sovereignty
+    - regulated finance legacy
+    - sovereign accounting continuity
+  book_id: s5_34_escaping_quickbooks
+- series: 5
+  title: Unbinding Salesforce — CRM to Governed Mandates
+  market: Salesforce Migration & Governed CRM Sovereignty
+  market_rationale: Very high 2026 search volume around "escape Salesforce", "Salesforce
+    to sovereign CRM", and "regulated opportunity-to-mandate migration" — especially
+    among mid-market and PE-backed companies hitting customization and cost walls.
+  keywords:
+  - escape Salesforce
+  - Salesforce to sovereign CRM
+  - governed opportunity management
+  - regulated CRM migration
+  - permissioned sales governance
+  - verifiable Salesforce exit
+  - sovereign mandate system
+  chapters:
+  - n: 1
+    chapter_title: Why Growing Teams Outgrow Salesforce
+    promise: You will clearly understand the customization costs, lock-in, and governance
+      gaps that trap companies in Salesforce.
+    beats:
+    - Customization debt and admin burden
+    - Reporting and visibility limitations
+    - Compliance and data ownership issues
+    - The sovereign CRM opportunity
+    - LGP growth constraint
+    keywords:
+    - Salesforce limitations 2026
+    - CRM migration pain
+    - regulated Salesforce exit
+    - enterprise sales lock-in
+  - n: 2
+    chapter_title: Receipted Ingestion from Salesforce
+    promise: You will safely extract Opportunities, Accounts, Contacts, and history
+      into verifiable sovereign receipts.
+    beats:
+    - Export and connector strategy
+    - Data classification and mapping
+    - Human-gated validation
+    - Atrium Salesforce ingestion lens
+    - LGP data truth foundation
+    keywords:
+    - Salesforce data migration
+    - regulated CRM ingestion
+    - permissioned opportunity import
+    - verifiable Salesforce transition
+  - n: 3
+    chapter_title: Parallel Run & Opportunity Reconciliation
+    promise: You will run Salesforce and the sovereign mandate system side-by-side
+      with governed reconciliation.
+    beats:
+    - Dual-pipeline visibility
+    - Automated variance detection
+    - Breath-gated reconciliation
+    - Atrium side-by-side views
+    - LGP truth alignment
+    keywords:
+    - Salesforce parallel run
+    - regulated CRM reconciliation
+    - permissioned hybrid sales
+    - compliant migration parallel
+  - n: 4
+    chapter_title: Governed Cutover from Salesforce
+    promise: You will execute a clean, phased cutover from Salesforce to sovereign
+      governed mandates.
+    beats:
+    - Module-by-module migration
+    - Breath-gated go-live
+    - Data finalization and history migration
+    - Atrium cutover cockpit
+    - LGP safe transition
+    keywords:
+    - Salesforce cutover governance
+    - regulated CRM go-live
+    - permissioned sales transition
+    - compliant Salesforce exit
+  - n: 5
+    chapter_title: Opportunity-to-Mandate Transformation
+    promise: You will transform Salesforce Opportunities into sovereign, governed
+      mandates with full traceability.
+    beats:
+    - Opportunity mapping governance
+    - Mandate creation rules
+    - Breath-gated approvals
+    - Atrium mandate surface
+    - LGP sales continuity
+    keywords:
+    - governed opportunity to mandate
+    - regulated CRM transformation
+    - permissioned sales governance
+    - compliant pipeline migration
+  - n: 6
+    chapter_title: Atrium Salesforce Migration Lens
+    promise: You will monitor and govern the entire Salesforce unbinding from a unified
+      sovereign cockpit.
+    beats:
+    - Connector status dashboard
+    - Reconciliation progress
+    - Cutover readiness
+    - Atrium migration surface
+    - LGP operational visibility
+    keywords:
+    - Salesforce migration dashboard
+    - regulated CRM transition monitoring
+    - permissioned migration cockpit
+    - compliant sales switch
+  - n: 7
+    chapter_title: Unbinding Salesforce vs Traditional Paths
+    promise: You will compare the sovereign unbinding path against traditional Salesforce-to-ERP
+      migrations or staying on Salesforce.
+    beats:
+    - Traditional migration weaknesses
+    - Sovereign decisive wins
+    - Cost and risk realism
+    - Self-service patterns
+    - LGP framing
+    keywords:
+    - sovereign Salesforce escape
+    - regulated CRM comparison
+    - permissioned Salesforce exit
+    - verifiable sales transition
+  - n: 8
+    chapter_title: Salesforce Unbinding as Generational Sales Foundation
+    promise: You will see how a clean unbinding from Salesforce becomes the foundation
+      for multi-generational governed sales.
+    beats:
+    - Full migration synthesis
+    - Integration with sovereign financials and mandates
+    - Generational handoff readiness
+    - Atrium sales cockpit
+    - Strong LGP call to action
+    keywords:
+    - generational Salesforce exit
+    - long term sovereign CRM
+    - regulated sales legacy
+    - sovereign mandate continuity
+  book_id: s5_35_unbinding_salesforce
+- series: 5
+  title: Consuming the Giants — SAP, NetSuite & Acumatica Carve-Ins
+  market: SAP, NetSuite & Acumatica Migration to Sovereign ERP
+  market_rationale: High 2026 enterprise search volume for "SAP migration", "NetSuite
+    exit", "Acumatica carve-out", and "legacy ERP replacement" — especially in PE-backed
+    companies and large mid-market firms seeking clean exits from vendor lock-in.
+  keywords:
+  - SAP migration to sovereign ERP
+  - NetSuite exit strategy
+  - Acumatica carve-out
+  - regulated legacy ERP transition
+  - permissioned enterprise migration
+  - verifiable SAP replacement
+  - sovereign ERP consolidation
+  chapters:
+  - n: 1
+    chapter_title: Why Enterprises Are Ready to Leave the Giants
+    promise: You will clearly understand the customization debt, upgrade costs, and
+      governance limitations that make SAP, NetSuite, and Acumatica unsustainable
+      for sovereign operators.
+    beats:
+    - Customization and upgrade fatigue
+    - Vendor lock-in realities
+    - Compliance and audit burdens
+    - The sovereign carve-in opportunity
+    - LGP enterprise risk
+    keywords:
+    - SAP migration pain
+    - NetSuite exit reasons
+    - Acumatica limitations
+    - legacy ERP replacement
+  - n: 2
+    chapter_title: Receipted Ingestion from Enterprise Systems
+    promise: You will safely extract and transform data from SAP, NetSuite, or Acumatica
+      into verifiable sovereign receipts.
+    beats:
+    - Connector and export strategy
+    - Data classification and mapping
+    - Human-gated validation
+    - Atrium enterprise ingestion lens
+    - LGP data truth foundation
+    keywords:
+    - SAP data migration
+    - NetSuite ingestion
+    - regulated enterprise import
+    - verifiable legacy transition
+  - n: 3
+    chapter_title: Parallel Run & Multi-Ledger Reconciliation
+    promise: You will run legacy ERP and sovereign core side-by-side with governed
+      reconciliation.
+    beats:
+    - Multi-ledger visibility
+    - Automated variance detection
+    - Breath-gated reconciliation
+    - Atrium dual-system views
+    - LGP truth alignment
+    keywords:
+    - SAP parallel run
+    - NetSuite reconciliation
+    - regulated multi-ledger
+    - compliant enterprise hybrid
+  - n: 4
+    chapter_title: Phased Carve-In & Cutover Governance
+    promise: You will execute a clean, module-by-module carve-in with rollback always
+      available as a fork.
+    beats:
+    - Module migration sequencing
+    - Breath-gated go-live gates
+    - Data finalization
+    - Atrium cutover cockpit
+    - LGP safe transition
+    keywords:
+    - SAP carve-in governance
+    - NetSuite cutover
+    - regulated enterprise migration
+    - permissioned legacy exit
+  - n: 5
+    chapter_title: Role, Process & Master Data Mapping
+    promise: You will map and govern roles, processes, and master data from legacy
+      systems into sovereign structures.
+    beats:
+    - Role lattice mapping
+    - Process transformation
+    - Master data governance
+    - Atrium mapping surface
+    - LGP structural continuity
+    keywords:
+    - SAP role migration
+    - NetSuite process mapping
+    - regulated master data governance
+    - permissioned enterprise transformation
+  - n: 6
+    chapter_title: Atrium Enterprise Migration Lens
+    promise: You will monitor and govern the entire carve-in from a unified sovereign
+      cockpit.
+    beats:
+    - Connector status dashboard
+    - Reconciliation progress
+    - Cutover readiness
+    - Atrium migration surface
+    - LGP operational visibility
+    keywords:
+    - enterprise migration dashboard
+    - regulated carve-in monitoring
+    - permissioned legacy transition
+    - compliant giant consumption
+  - n: 7
+    chapter_title: Consuming the Giants vs Traditional Migrations
+    promise: You will compare the sovereign carve-in approach against traditional
+      big-bang or lift-and-shift migrations.
+    beats:
+    - Traditional weaknesses
+    - Sovereign decisive wins
+    - Cost and risk realism
+    - Self-service patterns
+    - LGP framing
+    keywords:
+    - sovereign SAP migration
+    - NetSuite exit comparison
+    - regulated enterprise transition
+    - verifiable giant consumption
+  - n: 8
+    chapter_title: Consuming the Giants as Generational Liberation
+    promise: You will see how cleanly consuming legacy giants becomes the foundation
+      for multi-generational sovereignty.
+    beats:
+    - Full migration synthesis
+    - Integration with sovereign core
+    - Generational handoff readiness
+    - Atrium enterprise cockpit
+    - Strong LGP call to action
+    keywords:
+    - generational ERP liberation
+    - long term sovereign consolidation
+    - regulated legacy exit
+    - sovereign enterprise continuity
+  book_id: s5_36_consuming_the_giants
+- series: 5
+  title: The Clean Exit — PE Carve-Outs, Verifiable Diligence Packages & Generational
+    Handoff
+  market: PE Carve-Outs, Clean Exit Packages & Generational Business Transition
+  market_rationale: High-virality 2026 searches around "PE carve-out diligence", "clean
+    exit ERP", "verifiable business packages", and "generational business handoff"
+    — especially among private equity operators and family businesses preparing for
+    succession or sale.
+  keywords:
+  - PE carve-out diligence
+  - clean exit ERP package
+  - verifiable business handoff
+  - regulated generational transition
+  - permissioned exit governance
+  - sovereign diligence artifact
+  - compliant business succession
+  chapters:
+  - n: 1
+    chapter_title: The Clean Exit Imperative
+    promise: You will clearly understand why a clean, receipted exit is the highest-leverage
+      moment in any business lifecycle.
+    beats:
+    - PE diligence and carve-out realities
+    - Succession and family handoff pain
+    - Legacy debt inheritance
+    - The sovereign clean exit opportunity
+    - LGP exit risk
+    keywords:
+    - PE carve-out challenges
+    - clean business exit
+    - generational handoff problems
+    - regulated exit strategy
+  - n: 2
+    chapter_title: The Receipted Ledger as Deal Artifact
+    promise: You will turn the sovereign immutable ledger into the single source of
+      truth for buyers, auditors, and heirs.
+    beats:
+    - Full history export as receipts
+    - Verifiable diligence package
+    - Atrium clean exit generator
+    - Evidence bundling
+    - LGP truth at handoff
+    keywords:
+    - verifiable diligence package
+    - receipted exit artifact
+    - regulated PE handoff
+    - compliant business sale
+  - n: 3
+    chapter_title: Governed Carve-Out & Separation
+    promise: You will execute clean separation of entities while preserving sovereignty
+      on both sides.
+    beats:
+    - Entity carve-out governance
+    - Data scoping and isolation
+    - Breath-gated separation
+    - Atrium carve-out surface
+    - LGP clean break
+    keywords:
+    - governed carve-out process
+    - regulated entity separation
+    - permissioned business split
+    - compliant PE transition
+  - n: 4
+    chapter_title: Verifiable Diligence Package Generation
+    promise: You will generate complete, cryptographically verifiable diligence packages
+      on demand.
+    beats:
+    - Package assembly from receipts
+    - Financial + operational evidence
+    - Helix-rendered reports
+    - Atrium diligence tools
+    - LGP buyer confidence
+    keywords:
+    - diligence package generation
+    - verifiable exit documents
+    - regulated PE artifacts
+    - compliant business sale package
+  - n: 5
+    chapter_title: Generational Handoff & Succession
+    promise: You will design handoffs that transfer both control and verifiable truth
+      to the next generation.
+    beats:
+    - Succession rituals
+    - Knowledge + data transfer
+    - Breath-gated approval
+    - Atrium handoff cockpit
+    - LGP continuity
+    keywords:
+    - generational business handoff
+    - regulated succession planning
+    - permissioned family transition
+    - compliant legacy transfer
+  - n: 6
+    chapter_title: Atrium Clean Exit Console
+    promise: You will manage the entire exit or handoff from a unified sovereign cockpit.
+    beats:
+    - Exit readiness dashboard
+    - Package generation
+    - Rollback/fork options
+    - Atrium clean exit surface
+    - LGP operational control
+    keywords:
+    - clean exit cockpit
+    - regulated handoff dashboard
+    - permissioned exit management
+    - compliant transition console
+  - n: 7
+    chapter_title: Clean Exit vs Traditional M&A / Succession Paths
+    promise: You will compare the sovereign clean exit against traditional PE and
+      family succession processes.
+    beats:
+    - Traditional weaknesses
+    - Sovereign decisive wins
+    - Cost and risk realism
+    - Adoption guidance
+    - LGP framing
+    keywords:
+    - sovereign clean exit
+    - regulated PE comparison
+    - permissioned succession advantages
+    - verifiable business transition
+  - n: 8
+    chapter_title: The Clean Exit as LGP Culmination
+    promise: You will see the clean exit as the moment sovereignty is fully realized
+      and passed forward.
+    beats:
+    - Full arc synthesis
+    - Arrival and exit as one discipline
+    - Buyer and heir using the same receipts
+    - Atrium as eternal covenant
+    - Strong LGP call to action
+    keywords:
+    - generational clean exit
+    - lasting business sovereignty
+    - regulated prosperity handoff
+    - sovereign legacy culmination
+  book_id: s5_37_the_clean_exit

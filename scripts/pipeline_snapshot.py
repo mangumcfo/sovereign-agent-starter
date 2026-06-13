@@ -42,6 +42,25 @@ def build_snapshot() -> tuple[dict, dict]:
     return {"series": series}, {"coverage": cov, "content_hash": content_hash, "degraded_detail": detail}
 
 
+def _prior_snapshot(outdir: Path, date: str):
+    """Most-recent snapshot DATED BEFORE the run date (ISO dates sort lexicographically)."""
+    pri = []
+    for p in outdir.glob("series_pipeline_*.yaml"):
+        d = p.stem.replace("series_pipeline_", "")
+        if d < date:
+            pri.append((d, p))
+    return max(pri)[1] if pri else None
+
+
+def _coverage_of(path: Path) -> dict:
+    import yaml
+    try:
+        d = yaml.safe_load(path.read_text(encoding="utf-8"))
+        return d.get("coverage", {}) if isinstance(d, dict) else {}
+    except Exception:
+        return {}
+
+
 def main():
     date = sys.argv[1] if len(sys.argv) > 1 else datetime.date.today().isoformat()
     body, meta = build_snapshot()
@@ -49,6 +68,23 @@ def main():
     outdir.mkdir(parents=True, exist_ok=True)
     out = outdir / f"series_pipeline_{date}.yaml"
     import yaml
+
+    # Idempotency: if today's snapshot already matches this content, do nothing (no churn).
+    if out.exists():
+        prev = _coverage_of(out)
+        if yaml.safe_load(out.read_text(encoding="utf-8")).get("content_hash") == meta["content_hash"]:
+            print(f"unchanged — {out.name} already current (content_hash {meta['content_hash'][:16]})")
+            return 0
+
+    # DROP-OFF GUARD: compare coverage vs the most-recent prior snapshot; warn loudly if anything decreased.
+    cov = meta["coverage"]
+    prior = _prior_snapshot(outdir, date)
+    drops = []
+    if prior:
+        pc = _coverage_of(prior)
+        for k in ("series", "titles", "chapters", "chapters_with_kw", "titles_with_outline"):
+            if isinstance(pc.get(k), int) and cov.get(k, 0) < pc[k]:
+                drops.append(f"{k}: {pc[k]} -> {cov[k]}  (DROPPED {pc[k]-cov[k]})")
     cov = meta["coverage"]
     header = (
         f"# Series Pipeline Snapshot — {date}\n"
@@ -64,7 +100,16 @@ def main():
     print(f"wrote {out}")
     print(f"coverage: {cov}")
     print(f"content_hash: {meta['content_hash'][:16]}")
+    if drops:
+        print("\n" + "!" * 64)
+        print("!!  DROP-OFF GUARD — pipeline coverage DECREASED vs %s:" % prior.name)
+        for d in drops:
+            print("!!    " + d)
+        print("!!  Investigate before sealing — something was dropped.")
+        print("!" * 64)
+        return 2
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main() or 0)

@@ -63,13 +63,41 @@ def get_obligation_ledger():
     global _LEDGER
     if _LEDGER is None:
         from ..obligations.node_integration import wire_node_ledger
+        root = os.environ.get("OBLIGATION_LEDGER_ROOT")  # None -> ledger default (node-local)
+        _assert_root_not_starved(root)  # THREAD [245]: empty root beside an 811-card sibling must SCREAM
         _LEDGER = wire_node_ledger(
-            root=os.environ.get("OBLIGATION_LEDGER_ROOT"),  # None -> ledger default (node-local)
+            root=root,
             node=get_node(),
             mode=os.environ.get("BREATHLINE_NODE_MODE", "sovereign"),
             gate_mode=os.environ.get("BREATHLINE_GATE_MODE", "sovereign"),
         )
     return _LEDGER
+
+
+def _assert_root_not_starved(root):
+    """Loud guard (THREAD [245] principle 4): if the served ledger root holds far fewer packets
+    than a sibling root under memory/obligations/*, scream — never render a clean-looking empty
+    queue while real work sits in a sibling. The exact failure that silently hid KM's 42 cards."""
+    import logging
+    from pathlib import Path
+    log = logging.getLogger("breathline.ledger")
+    try:
+        served = Path(root).expanduser() if root else (Path(__file__).resolve().parents[3]
+                                                       / "memory" / "obligations")
+        sf = served / "obligations.ndjson"
+        served_n = sum(1 for _ in sf.open()) if sf.exists() else 0
+        base = served.parent if served.name != "obligations" else served
+        siblings = {sib.parent.name: sum(1 for _ in sib.open())
+                    for sib in base.glob("*/obligations.ndjson")
+                    if sib.parent.resolve() != served.resolve()}
+        richest = max(siblings.values(), default=0)
+        if served_n == 0 and richest > 10:
+            who = max(siblings, key=siblings.get)
+            log.error("LEDGER STARVED: served root %s is EMPTY while sibling '%s' holds %d packets. "
+                      "Node is pointed at the wrong root — the queue is silently empty. "
+                      "Set OBLIGATION_LEDGER_ROOT correctly.", served, who, richest)
+    except Exception as exc:  # never let the guard break boot
+        log.warning("ledger-starvation guard skipped: %s", exc)
 
 
 def set_node(node: UniversalSovereignNode) -> None:

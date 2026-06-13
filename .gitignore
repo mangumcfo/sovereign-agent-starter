@@ -1,38 +1,39 @@
-# Python
-__pycache__/
-*.py[cod]
-*.egg-info/
-.eggs/
-build/
-dist/
-
-# Virtualenvs
-.venv/
-venv/
-env/
-
-# Local state / generated
-*.db
-*.sqlite
-*.sqlite3
-cylinder_index.db
-
-# Secrets / local config
-.env
-.env.*
-*.key
-*.pem
-
-# OS / editor
-.DS_Store
-*.swp
-.idea/
-.vscode/
 
 # attachment bundles (redundant with the artifacts themselves)
-*.tgz
-
-# throwaway gate-demo ledgers (regenerated each run)
+build/
+cylinder_index.db
+*.db
+dist/
+.DS_Store
+*.egg-info/
+.eggs/
+.env
+.env.*
+env/
+_extrusion_sandbox/
+.idea/
+*.key
+# Local state / generated
 memory/obligations/bg_demo/
 memory/obligations/bg_deny_demo/
 memory/obligations/lgp_demo/
+# OS / editor
+*.pem
+__pycache__/
+*.py[cod]
+# Python
+# Secrets / local config
+*.sqlite
+*.sqlite3
+*.swp
+*.tgz
+# editor lock files + local backups + scan caches (never committed)
+.~lock.*#
+*.bak
+*.bak.*
+artifacts/.b51_last_scan.json
+# throwaway gate-demo ledgers (regenerated each run)
+.venv/
+venv/
+# Virtualenvs
+.vscode/

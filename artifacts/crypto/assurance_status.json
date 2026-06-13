@@ -1,0 +1,16 @@
+{
+  "status": "GREEN",
+  "last_run": "",
+  "merkle_root": "206e554a749c0e66f726a4d09737ce1c90167f8df6e7c0c3e41f21f41315876f",
+  "vectors": {
+    "pass": true,
+    "n_pass": 12,
+    "n_total": 12
+  },
+  "seal_tripwire": {
+    "status": "clean",
+    "manifest_hash": "9366b0b9d96db3342981c5d84a530d8bda8e98f3dde0a6c71b83460bbdacc84b"
+  },
+  "reasons": [],
+  "claim": "verified against international test vectors + reference-lib cross-check, and integrity-checked against its seal \u2014 receipts available"
+}

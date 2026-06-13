@@ -3,6 +3,7 @@
 Covers: clean parse, the safe-prefix fallback when GB's tail notes break strict YAML,
 visibility defaulting (absent → public; explicit private preserved), and missing-file honesty.
 """
+import json
 import textwrap
 
 import pytest
@@ -55,31 +56,53 @@ def make_client(tmp_path, monkeypatch):
         rp = tmp_path / "series_roadmap.yaml"
         rp.write_text(roadmap_text, encoding="utf-8")
         monkeypatch.setenv("SERIES_ROADMAP", str(rp))
+        # Hermetic by default: point the chapter index at a nonexistent file so tests don't pick up the
+        # real repo extraction. The Path B test overrides CHAPTER_INDEX with its own fixture.
+        monkeypatch.setenv("CHAPTER_INDEX", str(tmp_path / "no_chapter_index.json"))
         from sovereign_agent.node_api.server import create_app
         return create_app().test_client()
 
     return _make
 
 
-def test_clean_parse_and_visibility(make_client):
+def test_clean_parse_default_hides_private(make_client):
+    # One-source-of-truth visibility gate (KM 2026-06-09): the default public view shows only the
+    # public ladder; private series are hidden but COUNTED honestly (never silently dropped).
     r = make_client(CLEAN).get("/api/v1/series")
     assert r.status_code == 200
     body = r.get_json()
     assert body["meta"]["ok"] is True
     assert body["meta"]["degraded"] is False
     assert body["meta"]["active_series_count"] == 2
+    assert body["meta"]["include_private"] is False
+    assert body["meta"]["private_hidden"] == 1
+    assert "include_private" in body["meta"]["private_note"]
     by_slug = {s["slug"]: s for s in body["series"]}
-    # absent visibility defaults to public (KDP ladder)
+    # private series withheld from the public view…
+    assert "quadroof_private" not in by_slug
+    # …public ladder renders, absent visibility defaults to public
     assert by_slug["agentic_playbooks"]["visibility"] == "public"
-    # explicit private is preserved (honest surfacing)
-    assert by_slug["quadroof_private"]["visibility"] == "private"
     t = by_slug["agentic_playbooks"]["titles"][0]
     assert t["title"] == "Scaling"
     assert t["next_gate"].startswith("Human handoff")
 
 
+def test_include_private_surfaces_private(make_client):
+    # KM explicitly surfaces private series with ?include_private=1.
+    r = make_client(CLEAN).get("/api/v1/series?include_private=1")
+    assert r.status_code == 200
+    body = r.get_json()
+    assert body["meta"]["include_private"] is True
+    assert body["meta"]["private_hidden"] == 0
+    by_slug = {s["slug"]: s for s in body["series"]}
+    assert by_slug["agentic_playbooks"]["visibility"] == "public"
+    # explicit private is preserved + carries the null public number
+    assert by_slug["quadroof_private"]["visibility"] == "private"
+    assert by_slug["quadroof_private"]["number"] is None
+
+
 def test_safe_prefix_fallback_on_broken_tail(make_client):
-    r = make_client(BROKEN_TAIL).get("/api/v1/series")
+    r = make_client(BROKEN_TAIL).get("/api/v1/series?include_private=1")
     assert r.status_code == 200
     body = r.get_json()
     # the lens still renders the intact roadmap, but tells the truth that the tail was skipped
@@ -87,6 +110,27 @@ def test_safe_prefix_fallback_on_broken_tail(make_client):
     assert body["meta"]["ok"] is True
     assert len(body["series"]) == 2
     assert "gb_notes" in body["meta"]["note"] or "tail" in body["meta"]["note"]
+
+
+def test_path_b_chapters_merge_from_index(make_client, tmp_path, monkeypatch):
+    # Path B (KM 2026-06-09): a title with no chapters of its own gets the extracted TOC merged from
+    # the index by book_id at render time — chapters trace to the manuscript; the roadmap stays lean.
+    idx = tmp_path / "extracted_chapter_outlines_test.json"
+    idx.write_text(json.dumps({"books": {
+        "10_x": {"book_id": "10_x", "chapters": [
+            {"n": 1, "title": "Scaling", "stage": "extracted"},
+            {"n": 2, "title": "Drift", "stage": "extracted"}]}}}), encoding="utf-8")
+    client = make_client(CLEAN)  # fixture sets CHAPTER_INDEX to a nonexistent file…
+    monkeypatch.setenv("CHAPTER_INDEX", str(idx))  # …override it AFTER (lens reads env at request time)
+    r = client.get("/api/v1/series?include_private=1")
+    body = r.get_json()
+    by_slug = {s["slug"]: s for s in body["series"]}
+    t = by_slug["agentic_playbooks"]["titles"][0]
+    # merged from the index, flagged honestly as extracted-sourced
+    assert t["chapters_source"] == "extracted-index"
+    assert [c["title"] for c in t["chapters"]] == ["Scaling", "Drift"]
+    # a title NOT in the index stays chapterless (no fabrication)
+    assert "chapters" not in by_slug["quadroof_private"]["titles"][0]
 
 
 def test_missing_file_is_honest(make_client, tmp_path, monkeypatch):

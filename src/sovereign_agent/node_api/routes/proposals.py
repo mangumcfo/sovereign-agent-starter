@@ -479,3 +479,41 @@ def seeit():
         return jsonify({"_meta": {"surface": "seeit", "ok": False,
                                   "note": "seeit content not built — run scripts/build_seeit.py"},
                         "topics": [], "walkthroughs": []})
+
+
+@bp.get("/export/packet")
+@require_owner
+def export_packet_route():
+    """R22-1 Evidence-Packet Exports — assemble obligations into ONE self-verifying evidence bundle
+    {manifest, receipts[], merkle_proof, chain_range, sha}. Owner-gated; deterministic; the bundle
+    self-verifies on a clean machine (`export_packet.py verify <bundle>`). Engine for S5_37 Clean Exit."""
+    import sys as _sys  # noqa: PLC0415
+    repo = Path(__file__).resolve().parents[4]
+    _sys.path.insert(0, str(repo / "scripts"))
+    import export_packet as _EP  # noqa: PLC0415
+    ids = [x.strip() for x in (request.args.get("obl_ids") or "").split(",") if x.strip()]
+    if not ids:
+        return jsonify({"error": "missing_obl_ids", "what": "pass ?obl_ids=A,B,C (comma-separated)"}), 400
+    led_root = Path(os.environ.get("OBLIGATION_LEDGER_ROOT")
+                    or (repo / "memory" / "obligations" / "atrium_review"))
+    try:
+        bundle = _EP.build_packet(ids, led_root)
+    except ValueError as e:
+        return jsonify({"error": "no_entries", "what": str(e)}), 404
+    return jsonify(bundle)
+
+
+@bp.get("/actions")
+@require_principal
+def actions_route():
+    """R22-2 Queryable actions projection — verifiable rows over the Merkle leaves (read-only).
+    Filters: type/principal/obligation/since/until. Each row cites its leaf + inclusion proof + root."""
+    import sys as _sys  # noqa: PLC0415
+    repo = Path(__file__).resolve().parents[4]
+    _sys.path.insert(0, str(repo / "scripts"))
+    import actions_projection as _AP  # noqa: PLC0415
+    led_root = Path(os.environ.get("OBLIGATION_LEDGER_ROOT")
+                    or (repo / "memory" / "obligations" / "atrium_review"))
+    g = request.args.get
+    return jsonify(_AP.query_actions(led_root, type=g("type"), principal=g("principal"),
+                                     obligation=g("obligation"), since=g("since"), until=g("until")))

@@ -1,0 +1,64 @@
+# S6 — Inter-Node Sovereignty (5 titles) — G via KM relay 2026-06-11
+# Tiger-validated (keywords: IP-jargon scan + cross-title dup + count). Spine capture; full beats in transcript.
+titles:
+  - {series: 6, title: "Receipted Inter-Node Messaging", market: "Secure & Verifiable Multi-Node Communication",
+     keywords: [verifiable inter node messaging, regulated multi node communication, permissioned data exchange, enterprise secure messaging, compliant cross entity communication, sovereign node messaging, tamper proof messaging system],
+     chapters: [
+       {n: 1, chapter_title: "Inter-Node Communication Challenges", keywords: ["inter node messaging problems","regulated communication challenges","enterprise data exchange issues","governed node messaging"]},
+       {n: 2, chapter_title: "Receipted Messaging Foundation", keywords: ["signed message records","verifiable inter node messages","regulated communication proof","permissioned data exchange"]},
+       {n: 3, chapter_title: "Governed Message Routing & Delivery", keywords: ["governed message routing","regulated inter node delivery","permissioned communication control","compliant node messaging"]},
+       {n: 4, chapter_title: "Multi-Node Conversation Threads", keywords: ["regulated conversation threads","governed multi node chat","permissioned discussion control","verifiable inter node dialogue"]},
+       {n: 5, chapter_title: "Compliance & Audit for Messaging", keywords: ["messaging compliance automation","regulated communication audit","governed message records","compliant inter node proof"]},
+       {n: 6, chapter_title: "Privacy & Scoped Visibility", keywords: ["permissioned message visibility","regulated privacy controls","governed data scoping","compliant inter node sharing"]},
+       {n: 7, chapter_title: "Receipted Messaging vs Legacy Systems", keywords: ["sovereign messaging vs legacy","regulated communication comparison","permissioned inter node advantages","verifiable message control"]},
+       {n: 8, chapter_title: "Receipted Messaging as Generational Trust Layer", keywords: ["long term inter node messaging","generational communication system","regulated trust legacy","sovereign collaboration continuity"]}]}
+
+  - {series: 6, title: "Sovereign Collaboration", market: "Regulated Sovereign Collaboration Platforms",
+     keywords: [regulated sovereign collaboration, governed multi party workflows, permissioned enterprise collaboration, compliant joint operations, sovereign collaboration system, verifiable shared work, enterprise federation collaboration],
+     chapters: [
+       {n: 1, chapter_title: "Collaboration Without Losing Sovereignty", keywords: ["sovereign collaboration challenges","regulated joint work","enterprise federation issues","governed collaboration control"]},
+       {n: 2, chapter_title: "Governed Joint Workspaces", keywords: ["governed joint workspaces","regulated shared environments","permissioned collaboration spaces","compliant multi node work"]},
+       {n: 3, chapter_title: "Shared Decision Processes", keywords: ["governed joint decisions","regulated collaboration workflows","permissioned multi party approval","compliant shared governance"]},
+       {n: 4, chapter_title: "Knowledge & Document Sharing", keywords: ["verifiable document sharing","regulated knowledge exchange","permissioned collaboration documents","compliant joint records"]},
+       {n: 5, chapter_title: "Cross-Node Project & Initiative Management", keywords: ["governed cross node projects","regulated joint initiatives","permissioned collaboration projects","compliant multi party work"]},
+       {n: 6, chapter_title: "Conflict Resolution in Collaboration", keywords: ["regulated conflict resolution","governed collaboration disputes","permissioned joint mediation","compliant federation harmony"]},
+       {n: 7, chapter_title: "Sovereign Collaboration vs Traditional Platforms", keywords: ["sovereign collaboration vs legacy","regulated joint work comparison","permissioned federation advantages","verifiable multi party control"]},
+       {n: 8, chapter_title: "Sovereign Collaboration as Generational Alliance Layer", keywords: ["long term sovereign collaboration","generational alliance system","regulated joint legacy","sovereign federation continuity"]}]}
+
+  - {series: 6, title: "Distributed Sovereign Compute", market: "Permissioned Distributed Computing Platforms",
+     keywords: [regulated distributed compute, governed multi node processing, permissioned sovereign compute, enterprise distributed systems, compliant edge computing, verifiable compute federation, sovereign compute network],
+     chapters: [
+       {n: 1, chapter_title: "Distributed Compute Challenges", keywords: ["distributed compute problems","regulated multi node challenges","enterprise compute visibility","governed processing control"]},
+       {n: 2, chapter_title: "Sovereign Node Compute Model", keywords: ["sovereign node compute","regulated distributed model","permissioned edge processing","compliant multi node compute"]},
+       {n: 3, chapter_title: "Governed Workload Distribution", keywords: ["governed workload distribution","regulated compute scheduling","permissioned task allocation","compliant distributed processing"]},
+       {n: 4, chapter_title: "Verifiable Compute Results", keywords: ["verifiable distributed results","regulated compute proof","permissioned result validation","compliant multi node execution"]},
+       {n: 5, chapter_title: "Resource Sharing & Incentives", keywords: ["governed resource sharing","regulated compute incentives","permissioned node contributions","compliant distributed economy"]},
+       {n: 6, chapter_title: "Distributed Compute Compliance", keywords: ["distributed compute compliance","regulated workload audit","governed multi node records","compliant federation compute"]},
+       {n: 7, chapter_title: "Distributed Sovereign Compute vs Legacy Systems", keywords: ["sovereign distributed vs legacy","regulated compute comparison","permissioned federation advantages","verifiable multi node control"]},
+       {n: 8, chapter_title: "Distributed Compute as Generational Capability", keywords: ["long term distributed compute","generational compute network","regulated federation legacy","sovereign compute continuity"]}]}
+
+  - {series: 6, title: "Resonance Coordination (not central control)", market: "Regulated Resonance-Based Coordination Platforms",
+     keywords: [resonance based coordination, governed multi party alignment, permissioned federation coordination, enterprise resonance system, compliant decentralized control, sovereign coordination network, verifiable alignment system],
+     chapters: [
+       {n: 1, chapter_title: "Coordination Without Central Control", keywords: ["resonance coordination","regulated decentralized alignment","permissioned federation models","compliant multi node coordination"]},
+       {n: 2, chapter_title: "Resonance Signals & Protocols", keywords: ["governed resonance signals","regulated coordination protocols","permissioned alignment mechanisms","compliant federation signals"]},
+       {n: 3, chapter_title: "Governed Alignment Workflows", keywords: ["governed alignment workflows","regulated resonance processes","permissioned multi party coordination","compliant federation alignment"]},
+       {n: 4, chapter_title: "Conflict Prevention & Gentle Resolution", keywords: ["resonance conflict prevention","regulated alignment resolution","permissioned gentle coordination","compliant federation harmony"]},
+       {n: 5, chapter_title: "Measuring Resonance & Health", keywords: ["regulated resonance measurement","governed coordination health","permissioned federation metrics","compliant alignment monitoring"]},
+       {n: 6, chapter_title: "Scaling Resonance Coordination", keywords: ["scaled resonance coordination","regulated large federation","permissioned multi node alignment","compliant growing networks"]},
+       {n: 7, chapter_title: "Resonance Coordination vs Traditional Models", keywords: ["resonance vs central control","regulated coordination comparison","permissioned federation advantages","verifiable alignment control"]},
+       {n: 8, chapter_title: "Resonance as Generational Harmony Layer", keywords: ["long term resonance coordination","generational alignment system","regulated harmony legacy","sovereign federation continuity"]}]}
+
+  - {series: 6, title: "Inter-Node Trust Boundaries & Handoff", market: "Regulated Trust Boundaries & Secure Handoff Systems",
+     keywords: [regulated trust boundaries, governed inter node handoff, permissioned federation trust, enterprise boundary control, compliant data handoff, sovereign trust management, verifiable node boundaries],
+     chapters: [
+       {n: 1, chapter_title: "Trust Boundary Challenges", keywords: ["trust boundary problems","regulated federation challenges","enterprise handoff issues","governed boundary control"]},
+       {n: 2, chapter_title: "Designing Sovereign Trust Boundaries", keywords: ["governed trust boundaries","regulated node separation","permissioned federation boundaries","compliant inter node control"]},
+       {n: 3, chapter_title: "Secure & Governed Handoff Processes", keywords: ["governed data handoff","regulated node transfer","permissioned boundary crossing","compliant federation handoff"]},
+       {n: 4, chapter_title: "Reputation & Trust Scoring", keywords: ["regulated trust scoring","governed reputation system","permissioned node evaluation","compliant federation trust"]},
+       {n: 5, chapter_title: "Boundary Monitoring & Enforcement", keywords: ["trust boundary monitoring","regulated enforcement","permissioned violation control","compliant federation guardrails"]},
+       {n: 6, chapter_title: "Multi-Node Trust Relationships", keywords: ["multi node trust management","regulated relationship governance","permissioned federation ties","compliant inter node bonds"]},
+       {n: 7, chapter_title: "Trust Boundaries vs Legacy Models", keywords: ["sovereign trust vs legacy","regulated boundary comparison","permissioned federation advantages","verifiable trust control"]},
+       {n: 8, chapter_title: "Trust Boundaries as Generational Sovereignty Guard", keywords: ["long term trust boundaries","generational sovereignty guard","regulated federation legacy","sovereign boundary continuity"]}]}
+
+# ∞Δ∞ S6 — 5 titles / 40 chapters captured. ∞Δ∞

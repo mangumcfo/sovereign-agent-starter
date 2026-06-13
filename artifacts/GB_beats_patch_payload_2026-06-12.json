@@ -1,0 +1,3032 @@
+{
+  "s5_19_manufacturing_erp": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will understand the visibility, quality, and compliance gaps in legacy manufacturing systems.",
+        "beats": [
+          "Legacy MES limitations",
+          "Production scheduling pain",
+          "Quality and traceability issues",
+          "Sovereign opportunity",
+          "LGP manufacturing risk"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will plan and schedule manufacturing under constitutional rules with human oversight.",
+        "beats": [
+          "Master production scheduling",
+          "Breath-gated plan approval",
+          "Capacity governance",
+          "Atrium planning surface",
+          "LGP production reliability"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will execute production with full governance and real-time traceability.",
+        "beats": [
+          "Work order governance",
+          "Real-time execution tracking",
+          "Operator confirmation",
+          "Exception handling",
+          "LGP shop floor integrity"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will implement governed quality control with end-to-end traceability.",
+        "beats": [
+          "Quality rule enforcement",
+          "Receipted inspection events",
+          "Non-conformance governance",
+          "Atrium quality lens",
+          "LGP process integrity"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will govern materials, BOMs, and resources across manufacturing operations.",
+        "beats": [
+          "BOM governance",
+          "Material movement control",
+          "Resource allocation",
+          "Atrium resource views",
+          "LGP material continuity"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will automate compliance and generate verifiable production reports.",
+        "beats": [
+          "Regulatory mapping",
+          "Automated reporting",
+          "Audit trails",
+          "Exception governance",
+          "LGP compliance readiness"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare sovereign manufacturing capabilities against traditional MES/ERP.",
+        "beats": [
+          "Legacy weaknesses",
+          "Sovereign advantages",
+          "Performance realism",
+          "Migration guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build manufacturing operations that strengthen across business generations.",
+        "beats": [
+          "Module synthesis",
+          "Integration with supply chain",
+          "Generational handoff",
+          "Atrium manufacturing cockpit",
+          "Final LGP synthesis"
+        ]
+      }
+    ]
+  },
+  "s5_20_distribution_wholesale": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will understand visibility, inventory accuracy, and compliance issues in legacy systems.",
+        "beats": [
+          "Legacy distribution pain",
+          "Channel management gaps",
+          "Inventory accuracy problems",
+          "Sovereign opportunity",
+          "LGP disruption risk"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will manage inventory with immutable records and governed movements.",
+        "beats": [
+          "Warehouse governance",
+          "Receipted stock events",
+          "Cycle counting",
+          "Atrium inventory views",
+          "LGP stock integrity"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will govern logistics and fulfillment with full traceability.",
+        "beats": [
+          "Shipment governance",
+          "Carrier management",
+          "Delivery confirmation",
+          "Multi-channel support",
+          "LGP delivery reliability"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will manage sales channels and pricing under constitutional rules.",
+        "beats": [
+          "Channel governance",
+          "Pricing policy enforcement",
+          "Breath-gated changes",
+          "Atrium channel surface",
+          "LGP pricing integrity"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will align demand forecasting with governed supply execution.",
+        "beats": [
+          "Demand planning governance",
+          "Supply coordination",
+          "Exception handling",
+          "Atrium planning surface",
+          "LGP coordination"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will automate compliance and provide end-to-end traceable distribution records.",
+        "beats": [
+          "Regulatory mapping",
+          "Traceability receipts",
+          "Audit packages",
+          "Exception governance",
+          "LGP traceability"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare sovereign distribution capabilities against traditional systems.",
+        "beats": [
+          "Legacy weaknesses",
+          "Sovereign advantages",
+          "Performance realism",
+          "Migration guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build distribution capabilities that endure and strengthen across generations.",
+        "beats": [
+          "Module synthesis",
+          "Integration with manufacturing",
+          "Generational handoff",
+          "Atrium distribution cockpit",
+          "Final LGP synthesis"
+        ]
+      }
+    ]
+  },
+  "s5_21_professional_services": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will understand the billing accuracy, resource utilization, and compliance gaps in legacy PSA systems.",
+        "beats": [
+          "Legacy PSA limitations",
+          "Billing and revenue recognition issues",
+          "Resource visibility problems",
+          "Sovereign opportunity",
+          "LGP services risk"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will manage client projects and engagements under constitutional rules.",
+        "beats": [
+          "Engagement governance",
+          "Project setup approval",
+          "Breath-gated changes",
+          "Atrium project surface",
+          "LGP engagement continuity"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will govern resource allocation and utilization with full visibility.",
+        "beats": [
+          "Resource forecasting",
+          "Allocation governance",
+          "Utilization tracking",
+          "Atrium resource views",
+          "LGP talent optimization"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will manage billing and revenue recognition with governed accuracy.",
+        "beats": [
+          "Time and expense governance",
+          "Billing approval workflows",
+          "Recognition rules",
+          "Atrium billing surface",
+          "LGP revenue integrity"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will govern project knowledge and deliverables with verifiable records.",
+        "beats": [
+          "Knowledge capture governance",
+          "Deliverables approval",
+          "Version control",
+          "Atrium knowledge lens",
+          "LGP intellectual continuity"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will automate compliance while keeping human primacy on key decisions.",
+        "beats": [
+          "Regulatory mapping",
+          "Automated reporting",
+          "Audit trails",
+          "Exception governance",
+          "LGP compliance readiness"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare sovereign capabilities against traditional professional services automation.",
+        "beats": [
+          "Legacy weaknesses",
+          "Sovereign advantages",
+          "Performance realism",
+          "Migration guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build services capabilities that become multi-generational business assets.",
+        "beats": [
+          "Module synthesis",
+          "Integration with projects",
+          "Generational handoff",
+          "Atrium services cockpit",
+          "Final LGP synthesis"
+        ]
+      }
+    ]
+  },
+  "s5_22_energy_resources": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will understand the asset intensity, safety, and compliance demands unique to this sector.",
+        "beats": [
+          "Legacy EAM limitations",
+          "Regulatory complexity",
+          "Asset safety risks",
+          "Sovereign opportunity",
+          "LGP sector risk"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will maintain verifiable records for high-value, long-life assets.",
+        "beats": [
+          "Asset registry governance",
+          "Lifecycle stage control",
+          "Receipted events",
+          "Atrium asset views",
+          "LGP asset continuity"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will govern extraction, processing, and production operations.",
+        "beats": [
+          "Production planning governance",
+          "Operations approval",
+          "Safety and environmental rules",
+          "Atrium operations surface",
+          "LGP production reliability"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will manage maintenance for asset-intensive environments with full governance.",
+        "beats": [
+          "Predictive maintenance governance",
+          "Work execution control",
+          "Condition monitoring",
+          "Atrium maintenance lens",
+          "LGP asset reliability"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will automate compliance for highly regulated energy and resources sectors.",
+        "beats": [
+          "Environmental rule mapping",
+          "Audit package generation",
+          "Incident governance",
+          "Atrium compliance surface",
+          "LGP regulatory readiness"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will govern logistics and supply for asset-intensive operations.",
+        "beats": [
+          "Material and equipment flows",
+          "Logistics governance",
+          "Traceability requirements",
+          "Atrium logistics views",
+          "LGP supply continuity"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare sovereign capabilities against traditional industry-specific systems.",
+        "beats": [
+          "Legacy weaknesses",
+          "Sovereign advantages",
+          "Performance realism",
+          "Migration guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build asset-intensive operations that endure and strengthen across generations.",
+        "beats": [
+          "Module synthesis",
+          "Integration with core",
+          "Generational handoff",
+          "Atrium energy cockpit",
+          "Final LGP synthesis"
+        ]
+      }
+    ]
+  },
+  "s5_23_construction_projects": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will understand the cost, safety, and compliance complexities unique to construction.",
+        "beats": [
+          "Legacy construction pain",
+          "Job costing inaccuracies",
+          "Subcontractor risks",
+          "Sovereign opportunity",
+          "LGP project risk"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will set up projects and control job costing with full governance.",
+        "beats": [
+          "Project charter governance",
+          "Job cost structure",
+          "Budget approval",
+          "Atrium project surface",
+          "LGP cost integrity"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will manage subcontractors and suppliers under constitutional rules.",
+        "beats": [
+          "Subcontractor qualification",
+          "Contract governance",
+          "Payment approval",
+          "Atrium subcontractor views",
+          "LGP relationship continuity"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will govern safety and compliance on construction sites.",
+        "beats": [
+          "Safety rule enforcement",
+          "Incident reporting governance",
+          "Regulatory mapping",
+          "Atrium safety lens",
+          "LGP safety continuity"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will manage progress billing and changes with governed accuracy.",
+        "beats": [
+          "Progress claim governance",
+          "Change order approval",
+          "Breath-gated variations",
+          "Atrium billing surface",
+          "LGP financial control"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will automate compliance while maintaining human primacy.",
+        "beats": [
+          "Audit package generation",
+          "Regulatory reporting",
+          "Evidence collection",
+          "Exception governance",
+          "LGP compliance readiness"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare sovereign construction capabilities against traditional tools.",
+        "beats": [
+          "Legacy weaknesses",
+          "Sovereign advantages",
+          "Performance realism",
+          "Migration guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build construction capabilities that become multi-generational assets.",
+        "beats": [
+          "Module synthesis",
+          "Integration with projects",
+          "Generational handoff",
+          "Atrium construction cockpit",
+          "Final LGP synthesis"
+        ]
+      }
+    ]
+  },
+  "s5_24_regulated_industries": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will understand the strict traceability, quality, and audit demands of regulated sectors.",
+        "beats": [
+          "Legacy compliance burdens",
+          "Traceability gaps",
+          "Audit preparation pain",
+          "Sovereign opportunity",
+          "LGP regulatory risk"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will implement immutable traceability from source to end user.",
+        "beats": [
+          "Traceability registry",
+          "Receipted chain of custody",
+          "Batch and serial governance",
+          "Atrium traceability views",
+          "LGP product integrity"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will govern quality processes with breath-gated release decisions.",
+        "beats": [
+          "Quality rule enforcement",
+          "Release approval workflows",
+          "Non-conformance governance",
+          "Atrium quality surface",
+          "LGP product safety"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will maintain continuous audit readiness with verifiable evidence.",
+        "beats": [
+          "Automated evidence collection",
+          "Audit package generation",
+          "Regulatory mapping",
+          "Atrium audit lens",
+          "LGP audit continuity"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will manage compliance across multiple strict standards and regions.",
+        "beats": [
+          "Standards ingestion",
+          "Jurisdictional rules",
+          "Scoped compliance views",
+          "Atrium multi-standard surface",
+          "LGP global compliance"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will govern day-to-day operations in highly regulated environments.",
+        "beats": [
+          "Process governance",
+          "Exception handling",
+          "Human primacy flows",
+          "Atrium operations views",
+          "LGP operational integrity"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare sovereign capabilities against traditional industry-specific solutions.",
+        "beats": [
+          "Legacy weaknesses",
+          "Sovereign advantages",
+          "Performance realism",
+          "Migration guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build capabilities that turn strict regulation into a multi-generational competitive advantage.",
+        "beats": [
+          "Module synthesis",
+          "Integration with core",
+          "Generational handoff",
+          "Atrium regulated cockpit",
+          "Final LGP synthesis"
+        ]
+      }
+    ]
+  },
+  "s5_25_multi_standard_ingestion": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will understand the complexity of mapping external standards into internal systems.",
+        "beats": [
+          "Legacy ingestion pain",
+          "Mapping drift risks",
+          "Compliance overhead",
+          "Sovereign opportunity",
+          "LGP regulatory risk"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will design a governed process for ingesting and mapping external standards.",
+        "beats": [
+          "Ingestion pipeline governance",
+          "Mapping rule declaration",
+          "Version control",
+          "Atrium ingestion surface",
+          "LGP alignment"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will automate mapping while keeping human oversight on critical alignments.",
+        "beats": [
+          "Rule-based mapping",
+          "Validation against Charter",
+          "Breath-gated approvals",
+          "Atrium mapping views",
+          "LGP accuracy"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will manage standards from multiple jurisdictions and boards.",
+        "beats": [
+          "Jurisdictional rules",
+          "Board-specific mapping",
+          "Conflict resolution",
+          "Atrium multi-board lens",
+          "LGP global compliance"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will generate verifiable evidence for all ingested standards and mappings.",
+        "beats": [
+          "Receipted ingestion events",
+          "Audit package generation",
+          "Change tracking",
+          "Atrium evidence views",
+          "LGP audit readiness"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will maintain alignment as external standards evolve.",
+        "beats": [
+          "Change detection",
+          "Governed update flows",
+          "Drift safeguards",
+          "Atrium maintenance surface",
+          "LGP continuity"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare sovereign ingestion against traditional integration methods.",
+        "beats": [
+          "Legacy weaknesses",
+          "Sovereign advantages",
+          "Performance realism",
+          "Migration guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build ingestion capabilities that strengthen regulatory resilience across generations.",
+        "beats": [
+          "Module synthesis",
+          "Integration with core",
+          "Generational handoff",
+          "Atrium standards cockpit",
+          "Final LGP synthesis"
+        ]
+      }
+    ]
+  },
+  "s5_26_federation_node_gov": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will understand the trust, validation, and control issues in multi-node environments.",
+        "beats": [
+          "Legacy federation pain",
+          "Data sharing risks",
+          "Validation gaps",
+          "Sovereign opportunity",
+          "LGP federation risk"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will establish and govern sovereign node identities within federations.",
+        "beats": [
+          "Node registration governance",
+          "Trust framework",
+          "Identity verification",
+          "Atrium node views",
+          "LGP node continuity"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will validate data and events across nodes with governed reconciliation.",
+        "beats": [
+          "Validation rules",
+          "Receipted cross-node events",
+          "Reconciliation flows",
+          "Atrium validation surface",
+          "LGP truth alignment"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will control what data is shared and how it propagates.",
+        "beats": [
+          "Scoped sharing rules",
+          "Breath-gated propagation",
+          "Receipted sharing events",
+          "Atrium sharing views",
+          "LGP safe sharing"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will maintain compliance across the federation with verifiable evidence.",
+        "beats": [
+          "Federation audit trails",
+          "Regulatory mapping",
+          "Automated reporting",
+          "Exception governance",
+          "LGP federation compliance"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will govern the full lifecycle of federation nodes.",
+        "beats": [
+          "Onboarding governance",
+          "Lifecycle rules",
+          "Offboarding flows",
+          "Atrium node management",
+          "LGP node continuity"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare sovereign federation governance against traditional multi-system models.",
+        "beats": [
+          "Legacy weaknesses",
+          "Sovereign advantages",
+          "Performance realism",
+          "Migration guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build federation capabilities that enable multi-generational sovereign collaboration.",
+        "beats": [
+          "Module synthesis",
+          "Integration with core",
+          "Generational handoff",
+          "Atrium federation cockpit",
+          "Final LGP synthesis"
+        ]
+      }
+    ]
+  },
+  "s5_27_generational_continuity": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will understand why most business systems fail to support true multi-generational handoff.",
+        "beats": [
+          "Legacy succession pain",
+          "Knowledge and data loss",
+          "Compliance risks",
+          "Sovereign opportunity",
+          "LGP handoff risk"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will use private series to capture and hand down institutional knowledge.",
+        "beats": [
+          "Private series architecture",
+          "Knowledge capture governance",
+          "Versioned continuity",
+          "Atrium private views",
+          "LGP knowledge preservation"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will design and govern structured handoff rituals between generations.",
+        "beats": [
+          "Ritual design framework",
+          "Breath-gated handoff approvals",
+          "Knowledge transfer flows",
+          "Atrium handoff surface",
+          "LGP ritual integrity"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will create complete, provable business packages for successors.",
+        "beats": [
+          "Package assembly",
+          "Receipted evidence bundles",
+          "Audit-ready exports",
+          "Atrium package tools",
+          "LGP successor readiness"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will govern family office and multi-generational business structures.",
+        "beats": [
+          "Family compact governance",
+          "Multi-generational rules",
+          "Trust and entity structures",
+          "Atrium family views",
+          "LGP family alignment"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will maintain continuity as the business evolves through generations.",
+        "beats": [
+          "Evolution governance",
+          "Drift safeguards",
+          "Knowledge refresh rituals",
+          "Atrium continuity surface",
+          "LGP adaptive continuity"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare sovereign continuity capabilities against traditional succession planning.",
+        "beats": [
+          "Legacy weaknesses",
+          "Sovereign advantages",
+          "Performance realism",
+          "Migration guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build continuity that becomes the foundation of multi-generational prosperity.",
+        "beats": [
+          "Full module synthesis",
+          "Integration with core",
+          "Final handoff rituals",
+          "Atrium continuity cockpit",
+          "Strong LGP close"
+        ]
+      }
+    ]
+  },
+  "s5_28_private_series_templates": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will see why explicit constitutions are essential for long-term sovereign enterprises.",
+        "beats": [
+          "Implicit vs explicit governance",
+          "Family and enterprise risks",
+          "Constitution opportunity",
+          "Private series role",
+          "LGP foundation"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will use private series as the container for constitutional documents.",
+        "beats": [
+          "Series structure",
+          "Template design principles",
+          "Version governance",
+          "Atrium private views",
+          "LGP knowledge container"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will author and govern family-specific constitutional templates.",
+        "beats": [
+          "Family compact design",
+          "Inheritance and values rules",
+          "Governance rituals",
+          "Atrium family templates",
+          "LGP family alignment"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will create enterprise-level constitutional templates.",
+        "beats": [
+          "Charter and values",
+          "Decision rights",
+          "Succession rules",
+          "Atrium enterprise templates",
+          "LGP business continuity"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will safely evolve constitutions while preserving core truth.",
+        "beats": [
+          "Amendment governance",
+          "Breath-gated changes",
+          "Drift safeguards",
+          "Atrium template surface",
+          "LGP adaptive continuity"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will share templates safely within family and federation contexts.",
+        "beats": [
+          "Scoped sharing rules",
+          "Receipted distribution",
+          "Version synchronization",
+          "Atrium sharing views",
+          "LGP safe propagation"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare sovereign templates against traditional planning documents.",
+        "beats": [
+          "Legacy weaknesses",
+          "Sovereign advantages",
+          "Versioning realism",
+          "Adoption guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will see private series templates as the living covenant for multi-generational prosperity.",
+        "beats": [
+          "Full synthesis",
+          "Integration with continuity",
+          "Final handoff rituals",
+          "Atrium template cockpit",
+          "Strong LGP close"
+        ]
+      }
+    ]
+  },
+  "s5_29_exception_gov_workflows": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will understand why exception handling becomes the biggest governance risk at enterprise scale.",
+        "beats": [
+          "Legacy exception overload",
+          "Compliance escape risks",
+          "Decision fatigue",
+          "Sovereign opportunity",
+          "LGP exception risk"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will design scalable human gate patterns for exceptions.",
+        "beats": [
+          "Gate design principles",
+          "Loudest-object rule",
+          "Breath-gate mechanics",
+          "Atrium gate surface",
+          "LGP human primacy"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will detect and route exceptions with governed intelligence.",
+        "beats": [
+          "Automated detection",
+          "Risk-based routing",
+          "Escalation rules",
+          "Atrium exception inbox",
+          "LGP intelligent routing"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will resolve exceptions under constitutional rules and human oversight.",
+        "beats": [
+          "Resolution proposal flow",
+          "Breath-gated approvals",
+          "Audit trail generation",
+          "Atrium resolution views",
+          "LGP resolution integrity"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will handle high-volume exceptions without losing governance.",
+        "beats": [
+          "Threshold and batching",
+          "Delegation rules",
+          "Automation guardrails",
+          "Atrium scale surface",
+          "LGP operational resilience"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will turn exceptions into governed learning and prevention.",
+        "beats": [
+          "Exception analytics governance",
+          "Root cause workflows",
+          "Prevention rule updates",
+          "Atrium analytics lens",
+          "LGP continuous improvement"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare sovereign exception patterns against traditional workflow tools.",
+        "beats": [
+          "Legacy weaknesses",
+          "Sovereign advantages",
+          "Scale realism",
+          "Migration guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build exception capabilities that become a multi-generational governance asset.",
+        "beats": [
+          "Full module synthesis",
+          "Integration with core",
+          "Generational handoff",
+          "Atrium governance cockpit",
+          "Final LGP synthesis"
+        ]
+      }
+    ]
+  },
+  "s5_30_social_external_distribution": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will understand the risks of uncontrolled external content sharing.",
+        "beats": [
+          "Legacy sharing risks",
+          "Provenance loss",
+          "Compliance exposure",
+          "Sovereign opportunity",
+          "LGP distribution risk"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will distribute content with immutable provenance guarantees.",
+        "beats": [
+          "Provenance architecture",
+          "Receipted distribution events",
+          "Version tracking",
+          "Atrium distribution surface",
+          "LGP truth preservation"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will manage social and external channels under constitutional rules.",
+        "beats": [
+          "Channel governance",
+          "Breath-gated publishing",
+          "Audience scoping",
+          "Atrium channel views",
+          "LGP safe outreach"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will govern incoming feedback and interactions with provenance.",
+        "beats": [
+          "Feedback ingestion",
+          "Response governance",
+          "Interaction tracking",
+          "Atrium interaction surface",
+          "LGP relationship continuity"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will control content propagation across multiple external channels.",
+        "beats": [
+          "Multi-channel rules",
+          "Scoped distribution",
+          "Receipted propagation",
+          "Atrium multi-channel lens",
+          "LGP controlled reach"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will maintain compliance and monitoring for all external distributions.",
+        "beats": [
+          "Regulatory mapping",
+          "Automated monitoring",
+          "Audit trails",
+          "Exception governance",
+          "LGP compliance readiness"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare sovereign distribution against traditional social and content tools.",
+        "beats": [
+          "Legacy weaknesses",
+          "Sovereign advantages",
+          "Scale realism",
+          "Migration guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build distribution capabilities that carry the family or enterprise voice across generations.",
+        "beats": [
+          "Module synthesis",
+          "Integration with core",
+          "Generational handoff",
+          "Atrium distribution cockpit",
+          "Final LGP synthesis"
+        ]
+      }
+    ]
+  },
+  "s5_31_federation_marketplace": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will see how a governed marketplace accelerates sovereign adoption without losing control.",
+        "beats": [
+          "Marketplace vision",
+          "Sharing vs control tension",
+          "Verified patterns value",
+          "Sovereign opportunity",
+          "LGP collaboration"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will publish and consume verified, receipted patterns and blueprints.",
+        "beats": [
+          "Blueprint structure",
+          "Verification governance",
+          "Receipted publication",
+          "Atrium marketplace surface",
+          "LGP pattern integrity"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will share and consume patterns under constitutional rules.",
+        "beats": [
+          "Sharing approval workflows",
+          "Consumption governance",
+          "Fork and adaptation rules",
+          "Atrium marketplace views",
+          "LGP safe reuse"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will use reputation and quality signals to guide pattern selection.",
+        "beats": [
+          "Reputation system governance",
+          "Quality scoring",
+          "Review and feedback",
+          "Atrium reputation lens",
+          "LGP trust building"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will govern monetization of shared patterns within the federation.",
+        "beats": [
+          "Incentive rule governance",
+          "Payment and licensing",
+          "Breath-gated transactions",
+          "Atrium marketplace economics",
+          "LGP aligned incentives"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will maintain compliance across the shared marketplace.",
+        "beats": [
+          "Regulatory mapping",
+          "Audit trails",
+          "Intellectual property rules",
+          "Exception governance",
+          "LGP compliance readiness"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare sovereign marketplace capabilities against traditional sharing platforms.",
+        "beats": [
+          "Legacy weaknesses",
+          "Sovereign advantages",
+          "Scale realism",
+          "Adoption guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build a marketplace that becomes a multi-generational shared resource.",
+        "beats": [
+          "Full module synthesis",
+          "Integration with federation",
+          "Generational handoff",
+          "Atrium marketplace cockpit",
+          "Final LGP synthesis"
+        ]
+      }
+    ]
+  },
+  "s5_32_erp_operations_console": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will see why operators struggle with fragmented tools and surfaces.",
+        "beats": [
+          "Legacy console fragmentation",
+          "Context switching pain",
+          "Decision latency",
+          "Sovereign opportunity",
+          "LGP operational risk"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will operate the entire sovereign ERP from one unified, real-time console.",
+        "beats": [
+          "Atrium architecture",
+          "Content-agnostic rendering",
+          "Real-time updates",
+          "Breath-gate integration",
+          "LGP unified view"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will manage daily operations through a governed, prioritized inbox.",
+        "beats": [
+          "Intelligent inbox design",
+          "Priority and risk gating",
+          "Breath-gate workflows",
+          "Atrium daily surface",
+          "LGP operational flow"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will navigate seamlessly across all ERP modules with full context.",
+        "beats": [
+          "Fractal navigation",
+          "Cross-module views",
+          "Context preservation",
+          "Atrium navigation patterns",
+          "LGP operational awareness"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will receive governed support for exceptions and high-stakes decisions.",
+        "beats": [
+          "Intelligent exception surfacing",
+          "Proposal generation",
+          "Breath-gate decision aid",
+          "Atrium decision surface",
+          "LGP decision quality"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will monitor overall ERP health with governed, real-time analytics.",
+        "beats": [
+          "System health dashboard",
+          "Performance governance",
+          "Alert and drift monitoring",
+          "Atrium health lens",
+          "LGP operational resilience"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare the sovereign operations console against traditional ERP UIs.",
+        "beats": [
+          "Legacy UI weaknesses",
+          "Sovereign advantages",
+          "Usability and scale realism",
+          "Adoption guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build an operations console that becomes the enduring command center for future generations.",
+        "beats": [
+          "Full synthesis",
+          "Integration with all modules",
+          "Generational handoff",
+          "Atrium as family OS",
+          "Final LGP synthesis"
+        ]
+      }
+    ]
+  },
+  "vol_01_receipted_inter_node_messaging": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will understand the trust, security, and provenance problems in traditional multi-node messaging.",
+        "beats": [
+          "Legacy messaging risks",
+          "Data leakage concerns",
+          "Lack of verifiable proof",
+          "Sovereign opportunity",
+          "LGP collaboration risk"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will design every message as a signed, immutable receipt with full provenance.",
+        "beats": [
+          "Receipt structure for messages",
+          "Cryptographic guarantees",
+          "End-to-end verification",
+          "Atrium message views",
+          "LGP message integrity"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will control message routing and delivery under constitutional rules.",
+        "beats": [
+          "Routing governance",
+          "Breath-gated delivery",
+          "Scoped recipients",
+          "Atrium routing surface",
+          "LGP safe propagation"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will maintain coherent, verifiable conversation threads across nodes.",
+        "beats": [
+          "Thread linking",
+          "Context preservation",
+          "Reply governance",
+          "Atrium conversation views",
+          "LGP collaborative continuity"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will maintain full auditability for all inter-node communications.",
+        "beats": [
+          "Automated audit trails",
+          "Regulatory mapping",
+          "Evidence bundles",
+          "Exception governance",
+          "LGP compliance readiness"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will share messages with precise, governed visibility controls.",
+        "beats": [
+          "Scoped visibility rules",
+          "Privacy-preserving proofs",
+          "Opt-in sharing",
+          "Atrium privacy lens",
+          "LGP relationship safety"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare sovereign receipted messaging against traditional tools.",
+        "beats": [
+          "Legacy weaknesses",
+          "Sovereign advantages",
+          "Scale realism",
+          "Migration guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build messaging that becomes a foundation of long-term sovereign collaboration.",
+        "beats": [
+          "Module synthesis",
+          "Integration with federation",
+          "Generational handoff",
+          "Atrium messaging cockpit",
+          "Final LGP synthesis"
+        ]
+      }
+    ]
+  },
+  "vol_02_sovereign_collaboration": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will see how to collaborate across sovereign nodes without centralization or loss of control.",
+        "beats": [
+          "Traditional collaboration traps",
+          "Sovereignty vs sharing tension",
+          "The resonance opportunity",
+          "LGP collaboration risk"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will create shared workspaces that respect each node's sovereignty.",
+        "beats": [
+          "Workspace governance",
+          "Scoped visibility",
+          "Breath-gated edits",
+          "Atrium workspace surface",
+          "LGP safe collaboration"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will run joint decisions with clear human primacy for each sovereign.",
+        "beats": [
+          "Joint proposal flows",
+          "Multi-party breath-gates",
+          "Consensus without central control",
+          "Atrium decision views",
+          "LGP aligned decisions"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will share knowledge and documents with verifiable provenance.",
+        "beats": [
+          "Receipted document sharing",
+          "Version governance",
+          "Scoped access",
+          "Atrium knowledge lens",
+          "LGP knowledge continuity"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will run joint projects while preserving individual sovereignty.",
+        "beats": [
+          "Joint project governance",
+          "Resource contribution rules",
+          "Progress visibility",
+          "Atrium project surface",
+          "LGP joint success"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will resolve conflicts across sovereign nodes with dignity and proof.",
+        "beats": [
+          "Conflict detection",
+          "Mediation governance",
+          "Receipted resolutions",
+          "Atrium resolution tools",
+          "LGP relationship preservation"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare sovereign collaboration against centralized tools like Slack, Teams, or legacy platforms.",
+        "beats": [
+          "Legacy weaknesses",
+          "Sovereign advantages",
+          "Scale realism",
+          "Adoption guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build collaboration that strengthens alliances across generations.",
+        "beats": [
+          "Module synthesis",
+          "Integration with federation",
+          "Generational handoff",
+          "Atrium collaboration cockpit",
+          "Final LGP synthesis"
+        ]
+      }
+    ]
+  },
+  "vol_03_distributed_sovereign_compute": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will understand the control, trust, and compliance issues in distributed computing.",
+        "beats": [
+          "Legacy distributed pain",
+          "Centralization risks",
+          "Verification gaps",
+          "Sovereign opportunity",
+          "LGP compute risk"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will design compute that respects each node's sovereignty.",
+        "beats": [
+          "Node compute boundaries",
+          "Opt-in participation",
+          "Resource contribution rules",
+          "Atrium compute views",
+          "LGP node autonomy"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will distribute compute workloads with full governance and provenance.",
+        "beats": [
+          "Workload proposal flows",
+          "Breath-gated scheduling",
+          "Receipted execution",
+          "Atrium workload surface",
+          "LGP safe distribution"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will verify compute results across nodes with cryptographic proof.",
+        "beats": [
+          "Result receipting",
+          "Proof generation",
+          "Independent verification",
+          "Atrium result views",
+          "LGP compute integrity"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will govern resource sharing with aligned incentives.",
+        "beats": [
+          "Resource contribution rules",
+          "Incentive governance",
+          "Usage tracking",
+          "Atrium resource lens",
+          "LGP fair participation"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will maintain compliance for compute workloads across nodes.",
+        "beats": [
+          "Regulatory mapping",
+          "Audit trails",
+          "Data locality rules",
+          "Exception governance",
+          "LGP compliance readiness"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare sovereign distributed compute against traditional grid/cloud models.",
+        "beats": [
+          "Legacy weaknesses",
+          "Sovereign advantages",
+          "Scale realism",
+          "Migration guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build distributed compute that becomes a multi-generational sovereign strength.",
+        "beats": [
+          "Module synthesis",
+          "Integration with federation",
+          "Generational handoff",
+          "Atrium compute cockpit",
+          "Final LGP synthesis"
+        ]
+      }
+    ]
+  },
+  "vol_04_resonance_coordination": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will see the difference between resonance and traditional central coordination.",
+        "beats": [
+          "Central control risks",
+          "Resonance principles",
+          "Sovereignty preservation",
+          "LGP coordination opportunity"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will design signals and protocols that enable natural alignment.",
+        "beats": [
+          "Signal design",
+          "Protocol governance",
+          "Opt-in participation",
+          "Atrium resonance views",
+          "LGP natural alignment"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will facilitate alignment across sovereign nodes without coercion.",
+        "beats": [
+          "Alignment proposal flows",
+          "Breath-gated consensus",
+          "Feedback loops",
+          "Atrium alignment surface",
+          "LGP voluntary coordination"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will prevent and resolve misalignment with dignity and proof.",
+        "beats": [
+          "Early warning signals",
+          "Mediation patterns",
+          "Receipted resolutions",
+          "Atrium resolution tools",
+          "LGP relationship preservation"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will monitor coordination health without invasive surveillance.",
+        "beats": [
+          "Resonance metrics",
+          "Health indicators",
+          "Privacy-preserving measurement",
+          "Atrium resonance dashboard",
+          "LGP network vitality"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will scale coordination across growing numbers of sovereign nodes.",
+        "beats": [
+          "Scaling patterns",
+          "Threshold governance",
+          "Hierarchical resonance",
+          "Atrium scale surface",
+          "LGP network resilience"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare resonance coordination against centralized and blockchain models.",
+        "beats": [
+          "Centralized weaknesses",
+          "Blockchain limitations",
+          "Resonance advantages",
+          "Adoption guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build coordination that fosters lasting harmony across generations.",
+        "beats": [
+          "Module synthesis",
+          "Integration with federation",
+          "Generational handoff",
+          "Atrium resonance cockpit",
+          "Final LGP synthesis"
+        ]
+      }
+    ]
+  },
+  "vol_05_inter_node_trust_boundaries_handoff": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will understand the risks of poor trust boundaries in federated environments.",
+        "beats": [
+          "Boundary violation risks",
+          "Handoff failures",
+          "Compliance exposure",
+          "Sovereign opportunity",
+          "LGP trust risk"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will define clear, enforceable trust boundaries between nodes.",
+        "beats": [
+          "Boundary declaration",
+          "Rule governance",
+          "Scoped interactions",
+          "Atrium boundary views",
+          "LGP sovereignty preservation"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will execute clean, receipted handoffs between nodes.",
+        "beats": [
+          "Handoff proposal flow",
+          "Breath-gated transfers",
+          "Receipted handoff events",
+          "Atrium handoff surface",
+          "LGP safe transition"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will use governed reputation to inform trust boundaries and handoffs.",
+        "beats": [
+          "Reputation framework",
+          "Scoring governance",
+          "History-based trust",
+          "Atrium reputation lens",
+          "LGP relationship building"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will monitor and enforce trust boundaries in real time.",
+        "beats": [
+          "Monitoring rules",
+          "Violation detection",
+          "Automated response",
+          "Atrium boundary monitoring",
+          "LGP boundary integrity"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will manage complex trust relationships across multiple nodes.",
+        "beats": [
+          "Relationship mapping",
+          "Tiered trust levels",
+          "Dynamic adjustments",
+          "Atrium relationship views",
+          "LGP network health"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare sovereign trust boundaries against traditional security models.",
+        "beats": [
+          "Legacy weaknesses",
+          "Sovereign advantages",
+          "Scale realism",
+          "Migration guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build trust boundaries that protect sovereignty across generations.",
+        "beats": [
+          "Module synthesis",
+          "Integration with federation",
+          "Generational handoff",
+          "Atrium trust cockpit",
+          "Final LGP synthesis"
+        ]
+      }
+    ]
+  },
+  "vol_01_zero_trust_node_architecture": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will clearly see why traditional perimeter-based security fails in sovereign and federated environments.",
+        "beats": [
+          "Perimeter model failures",
+          "Insider and supply chain risks",
+          "Compliance gaps",
+          "Zero-trust opportunity",
+          "LGP security risk"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will design node architecture that assumes breach and verifies every interaction.",
+        "beats": [
+          "Never trust, always verify",
+          "Least privilege enforcement",
+          "Human primacy integration",
+          "Atrium visibility layer",
+          "LGP sovereignty preservation"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will implement strong, governed identity and access controls for each sovereign node.",
+        "beats": [
+          "Node identity governance",
+          "Multi-factor and biometric options",
+          "Breath-gated access",
+          "Atrium identity surface",
+          "LGP access continuity"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will isolate workloads and data flows within each node.",
+        "beats": [
+          "Micro-segmentation rules",
+          "Workload isolation",
+          "East-west traffic governance",
+          "Atrium segmentation views",
+          "LGP containment"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will maintain ongoing verification of every node interaction and state.",
+        "beats": [
+          "Real-time verification",
+          "Behavioral baselining",
+          "Anomaly detection",
+          "Atrium monitoring lens",
+          "LGP continuous trust"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will ensure the entire node meets regulatory and internal standards.",
+        "beats": [
+          "Compliance mapping",
+          "Automated audit trails",
+          "Evidence generation",
+          "Exception governance",
+          "LGP audit readiness"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare sovereign zero-trust node design against legacy perimeter and cloud models.",
+        "beats": [
+          "Legacy weaknesses",
+          "Sovereign advantages",
+          "Performance realism",
+          "Migration guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build node architecture that protects sovereignty across generations.",
+        "beats": [
+          "Module synthesis",
+          "Integration with federation",
+          "Generational handoff",
+          "Atrium node cockpit",
+          "Final LGP synthesis"
+        ]
+      }
+    ]
+  },
+  "vol_02_shields_protective_layers": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will see why layered shields are essential for true sovereign security.",
+        "beats": [
+          "Single layer failures",
+          "Modern threat landscape",
+          "Defense-in-depth opportunity",
+          "LGP security risk"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will implement the foundational identity and access protection layer.",
+        "beats": [
+          "Strong identity controls",
+          "Access policy enforcement",
+          "Breath-gate integration",
+          "Atrium identity shield",
+          "LGP access protection"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will protect data at rest and in motion with sovereign controls.",
+        "beats": [
+          "Encryption governance",
+          "Data classification",
+          "Storage isolation",
+          "Atrium data shield views",
+          "LGP data integrity"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will secure all network and inter-node communications.",
+        "beats": [
+          "Network segmentation",
+          "Encrypted channels",
+          "Traffic governance",
+          "Atrium network shield",
+          "LGP communication safety"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will protect applications and compute workloads running on nodes.",
+        "beats": [
+          "Application isolation",
+          "Runtime governance",
+          "Vulnerability management",
+          "Atrium workload shield",
+          "LGP compute protection"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will integrate human primacy and constitutional rules as the final protective layer.",
+        "beats": [
+          "Human gate enforcement",
+          "Policy shields",
+          "Oversight mechanisms",
+          "Atrium governance shield",
+          "LGP human protection"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare multi-layer sovereign shields against legacy security approaches.",
+        "beats": [
+          "Legacy weaknesses",
+          "Sovereign advantages",
+          "Performance realism",
+          "Implementation guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build protective layers that safeguard sovereignty across generations.",
+        "beats": [
+          "Full layer synthesis",
+          "Integration with zero-trust",
+          "Generational handoff",
+          "Atrium shields cockpit",
+          "Final LGP synthesis"
+        ]
+      }
+    ]
+  },
+  "vol_03_sovereign_data_storage": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will understand the risks of relying on third-party or mutable storage.",
+        "beats": [
+          "Cloud provider risks",
+          "Data lock-in issues",
+          "Compliance exposure",
+          "Sovereign opportunity",
+          "LGP data risk"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will design storage that treats every write as a verifiable receipt.",
+        "beats": [
+          "Receipted write model",
+          "Immutable append patterns",
+          "Merkle integrity",
+          "Atrium storage views",
+          "LGP data truth"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will control who can read or modify data with sovereign rules.",
+        "beats": [
+          "Access policy governance",
+          "Encryption key management",
+          "Breath-gated access",
+          "Atrium access shield",
+          "LGP data protection"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will manage storage across sovereign nodes with controlled sharing.",
+        "beats": [
+          "Federated storage patterns",
+          "Scoped replication",
+          "Consistency governance",
+          "Atrium federation views",
+          "LGP distributed integrity"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will ensure data survivability with governed backup and recovery.",
+        "beats": [
+          "Governed backup rules",
+          "Verified recovery testing",
+          "Disaster scenarios",
+          "Atrium recovery surface",
+          "LGP data resilience"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will maintain full auditability and regulatory compliance for all stored data.",
+        "beats": [
+          "Audit trail generation",
+          "Regulatory mapping",
+          "Evidence packages",
+          "Exception governance",
+          "LGP compliance readiness"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare sovereign storage against public cloud and traditional solutions.",
+        "beats": [
+          "Cloud and legacy weaknesses",
+          "Sovereign decisive wins",
+          "Cost and performance realism",
+          "Migration guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build storage that becomes a protected, inheritable family and business asset.",
+        "beats": [
+          "Module synthesis",
+          "Integration with zero-trust",
+          "Generational handoff",
+          "Atrium storage cockpit",
+          "Final LGP synthesis"
+        ]
+      }
+    ]
+  },
+  "vol_04_verified_data_flows": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will see the risks and fragmentation in uncontrolled data movement across nodes.",
+        "beats": [
+          "Legacy flow risks",
+          "Provenance loss",
+          "Compliance gaps",
+          "Sovereign opportunity",
+          "LGP data risk"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will make every data flow a signed, verifiable receipted event.",
+        "beats": [
+          "Flow receipt structure",
+          "End-to-end proof",
+          "Validation checkpoints",
+          "Atrium flow views",
+          "LGP truth preservation"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will define and enforce policies for what data can flow where.",
+        "beats": [
+          "Policy declaration",
+          "Breath-gated flows",
+          "Scoped rules",
+          "Atrium policy surface",
+          "LGP safe movement"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will monitor all cross-node data flows with governed visibility.",
+        "beats": [
+          "Real-time tracking",
+          "Anomaly detection",
+          "Alert governance",
+          "Atrium monitoring lens",
+          "LGP operational awareness"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will detect and resolve conflicts in distributed data flows.",
+        "beats": [
+          "Conflict detection",
+          "Reconciliation governance",
+          "Human witness flows",
+          "Atrium reconciliation tools",
+          "LGP data alignment"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will maintain full auditability for all data movements.",
+        "beats": [
+          "Audit trail generation",
+          "Regulatory mapping",
+          "Evidence bundles",
+          "Exception governance",
+          "LGP compliance readiness"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare sovereign verified flows against traditional integration patterns.",
+        "beats": [
+          "Legacy weaknesses",
+          "Sovereign advantages",
+          "Scale realism",
+          "Migration guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build data flows that maintain trust and sovereignty across generations.",
+        "beats": [
+          "Module synthesis",
+          "Integration with federation",
+          "Generational handoff",
+          "Atrium flow cockpit",
+          "Final LGP synthesis"
+        ]
+      }
+    ]
+  },
+  "vol_05_private_shared_storage_governance": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will understand the tension between privacy, collaboration, and compliance in storage.",
+        "beats": [
+          "Private data needs",
+          "Shared collaboration value",
+          "Compliance complexity",
+          "Sovereign opportunity",
+          "LGP data tension"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will classify data into private, shared, and hybrid categories with governance.",
+        "beats": [
+          "Classification rules",
+          "Breath-gated decisions",
+          "Policy enforcement",
+          "Atrium classification surface",
+          "LGP data alignment"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will protect strictly private data with strong sovereign controls.",
+        "beats": [
+          "Private storage isolation",
+          "Encryption and access rules",
+          "No-leak guarantees",
+          "Atrium private views",
+          "LGP privacy protection"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will govern shared storage with clear boundaries and provenance.",
+        "beats": [
+          "Shared scope rules",
+          "Receipted sharing",
+          "Access revocation",
+          "Atrium shared lens",
+          "LGP safe collaboration"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will manage hybrid data that is partially private and partially shared.",
+        "beats": [
+          "Hybrid classification",
+          "Scoped replication",
+          "Consistency governance",
+          "Atrium hybrid views",
+          "LGP balanced control"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will maintain compliance across private, shared, and hybrid storage.",
+        "beats": [
+          "Regulatory mapping",
+          "Audit trails",
+          "Evidence generation",
+          "Exception governance",
+          "LGP compliance readiness"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare sovereign governance models against traditional approaches.",
+        "beats": [
+          "Legacy weaknesses",
+          "Sovereign advantages",
+          "Performance realism",
+          "Migration guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build a balanced storage governance model that serves multi-generational needs.",
+        "beats": [
+          "Full synthesis",
+          "Integration with shields",
+          "Generational handoff",
+          "Atrium storage governance cockpit",
+          "Final LGP synthesis"
+        ]
+      }
+    ]
+  },
+  "vol_06_resilience_recovery_shields": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will understand the unique resilience needs of distributed sovereign nodes.",
+        "beats": [
+          "Single point failures",
+          "Federation-wide risks",
+          "Recovery complexity",
+          "Sovereign opportunity",
+          "LGP resilience risk"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will design protective resilience layers that preserve sovereignty.",
+        "beats": [
+          "Defense-in-depth resilience",
+          "Node-level recovery",
+          "Federation coordination",
+          "Atrium resilience views",
+          "LGP continuity focus"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will implement governed, verifiable backup and snapshot processes.",
+        "beats": [
+          "Backup governance",
+          "Snapshot receipting",
+          "Frequency and retention rules",
+          "Atrium backup surface",
+          "LGP data protection"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will execute recovery and failover under human primacy and constitutional rules.",
+        "beats": [
+          "Failover proposal flow",
+          "Breath-gated recovery",
+          "Testing governance",
+          "Atrium recovery tools",
+          "LGP safe restoration"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will coordinate resilience across federated sovereign nodes.",
+        "beats": [
+          "Federation recovery patterns",
+          "Shared resilience resources",
+          "Scoped failover",
+          "Atrium federation resilience",
+          "LGP network strength"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will maintain compliance through regular, governed resilience testing.",
+        "beats": [
+          "Test governance",
+          "Automated validation",
+          "Audit trail generation",
+          "Exception handling",
+          "LGP compliance readiness"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare sovereign resilience against traditional backup and DR solutions.",
+        "beats": [
+          "Legacy weaknesses",
+          "Sovereign advantages",
+          "Scale realism",
+          "Migration guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build resilience shields that protect the enterprise and family across generations.",
+        "beats": [
+          "Full module synthesis",
+          "Integration with zero-trust",
+          "Generational handoff",
+          "Atrium resilience cockpit",
+          "Final LGP synthesis"
+        ]
+      }
+    ]
+  },
+  "s8_01_sovereign_lens": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will see why most dashboards cannot be trusted as single sources of truth.",
+        "beats": [
+          "Traditional UI drift issues",
+          "Data vs display disconnect",
+          "Compliance risks",
+          "Sovereign Lens opportunity",
+          "LGP visibility risk"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will build a renderer that works for any data shape without custom code.",
+        "beats": [
+          "Thin-waist architecture",
+          "Dynamic schema handling",
+          "Atrium lens design",
+          "Honest rendering guarantees",
+          "LGP flexibility"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will make every displayed view provably faithful to the underlying book and receipts.",
+        "beats": [
+          "Real-time validation",
+          "Drift badges",
+          "Page-level citations",
+          "Atrium honest lens",
+          "LGP truth in UI"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will achieve low-latency, governed real-time updates across all surfaces.",
+        "beats": [
+          "Live subscription model",
+          "Breath-gate integration",
+          "Performance governance",
+          "Atrium real-time surface",
+          "LGP operational awareness"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will render different views for different mandates while preserving truth.",
+        "beats": [
+          "Mandate-aware lenses",
+          "Scoped data rendering",
+          "Clean separation",
+          "Atrium multi-mandate views",
+          "LGP safe visibility"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will ensure all rendered interfaces are audit-ready and compliant.",
+        "beats": [
+          "Render audit trails",
+          "Regulatory mapping",
+          "Evidence generation",
+          "Exception governance",
+          "LGP compliance readiness"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare sovereign content-agnostic rendering against legacy UI approaches.",
+        "beats": [
+          "Legacy weaknesses",
+          "Sovereign advantages",
+          "Performance realism",
+          "Migration guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build rendering that becomes an intuitive, inheritable foundation for future generations.",
+        "beats": [
+          "Full module synthesis",
+          "Integration with Atrium",
+          "Generational handoff",
+          "Atrium Lens cockpit",
+          "Final LGP synthesis"
+        ]
+      }
+    ]
+  },
+  "s8_02_breath_gated_interfaces": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will see the risks of interfaces that remove human judgment.",
+        "beats": [
+          "Auto-approve dangers",
+          "Loss of sovereignty",
+          "Compliance failures",
+          "Breath-gate opportunity",
+          "LGP decision risk"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will design interfaces where every material action requires explicit human witness.",
+        "beats": [
+          "Loudest-object principle",
+          "Proposal vs execution",
+          "Inline Approve/Deny",
+          "Atrium gate patterns",
+          "LGP human primacy"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will implement governed proposal flows for all high-impact actions.",
+        "beats": [
+          "Detailed proposal cards",
+          "Context-rich review",
+          "Breath-gate mechanics",
+          "Atrium inbox design",
+          "LGP decision quality"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will embed human approval directly in operational surfaces.",
+        "beats": [
+          "Contextual gates",
+          "One-click dispose",
+          "Multi-mandate support",
+          "Atrium inline patterns",
+          "LGP operational flow"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will apply stronger gates for high-risk or exceptional actions.",
+        "beats": [
+          "Risk-based gating",
+          "Multi-party approval",
+          "Escalation flows",
+          "Atrium exception surface",
+          "LGP risk management"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will ensure all human gates are fully auditable and compliant.",
+        "beats": [
+          "Gate audit trails",
+          "Regulatory mapping",
+          "Evidence generation",
+          "Exception governance",
+          "LGP compliance readiness"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare sovereign breath-gated interfaces against conventional dashboards.",
+        "beats": [
+          "Legacy weaknesses",
+          "Sovereign advantages",
+          "Usability realism",
+          "Adoption guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build interfaces that preserve human primacy across generations.",
+        "beats": [
+          "Full module synthesis",
+          "Integration with Atrium",
+          "Generational handoff",
+          "Atrium gate cockpit",
+          "Final LGP synthesis"
+        ]
+      }
+    ]
+  },
+  "s8_03_aesthetic_resonance": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will understand how aesthetics directly impact attention, trust, and decision quality.",
+        "beats": [
+          "Cognitive load problems",
+          "Ugly UI fatigue",
+          "Resonance opportunity",
+          "LGP attention risk"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will apply design principles that reduce load while increasing clarity and joy.",
+        "beats": [
+          "Fractal self-similarity",
+          "Calm color and typography",
+          "Signal-to-noise optimization",
+          "Atrium resonance patterns",
+          "LGP functional beauty"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will create interfaces that feel consistent at every level of depth.",
+        "beats": [
+          "Self-similar node views",
+          "Consistent interaction patterns",
+          "Scalable detail",
+          "Atrium fractal design",
+          "LGP intuitive navigation"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will implement visual systems that support long-term focus and trust.",
+        "beats": [
+          "Calm palette guidelines",
+          "Typography governance",
+          "Whitespace and hierarchy",
+          "Atrium visual language",
+          "LGP sustained attention"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will use subtle motion and feedback to guide attention without distraction.",
+        "beats": [
+          "Purposeful micro-animations",
+          "Breath-gate feedback",
+          "Progress indicators",
+          "Atrium motion patterns",
+          "LGP joyful interaction"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will maintain aesthetic standards through governance without stifling creativity.",
+        "beats": [
+          "Design system governance",
+          "Theme and variant control",
+          "Breath-gated changes",
+          "Atrium aesthetic surface",
+          "LGP visual continuity"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare resonant design against typical enterprise dashboards.",
+        "beats": [
+          "Traditional weaknesses",
+          "Sovereign advantages",
+          "Usability realism",
+          "Adoption guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build interfaces that future generations actually enjoy using.",
+        "beats": [
+          "Full module synthesis",
+          "Integration with Atrium",
+          "Generational handoff",
+          "Atrium resonance cockpit",
+          "Final LGP synthesis"
+        ]
+      }
+    ]
+  },
+  "s8_04_atrium_living_os": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will see why operators struggle with disconnected tools and surfaces.",
+        "beats": [
+          "Tool sprawl pain",
+          "Context loss",
+          "Decision latency",
+          "Atrium opportunity",
+          "LGP operational risk"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will understand the thin-waist, content-agnostic foundation of Atrium.",
+        "beats": [
+          "api.js seam",
+          "Renderer flexibility",
+          "Real-time capabilities",
+          "Atrium core design",
+          "LGP unified truth"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will manage daily work through a prioritized, governed inbox.",
+        "beats": [
+          "Intelligent prioritization",
+          "Breath-gate integration",
+          "Context-rich cards",
+          "Atrium daily cockpit",
+          "LGP workflow efficiency"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will navigate seamlessly across all sovereign modules and nodes.",
+        "beats": [
+          "Fractal navigation",
+          "Federation strip",
+          "Multi-mandate support",
+          "Atrium unified views",
+          "LGP operational awareness"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will maintain a running dashboard focused on Lasting Generational Prosperity.",
+        "beats": [
+          "LGP metrics governance",
+          "Strategic Kanban",
+          "Trend visualization",
+          "Atrium LGP surface",
+          "LGP decision support"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will access compliance and audit tools directly from the cockpit.",
+        "beats": [
+          "Audit package generation",
+          "Real-time compliance views",
+          "Evidence browser",
+          "Atrium audit lens",
+          "LGP compliance readiness"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare the sovereign living OS against conventional enterprise dashboards.",
+        "beats": [
+          "Legacy weaknesses",
+          "Sovereign advantages",
+          "Usability and scale realism",
+          "Adoption guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build Atrium as the enduring command center for sovereign operations.",
+        "beats": [
+          "Full module synthesis",
+          "Integration with all layers",
+          "Generational handoff",
+          "Atrium as family OS",
+          "Final LGP synthesis"
+        ]
+      }
+    ]
+  },
+  "s8_05_generational_ux": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will see why typical business UIs become unusable for the next generation.",
+        "beats": [
+          "Cognitive style differences",
+          "Documentation gaps",
+          "Learning curve problems",
+          "Generational opportunity",
+          "LGP UX risk"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will create interfaces that work across different ages, skills, and learning styles.",
+        "beats": [
+          "Accessibility foundations",
+          "Progressive disclosure",
+          "Multiple learning paths",
+          "Atrium inclusive patterns",
+          "LGP broad usability"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will build built-in learning and onboarding experiences for heirs.",
+        "beats": [
+          "Guided tours and tooltips",
+          "Interactive tutorials",
+          "Progressive mastery",
+          "Atrium education lens",
+          "LGP knowledge transfer"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will provide simplified views that grow in complexity as users gain mastery.",
+        "beats": [
+          "Beginner to expert modes",
+          "Progressive disclosure",
+          "Custom view governance",
+          "Atrium layered surfaces",
+          "LGP adaptive UX"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will support structured handoff rituals through dedicated UX flows.",
+        "beats": [
+          "Handoff proposal surfaces",
+          "Breath-gated transitions",
+          "Knowledge transfer tools",
+          "Atrium handoff cockpit",
+          "LGP succession UX"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will ensure interfaces remain maintainable and forkable across generations.",
+        "beats": [
+          "Theme and customization governance",
+          "Renderer replaceability",
+          "Documentation integration",
+          "Atrium maintainability",
+          "LGP fork readiness"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare generational-first design against typical business UIs.",
+        "beats": [
+          "Legacy weaknesses",
+          "Sovereign advantages",
+          "Usability realism",
+          "Adoption guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build interfaces that become a joy and strength for future generations.",
+        "beats": [
+          "Full module synthesis",
+          "Integration with Atrium",
+          "Final handoff rituals",
+          "Atrium generational cockpit",
+          "Strong LGP close"
+        ]
+      }
+    ]
+  },
+  "s8_06_federation_ux": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will understand the trust and control issues in cross-node user interfaces.",
+        "beats": [
+          "Fragmented views",
+          "Data leakage risks",
+          "Trust boundary problems",
+          "Resonance opportunity",
+          "LGP federation risk"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will create views that show relevant information without violating sovereignty.",
+        "beats": [
+          "Scoped visibility rules",
+          "Resonance-based aggregation",
+          "Atrium federation strip",
+          "Privacy-preserving displays",
+          "LGP safe visibility"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will support joint decisions with governed, multi-node context.",
+        "beats": [
+          "Joint proposal surfaces",
+          "Breath-gated federation actions",
+          "Context sharing",
+          "Atrium decision federation",
+          "LGP aligned decisions"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will monitor overall federation health through resonant indicators.",
+        "beats": [
+          "Health metrics governance",
+          "Resonance signals",
+          "Anomaly surfacing",
+          "Atrium federation dashboard",
+          "LGP network vitality"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will provide clean, governed views for partners and auditors.",
+        "beats": [
+          "Partner access patterns",
+          "Auditor scoped lenses",
+          "Receipted views",
+          "Atrium partner surface",
+          "LGP safe sharing"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will maintain compliance across all cross-node user interfaces.",
+        "beats": [
+          "Audit trails for views",
+          "Regulatory mapping",
+          "Evidence generation",
+          "Exception governance",
+          "LGP compliance readiness"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare sovereign federation UX against legacy multi-system interfaces.",
+        "beats": [
+          "Legacy weaknesses",
+          "Sovereign advantages",
+          "Usability realism",
+          "Adoption guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build cross-node interfaces that foster lasting sovereign alliances.",
+        "beats": [
+          "Full module synthesis",
+          "Integration with Atrium",
+          "Generational handoff",
+          "Atrium federation cockpit",
+          "Final LGP synthesis"
+        ]
+      }
+    ]
+  },
+  "s8_07_zero_trust_ux": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will see why user interfaces must embody zero-trust principles.",
+        "beats": [
+          "UI trust assumptions",
+          "Adversarial risks",
+          "Verification opportunity",
+          "LGP interface risk"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will make security and verification status visible and understandable.",
+        "beats": [
+          "Shield status indicators",
+          "Real-time verification badges",
+          "Trust signals",
+          "Atrium shield views",
+          "LGP clarity"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will design interfaces that remain clear even under adversarial conditions.",
+        "beats": [
+          "Attack surface reduction",
+          "Clear error states",
+          "Red-team informed design",
+          "Atrium adversarial patterns",
+          "LGP resilience"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will provide easy access to cryptographic proofs and verification tools.",
+        "beats": [
+          "Proof request flows",
+          "Merkle verification",
+          "Receipt browsers",
+          "Atrium proof surface",
+          "LGP verifiability"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will embed zero-trust principles into everyday decision flows.",
+        "beats": [
+          "Gated decision paths",
+          "Evidence requirements",
+          "Breath-gate reinforcement",
+          "Atrium decision shields",
+          "LGP secure decisions"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will ensure interfaces meet zero-trust and regulatory standards.",
+        "beats": [
+          "Red-team testing",
+          "Compliance mapping",
+          "Audit trails",
+          "Exception governance",
+          "LGP compliance readiness"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare sovereign zero-trust UX against conventional enterprise UIs.",
+        "beats": [
+          "Legacy weaknesses",
+          "Sovereign advantages",
+          "Usability realism",
+          "Adoption guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will build interfaces that protect sovereignty and trust across generations.",
+        "beats": [
+          "Full module synthesis",
+          "Integration with shields",
+          "Generational handoff",
+          "Atrium zero-trust cockpit",
+          "Final LGP synthesis"
+        ]
+      }
+    ]
+  },
+  "s8_08_ux_executable_covenant": {
+    "chapters": [
+      {
+        "n": 1,
+        "promise": "You will see how interfaces become the living proof of the entire sovereign system.",
+        "beats": [
+          "Covenant philosophy",
+          "Book-to-UI connection",
+          "Trust embodiment",
+          "LGP covenant opportunity"
+        ]
+      },
+      {
+        "n": 2,
+        "promise": "You will connect the metalayer disciplines (Gate, Fence, Seal, etc.) directly into interfaces.",
+        "beats": [
+          "Gate visualization",
+          "Fence indicators",
+          "Seal proofs",
+          "Atrium metalayer surface",
+          "LGP living story"
+        ]
+      },
+      {
+        "n": 3,
+        "promise": "You will surface governance, receipts, and constitutional state in intuitive ways.",
+        "beats": [
+          "Invisible made visible",
+          "Receipt indicators",
+          "Governance cues",
+          "Atrium truth layers",
+          "LGP transparency"
+        ]
+      },
+      {
+        "n": 4,
+        "promise": "You will support the handoff of the living covenant to the next generation.",
+        "beats": [
+          "Handoff rituals in UX",
+          "Educational covenant tours",
+          "Interactive exploration",
+          "Atrium handoff flows",
+          "LGP covenant transfer"
+        ]
+      },
+      {
+        "n": 5,
+        "promise": "You will make the covenant not only truthful but also resonant and beautiful.",
+        "beats": [
+          "Beauty as covenant signal",
+          "Resonance in proof",
+          "Calm authority",
+          "Atrium aesthetic covenant",
+          "LGP joyful truth"
+        ]
+      },
+      {
+        "n": 6,
+        "promise": "You will maintain and evolve the covenant while preserving its integrity.",
+        "beats": [
+          "Governed evolution",
+          "Drift safeguards",
+          "Versioned covenant views",
+          "Atrium covenant maintenance",
+          "LGP adaptive continuity"
+        ]
+      },
+      {
+        "n": 7,
+        "promise": "You will compare living covenant UX against static documentation and dashboards.",
+        "beats": [
+          "Traditional weaknesses",
+          "Sovereign advantages",
+          "Usability realism",
+          "Adoption guidance",
+          "LGP framing"
+        ]
+      },
+      {
+        "n": 8,
+        "promise": "You will see interfaces as the final, living embodiment of sovereign prosperity.",
+        "beats": [
+          "Full series synthesis",
+          "Integration with all layers",
+          "Final handoff vision",
+          "Atrium as eternal cockpit",
+          "Strong LGP close"
+        ]
+      }
+    ]
+  }
+}

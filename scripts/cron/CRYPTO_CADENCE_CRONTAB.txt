@@ -1,0 +1,7 @@
+# Crypto Assurance Cadence — DETERMINISTIC daily math only (KM 2026-06-12). Safe, ~zero tokens, no agents.
+# Install: crontab -l > /tmp/ct && cat scripts/cron/CRYPTO_CADENCE_CRONTAB.txt >> /tmp/ct && crontab /tmp/ct
+# The expensive agent lanes (adversarial review, deep baseline) are NOT cron-scheduled — they are
+# Atrium-gated cards (one human gate): the on-change trigger + Friday surface mint a card KM disposes.
+
+# Daily mathematics: vectors + reference cross-verify + seal tripwire + assurance roll-up (02:50).
+50 2 * * * cd /home/kmangum/work-repos/sovereign-agent-starter && python3 scripts/crypto_vector_check.py; python3 scripts/seal_manifest_tripwire.py; python3 scripts/crypto_assurance.py; python3 scripts/crypto_cadence_surface.py >> artifacts/crypto/cron-$(date +\%Y\%m\%d).log 2>&1

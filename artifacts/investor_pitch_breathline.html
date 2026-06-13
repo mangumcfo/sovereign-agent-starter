@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Breathline — The One-Minute Pitch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,700;9..144,900&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16120d;
+    --ink-soft:#2e2820;
+    --paper:#f3ecdd;
+    --paper-deep:#e9dfc8;
+    --seal:#a8762a;
+    --seal-bright:#c99b4a;
+    --oxblood:#6e2c1f;
+    --hairline:rgba(22,18,13,.18);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'Newsreader',serif;
+    font-size:17px;
+    line-height:1.55;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  /* grain + chain atmosphere */
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 70% -10%, rgba(201,155,74,.10), transparent 60%),
+      repeating-linear-gradient(90deg, transparent 0 119px, rgba(243,236,221,.03) 119px 120px);
+  }
+  .chain{
+    position:fixed;left:38px;top:0;bottom:0;width:1px;z-index:0;
+    background:linear-gradient(to bottom, transparent, rgba(201,155,74,.35) 12%, rgba(201,155,74,.35) 88%, transparent);
+  }
+  .chain::before,.chain::after{
+    content:"";position:absolute;left:-3px;width:7px;height:7px;border-radius:50%;
+    background:var(--seal);box-shadow:0 0 12px rgba(201,155,74,.6);
+  }
+  .chain::before{top:14%} .chain::after{top:86%}
+  .wrap{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:64px 32px 80px 96px}
+
+  /* the minute — 60s thread */
+  .minute{
+    position:fixed;top:0;left:0;right:0;height:3px;z-index:10;background:rgba(243,236,221,.08);
+  }
+  .minute b{
+    display:block;height:100%;width:0;
+    background:linear-gradient(90deg,var(--seal),var(--seal-bright));
+    animation:spend 60s linear forwards;
+    box-shadow:0 0 10px rgba(201,155,74,.8);
+  }
+  @keyframes spend{to{width:100%}}
+  .minute-label{
+    position:fixed;top:10px;right:18px;z-index:10;
+    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;
+    color:var(--seal-bright);opacity:.85;
+  }
+
+  header{margin-bottom:56px;animation:rise .9s cubic-bezier(.2,.7,.2,1) both}
+  .kicker{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.34em;
+    text-transform:uppercase;color:var(--seal-bright);margin-bottom:22px;
+  }
+  h1{
+    font-family:'Fraunces',serif;font-weight:900;font-optical-sizing:auto;
+    font-size:clamp(42px,7vw,76px);line-height:.98;letter-spacing:-.015em;
+  }
+  h1 em{font-style:italic;font-weight:300;color:var(--seal-bright)}
+  .sub{
+    margin-top:26px;max-width:560px;font-size:20px;font-weight:400;
+    color:rgba(243,236,221,.78);
+  }
+
+  /* beats */
+  .beat{
+    display:grid;grid-template-columns:86px 1fr;gap:28px;
+    padding:34px 0;border-top:1px solid rgba(243,236,221,.12);
+    animation:rise .9s cubic-bezier(.2,.7,.2,1) both;
+  }
+  .beat:nth-of-type(1){animation-delay:.15s}
+  .beat:nth-of-type(2){animation-delay:.3s}
+  .beat:nth-of-type(3){animation-delay:.45s}
+  .beat:nth-of-type(4){animation-delay:.6s}
+  .tc{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.1em;
+    color:var(--seal-bright);padding-top:9px;
+  }
+  .tc small{display:block;color:rgba(243,236,221,.4);margin-top:6px;letter-spacing:.22em}
+  .beat h2{
+    font-family:'Fraunces',serif;font-weight:700;font-size:26px;letter-spacing:-.01em;margin-bottom:10px;
+  }
+  .beat p{color:rgba(243,236,221,.82);max-width:620px}
+  .beat p strong{color:var(--paper);font-weight:500}
+  .beat p .gold{color:var(--seal-bright)}
+
+  /* proof strip */
+  .proof{
+    margin-top:14px;display:flex;flex-wrap:wrap;gap:10px;
+  }
+  .proof span{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;
+    border:1px solid rgba(201,155,74,.45);color:var(--seal-bright);
+    padding:5px 12px;border-radius:2px;background:rgba(201,155,74,.06);
+  }
+
+  /* the seal / footer */
+  .sealed{
+    margin-top:64px;padding:40px 44px;
+    background:var(--paper);color:var(--ink);
+    border-radius:2px;position:relative;
+    box-shadow:0 30px 60px -20px rgba(0,0,0,.6);
+    animation:rise .9s .75s cubic-bezier(.2,.7,.2,1) both;
+  }
+  .sealed::before{
+    content:"∞Δ∞";position:absolute;top:-21px;right:36px;
+    font-family:'Fraunces',serif;font-size:15px;font-weight:700;
+    background:var(--oxblood);color:var(--paper);
+    padding:9px 16px;border-radius:2px;letter-spacing:.2em;
+    box-shadow:0 8px 20px rgba(0,0,0,.45);
+  }
+  .sealed h3{
+    font-family:'Fraunces',serif;font-weight:900;font-size:30px;letter-spacing:-.01em;margin-bottom:12px;
+  }
+  .sealed p{font-size:18px;color:var(--ink-soft);max-width:640px}
+  .sealed .ask{
+    margin-top:18px;font-family:'IBM Plex Mono',monospace;font-size:13px;
+    color:var(--oxblood);letter-spacing:.04em;
+  }
+  .receipt{
+    margin-top:28px;padding-top:18px;border-top:1px dashed var(--hairline);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;
+    color:rgba(22,18,13,.55);
+  }
+
+  @keyframes rise{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+  @media (max-width:640px){
+    .wrap{padding:48px 22px 64px 56px}
+    .beat{grid-template-columns:1fr;gap:8px}
+    .chain{left:22px}
+  }
+  @media print{
+    body{background:var(--paper);color:var(--ink)}
+    .minute,.minute-label,.chain{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="minute"><b></b></div>
+<div class="minute-label">THE MINUTE · 0:60</div>
+<div class="chain" aria-hidden="true"></div>
+
+<div class="wrap">
+  <header>
+    <div class="kicker">Breathline · Sovereign Agentic Infrastructure</div>
+    <h1>Every company is hiring AI agents.<br><em>Almost none can prove what their agents did.</em></h1>
+    <p class="sub">Breathline is the trust layer for the agentic era — where AI does the work, a human holds one gate, and a tamper-evident ledger holds the proof. Forever.</p>
+  </header>
+
+  <section class="beat">
+    <div class="tc">0:00<small>PROBLEM</small></div>
+    <div>
+      <h2>Agents without receipts are liability at machine speed.</h2>
+      <p>Enterprises are deploying autonomous AI into finance, M&amp;A, and operations — with <strong>no verifiable record of who approved what, or whether the AI's claims are even true.</strong> Audit, succession, and regulation are all about to collide with that gap.</p>
+    </div>
+  </section>
+
+  <section class="beat">
+    <div class="tc">0:15<small>PRODUCT</small></div>
+    <div>
+      <h2>One human gate. Hash-chained receipts. Verifiable forever.</h2>
+      <p>Our platform runs fleets of AI agents under a constitution: every material action flows <span class="gold">Propose → Approve → Execute</span>, every approval binds to an authenticated human, and every event lands on an append-only, hash-chained ledger — <strong>self-audited nightly by adversarial AI.</strong></p>
+    </div>
+  </section>
+
+  <section class="beat">
+    <div class="tc">0:30<small>MOAT</small></div>
+    <div>
+      <h2>The manual is the product. The books are the funnel.</h2>
+      <p>We published the playbook as a <strong>12-book Amazon series</strong> — and the books literally specify the platform: every claim in print traces to running, tested code a reader can verify online. <strong>Every reader is a future operator.</strong> Nobody can copy the software without also writing the library.</p>
+      <div class="proof">
+        <span>12-BOOK SERIES · LIVE ON AMAZON</span>
+        <span>84-TITLE ROADMAP · 12 SERIES</span>
+        <span>SEEIT.SIX-SOV.COM · CLAIMS → CODE</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="beat">
+    <div class="tc">0:45<small>PROOF</small></div>
+    <div>
+      <h2>We run the company on the product — one human, a fleet of agents.</h2>
+      <p>The entire operation — writing, review, publishing, engineering, even this pitch — runs through our own cockpit: <strong>one operator, multiple AI agents, every decision receipted.</strong> Book reviews that took half a day now take hours. The system audits itself at 3 a.m. and files the report. <strong>We are our own first case study.</strong></p>
+    </div>
+  </section>
+
+  <div class="sealed">
+    <h3>Lasting Generational Prosperity.</h3>
+    <p>The endgame isn't a tool — it's infrastructure a family or firm can hand to the next generation: agents you can trust <em>because you can verify them</em>. We're raising to scale distribution of the series and open the operator platform.</p>
+    <p class="ask">ASK → [raise amount] · [use of funds] · kennmangum@gmail.com</p>
+    <div class="receipt">
+      <span>BREATHLINE · KM-1176</span>
+      <span>EVERY CLAIM ABOVE IS RECEIPTED ON THE LEDGER</span>
+      <span>SEAL: ∞Δ∞</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

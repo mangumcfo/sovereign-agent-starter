@@ -1,0 +1,102 @@
+# S8 — Sovereign UX (8 titles) — G via KM relay 2026-06-11
+# Tiger-validated (keywords: IP-jargon scan + cross-title dup + count). Spine capture; full beats in transcript.
+# NOTE: S8 is the UX series — titles legitimately reference internal product names (Atrium) as CONTENT;
+#   only the searchable KEYWORDS are swapped off internal jargon (Atrium / metalayer / LGP).
+titles:
+  - {series: 8, title: "The Sovereign Lens — Content-Agnostic Rendering & Honest Views", market: "Sovereign & Verifiable UI Rendering Systems",
+     keywords: [sovereign UI rendering, content agnostic dashboard, honest verifiable views, regulated interface system, permissioned UI governance, enterprise honest rendering, sovereign lens architecture],
+     chapters: [
+       {n: 1, chapter_title: "The Rendering Trust Problem", keywords: ["UI rendering problems","regulated dashboard challenges","enterprise view trust issues","governed interface control"]},
+       {n: 2, chapter_title: "Content-Agnostic Rendering Foundation", keywords: ["content agnostic rendering","regulated dynamic UI","permissioned interface foundation","compliant sovereign lens"]},
+       {n: 3, chapter_title: "Honest Views & Drift Detection", keywords: ["honest UI views","regulated rendering verification","permissioned display integrity","compliant dashboard truth"]},
+       {n: 4, chapter_title: "Real-Time Rendering Mechanics", keywords: ["real time sovereign UI","regulated live rendering","permissioned update control","compliant dynamic views"]},
+       {n: 5, chapter_title: "Multi-Mandate & Scoped Rendering", keywords: ["multi mandate UI","regulated scoped rendering","permissioned view control","compliant enterprise interfaces"]},
+       {n: 6, chapter_title: "Rendering Compliance & Audit", keywords: ["UI compliance automation","regulated rendering audit","governed interface records","compliant sovereign views"]},
+       {n: 7, chapter_title: "Sovereign Lens vs Traditional UI Frameworks", keywords: ["sovereign lens vs legacy UI","regulated rendering comparison","permissioned interface advantages","verifiable display control"]},
+       {n: 8, chapter_title: "Sovereign Lens as Generational Interface Foundation", keywords: ["long term sovereign UI","generational interface system","regulated rendering legacy","sovereign lens continuity"]}]}
+
+  - {series: 8, title: "Breath-Gated Interfaces — Human Primacy in Every Pixel", market: "Human-in-the-Loop & Governed User Interfaces",
+     keywords: [human in the loop interfaces, human primacy UI, governed decision surfaces, permissioned approval workflows, enterprise human gate system, compliant decision interfaces, sovereign user control],
+     chapters: [
+       {n: 1, chapter_title: "The Automation Overreach Problem", keywords: ["human in the loop needs","regulated UI governance","enterprise decision challenges","governed interface control"]},
+       {n: 2, chapter_title: "Breath-Gate Design Principles", keywords: ["approval gate UI design","regulated human approval","permissioned decision UI","compliant governance surfaces"]},
+       {n: 3, chapter_title: "Proposal & Review Workflows", keywords: ["governed proposal workflows","regulated review interfaces","permissioned action approval","compliant decision flows"]},
+       {n: 4, chapter_title: "Inline Human Dispose Patterns", keywords: ["inline human gates","regulated dispose UI","permissioned operational control","compliant action interfaces"]},
+       {n: 5, chapter_title: "Exception & High-Risk Gating", keywords: ["high risk governance UI","regulated exception gates","permissioned approval workflows","compliant critical decisions"]},
+       {n: 6, chapter_title: "Breath-Gate Compliance & Audit", keywords: ["approval workflow compliance","regulated decision audit","governed approval records","compliant human interfaces"]},
+       {n: 7, chapter_title: "Breath-Gated Interfaces vs Traditional UIs", keywords: ["sovereign gates vs legacy UI","regulated human interface comparison","permissioned decision advantages","verifiable user control"]},
+       {n: 8, chapter_title: "Breath-Gated Interfaces as Generational Primacy Layer", keywords: ["long term human UI","generational primacy system","regulated decision legacy","sovereign interface continuity"]}]}
+
+  - {series: 8, title: "Aesthetic Resonance — Beauty as Functional Attention", market: "Human-Centered & Resonant UI Design Systems",
+     keywords: [aesthetic resonance UX, calm functional interfaces, attention friendly design, regulated beautiful UI, enterprise resonant surfaces, compliant aesthetic system, sovereign beauty principles],
+     chapters: [
+       {n: 1, chapter_title: "Why Beauty Matters in Sovereign Systems", keywords: ["aesthetic UX importance","regulated calm interfaces","enterprise beauty challenges","governed attention design"]},
+       {n: 2, chapter_title: "Core Principles of Aesthetic Resonance", keywords: ["aesthetic resonance principles","regulated calm design","permissioned beautiful UI","compliant attention UX"]},
+       {n: 3, chapter_title: "Fractal & Self-Similar Interfaces", keywords: ["fractal UI design","regulated self similar interfaces","permissioned consistent UX","compliant sovereign patterns"]},
+       {n: 4, chapter_title: "Color, Typography & Calm Systems", keywords: ["calm interface design","regulated typography UX","permissioned aesthetic systems","compliant beautiful dashboards"]},
+       {n: 5, chapter_title: "Motion & Feedback Resonance", keywords: ["resonant motion UX","regulated feedback design","permissioned interface animation","compliant attention guidance"]},
+       {n: 6, chapter_title: "Aesthetic Governance & Consistency", keywords: ["governed aesthetic standards","regulated design consistency","permissioned UI governance","compliant beauty control"]},
+       {n: 7, chapter_title: "Aesthetic Resonance vs Traditional Enterprise UI", keywords: ["sovereign aesthetic vs legacy UI","regulated beautiful comparison","permissioned resonance advantages","verifiable attention control"]},
+       {n: 8, chapter_title: "Aesthetic Resonance as Generational Joy Layer", keywords: ["long term aesthetic UX","generational joyful interfaces","regulated beauty legacy","sovereign resonance continuity"]}]}
+
+  - {series: 8, title: "Atrium as Living OS — The Sovereign Decision Cockpit", market: "Unified Sovereign Decision & Operations Platforms",
+     keywords: [sovereign operations OS, sovereign decision cockpit, governed operations platform, permissioned unified console, enterprise decision surface, compliant operations hub, sovereign cockpit system],
+     chapters: [
+       {n: 1, chapter_title: "The Fragmented Operator Experience", keywords: ["operations cockpit problems","regulated console challenges","enterprise decision issues","governed unified platform"]},
+       {n: 2, chapter_title: "Atrium Core Architecture", keywords: ["sovereign cockpit architecture","regulated living OS","permissioned cockpit foundation","compliant decision platform"]},
+       {n: 3, chapter_title: "Daily Decision & Inbox Surface", keywords: ["governed decision inbox","regulated operations surface","permissioned daily console","compliant work hub"]},
+       {n: 4, chapter_title: "Cross-Module & Federated Views", keywords: ["cross module cockpit","regulated federation views","permissioned unified navigation","compliant enterprise console"]},
+       {n: 5, chapter_title: "LGP Watch & Strategic Dashboard", keywords: ["strategic prosperity dashboard","regulated prosperity tracking","permissioned strategic cockpit","compliant generational views"]},
+       {n: 6, chapter_title: "Atrium Compliance & Audit Surface", keywords: ["cockpit compliance tools","regulated audit surface","governed console records","compliant operations hub"]},
+       {n: 7, chapter_title: "Atrium vs Traditional Dashboards", keywords: ["sovereign cockpit vs legacy","regulated cockpit comparison","permissioned decision advantages","verifiable unified control"]},
+       {n: 8, chapter_title: "Atrium as Generational Operating System", keywords: ["long term living OS","generational decision cockpit","regulated operations legacy","sovereign cockpit continuity"]}]}
+
+  - {series: 8, title: "Generational UX — Interfaces That Heirs Actually Want to Inherit", market: "Generational & Family-Friendly Business Interfaces",
+     keywords: [generational UX design, heir friendly interfaces, family business dashboard, regulated long term UX, enterprise succession interfaces, compliant generational system, sovereign inheritance UX],
+     chapters: [
+       {n: 1, chapter_title: "Why Most Interfaces Fail Generational Handoff", keywords: ["generational UX challenges","heir interface problems","family business dashboard issues","governed long term design"]},
+       {n: 2, chapter_title: "Designing for Cognitive Diversity", keywords: ["inclusive generational UX","regulated cognitive design","permissioned heir interfaces","compliant family UX"]},
+       {n: 3, chapter_title: "Educational & Onboarding Surfaces", keywords: ["generational onboarding UX","regulated learning interfaces","permissioned heir education","compliant succession training"]},
+       {n: 4, chapter_title: "Simplified & Progressive Views", keywords: ["progressive generational UI","regulated simplified dashboards","permissioned heir views","compliant family interfaces"]},
+       {n: 5, chapter_title: "Family Compact & Handoff Workflows", keywords: ["generational handoff UX","regulated succession workflows","permissioned family transfer","compliant inheritance interfaces"]},
+       {n: 6, chapter_title: "Long-Term Maintainability & Forkability", keywords: ["long term UX maintainability","regulated generational fork","permissioned interface evolution","compliant heir UX"]},
+       {n: 7, chapter_title: "Generational UX vs Traditional Enterprise Interfaces", keywords: ["generational UX vs legacy","regulated heir comparison","permissioned family advantages","verifiable long term control"]},
+       {n: 8, chapter_title: "Generational UX as Lasting Prosperity Layer", keywords: ["long term generational UX","lasting family interfaces","regulated heir legacy","sovereign prosperity UX"]}]}
+
+  - {series: 8, title: "Federation UX — Resonance Across Sovereign Nodes", market: "Multi-Node & Federated User Interfaces",
+     keywords: [federation UX design, regulated multi node views, permissioned cross entity interfaces, enterprise federation dashboard, compliant resonance UX, sovereign node visibility, verifiable federation surfaces],
+     chapters: [
+       {n: 1, chapter_title: "Federation Visibility Challenges", keywords: ["federation UX problems","regulated multi node challenges","enterprise cross entity issues","governed federation views"]},
+       {n: 2, chapter_title: "Scoped & Resonant Federation Views", keywords: ["scoped federation UX","regulated resonance views","permissioned cross node interfaces","compliant shared dashboards"]},
+       {n: 3, chapter_title: "Cross-Node Decision Support", keywords: ["governed federation decisions","regulated joint UX","permissioned multi node approval","compliant cross entity workflows"]},
+       {n: 4, chapter_title: "Federation Status & Health Dashboard", keywords: ["federation health UX","regulated multi node monitoring","permissioned resonance dashboard","compliant federation visibility"]},
+       {n: 5, chapter_title: "Scoped Partner & Auditor Views", keywords: ["scoped partner UX","regulated auditor interfaces","permissioned federation views","compliant external access"]},
+       {n: 6, chapter_title: "Federation UX Compliance", keywords: ["federation UX compliance","regulated multi node audit","governed shared records","compliant federation interfaces"]},
+       {n: 7, chapter_title: "Federation UX vs Traditional Multi-System Dashboards", keywords: ["sovereign federation UX vs legacy","regulated multi node comparison","permissioned resonance advantages","verifiable cross entity control"]},
+       {n: 8, chapter_title: "Federation UX as Generational Resonance Layer", keywords: ["long term federation UX","generational resonance interfaces","regulated alliance legacy","sovereign cross node continuity"]}]}
+
+  - {series: 8, title: "Zero-Trust UX — Shields, Verification & Adversarial Clarity", market: "Zero-Trust & Verifiable User Interfaces",
+     keywords: [zero trust UX design, verifiable interface shields, regulated adversarial clarity, permissioned security UX, enterprise zero trust console, compliant verification surfaces, sovereign trust UI],
+     chapters: [
+       {n: 1, chapter_title: "Zero-Trust in the User Layer", keywords: ["zero trust UX challenges","regulated interface security","enterprise verification issues","governed trust design"]},
+       {n: 2, chapter_title: "Shield Indicators & Verification Cues", keywords: ["zero trust shield UX","regulated verification cues","permissioned security indicators","compliant trust signals"]},
+       {n: 3, chapter_title: "Adversarial Clarity in Interfaces", keywords: ["adversarial UX clarity","regulated security design","permissioned interface resilience","compliant zero trust views"]},
+       {n: 4, chapter_title: "Verification & Proof Surfaces", keywords: ["verifiable proof UX","regulated verification interfaces","permissioned evidence views","compliant trust surfaces"]},
+       {n: 5, chapter_title: "Zero-Trust Decision Workflows", keywords: ["zero trust decision UX","regulated governed workflows","permissioned secure actions","compliant interface gates"]},
+       {n: 6, chapter_title: "Zero-Trust UX Compliance & Testing", keywords: ["zero trust UX compliance","regulated interface audit","governed security records","compliant adversarial testing"]},
+       {n: 7, chapter_title: "Zero-Trust UX vs Traditional Interfaces", keywords: ["zero trust UX vs legacy","regulated security comparison","permissioned interface advantages","verifiable trust control"]},
+       {n: 8, chapter_title: "Zero-Trust UX as Generational Security Layer", keywords: ["long term zero trust UX","generational security interfaces","regulated trust legacy","sovereign verification continuity"]}]}
+
+  - {series: 8, title: "UX as Executable Covenant — The Living Proof", market: "UX as Living Constitutional Covenant",
+     keywords: [executable covenant UX, living proof interfaces, regulated constitutional UX, permissioned covenant design, enterprise living OS UX, compliant covenant surfaces, sovereign proof layer],
+     chapters: [
+       {n: 1, chapter_title: "UX as the Final Covenant Layer", keywords: ["executable covenant UX","regulated living proof","enterprise constitutional interfaces","governed covenant design"]},
+       {n: 2, chapter_title: "The Metalayer in UX", keywords: ["governance discipline UX","regulated covenant visualization","permissioned governance surfaces","compliant living proof"]},
+       {n: 3, chapter_title: "Making the Invisible Visible", keywords: ["visible governance UX","regulated transparency UI","permissioned audit cues","compliant truth interfaces"]},
+       {n: 4, chapter_title: "Covenant Handoff & Education", keywords: ["generational covenant UX","regulated handoff interfaces","permissioned education surfaces","compliant legacy proof"]},
+       {n: 5, chapter_title: "Aesthetic Covenant Design", keywords: ["aesthetic covenant UX","regulated beautiful proof","permissioned resonant interfaces","compliant living covenant"]},
+       {n: 6, chapter_title: "Covenant Compliance & Evolution", keywords: ["governed covenant evolution","regulated living proof maintenance","permissioned interface updates","compliant generational covenant"]},
+       {n: 7, chapter_title: "Executable Covenant vs Traditional Documentation", keywords: ["executable covenant vs docs","regulated living proof comparison","permissioned UX advantages","verifiable covenant control"]},
+       {n: 8, chapter_title: "UX as the Ultimate Generational Covenant", keywords: ["generational covenant UX","lasting living proof","regulated sovereign legacy","sovereign interface continuity"]}]}
+
+# ∞Δ∞ S8 — 8 titles / 64 chapters captured. ∞Δ∞

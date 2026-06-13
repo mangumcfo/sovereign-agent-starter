@@ -1,0 +1,68 @@
+{
+  "checks": [
+    {
+      "name": "sha256_kat[b'']",
+      "pass": true,
+      "detail": "got=e3b0c44298fc1c14\u2026"
+    },
+    {
+      "name": "sha256_kat[b'abc']",
+      "pass": true,
+      "detail": "got=ba7816bf8f01cfea\u2026"
+    },
+    {
+      "name": "sha256_kat[b'abcdbcde']",
+      "pass": true,
+      "detail": "got=248d6a61d20638b8\u2026"
+    },
+    {
+      "name": "merkle_root_deterministic",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "merkle_root_sensitive",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "p1_sign_verify_roundtrip",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "p1_rfc6979_deterministic",
+      "pass": true,
+      "detail": "r=0x3d53266040\u2026"
+    },
+    {
+      "name": "p1_s_in_range",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "p1_wrong_message_fails",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "interop_p1sig_verifies_in_cryptography",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "interop_cryptographysig_verifies_in_p1",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "p1_invalid_curve_rejected",
+      "pass": true,
+      "detail": ""
+    }
+  ],
+  "merkle_root": "206e554a749c0e66f726a4d09737ce1c90167f8df6e7c0c3e41f21f41315876f",
+  "pass": true,
+  "n_pass": 12,
+  "n_total": 12
+}

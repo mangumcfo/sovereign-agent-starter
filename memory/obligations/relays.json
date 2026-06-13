@@ -1,0 +1,15 @@
+[
+  {
+    "id": "relay_1781194084306",
+    "from": "gb",
+    "to": "tiger",
+    "prompt": "SMOKE — do not relay; A1 live check",
+    "ref": "relay-1781194084",
+    "rationale": "",
+    "status": "dismissed",
+    "thread_n": null,
+    "thread_receipt": null,
+    "created_by": "KM-1176",
+    "created_at": "2026-06-11T16:08:04Z"
+  }
+]

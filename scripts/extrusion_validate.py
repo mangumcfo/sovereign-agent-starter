@@ -193,9 +193,20 @@ def main(argv):
     for r in results:
         b = per_book.setdefault(r["book_id"] or "?", {"validated": 0, "untested": 0, "drift": 0, "fail": 0})
         b[r["status"].lower().replace("pinned_untested", "untested")] += 1
+    # Crypto assurance (daily mathematics) folded INTO the extrusion harness state + gate — G directive
+    # 2026-06-12: "wire the nightly vector suite + seal tripwire into the extrusion validation harness."
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import crypto_assurance as _CA  # noqa: PLC0415
+        crypto = _CA.assess(mint_card=True)
+    except Exception as _e:  # noqa: BLE001
+        crypto = {"status": "ERROR", "reasons": [str(_e)]}
+    crypto_fail = 0 if crypto.get("status") == "GREEN" else 1
     STATE.write_text(json.dumps({
-        "counts": n, "gate_pass": (n["DRIFT"] + n["FAIL"] + len(cap_bad) + len(drift_roots)) == 0,
+        "counts": n,
+        "gate_pass": (n["DRIFT"] + n["FAIL"] + len(cap_bad) + len(drift_roots) + crypto_fail) == 0,
         "roots": {k: v[:16] for k, v in roots.items()}, "root_drift": list(drift_roots),
+        "crypto_assurance": crypto,
         "per_book": per_book,
         "anchors": [{"book_id": r["book_id"], "capability": r["capability"], "status": r["status"],
                      "test_result": r["test_result"], "tests_file": r["tests_file"]} for r in results],
@@ -204,7 +215,10 @@ def main(argv):
     print(f"  VALIDATED {n['VALIDATED']} · UNTESTED {n['PINNED_UNTESTED']} · DRIFT {n['DRIFT']} · FAIL {n['FAIL']}")
     print(f"  registry_root {roots['registry_root'][:16]} · modules {len(module_hashes)}"
           + (f" · ⚠ ROOT DRIFT {list(drift_roots)}" if drift_roots else ""))
-    gate_fail = n["DRIFT"] + n["FAIL"] + len(cap_bad) + len(drift_roots)
+    print(f"  crypto_assurance {crypto.get('status')} · vectors "
+          f"{crypto.get('vectors',{}).get('n_pass','?')}/{crypto.get('vectors',{}).get('n_total','?')} · "
+          f"merkle {(crypto.get('merkle_root') or '')[:16]}…")
+    gate_fail = n["DRIFT"] + n["FAIL"] + len(cap_bad) + len(drift_roots) + crypto_fail
     print(("⛔ GATE: FAIL — " if gate_fail else "✓ GATE: PASS — ") + f"{gate_fail} blocking; {n['PINNED_UNTESTED']} untested (warning)")
     return 1 if gate_fail else 0
 

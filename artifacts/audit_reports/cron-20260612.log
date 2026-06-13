@@ -1,0 +1,57 @@
+Night watch delta audit complete. All six steps executed.
+
+## Summary
+
+**Baseline:** `audit-report-2026-06-10.md` (cutoff = its mtime, 2026-06-11 04:27:39).
+**Delta scope:** 44 changed code/script/test files (20 commits `10644ba..aeeffe5` + working tree). Data/memory JSON excluded.
+**Cost control:** one read-only Opus finder, verification only on new findings.
+
+### Results — 2 NEW, 0 regressions, 11 fixed
+
+| Category | CRIT | HIGH | MED | LOW |
+|---|---|---|---|---|
+| NEW | 0 | **1** | 0 | 1 |
+| Regressions | 0 | 0 | 0 | 0 |
+| Fixed since baseline | 1 | 5 | 3 | 2 |
+
+**NEW HIGH (escalated to Tiger):** authorization gap on the new Accept→execute route. `feedback.py:273-274` gates `/feedback/<id>/disposition` with `@require_principal` only — no `@require_owner` — yet on accept it spawns `atrium_executor.py` (which mutates the hash chain and can spawn `BREATHLINE_EXECUTOR_AGENT`). Any authenticated non-owner can drive execution + chain mutation. Fix: add `@require_owner`, mirroring the sibling routes the same work hardened. Verified live: `require_owner` exists at `auth.py:172-188` but is absent here.
+
+**NEW LOW:** `thread_channel.append` (`thread_channel.py:59-71`) is an unlocked read-tail-then-append hash-chain writer now reachable via `POST /relay/<id>/relay` — fence with `fcntl.flock`.
+
+**Fixed & verified:** the anchor **CRITICAL** (ledger write-fence via `fcntl.flock` + `repair_chain()` + concurrency test) plus the principal-spoofing, missing-authorization, simulated-gate, denied→approved replay flip, orphan-id, and bare-500 **HIGHs**, plus path-traversal, token-compare, and hot-path perf items.
+
+### Actions taken
+- **Report:** `artifacts/audit_reports/audit-delta-2026-06-12.md`
+- **THREAD to Tiger:** entry `[237]` GB→Tiger (receipt `sha256:f4603ba4…`) with file:line + fix for the NEW HIGH and LOW.
+- **Cylinder log:** `audit_delta` entry `hash:2e92fdb5…` ref `audit-delta-2026-06-12`.
+
+One housekeeping note: while probing the cylinder CLI I accidentally triggered a no-arg `log` that wrote an empty note (`hash:38f88e50…`) before the real run entry — a harmless stray entry in the chain, flagging it for transparency.
+Weekly full audit sweep complete. All four post-run obligations discharged.
+
+## Summary
+
+**Audit ran clean** — run `wf_cd950e14-cb3`, 58 agents, 7 dimensions, adversarially verified, **no spend starvation** (no resume needed).
+
+**Report saved:** `artifacts/audit_reports/audit-report-2026-06-12.md` (with the full-report comparison footer).
+
+**Health & counts vs. previous full report (06-10):**
+
+| | 06-10 | 06-12 | Δ |
+|---|---:|---:|---:|
+| CRITICAL | 1 | 1 | — (*moved*) |
+| HIGH | 14 | 9 | −5 |
+| MEDIUM | 26 | 19 | −7 |
+| LOW | 16 | 18 | +2 |
+| **Total** | **57** | **47** | **−10** |
+| Health | 58 | **62** | **+4** |
+
+**The headline — the CRITICAL moved, it didn't linger:**
+- ✅ **Fixed:** the 06-10 CRITICAL (concurrent ledger appends forking the hash chain) — a cross-process `fcntl.flock` write-fence is now on `_append`.
+- 🔴 **New CRITICAL:** Propose→Decide→Apply human-gate is **not enforceable** (`atrium_apply.py:193-198`) — undecided *or explicitly-rejected* diffs get applied, committed, and sealed. `@require_owner` gates *who* applies, not *whether* a disposition was recorded.
+
+**Also fixed** (now appearing as positives): request-body principal spoofing, non-constant-time token compare, traversal-safe serving.
+
+**Still open (HIGH themes):** wildcard CORS + default-on loopback-trust = live CSRF/DNS-rebinding to owner-level code-exec; `/obligations` approve/close still only `@require_principal`; crypto core hard-imports undeclared `breathline_primitives`; zero tests on the new `board_rigor` / `review_ready_contract` rail gates.
+
+**Threaded to Tiger:** entry `[275]` (ref `weekly-audit-2026-06-12-full-sweep`, receipt `sha256:a4197293…`).
+**Logged to GB meta-cylinder:** hash `c9c27bd02d516153`, manifest entry 848.

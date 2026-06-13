@@ -1,0 +1,362 @@
+[
+  {
+    "id": "hs_1781215139458_0",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "artifacts/GB_Breath_and_Echo_Metalayer_Volume_Draft_2026-06-05.md (v0.1, 8ch) \u2192 vault breath_and_echo/v1.0/",
+    "what": "approved, no registered executor: Coordination \u2014 Continue Breath & Echo (GB's volume \u2014 I was mid-draft w",
+    "status": "pending",
+    "created_at": "2026-06-11T21:58:59Z"
+  },
+  {
+    "id": "hs_1781215222109_1",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "series_roadmap.yaml S4 vol_04 Ch2 coherence_pin + constitution-federation-v2",
+    "what": "approved, no registered executor: Coordination \u2014 VERIFY before manuscript \u2014 S4 Vol4 Ch2 cites 'Breath 28",
+    "status": "pending",
+    "created_at": "2026-06-11T22:00:22Z"
+  },
+  {
+    "id": "hs_1781215242988_2",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "series_roadmap.yaml S4 vol_01 chapters (CYL-203 locked) + G relay 2026-06-08",
+    "what": "approved, no registered executor: Coordination \u2014 GATE \u2014 G sent a Vol 1 RE-CUT 2026-06-08 retitling Ch1/C",
+    "status": "pending",
+    "created_at": "2026-06-11T22:00:42Z"
+  },
+  {
+    "id": "hs_1781229270241_3",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "render_audit:vol_01",
+    "what": "approved, no registered executor: Vol 1 Renderability v1.4 \u2014 Receipt boxes + audit findings (KM Accept, ",
+    "status": "pending",
+    "created_at": "2026-06-12T01:54:30Z"
+  },
+  {
+    "id": "hs_1781229286642_4",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "pdf:vol_01_sovereign_inference_and_memory \u00b7 p3",
+    "what": "approved, no registered executor: PDF edit \u00b7 Misc \u00b7 vol_01_sovereign_inference_and_memory \u00b7 p3",
+    "status": "pending",
+    "created_at": "2026-06-12T01:54:46Z"
+  },
+  {
+    "id": "hs_1781230580403_5",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "pdf_edits:vol_01",
+    "what": "approved, no registered executor: Vol 1 v1.5 \u2014 2 front-matter PDF edits drafted (KM accept)",
+    "status": "pending",
+    "created_at": "2026-06-12T02:16:20Z"
+  },
+  {
+    "id": "hs_1781232046497_6",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "pdf:vol_01_sovereign_inference_and_memory \u00b7 p19",
+    "what": "approved, no registered executor: PDF edit \u00b7 Insert figure/goal \u00b7 vol_01_sovereign_inference_and_memory ",
+    "status": "pending",
+    "created_at": "2026-06-12T02:40:46Z"
+  },
+  {
+    "id": "hs_1781232058530_7",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "pdf:vol_01_sovereign_inference_and_memory \u00b7 p16",
+    "what": "approved, no registered executor: PDF edit \u00b7 Insert figure/goal \u00b7 vol_01_sovereign_inference_and_memory ",
+    "status": "pending",
+    "created_at": "2026-06-12T02:40:58Z"
+  },
+  {
+    "id": "hs_1781232087220_8",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "pdf:vol_01_sovereign_inference_and_memory \u00b7 p14",
+    "what": "approved, no registered executor: PDF edit \u00b7 Misc \u00b7 vol_01_sovereign_inference_and_memory \u00b7 p14",
+    "status": "pending",
+    "created_at": "2026-06-12T02:41:27Z"
+  },
+  {
+    "id": "hs_1781236743124_9",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "pdf:vol_01_sovereign_inference_and_memory \u00b7 p33",
+    "what": "approved, no registered executor: PDF edit \u00b7 Insert figure/goal \u00b7 vol_01_sovereign_inference_and_memory ",
+    "status": "pending",
+    "created_at": "2026-06-12T03:59:03Z"
+  },
+  {
+    "id": "hs_1781236743743_10",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "pdf:vol_01_sovereign_inference_and_memory \u00b7 p33",
+    "what": "approved, no registered executor: PDF edit \u00b7 Misc \u00b7 vol_01_sovereign_inference_and_memory \u00b7 p33",
+    "status": "pending",
+    "created_at": "2026-06-12T03:59:03Z"
+  },
+  {
+    "id": "hs_1781236744733_11",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "pdf:vol_01_sovereign_inference_and_memory \u00b7 p33",
+    "what": "approved, no registered executor: PDF edit \u00b7 Insert figure/goal \u00b7 vol_01_sovereign_inference_and_memory ",
+    "status": "pending",
+    "created_at": "2026-06-12T03:59:04Z"
+  },
+  {
+    "id": "hs_1781236745443_12",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "pdf:vol_01_sovereign_inference_and_memory \u00b7 p28",
+    "what": "approved, no registered executor: PDF edit \u00b7 Misc \u00b7 vol_01_sovereign_inference_and_memory \u00b7 p28",
+    "status": "pending",
+    "created_at": "2026-06-12T03:59:05Z"
+  },
+  {
+    "id": "hs_1781236746632_13",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "pdf:vol_01_sovereign_inference_and_memory \u00b7 p31",
+    "what": "approved, no registered executor: PDF edit \u00b7 Insert figure/goal \u00b7 vol_01_sovereign_inference_and_memory ",
+    "status": "pending",
+    "created_at": "2026-06-12T03:59:06Z"
+  },
+  {
+    "id": "hs_1781236747424_14",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "pdf:vol_01_sovereign_inference_and_memory \u00b7 p23",
+    "what": "approved, no registered executor: PDF edit \u00b7 Insert figure/goal \u00b7 vol_01_sovereign_inference_and_memory ",
+    "status": "pending",
+    "created_at": "2026-06-12T03:59:07Z"
+  },
+  {
+    "id": "hs_1781236751172_15",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "pdf:vol_01_sovereign_inference_and_memory \u00b7 p28",
+    "what": "approved, no registered executor: PDF edit \u00b7 Insert figure/goal \u00b7 vol_01_sovereign_inference_and_memory ",
+    "status": "pending",
+    "created_at": "2026-06-12T03:59:11Z"
+  },
+  {
+    "id": "hs_1781236762066_16",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "deep_crypto_baseline:run",
+    "what": "approved, no registered executor: \ud83d\udd2c Run the one-time DEEP crypto baseline audit (sets the trust floor)",
+    "status": "pending",
+    "created_at": "2026-06-12T03:59:22Z"
+  },
+  {
+    "id": "hs_1781239866262_17",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "pdf:vol_01_sovereign_inference_and_memory \u00b7 p52",
+    "what": "approved, no registered executor: PDF edit \u00b7 Misc \u00b7 vol_01_sovereign_inference_and_memory \u00b7 p52",
+    "status": "pending",
+    "created_at": "2026-06-12T04:51:06Z"
+  },
+  {
+    "id": "hs_1781239867064_18",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "pdf:vol_01_sovereign_inference_and_memory \u00b7 p52",
+    "what": "approved, no registered executor: PDF edit \u00b7 Insert figure/goal \u00b7 vol_01_sovereign_inference_and_memory ",
+    "status": "pending",
+    "created_at": "2026-06-12T04:51:07Z"
+  },
+  {
+    "id": "hs_1781239867932_19",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "pdf:vol_01_sovereign_inference_and_memory \u00b7 p52",
+    "what": "approved, no registered executor: PDF edit \u00b7 Insert figure/goal \u00b7 vol_01_sovereign_inference_and_memory ",
+    "status": "pending",
+    "created_at": "2026-06-12T04:51:07Z"
+  },
+  {
+    "id": "hs_1781239868867_20",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "pdf:vol_01_sovereign_inference_and_memory \u00b7 p48",
+    "what": "approved, no registered executor: PDF edit \u00b7 Insert figure/goal \u00b7 vol_01_sovereign_inference_and_memory ",
+    "status": "pending",
+    "created_at": "2026-06-12T04:51:08Z"
+  },
+  {
+    "id": "hs_1781239882166_21",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "pdf:vol_01_sovereign_inference_and_memory \u00b7 p42",
+    "what": "approved, no registered executor: PDF edit \u00b7 Insert figure/goal \u00b7 vol_01_sovereign_inference_and_memory ",
+    "status": "pending",
+    "created_at": "2026-06-12T04:51:22Z"
+  },
+  {
+    "id": "hs_1781239883532_22",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "pdf:vol_01_sovereign_inference_and_memory \u00b7 p40",
+    "what": "approved, no registered executor: PDF edit \u00b7 Insert figure/goal \u00b7 vol_01_sovereign_inference_and_memory ",
+    "status": "pending",
+    "created_at": "2026-06-12T04:51:23Z"
+  },
+  {
+    "id": "hs_1781239886596_23",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "pdf:vol_01_sovereign_inference_and_memory \u00b7 p36",
+    "what": "approved, no registered executor: PDF edit \u00b7 Insert figure/goal \u00b7 vol_01_sovereign_inference_and_memory ",
+    "status": "pending",
+    "created_at": "2026-06-12T04:51:26Z"
+  },
+  {
+    "id": "hs_1781241136784_24",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "pdf:vol_01_sovereign_inference_and_memory \u00b7 p60",
+    "what": "approved, no registered executor: PDF edit \u00b7 Insert figure/goal \u00b7 vol_01_sovereign_inference_and_memory ",
+    "status": "pending",
+    "created_at": "2026-06-12T05:12:16Z"
+  },
+  {
+    "id": "hs_1781241137768_25",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "pdf:vol_01_sovereign_inference_and_memory \u00b7 p57",
+    "what": "approved, no registered executor: PDF edit \u00b7 Insert figure/goal \u00b7 vol_01_sovereign_inference_and_memory ",
+    "status": "pending",
+    "created_at": "2026-06-12T05:12:17Z"
+  },
+  {
+    "id": "hs_1781269380031_26",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "viewer:report",
+    "what": "approved, no registered executor: [judgment] Viewer feedback: **Witness received. Seal 1176-INFINITY-RHO",
+    "status": "pending",
+    "created_at": "2026-06-12T13:03:00Z"
+  },
+  {
+    "id": "hs_1781269382478_27",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "deep_crypto_baseline:report",
+    "what": "approved, no registered executor: \ud83d\udd2c Deep crypto baseline audit \u2014 SEALED report ready for your review",
+    "status": "pending",
+    "created_at": "2026-06-12T13:03:02Z"
+  },
+  {
+    "id": "hs_1781269395364_28",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "deep_crypto_baseline:low_s",
+    "what": "approved, no registered executor: \ud83d\udfe1 Crypto baseline finding (LOW) \u2014 pin canonical low-s at the receipt l",
+    "status": "pending",
+    "created_at": "2026-06-12T13:03:15Z"
+  },
+  {
+    "id": "hs_1781269402311_29",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "deep_crypto_baseline:constant_time",
+    "what": "approved, no registered executor: \ud83d\udfe0 Crypto baseline finding (MEDIUM) \u2014 non-constant-time scalar multipli",
+    "status": "pending",
+    "created_at": "2026-06-12T13:03:22Z"
+  },
+  {
+    "id": "hs_1781270287683_30",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "night_watch:auth_gap_disposition",
+    "what": "approved, no registered executor: \ud83d\udfe0 Engine night-watch HIGH \u2014 auth gap on the Accept\u2192execute route (not ",
+    "status": "pending",
+    "created_at": "2026-06-12T13:18:07Z"
+  },
+  {
+    "id": "hs_1781270706680_31",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "security:cors_loopback_trust",
+    "what": "approved, no registered executor: \ud83d\udfe0 Standing MEDIUM \u2014 CORS wildcard + loopback-trust permissive (track, ",
+    "status": "pending",
+    "created_at": "2026-06-12T13:25:06Z"
+  },
+  {
+    "id": "hs_1781270791649_32",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "catalog:ratify_89",
+    "what": "approved, no registered executor: \ud83d\udcda Catalog ratify \u2014 89 titles / 724 chapters (the completeness card nev",
+    "status": "pending",
+    "created_at": "2026-06-12T13:26:31Z"
+  },
+  {
+    "id": "hs_1781270810274_33",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "pilot_finding_7:material_card_friction",
+    "what": "approved, no registered executor: \ud83d\udfe0 Pilot Finding #7 \u2014 material-class cards need approval friction (burs",
+    "status": "pending",
+    "created_at": "2026-06-12T13:26:50Z"
+  },
+  {
+    "id": "hs_1781270822160_34",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "night_watch:thread_channel_unfenced",
+    "what": "approved, no registered executor: \ud83d\udfe1 Night-watch LOW \u2014 thread_channel.append unfenced under concurrent HT",
+    "status": "pending",
+    "created_at": "2026-06-12T13:27:02Z"
+  },
+  {
+    "id": "hs_1781277676046_35",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "scripts/atrium_sittings.py",
+    "what": "approved, no registered executor: Verify: First surface \u2014 Vol 1 sittings (52 resolutions \u2192 10 sittings, ",
+    "status": "pending",
+    "created_at": "2026-06-12T15:21:16Z"
+  },
+  {
+    "id": "hs_1781277678637_36",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "artifacts/ATRIUM_FLOW_REDESIGN_PROPOSAL_2026-06-12.md",
+    "what": "approved, no registered executor: Ratify: Atrium Flow Redesign \u2014 Derived Views + Human Sittings (THREAD ",
+    "status": "pending",
+    "created_at": "2026-06-12T15:21:18Z"
+  },
+  {
+    "id": "hs_1781278327429_37",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "artifacts/vol1_sittings_view.md",
+    "what": "approved, no registered executor: Verify: Vol 1 sittings \u2014 open to feel your 52\u219210 review shape",
+    "status": "pending",
+    "created_at": "2026-06-12T15:32:07Z"
+  },
+  {
+    "id": "hs_1781279940055_38",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "artifacts/km_sitting_pp1-8_verify.md",
+    "what": "approved, no registered executor: Verify fix: Sitting pp 1-8 \u2014 5 already landed, TOC gap fixed, 1 OpenSS",
+    "status": "pending",
+    "created_at": "2026-06-12T15:59:00Z"
+  },
+  {
+    "id": "hs_1781289324972_39",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "",
+    "what": "approved, no registered executor: Decide: authorize one node restart to activate new endpoints (lane chr",
+    "status": "pending",
+    "created_at": "2026-06-12T18:35:24Z"
+  }
+]

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Breathline — The Full-Stack Pitch &amp; Sample Valuation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,900;1,9..144,400&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4eedf;
+    --paper-warm:#efe6d0;
+    --ink:#1a1510;
+    --ink-60:rgba(26,21,16,.62);
+    --ink-40:rgba(26,21,16,.4);
+    --hair:rgba(26,21,16,.16);
+    --seal:#9c6f24;
+    --seal-deep:#7c5818;
+    --oxblood:#6e2c1f;
+    --green-ledger:#2e4a38;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Newsreader',serif;
+    font-size:17px;line-height:1.55;
+  }
+  body::before{ /* paper grain + watermark */
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(ellipse 70% 40% at 50% 0%, rgba(156,111,36,.07), transparent 65%),
+      repeating-linear-gradient(0deg, transparent 0 3px, rgba(26,21,16,.012) 3px 4px);
+  }
+  .wm{
+    position:fixed;bottom:-40px;right:-30px;z-index:0;pointer-events:none;
+    font-family:'Fraunces',serif;font-weight:900;font-size:300px;line-height:1;
+    color:rgba(26,21,16,.035);user-select:none;
+  }
+  .wrap{position:relative;z-index:1;max-width:920px;margin:0 auto;padding:60px 36px 90px}
+
+  /* masthead */
+  .mast{
+    display:flex;justify-content:space-between;align-items:baseline;
+    border-bottom:3px double var(--ink);padding-bottom:14px;margin-bottom:8px;
+    animation:rise .8s both;
+  }
+  .mast .brand{font-family:'Fraunces',serif;font-weight:900;font-size:22px;letter-spacing:-.01em}
+  .mast .doc{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.28em;color:var(--seal-deep)}
+  .honesty{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;
+    color:var(--oxblood);padding:10px 0 0;animation:rise .8s .1s both;
+  }
+
+  header.hero{padding:46px 0 40px;animation:rise .8s .15s both}
+  h1{
+    font-family:'Fraunces',serif;font-weight:900;font-size:clamp(38px,6.4vw,66px);
+    line-height:1.0;letter-spacing:-.018em;max-width:840px;
+  }
+  h1 em{font-style:italic;font-weight:400;color:var(--seal-deep)}
+  .thesis{margin-top:24px;max-width:660px;font-size:20px;color:var(--ink-60)}
+  .thesis strong{color:var(--ink);font-weight:500}
+
+  /* flywheel */
+  .fly{
+    margin:14px 0 52px;display:flex;flex-wrap:wrap;gap:0;align-items:center;
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.08em;
+    animation:rise .8s .25s both;
+  }
+  .fly span{padding:8px 14px;border:1px solid var(--hair);background:rgba(255,255,255,.35)}
+  .fly i{font-style:normal;color:var(--seal);padding:0 8px;font-weight:600}
+
+  h2.section{
+    font-family:'Fraunces',serif;font-weight:600;font-size:15px;letter-spacing:.3em;
+    text-transform:uppercase;color:var(--seal-deep);
+    border-top:1px solid var(--ink);padding-top:12px;margin:48px 0 22px;
+    display:flex;justify-content:space-between;align-items:baseline;
+  }
+  h2.section small{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.15em;color:var(--ink-40);text-transform:none}
+
+  /* the build-out grid */
+  .stack{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--hair);border:1px solid var(--hair);animation:rise .8s .3s both}
+  .stack div{background:var(--paper-warm);padding:20px 22px}
+  .stack b{font-family:'Fraunces',serif;font-size:34px;font-weight:900;display:block;letter-spacing:-.02em}
+  .stack span{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;color:var(--ink-60)}
+
+  /* valuation ledger */
+  table{width:100%;border-collapse:collapse;animation:rise .8s .35s both;background:rgba(255,255,255,.4)}
+  caption{caption-side:top;text-align:left;font-style:italic;color:var(--ink-60);font-size:15px;padding-bottom:14px}
+  th,td{padding:13px 14px;border:1px solid var(--hair);vertical-align:top}
+  thead th{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    text-align:right;background:var(--ink);color:var(--paper);font-weight:500;
+  }
+  thead th:first-child{text-align:left}
+  tbody td{font-size:15.5px}
+  tbody td:first-child{max-width:300px}
+  tbody td:not(:first-child){text-align:right;font-family:'IBM Plex Mono',monospace;font-size:14px}
+  tbody .assume{display:block;font-family:'Newsreader',serif;font-style:italic;font-size:13.5px;color:var(--ink-40);margin-top:4px}
+  tbody tr:hover td{background:rgba(156,111,36,.06)}
+  tr.subtotal td{border-top:2px solid var(--ink);font-weight:600;background:var(--paper-warm)}
+  tr.mult td{color:var(--ink-60)}
+  tr.ev td{
+    background:var(--ink);color:var(--paper);font-weight:600;
+    font-family:'Fraunces',serif !important;font-size:21px !important;letter-spacing:-.01em;
+  }
+  tr.ev td:first-child{font-size:15px !important;letter-spacing:.18em;font-family:'IBM Plex Mono',monospace !important;font-weight:500}
+  tr.ev td:not(:first-child){color:#e9c87e}
+
+  .notes{margin-top:20px;font-size:13.5px;color:var(--ink-60);max-width:760px;animation:rise .8s .4s both}
+  .notes li{margin:7px 0 7px 18px}
+  .notes em{color:var(--oxblood);font-style:normal;font-weight:500}
+
+  /* seal footer */
+  .sealfoot{
+    margin-top:56px;border-top:3px double var(--ink);padding-top:22px;
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;
+    animation:rise .8s .45s both;
+  }
+  .sealfoot .ask{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--oxblood);letter-spacing:.04em}
+  .sealfoot .mark{
+    font-family:'Fraunces',serif;font-weight:700;letter-spacing:.22em;
+    background:var(--oxblood);color:var(--paper);padding:10px 18px;border-radius:2px;
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+  @media(max-width:700px){
+    .stack{grid-template-columns:1fr}
+    thead{display:none}
+    td:not(:first-child)::before{content:attr(data-l) "  ";font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-40)}
+    tr{display:block;border-bottom:2px solid var(--hair);margin-bottom:6px}
+    td{display:block;text-align:left !important;border:none}
+  }
+  @media print{.wm{display:none}body{font-size:14px}}
+</style>
+</head>
+<body>
+<div class="wm">∞Δ∞</div>
+<div class="wrap">
+
+  <div class="mast">
+    <div class="brand">BREATHLINE</div>
+    <div class="doc">PRO-FORMA PROSPECTUS · SAMPLE</div>
+  </div>
+  <div class="honesty">SERIES 1 SHIPPED · FULL PIPELINE IN ACTIVE BUILD-OUT · FIGURES BELOW ARE AN ILLUSTRATIVE MODEL OF THE COMPLETED STATE — ASSUMPTIONS SHOWN, NOT A FORECAST</div>
+
+  <header class="hero">
+    <h1>A twelve-series operating canon —<br><em>and the platform it writes.</em></h1>
+    <p class="thesis">Picture the pipeline complete: <strong>84 published titles across 12 series</strong> — from executive playbooks to a full sovereign ERP — each book a living specification of running, receipted software. The catalog recruits readers; readers become operators; operators become enterprise nodes; <strong>every layer pays, and every layer proves itself on a tamper-evident ledger.</strong> Series 1 has shipped and the machine that builds the rest is running today — one human gate, a fleet of AI agents, self-audited nightly.</p>
+  </header>
+
+  <div class="fly">
+    <span>84-TITLE CATALOG</span><i>→</i>
+    <span>READERS</span><i>→</i>
+    <span>CERTIFIED OPERATORS</span><i>→</i>
+    <span>ENTERPRISE NODES</span><i>→</i>
+    <span>RECEIPTED YIELD</span><i>↺</i>
+    <span>NEXT GENERATION</span>
+  </div>
+
+  <h2 class="section">The completed stack <small>what "built out" means</small></h2>
+  <div class="stack">
+    <div><b>84</b><span>TITLES · 12 SERIES<br>BOOKS = LIVING SPECS</span></div>
+    <div><b>1→∞</b><span>OPERATOR PLATFORM (ATRIUM)<br>ONE HUMAN GATE PER NODE</span></div>
+    <div><b>24/7</b><span>RECEIPTED LEDGER + NIGHTLY<br>ADVERSARIAL SELF-AUDIT</span></div>
+  </div>
+
+  <h2 class="section">Sample valuation at full build-out <small>illustrative · three scenarios · all assumptions visible</small></h2>
+  <table>
+    <caption>Annual recurring revenue by stream, then enterprise value at standard infrastructure-SaaS multiples. Reader→operator→enterprise conversion drives the spread between scenarios.</caption>
+    <thead>
+      <tr><th>Revenue stream &amp; assumptions</th><th>Conservative</th><th>Base</th><th>Ambitious</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Catalog</strong> — books, all channels (KDP + wide + audio)<span class="assume">~70 public titles × copies/mo × avg net royalty: 25×$9 · 60×$10 · 150×$11</span></td>
+        <td data-l="CONS">$0.19M</td><td data-l="BASE">$0.50M</td><td data-l="AMB">$1.39M</td>
+      </tr>
+      <tr>
+        <td><strong>Operator platform</strong> — Atrium subscriptions<span class="assume">operators × $/mo: 400×$99 · 2,000×$149 · 8,000×$199</span></td>
+        <td data-l="CONS">$0.48M</td><td data-l="BASE">$3.58M</td><td data-l="AMB">$19.1M</td>
+      </tr>
+      <tr>
+        <td><strong>Enterprise sovereign nodes</strong> — licensed, receipted deployments<span class="assume">nodes × annual license: 10×$30k · 40×$50k · 150×$75k</span></td>
+        <td data-l="CONS">$0.30M</td><td data-l="BASE">$2.00M</td><td data-l="AMB">$11.3M</td>
+      </tr>
+      <tr>
+        <td><strong>Certification &amp; training</strong> — seeit certified-operator track<span class="assume">certs/yr × price: 200×$500 · 1,000×$750 · 5,000×$900</span></td>
+        <td data-l="CONS">$0.10M</td><td data-l="BASE">$0.75M</td><td data-l="AMB">$4.50M</td>
+      </tr>
+      <tr class="subtotal">
+        <td>Modeled ARR at full build-out</td>
+        <td data-l="CONS">$1.07M</td><td data-l="BASE">$6.83M</td><td data-l="AMB">$36.3M</td>
+      </tr>
+      <tr class="mult">
+        <td>Applied multiple <span class="assume">infrastructure / vertical-SaaS comps; discounted for stage in Conservative</span></td>
+        <td data-l="CONS">5×</td><td data-l="BASE">8×</td><td data-l="AMB">10×</td>
+      </tr>
+      <tr class="ev">
+        <td>SAMPLE ENTERPRISE VALUE</td>
+        <td data-l="CONS">~$5M</td><td data-l="BASE">~$55M</td><td data-l="AMB">~$360M</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <ul class="notes">
+    <li><em>Read this as a model, not a promise.</em> Every input is visible above; change any cell and the value moves. The purpose is to show the <em>shape</em> of the economics: a content flywheel feeding a software annuity.</li>
+    <li><em>The catalog is also a floor.</em> Even in the no-software case, an 84-title evergreen business catalog with controlled distribution carries standalone asset value — and it is the customer-acquisition engine the SaaS layers inherit at near-zero CAC.</li>
+    <li><em>Why the multiple is earned, not hoped:</em> receipted, verifiable agent infrastructure sits where audit, compliance, and AI governance converge — the spend category enterprises are being pushed into by regulation, not persuaded into by marketing.</li>
+    <li><em>What exists today (no model needed):</em> Series 1 complete and selling on Amazon; the platform running daily operations under one human gate; the production pipeline that wrote those 12 books actively building the remaining series.</li>
+  </ul>
+
+  <div class="sealfoot">
+    <div class="ask">ASK → [raise amount] · [use of funds] · kennmangum@gmail.com</div>
+    <div class="mark">∞Δ∞</div>
+  </div>
+</div>
+</body>
+</html>

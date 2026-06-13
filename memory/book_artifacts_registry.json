@@ -2,8 +2,8 @@
   "_meta": {
     "schema": "book-artifacts-registry-1.0 (Helix increment #1)",
     "vault": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp",
-    "generated_at": "2026-06-10T00:33:58Z",
-    "receipt": "372513e980cd80ac",
+    "generated_at": "2026-06-11T21:43:05Z",
+    "receipt": "4ed32847b840df20",
     "n_titles": 24,
     "n_with_pdf": 23,
     "n_missing_pdf": 1
@@ -298,15 +298,15 @@
       "series": "series_02_building_the_agentic_harness",
       "version": "v1.0",
       "dir": "series_02_building_the_agentic_harness/vol_01_sovereign_inference_and_memory/v1.0",
-      "manuscript": "series_02_building_the_agentic_harness/vol_01_sovereign_inference_and_memory/v1.0/manuscript_v1.3.md",
+      "manuscript": "series_02_building_the_agentic_harness/vol_01_sovereign_inference_and_memory/v1.0/manuscript_v1.6.md",
       "pdf": "series_02_building_the_agentic_harness/vol_01_sovereign_inference_and_memory/v1.0/final/Sovereign_Inference_and_Memory.pdf",
       "epub": "series_02_building_the_agentic_harness/vol_01_sovereign_inference_and_memory/v1.0/final/Sovereign_Inference_and_Memory.epub",
-      "cover": null,
+      "cover": "series_02_building_the_agentic_harness/vol_01_sovereign_inference_and_memory/v1.0/final/cover_KDP.jpg",
       "present": {
         "pdf": true,
         "manuscript": true,
         "epub": true,
-        "cover": false
+        "cover": true
       }
     },
     "vol_02_the_primacy_cockpit": {
@@ -316,12 +316,12 @@
       "manuscript": "series_02_building_the_agentic_harness/vol_02_the_primacy_cockpit/v1.0/manuscript_v1.3.md",
       "pdf": "series_02_building_the_agentic_harness/vol_02_the_primacy_cockpit/v1.0/final/The_Primacy_Cockpit.pdf",
       "epub": "series_02_building_the_agentic_harness/vol_02_the_primacy_cockpit/v1.0/final/The_Primacy_Cockpit.epub",
-      "cover": null,
+      "cover": "series_02_building_the_agentic_harness/vol_02_the_primacy_cockpit/v1.0/final/cover_KDP.jpg",
       "present": {
         "pdf": true,
         "manuscript": true,
         "epub": true,
-        "cover": false
+        "cover": true
       }
     },
     "vol_03_governed_dev_loop_and_self_building_harness": {
@@ -331,12 +331,12 @@
       "manuscript": "series_02_building_the_agentic_harness/vol_03_governed_dev_loop_and_self_building_harness/v1.0/manuscript_v1.3.md",
       "pdf": "series_02_building_the_agentic_harness/vol_03_governed_dev_loop_and_self_building_harness/v1.0/final/The_Harness_That_Builds_Itself.pdf",
       "epub": "series_02_building_the_agentic_harness/vol_03_governed_dev_loop_and_self_building_harness/v1.0/final/The_Harness_That_Builds_Itself.epub",
-      "cover": null,
+      "cover": "series_02_building_the_agentic_harness/vol_03_governed_dev_loop_and_self_building_harness/v1.0/final/cover_KDP.jpg",
       "present": {
         "pdf": true,
         "manuscript": true,
         "epub": true,
-        "cover": false
+        "cover": true
       }
     },
     "vol_04_federation_and_partner_device_gateway": {
@@ -346,12 +346,12 @@
       "manuscript": "series_02_building_the_agentic_harness/vol_04_federation_and_partner_device_gateway/v1.0/manuscript_v1.3.md",
       "pdf": "series_02_building_the_agentic_harness/vol_04_federation_and_partner_device_gateway/v1.0/final/Federated_Sovereignty.pdf",
       "epub": "series_02_building_the_agentic_harness/vol_04_federation_and_partner_device_gateway/v1.0/final/Federated_Sovereignty.epub",
-      "cover": null,
+      "cover": "series_02_building_the_agentic_harness/vol_04_federation_and_partner_device_gateway/v1.0/final/cover_KDP.jpg",
       "present": {
         "pdf": true,
         "manuscript": true,
         "epub": true,
-        "cover": false
+        "cover": true
       }
     },
     "vol_05_yield_organism_and_generational_prosperity": {
@@ -361,12 +361,12 @@
       "manuscript": "series_02_building_the_agentic_harness/vol_05_yield_organism_and_generational_prosperity/v1.0/manuscript_v1.3.md",
       "pdf": "series_02_building_the_agentic_harness/vol_05_yield_organism_and_generational_prosperity/v1.0/final/The_Sovereign_Yield_Engine.pdf",
       "epub": "series_02_building_the_agentic_harness/vol_05_yield_organism_and_generational_prosperity/v1.0/final/The_Sovereign_Yield_Engine.epub",
-      "cover": null,
+      "cover": "series_02_building_the_agentic_harness/vol_05_yield_organism_and_generational_prosperity/v1.0/final/cover_KDP.jpg",
       "present": {
         "pdf": true,
         "manuscript": true,
         "epub": true,
-        "cover": false
+        "cover": true
       }
     }
   }

@@ -1,0 +1,151 @@
+# S5 Full Production ERP — Pass B (Core ERP Modules, Vols 7–18) — G via KM relay 2026-06-11
+# Captured verbatim from G's trend-grounded reply. Tiger-validated (keywords: IP-jargon scan + dup + count).
+# Part of the open-series fold batch (index: G_open_series_outlines_2026-06-11.yaml). GB folds; KM ratifies.
+titles:
+  - {series: 5, title: "Sovereign Financials — General Ledger, Controlling & Reporting", market: "Regulated Financial ERP & Immutable Accounting",
+     keywords: [sovereign financials ERP, immutable general ledger, regulated financial reporting, enterprise accounting system, permissioned financial control, verifiable financial records, compliant financial ERP],
+     chapters: [
+       {n: 1, chapter_title: "The Limitations of Traditional Financial Systems", keywords: ["financial ERP problems","legacy accounting issues","regulated financial challenges","business finance trust"]},
+       {n: 2, chapter_title: "Immutable General Ledger Foundation", keywords: ["immutable general ledger","regulated financial ledger","verifiable accounting core","sovereign finance foundation"]},
+       {n: 3, chapter_title: "Controlled Financial Posting & Reconciliation", keywords: ["governed financial posting","regulated reconciliation","permissioned accounting flows","compliant finance operations"]},
+       {n: 4, chapter_title: "Management & Statutory Reporting", keywords: ["regulated financial reporting","enterprise management reports","compliant statutory reports","verifiable financial insights"]},
+       {n: 5, chapter_title: "Cost & Profitability Controlling", keywords: ["ERP profitability control","regulated cost accounting","enterprise controlling system","financial performance governance"]},
+       {n: 6, chapter_title: "Financial Governance & Compliance Automation", keywords: ["financial compliance automation","regulated ERP controls","governed financial governance","enterprise audit automation"]},
+       {n: 7, chapter_title: "Financials vs Legacy Systems", keywords: ["sovereign financials vs SAP","immutable vs mutable finance","regulated accounting comparison","verifiable finance advantages"]},
+       {n: 8, chapter_title: "Financials Foundation & Transition", keywords: ["long term financial ERP","generational accounting system","regulated finance legacy","sovereign financial continuity"]}]}
+
+  - {series: 5, title: "Treasury & Cash Management — Liquidity, Forecasting & Compliance", market: "Regulated Treasury & Cash Management Systems",
+     keywords: [sovereign treasury management, regulated cash forecasting, permissioned liquidity control, enterprise cash management, compliant treasury ERP, verifiable cash flows, governance treasury system],
+     chapters: [
+       {n: 1, chapter_title: "Traditional Treasury Challenges", keywords: ["treasury management problems","cash forecasting issues","regulated liquidity challenges","enterprise cash control"]},
+       {n: 2, chapter_title: "Real-Time Cash Position & Liquidity", keywords: ["real time cash position","regulated liquidity dashboard","verifiable cash management","enterprise treasury visibility"]},
+       {n: 3, chapter_title: "Governed Cash Forecasting", keywords: ["governed cash forecasting","regulated treasury planning","permissioned financial forecasting","enterprise cash prediction"]},
+       {n: 4, chapter_title: "Payment & Banking Governance", keywords: ["regulated payment governance","permissioned banking control","compliant treasury payments","enterprise payment workflows"]},
+       {n: 5, chapter_title: "Investment & Financing Management", keywords: ["regulated investment management","governed treasury investments","enterprise financing control","compliant capital management"]},
+       {n: 6, chapter_title: "Treasury Compliance & Reporting", keywords: ["treasury compliance automation","regulated cash reporting","governed treasury audit","enterprise compliance tools"]},
+       {n: 7, chapter_title: "Treasury vs Legacy Cash Systems", keywords: ["sovereign treasury vs legacy","regulated cash management comparison","permissioned treasury advantages","verifiable liquidity control"]},
+       {n: 8, chapter_title: "Treasury as Generational Financial Infrastructure", keywords: ["long term treasury system","generational cash management","regulated financial infrastructure","sovereign treasury legacy"]}]}
+
+  - {series: 5, title: "Supply Chain Execution — Procurement, Logistics & Inventory", market: "Regulated Supply Chain & Procurement ERP",
+     keywords: [regulated supply chain ERP, governed procurement system, verifiable inventory management, permissioned logistics control, enterprise supply chain governance, compliant procurement ERP, sovereign inventory system],
+     chapters: [
+       {n: 1, chapter_title: "Supply Chain Visibility Challenges", keywords: ["supply chain visibility issues","regulated procurement problems","inventory management challenges","enterprise supply chain control"]},
+       {n: 2, chapter_title: "Governed Procurement & Sourcing", keywords: ["governed procurement","regulated sourcing ERP","permissioned purchase control","compliant supplier management"]},
+       {n: 3, chapter_title: "Verifiable Inventory & Warehouse Management", keywords: ["verifiable inventory system","regulated warehouse management","immutable stock tracking","enterprise inventory control"]},
+       {n: 4, chapter_title: "Logistics & Fulfillment Execution", keywords: ["regulated logistics ERP","governed fulfillment","permissioned shipment control","compliant supply chain execution"]},
+       {n: 5, chapter_title: "Demand Planning & Supply Coordination", keywords: ["supply chain demand planning","regulated supply coordination","enterprise planning governance","compliant forecasting"]},
+       {n: 6, chapter_title: "Supply Chain Compliance & Traceability", keywords: ["supply chain compliance","regulated traceability ERP","verifiable supply records","compliant logistics audit"]},
+       {n: 7, chapter_title: "Supply Chain vs Legacy Systems", keywords: ["sovereign supply chain vs legacy","regulated SCM comparison","permissioned logistics advantages","verifiable supply chain control"]},
+       {n: 8, chapter_title: "Supply Chain as Generational Infrastructure", keywords: ["long term supply chain ERP","generational logistics system","regulated supply legacy","sovereign supply continuity"]}]}
+
+  - {series: 5, title: "Manufacturing & Quality — Production, MES & Traceability", market: "Regulated Manufacturing & Quality Management ERP",
+     keywords: [regulated manufacturing ERP, governed production management, verifiable quality control, permissioned MES system, enterprise production governance, compliant manufacturing traceability, sovereign quality management],
+     chapters: [
+       {n: 1, chapter_title: "Manufacturing Execution Challenges", keywords: ["manufacturing ERP problems","regulated MES challenges","production visibility issues","enterprise manufacturing control"]},
+       {n: 2, chapter_title: "Governed Production Planning & Scheduling", keywords: ["governed production planning","regulated manufacturing scheduling","permissioned MES planning","compliant production control"]},
+       {n: 3, chapter_title: "Shop Floor Execution & Work Orders", keywords: ["regulated shop floor control","governed work orders","permissioned manufacturing execution","verifiable production records"]},
+       {n: 4, chapter_title: "Quality Management & Traceability", keywords: ["regulated quality management","verifiable manufacturing traceability","compliant quality control","enterprise quality ERP"]},
+       {n: 5, chapter_title: "Material & Resource Management", keywords: ["regulated BOM management","governed material flow","permissioned resource planning","manufacturing resource control"]},
+       {n: 6, chapter_title: "Manufacturing Compliance & Reporting", keywords: ["manufacturing compliance automation","regulated production reporting","governed MES audit","compliant manufacturing records"]},
+       {n: 7, chapter_title: "Manufacturing vs Legacy Systems", keywords: ["sovereign manufacturing vs legacy","regulated MES comparison","permissioned production advantages","verifiable manufacturing control"]},
+       {n: 8, chapter_title: "Manufacturing as Generational Capability", keywords: ["long term manufacturing ERP","generational production system","regulated manufacturing legacy","sovereign production continuity"]}]}
+
+  - {series: 5, title: "Project & Portfolio Management — Planning, Execution & Governance", market: "Regulated Project & Portfolio Management ERP",
+     keywords: [regulated project management ERP, governed portfolio oversight, verifiable project execution, permissioned project governance, enterprise project ERP, compliant portfolio management, sovereign project control],
+     chapters: [
+       {n: 1, chapter_title: "Project Management Fragmentation", keywords: ["project management problems","regulated portfolio challenges","enterprise project visibility","governed project control"]},
+       {n: 2, chapter_title: "Governed Project Planning", keywords: ["governed project planning","regulated project setup","permissioned portfolio planning","compliant project initiation"]},
+       {n: 3, chapter_title: "Execution & Progress Governance", keywords: ["regulated project execution","governed project tracking","permissioned progress control","verifiable project status"]},
+       {n: 4, chapter_title: "Budget & Cost Governance", keywords: ["project budget governance","regulated cost control","permissioned project finance","compliant project costing"]},
+       {n: 5, chapter_title: "Risk & Issue Management", keywords: ["governed project risk","regulated issue management","permissioned risk control","enterprise project governance"]},
+       {n: 6, chapter_title: "Project Compliance & Reporting", keywords: ["project compliance automation","regulated project reporting","governed project audit","compliant project records"]},
+       {n: 7, chapter_title: "Project Management vs Legacy Tools", keywords: ["sovereign project vs legacy PM","regulated project management comparison","permissioned project advantages","verifiable project control"]},
+       {n: 8, chapter_title: "Project & Portfolio as Generational Assets", keywords: ["long term project ERP","generational portfolio system","regulated project legacy","sovereign project continuity"]}]}
+
+  - {series: 5, title: "Asset & Maintenance Management — Lifecycle & Reliability", market: "Regulated Asset Management & Maintenance ERP",
+     keywords: [regulated asset management ERP, governed maintenance system, verifiable asset lifecycle, permissioned maintenance control, enterprise asset governance, compliant asset ERP, sovereign maintenance management],
+     chapters: [
+       {n: 1, chapter_title: "Asset Management Challenges", keywords: ["asset management problems","regulated maintenance challenges","enterprise asset visibility","governed asset control"]},
+       {n: 2, chapter_title: "Asset Registry & Lifecycle Governance", keywords: ["immutable asset registry","regulated asset lifecycle","verifiable asset records","sovereign asset management"]},
+       {n: 3, chapter_title: "Governed Maintenance Planning", keywords: ["governed maintenance planning","regulated maintenance scheduling","permissioned asset maintenance","compliant maintenance workflows"]},
+       {n: 4, chapter_title: "Execution & Condition Monitoring", keywords: ["regulated maintenance execution","governed asset monitoring","permissioned condition management","verifiable maintenance records"]},
+       {n: 5, chapter_title: "Spares & Inventory Integration", keywords: ["maintenance inventory governance","regulated spares management","permissioned maintenance stock","compliant asset spares"]},
+       {n: 6, chapter_title: "Asset Compliance & Reliability Reporting", keywords: ["asset compliance automation","regulated reliability reporting","governed asset audit","compliant maintenance records"]},
+       {n: 7, chapter_title: "Asset Management vs Legacy EAM", keywords: ["sovereign asset vs legacy EAM","regulated maintenance comparison","permissioned asset advantages","verifiable asset control"]},
+       {n: 8, chapter_title: "Asset Management as Generational Infrastructure", keywords: ["long term asset ERP","generational maintenance system","regulated asset legacy","sovereign asset continuity"]}]}
+
+  - {series: 5, title: "Human Capital & Sovereign Payroll — Roles, Compensation & Continuity", market: "Regulated HR & Payroll ERP",
+     keywords: [regulated HR payroll ERP, governed compensation system, verifiable employee records, permissioned HR governance, enterprise human capital ERP, compliant payroll management, sovereign HR system],
+     chapters: [
+       {n: 1, chapter_title: "Human Capital Management Challenges", keywords: ["HR payroll problems","regulated human capital challenges","enterprise HR visibility","governed employee management"]},
+       {n: 2, chapter_title: "Sovereign Role & Organizational Model", keywords: ["sovereign role management","regulated organizational model","permissioned HR structure","enterprise role governance"]},
+       {n: 3, chapter_title: "Governed Compensation & Payroll", keywords: ["governed payroll system","regulated compensation management","permissioned payroll control","compliant HR payroll"]},
+       {n: 4, chapter_title: "Employee Lifecycle & Development", keywords: ["regulated employee lifecycle","governed HR development","permissioned talent management","verifiable employee records"]},
+       {n: 5, chapter_title: "HR Compliance & Reporting", keywords: ["HR compliance automation","regulated payroll reporting","governed HR audit","compliant human capital records"]},
+       {n: 6, chapter_title: "Multi-Entity & Global HR", keywords: ["multi entity HR ERP","regulated global payroll","permissioned HR sharing","enterprise human capital governance"]},
+       {n: 7, chapter_title: "Human Capital vs Legacy HR Systems", keywords: ["sovereign HR vs legacy","regulated payroll comparison","permissioned HR advantages","verifiable human capital control"]},
+       {n: 8, chapter_title: "Human Capital as Generational Asset", keywords: ["long term HR ERP","generational human capital","regulated HR legacy","sovereign people continuity"]}]}
+
+  - {series: 5, title: "Compliance & Audit Automation — Standards Ingestion & Evidence", market: "Regulated Compliance & Audit Automation ERP",
+     keywords: [regulated compliance ERP, automated audit management, verifiable evidence system, permissioned compliance control, enterprise audit automation, compliant standards ingestion, sovereign compliance governance],
+     chapters: [
+       {n: 1, chapter_title: "The Compliance Burden in Traditional Systems", keywords: ["compliance management problems","regulated audit challenges","enterprise compliance visibility","governed audit control"]},
+       {n: 2, chapter_title: "Standards Ingestion & Mapping", keywords: ["regulated standards ingestion","compliance mapping automation","permissioned regulatory rules","enterprise compliance framework"]},
+       {n: 3, chapter_title: "Evidence Generation & Collection", keywords: ["verifiable compliance evidence","regulated evidence management","governed audit records","compliant evidence system"]},
+       {n: 4, chapter_title: "Continuous Compliance Monitoring", keywords: ["continuous compliance monitoring","regulated audit automation","permissioned compliance control","enterprise compliance dashboard"]},
+       {n: 5, chapter_title: "Audit Package Generation", keywords: ["automated audit packages","regulated audit readiness","verifiable compliance reports","governed audit generation"]},
+       {n: 6, chapter_title: "Multi-Standard & Multi-Jurisdiction Support", keywords: ["multi jurisdiction compliance","regulated multi standard ERP","permissioned compliance sharing","enterprise global compliance"]},
+       {n: 7, chapter_title: "Compliance Automation vs Legacy Approaches", keywords: ["sovereign compliance vs legacy","regulated audit comparison","permissioned compliance advantages","verifiable compliance control"]},
+       {n: 8, chapter_title: "Compliance as Generational Governance Asset", keywords: ["long term compliance ERP","generational regulatory system","regulated compliance legacy","sovereign compliance continuity"]}]}
+
+  - {series: 5, title: "Revenue & Order-to-Cash — Contracts, Billing & Recognition", market: "Regulated Revenue & Order-to-Cash ERP",
+     keywords: [regulated revenue management, governed order to cash, verifiable billing system, permissioned revenue recognition, enterprise contract governance, compliant order management, sovereign revenue ERP],
+     chapters: [
+       {n: 1, chapter_title: "Revenue Cycle Challenges", keywords: ["revenue management problems","regulated order to cash","enterprise billing challenges","governed revenue control"]},
+       {n: 2, chapter_title: "Governed Contract & Order Management", keywords: ["governed contract management","regulated order processing","permissioned revenue orders","compliant contract control"]},
+       {n: 3, chapter_title: "Billing & Invoicing Governance", keywords: ["regulated billing governance","permissioned invoicing","compliant revenue billing","verifiable order to cash"]},
+       {n: 4, chapter_title: "Revenue Recognition & Compliance", keywords: ["regulated revenue recognition","governed revenue accounting","permissioned revenue compliance","enterprise revenue control"]},
+       {n: 5, chapter_title: "Collections & Credit Management", keywords: ["governed collections management","regulated credit control","permissioned accounts receivable","compliant revenue collection"]},
+       {n: 6, chapter_title: "Revenue Analytics & Insights", keywords: ["revenue performance dashboard","regulated revenue analytics","governed revenue insights","compliant revenue reporting"]},
+       {n: 7, chapter_title: "Revenue Cycle vs Legacy Systems", keywords: ["sovereign revenue vs legacy","regulated order to cash comparison","permissioned revenue advantages","verifiable revenue control"]},
+       {n: 8, chapter_title: "Revenue as Generational Prosperity Engine", keywords: ["long term revenue ERP","generational revenue system","regulated revenue legacy","sovereign revenue continuity"]}]}
+
+  - {series: 5, title: "Procurement-to-Pay — Sourcing, Contracts & Supplier Governance", market: "Regulated Procurement & Supplier Management ERP",
+     keywords: [regulated procurement ERP, governed supplier management, verifiable P2P process, permissioned procurement control, enterprise sourcing governance, compliant supplier ERP, sovereign procurement system],
+     chapters: [
+       {n: 1, chapter_title: "Procurement Challenges in Traditional Systems", keywords: ["procurement management problems","regulated P2P challenges","enterprise supplier visibility","governed procurement control"]},
+       {n: 2, chapter_title: "Governed Sourcing & Supplier Selection", keywords: ["governed sourcing process","regulated supplier selection","permissioned procurement sourcing","compliant supplier onboarding"]},
+       {n: 3, chapter_title: "Contract & Purchase Order Governance", keywords: ["regulated contract governance","permissioned purchase orders","compliant procurement contracts","verifiable supplier agreements"]},
+       {n: 4, chapter_title: "Invoice Matching & Payment Execution", keywords: ["governed invoice matching","regulated payment execution","permissioned accounts payable","compliant P2P process"]},
+       {n: 5, chapter_title: "Supplier Performance & Relationship Management", keywords: ["regulated supplier performance","governed vendor management","permissioned supplier control","enterprise supplier governance"]},
+       {n: 6, chapter_title: "Procurement Compliance & Spend Analysis", keywords: ["procurement compliance automation","regulated spend analysis","governed procurement audit","compliant P2P reporting"]},
+       {n: 7, chapter_title: "Procurement-to-Pay vs Legacy Systems", keywords: ["sovereign P2P vs legacy","regulated procurement comparison","permissioned P2P advantages","verifiable procurement control"]},
+       {n: 8, chapter_title: "Procurement as Generational Relationship Infrastructure", keywords: ["long term procurement ERP","generational supplier system","regulated procurement legacy","sovereign P2P continuity"]}]}
+
+  - {series: 5, title: "Analytics & Decision Intelligence — Real-Time Insights with Provenance", market: "Regulated Business Intelligence & Analytics ERP",
+     keywords: [regulated business analytics, governed decision intelligence, verifiable insights ERP, permissioned analytics control, enterprise decision support, compliant business intelligence, sovereign analytics system],
+     chapters: [
+       {n: 1, chapter_title: "Analytics Challenges in Traditional ERP", keywords: ["analytics problems in ERP","regulated BI challenges","enterprise insights visibility","governed decision making"]},
+       {n: 2, chapter_title: "Real-Time Insights from Immutable Source", keywords: ["real time regulated analytics","verifiable business insights","immutable data analytics","compliant decision intelligence"]},
+       {n: 3, chapter_title: "Governed Analytics & Reporting", keywords: ["governed business analytics","regulated reporting control","permissioned BI governance","enterprise analytics rules"]},
+       {n: 4, chapter_title: "Decision Intelligence Workflows", keywords: ["governed decision workflows","regulated decision support","permissioned analytics decisions","compliant business intelligence"]},
+       {n: 5, chapter_title: "Multi-Dimensional & Predictive Analytics", keywords: ["regulated predictive analytics","governed multi dimensional BI","permissioned forecasting","verifiable business prediction"]},
+       {n: 6, chapter_title: "Compliance & Audit for Analytics", keywords: ["analytics compliance automation","regulated BI audit","governed analytics records","compliant decision audit"]},
+       {n: 7, chapter_title: "Analytics vs Legacy BI Tools", keywords: ["sovereign analytics vs legacy BI","regulated intelligence comparison","permissioned analytics advantages","verifiable insights control"]},
+       {n: 8, chapter_title: "Decision Intelligence as Generational Wisdom", keywords: ["long term decision ERP","generational business intelligence","regulated analytics legacy","sovereign decision continuity"]}]}
+
+  - {series: 5, title: "Multi-Entity & Consolidation — Global Structures & Intercompany", market: "Multi-Entity & Global ERP Consolidation",
+     keywords: [multi entity ERP, regulated consolidation system, governed intercompany transactions, permissioned global ERP, enterprise consolidation governance, compliant multi company ERP, sovereign global structures],
+     chapters: [
+       {n: 1, chapter_title: "Multi-Entity Management Challenges", keywords: ["multi entity ERP problems","regulated consolidation challenges","enterprise global visibility","governed intercompany control"]},
+       {n: 2, chapter_title: "Sovereign Entity Structures", keywords: ["sovereign entity management","regulated organizational structures","permissioned multi company","enterprise entity governance"]},
+       {n: 3, chapter_title: "Governed Intercompany Transactions", keywords: ["governed intercompany","regulated intercompany transactions","permissioned global flows","compliant consolidation"]},
+       {n: 4, chapter_title: "Consolidation & Group Reporting", keywords: ["regulated consolidation ERP","governed group reporting","permissioned financial consolidation","verifiable multi entity reports"]},
+       {n: 5, chapter_title: "Global Compliance & Tax Management", keywords: ["global tax governance","regulated multi entity compliance","permissioned tax management","enterprise global compliance"]},
+       {n: 6, chapter_title: "Multi-Entity Governance & Visibility", keywords: ["multi entity governance","regulated global visibility","permissioned enterprise control","compliant multi company dashboard"]},
+       {n: 7, chapter_title: "Multi-Entity vs Legacy Consolidation Tools", keywords: ["sovereign multi entity vs legacy","regulated consolidation comparison","permissioned global advantages","verifiable multi company control"]},
+       {n: 8, chapter_title: "Multi-Entity as Generational Global Infrastructure", keywords: ["long term multi entity ERP","generational global system","regulated consolidation legacy","sovereign global continuity"]}]}
+
+# NOTE: beats/promise omitted here for brevity — full prose outlines are in G's reply transcript (2026-06-11);
+# this capture preserves series/title/market/keywords + per-chapter chapter_title+keywords (the foldable spine).
+# ∞Δ∞ S5 Pass B — 12 titles / 96 chapters captured. ∞Δ∞

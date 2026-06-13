@@ -1,0 +1,137 @@
+# G's Series-3 (Programmable Sovereign ERP) keyword pass — STAGED (NOT folded)
+# Source: G via KM relay (x.com), 2026-06-11. Extracted verbatim from live HMC cylinder
+#   cyl_6405a38eb6ed.json, entry index 503 (```yaml block). Same depth/format as G_S4_keywords_2026-06-11.yaml.
+# Recommended markets (G, X.com trend analysis): Sovereign ERP Foundations & Immutable Ledgers;
+#   Configurable & Governed ERP Systems — enterprise ERP fatigue with SAP/Oracle lock-in, demand for
+#   sovereign/compliant alternatives, generational continuity, "book-to-code" automation.
+#
+# --- VALIDATION (Tiger, S4-method) ---
+# Completeness: 2/2 titles found (expected 2). OK.
+# Keyword[] uniqueness (search-facing keyword arrays only): 78 total, 77 unique, 1 duplicate
+#   ("human in the loop ERP" appears in both titles — same human-primacy chapter angle). Minor.
+# IP-jargon scan INSIDE keyword[] search arrays: 0 hits. CLEAN (matches S4 standard).
+# IP-jargon scan in TITLE / market / market_rationale (sell-facing) fields:
+#   - "Cylinders" in Title 1 ("The Immutable Core: Receipts, Cylinders & Constitutional Truth")
+#   - "Breath-Gates" in Title 2 ("Programmable Governance Skin: YAML Roles, Action Classes & Breath-Gates")
+#   These are internal vocabulary (~zero search volume). NOT in keywords, but they ARE in the public-facing
+#   book titles — GB should de-jargon the titles before publish (e.g. "Obligation Ledgers", "Human Approval Gates").
+# IP-jargon in beats[] (structural, not search keywords, listed for completeness): Atrium x~9, LGP x14,
+#   "cylinders" x2. Beats are outline scaffolding, not sold keywords — flagged, not dropped.
+# Duplicate-chapter-cluster scan (cross-series): both S3 titles are near-identical to S5 Vols 1 & 2:
+#   - S3 "Immutable Core" vs S5 "Immutable Core": 0.94 chapter-keyword Jaccard (31 shared kw)
+#   - S3 "Programmable Governance Skin" vs S5 "Programmable Governance Skin": 0.88 (30 shared kw)
+#   Expected (shared constitutional root) but GB must decide dedup / cross-link before fold.
+#
+# Fold target: series_roadmap.yaml + extracted_chapter_outlines — GB folds (sole writer). Tiger STAGES ONLY.
+# STATUS: staged_WITH_FLAGS
+# FLAGS: [title-jargon: Cylinders, Breath-Gates] [1 dup keyword] [cross-series dup vs S5 Vols 1-2 (0.94/0.88)]
+#        [beats carry Atrium/LGP/cylinder vocabulary]
+
+titles:
+  - series: 3
+    title: "The Immutable Core: Receipts, Cylinders & Constitutional Truth"
+    market: Sovereign ERP Foundations & Immutable Ledgers
+    market_rationale: Strong X.com conversation around "immutable business records", "private ledger ERP", and "regulated accounting alternatives to SAP" — enterprises seeking trust and auditability without vendor lock-in.
+    keywords: 
+      - immutable ERP ledger
+      - private ledger accounting
+      - regulated ERP foundation
+      - sovereign business records
+      - receipted ERP core
+      - verifiable ERP truth
+      - constitutional ERP system
+    chapters:
+      - n: 1
+        chapter_title: "The Mutable ERP Crisis"
+        promise: You will clearly see why traditional mutable ERP systems fail long-term trust and generational continuity.
+        beats: ["SAP/Oracle lock-in realities", "Audit and compliance failures", "Mutable data risks", "Preview of immutable alternative", "LGP implications"]
+        keywords: ["ERP lock-in problems", "mutable ledger failures", "regulated ERP alternative", "business record trust"]
+      - n: 2
+        chapter_title: "Receipts as the Atomic Truth Unit"
+        promise: You will design every economic event as a verifiable, signed receipt that survives audits and handoffs.
+        beats: ["Receipt structure and proof", "Event-level immutability", "Comparison to traditional journals", "Atrium receipt visibility", "Generational verifiability"]
+        keywords: ["ERP receipt system", "immutable transaction record", "verifiable business events", "regulated ERP proof"]
+      - n: 3
+        chapter_title: "Obligation Cylinders for ERP Accounting"
+        promise: You will implement double-entry accounting as replayable, cryptographically witnessed obligations.
+        beats: ["Debit/credit in cylinders", "Evidence tiers for entries", "Replay from genesis", "Honest query performance", "LGP audit continuity"]
+        keywords: ["private ERP ledger", "immutable accounting system", "regulated double entry", "verifiable ERP history"]
+      - n: 4
+        chapter_title: "Human Primacy in Core ERP Events"
+        promise: You will enforce human approval on all material ERP actions at the foundation layer.
+        beats: ["Permissioned event creation", "Human dispose mechanics", "Governance boundaries", "Atrium core views", "LGP decision continuity"]
+        keywords: ["human in the loop ERP", "permissioned ERP events", "regulated ERP governance", "sovereign ERP control"]
+      - n: 5
+        chapter_title: "Constitutional Rules at ERP Genesis"
+        promise: You will declare the foundational rules that govern your entire ERP from day one.
+        beats: ["Initial constitutional setup", "Core policy declaration", "Versioned truth anchors", "Honest minimal start", "LGP foundation rules"]
+        keywords: ["ERP constitution setup", "regulated ERP rules", "enterprise ERP framework", "sovereign ERP policy"]
+      - n: 6
+        chapter_title: "Core ERP Visibility & Audit Lens"
+        promise: You will gain honest, real-time visibility into the immutable ERP foundation.
+        beats: ["Ledger and receipt browser", "Audit-ready views", "Drift detection basics", "Honest current capabilities", "Generational audit readiness"]
+        keywords: ["ERP audit dashboard", "private ledger visibility", "regulated ERP monitoring", "immutable ERP views"]
+      - n: 7
+        chapter_title: "Immutable Core vs Traditional ERP"
+        promise: You will confidently compare the sovereign immutable core against legacy ERP systems.
+        beats: ["Legacy ERP weaknesses", "Sovereign decisive advantages", "Performance realism", "Migration considerations", "LGP framing"]
+        keywords: ["sovereign ERP vs SAP", "immutable vs mutable ERP", "regulated ERP comparison", "private ledger advantages"]
+      - n: 8
+        chapter_title: "Immutable Core Foundation & Transition"
+        promise: You will understand how a solid immutable core enables the full sovereign ERP stack.
+        beats: ["Series 3 foundation synthesis", "Transition to governance skin", "Generational truth guarantees", "Atrium core preview", "LGP call to build"]
+        keywords: ["ERP immutable foundation", "sovereign ERP base", "long term ERP strategy", "regulated ERP readiness"]
+  
+  - series: 3
+    title: "Programmable Governance Skin: YAML Roles, Action Classes & Breath-Gates"
+    market: Configurable & Governed ERP Systems
+    market_rationale: Trending searches for "configurable ERP", "governed business workflows", and "permissioned enterprise automation" — companies wanting flexibility without losing control.
+    keywords: 
+      - configurable ERP governance
+      - permissioned ERP roles
+      - governed business workflows
+      - regulated ERP configuration
+      - enterprise ERP policy
+      - YAML ERP rules
+      - human approved ERP actions
+    chapters:
+      - n: 1
+        chapter_title: "YAML as the ERP Constitutional Skin"
+        promise: You will declare and maintain your ERP governance rules as living, editable YAML.
+        beats: ["YAML as single source of truth", "Operator-first configuration", "Versioned policy changes", "Atrium policy surface", "LGP evolution"]
+        keywords: ["ERP governance YAML", "configurable ERP rules", "regulated ERP policy", "enterprise configuration framework"]
+      - n: 2
+        chapter_title: "Operator-Defined ERP Roles & Lattices"
+        promise: You will author the exact roles and permissions your business needs.
+        beats: ["Default empty + templates", "Role lattice design", "Multi-mandate support", "Atrium Roles surface", "Generational role evolution"]
+        keywords: ["ERP role management", "permissioned ERP access", "enterprise role lattices", "governed ERP participants"]
+      - n: 3
+        chapter_title: "Action Classes for ERP Operations"
+        promise: You will model every business action with governed rules and scoping.
+        beats: ["Action class structure", "GREEN/YELLOW/RED scoping", "Reversibility rules", "Industry examples", "LGP action alignment"]
+        keywords: ["ERP action governance", "regulated workflow rules", "permissioned ERP operations", "business process control"]
+      - n: 4
+        chapter_title: "Breath-Gates on Material ERP Actions"
+        promise: You will enforce human approval on all high-impact ERP decisions.
+        beats: ["Proposal flow for actions", "Inline human dispose", "Threshold gating", "Atrium decision surface", "LGP decision continuity"]
+        keywords: ["human in the loop ERP", "permissioned ERP approvals", "regulated ERP decisions", "governed business actions"]
+      - n: 5
+        chapter_title: "Industry-Specific Governance Patterns"
+        promise: You will apply the governance skin to real vertical needs.
+        beats: ["Vertical policy examples", "Reusable patterns", "Atrium industry lenses", "Honest adaptation", "LGP vertical continuity"]
+        keywords: ["vertical ERP governance", "industry ERP rules", "sector specific ERP", "regulated industry workflows"]
+      - n: 6
+        chapter_title: "Governed Extensions & Self-Building ERP"
+        promise: You will safely extend your ERP under constitutional guardrails.
+        beats: ["Proposal mechanics", "Constitutional boundaries", "Drift safeguards", "Atrium extension flow", "LGP safe evolution"]
+        keywords: ["ERP system extensions", "governed ERP upgrades", "permissioned ERP development", "regulated ERP evolution"]
+      - n: 7
+        chapter_title: "Multi-Mandate & Scoped ERP Access"
+        promise: You will run ERP across entities with clean, scoped access.
+        beats: ["Multi-mandate support", "Partner/auditor scoping", "Atrium federation views", "Clean separation", "LGP handoff readiness"]
+        keywords: ["multi entity ERP", "scoped ERP access", "regulated ERP collaboration", "enterprise ERP sharing"]
+      - n: 8
+        chapter_title: "Governance Skin Continuity & LGP Close"
+        promise: You will maintain governance alignment across generations and business evolution.
+        beats: ["Drift control", "Self-healing patterns", "Generational policy handoff", "Atrium governance cockpit", "Final LGP synthesis"]
+        keywords: ["long term ERP governance", "generational ERP policy", "regulated ERP continuity", "enterprise ERP legacy"]

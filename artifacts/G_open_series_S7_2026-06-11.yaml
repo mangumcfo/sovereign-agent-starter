@@ -1,0 +1,76 @@
+# S7 — Zero-Trust Sovereignty (6 titles) — G via KM relay 2026-06-11
+# Tiger-validated (keywords: IP-jargon scan + cross-title dup + count). Spine capture; full beats in transcript.
+titles:
+  - {series: 7, title: "Zero-Trust Node Architecture", market: "Zero-Trust Enterprise & Sovereign Node Systems",
+     keywords: [zero trust node architecture, sovereign node design, regulated zero trust system, permissioned infrastructure security, enterprise node governance, compliant zero trust ERP, verifiable node security],
+     chapters: [
+       {n: 1, chapter_title: "The Limits of Perimeter Security", keywords: ["zero trust vs perimeter","regulated security challenges","enterprise infrastructure risks","governed node protection"]},
+       {n: 2, chapter_title: "Core Principles of Sovereign Zero-Trust", keywords: ["zero trust principles","regulated node architecture","permissioned security model","compliant sovereign design"]},
+       {n: 3, chapter_title: "Identity & Access at the Node Level", keywords: ["regulated node identity","governed access control","permissioned zero trust identity","compliant node security"]},
+       {n: 4, chapter_title: "Micro-Segmentation & Workload Protection", keywords: ["zero trust micro segmentation","regulated workload isolation","permissioned node protection","compliant internal security"]},
+       {n: 5, chapter_title: "Continuous Verification & Monitoring", keywords: ["continuous zero trust verification","regulated node monitoring","governed security analytics","compliant trust validation"]},
+       {n: 6, chapter_title: "Node Architecture Compliance & Audit", keywords: ["zero trust compliance automation","regulated node audit","governed architecture records","compliant security framework"]},
+       {n: 7, chapter_title: "Zero-Trust Node vs Traditional Architectures", keywords: ["zero trust node vs legacy","regulated architecture comparison","permissioned security advantages","verifiable node control"]},
+       {n: 8, chapter_title: "Zero-Trust Node as Generational Security Foundation", keywords: ["long term zero trust node","generational security system","regulated node legacy","sovereign architecture continuity"]}]}
+
+  - {series: 7, title: "Shields as Protective Layers", market: "Multi-Layer Security Shields & Protection Systems",
+     keywords: [multi layer security shields, regulated protective layers, permissioned defense in depth, enterprise security shields, compliant protection architecture, sovereign shield system, verifiable security layers],
+     chapters: [
+       {n: 1, chapter_title: "Beyond Single Point Protection", keywords: ["security layers importance","regulated multi layer protection","enterprise defense in depth","governed shield architecture"]},
+       {n: 2, chapter_title: "Layer 1 — Identity & Access Shields", keywords: ["identity security shield","regulated access protection","permissioned identity layer","compliant access governance"]},
+       {n: 3, chapter_title: "Layer 2 — Data & Storage Shields", keywords: ["data protection shield","regulated storage security","permissioned data layer","compliant information shields"]},
+       {n: 4, chapter_title: "Layer 3 — Network & Communication Shields", keywords: ["network security shield","regulated communication protection","permissioned network layer","compliant inter node security"]},
+       {n: 5, chapter_title: "Layer 4 — Application & Workload Shields", keywords: ["application security shield","regulated workload protection","permissioned app layer","compliant execution security"]},
+       {n: 6, chapter_title: "Layer 5 — Human & Governance Shields", keywords: ["human governance shield","regulated oversight layer","permissioned human primacy","compliant decision security"]},
+       {n: 7, chapter_title: "Shields vs Traditional Security Models", keywords: ["sovereign shields vs legacy","regulated security comparison","permissioned defense advantages","verifiable protection control"]},
+       {n: 8, chapter_title: "Shields as Generational Protection System", keywords: ["long term security shields","generational protection system","regulated shield legacy","sovereign defense continuity"]}]}
+
+  - {series: 7, title: "Sovereign Data Storage Model", market: "Sovereign & Regulated Data Storage Systems",
+     keywords: [sovereign data storage, regulated private storage model, verifiable data sovereignty, permissioned storage governance, enterprise data control, compliant storage architecture, sovereign data system],
+     chapters: [
+       {n: 1, chapter_title: "Data Storage Sovereignty Challenges", keywords: ["data sovereignty problems","regulated storage challenges","enterprise data control issues","governed storage model"]},
+       {n: 2, chapter_title: "Immutable & Receipted Storage Foundation", keywords: ["immutable data storage","regulated write once storage","permissioned sovereign storage","compliant data foundation"]},
+       {n: 3, chapter_title: "Governed Access & Encryption Layers", keywords: ["governed data access","regulated encryption control","permissioned storage governance","compliant data security"]},
+       {n: 4, chapter_title: "Multi-Node & Federated Storage", keywords: ["multi node storage governance","regulated federated data","permissioned cross node storage","compliant distributed model"]},
+       {n: 5, chapter_title: "Backup, Recovery & Continuity", keywords: ["regulated data backup","governed recovery processes","permissioned continuity planning","compliant storage resilience"]},
+       {n: 6, chapter_title: "Storage Compliance & Auditability", keywords: ["storage compliance automation","regulated data audit","governed storage records","compliant sovereignty proof"]},
+       {n: 7, chapter_title: "Sovereign Storage vs Cloud & Legacy Models", keywords: ["sovereign storage vs cloud","regulated data comparison","permissioned storage advantages","verifiable data control"]},
+       {n: 8, chapter_title: "Sovereign Data Storage as Generational Asset", keywords: ["long term sovereign storage","generational data asset","regulated storage legacy","sovereign data continuity"]}]}
+
+  - {series: 7, title: "Verified Data Flows Across Nodes", market: "Regulated Cross-Node Data Flow & Verification",
+     keywords: [verified data flows, regulated cross node exchange, permissioned data propagation, enterprise federation flows, compliant inter node data, sovereign data movement, verifiable federation system],
+     chapters: [
+       {n: 1, chapter_title: "Data Flow Trust Problems", keywords: ["data flow challenges","regulated cross node issues","enterprise exchange problems","governed data movement"]},
+       {n: 2, chapter_title: "Receipted & Verifiable Flow Design", keywords: ["signed data exchange","verifiable inter node exchange","regulated flow proof","permissioned data propagation"]},
+       {n: 3, chapter_title: "Governed Flow Policies", keywords: ["governed data flow policies","regulated propagation rules","permissioned exchange control","compliant data movement"]},
+       {n: 4, chapter_title: "Real-Time Flow Monitoring", keywords: ["regulated flow monitoring","governed data exchange visibility","permissioned propagation tracking","compliant inter node oversight"]},
+       {n: 5, chapter_title: "Conflict & Reconciliation in Flows", keywords: ["governed flow reconciliation","regulated data conflict resolution","permissioned exchange fixes","compliant federation data"]},
+       {n: 6, chapter_title: "Flow Compliance & Audit", keywords: ["data flow compliance","regulated exchange audit","governed movement records","compliant inter node proof"]},
+       {n: 7, chapter_title: "Verified Flows vs Legacy Integration", keywords: ["sovereign data flows vs legacy","regulated exchange comparison","permissioned federation advantages","verifiable data movement control"]},
+       {n: 8, chapter_title: "Verified Flows as Generational Trust Backbone", keywords: ["long term verified flows","generational data trust","regulated exchange legacy","sovereign federation continuity"]}]}
+
+  - {series: 7, title: "Private vs Shared Storage Governance", market: "Private vs Shared Data Governance Systems",
+     keywords: [private vs shared storage, regulated data ownership, governed storage governance, permissioned data classification, enterprise private shared model, compliant data sovereignty, sovereign storage governance],
+     chapters: [
+       {n: 1, chapter_title: "The Private vs Shared Dilemma", keywords: ["private shared data challenges","regulated storage governance","enterprise data ownership issues","governed classification"]},
+       {n: 2, chapter_title: "Data Classification Framework", keywords: ["regulated data classification","governed private shared rules","permissioned data ownership","compliant storage categories"]},
+       {n: 3, chapter_title: "Private Storage Governance", keywords: ["private data governance","regulated sovereign storage","permissioned private control","compliant isolated data"]},
+       {n: 4, chapter_title: "Shared & Federated Storage Governance", keywords: ["shared storage governance","regulated federation data","permissioned collaborative storage","compliant shared records"]},
+       {n: 5, chapter_title: "Hybrid & Scoped Storage Models", keywords: ["hybrid data governance","regulated scoped storage","permissioned partial sharing","compliant mixed data model"]},
+       {n: 6, chapter_title: "Storage Governance Compliance", keywords: ["storage governance compliance","regulated data audit","governed private shared records","compliant ownership proof"]},
+       {n: 7, chapter_title: "Private vs Shared vs Legacy Storage", keywords: ["sovereign private shared vs legacy","regulated storage comparison","permissioned governance advantages","verifiable data control"]},
+       {n: 8, chapter_title: "Private vs Shared as Generational Data Strategy", keywords: ["long term data governance","generational storage strategy","regulated ownership legacy","sovereign data continuity"]}]}
+
+  - {series: 7, title: "Resilience & Recovery Shields", market: "Regulated Disaster Recovery & Resilience Systems",
+     keywords: [regulated resilience shields, governed disaster recovery, verifiable recovery system, permissioned resilience control, enterprise recovery governance, compliant backup shields, sovereign resilience architecture],
+     chapters: [
+       {n: 1, chapter_title: "Resilience Challenges in Sovereign Systems", keywords: ["resilience challenges","regulated recovery problems","enterprise disaster risks","governed resilience control"]},
+       {n: 2, chapter_title: "Resilience Shield Design Principles", keywords: ["resilience shield design","regulated recovery architecture","permissioned disaster protection","compliant resilience model"]},
+       {n: 3, chapter_title: "Governed Backup & Snapshot Strategies", keywords: ["governed backup strategies","regulated snapshot management","permissioned recovery points","compliant data shields"]},
+       {n: 4, chapter_title: "Recovery & Failover Governance", keywords: ["governed disaster recovery","regulated failover control","permissioned system restoration","compliant resilience execution"]},
+       {n: 5, chapter_title: "Cross-Node Resilience Coordination", keywords: ["cross node resilience","regulated federation recovery","permissioned multi node continuity","compliant distributed shields"]},
+       {n: 6, chapter_title: "Resilience Compliance & Testing", keywords: ["resilience compliance automation","regulated recovery testing","governed disaster audit","compliant continuity proof"]},
+       {n: 7, chapter_title: "Resilience Shields vs Legacy Approaches", keywords: ["sovereign resilience vs legacy","regulated recovery comparison","permissioned shields advantages","verifiable continuity control"]},
+       {n: 8, chapter_title: "Resilience as Generational Safety Net", keywords: ["long term resilience shields","generational safety system","regulated recovery legacy","sovereign continuity protection"]}]}
+
+# ∞Δ∞ S7 — 6 titles / 48 chapters captured. ∞Δ∞

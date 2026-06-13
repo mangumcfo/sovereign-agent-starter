@@ -1,0 +1,126 @@
+# S5 Pass B — BEATS PATCH (promise + beats for the 12 Core-ERP-Module titles)
+# Recovered from Tiger's session transcript (KM's verbatim G Pass-B relay, 2026-06-11) — answers GB [221] ask #1.
+# Merge key: (series=5, title, chapter n). Pairs with G_open_series_S5_PassB_2026-06-11.yaml (spine: title/market/keywords).
+# COUNTS (per GB [221] capture rule): 12 titles · 96 chapters · 96 promise · 96 beats-lists.
+titles:
+  - {series: 5, title: "Sovereign Financials — General Ledger, Controlling & Reporting", chapters: [
+      {n: 1, promise: "You will see why legacy financial modules create ongoing compliance and trust issues.", beats: ["Mutable ledger problems","Reporting reconciliation pain","Audit fatigue","The sovereign alternative","LGP implications"]},
+      {n: 2, promise: "You will implement a cryptographically verifiable general ledger as the single source of financial truth.", beats: ["Ledger architecture","Transaction immutability","Real-time posting","Audit-ready design","Generational continuity"]},
+      {n: 3, promise: "You will govern all financial postings with human oversight and automated reconciliation.", beats: ["Breath-gated postings","Automated matching","Exception handling","Multi-currency support","LGP financial integrity"]},
+      {n: 4, promise: "You will generate both internal management and external statutory reports from the same immutable source.", beats: ["Single source reporting","Real-time analytics","Compliance package generation","Atrium reporting views","LGP transparency"]},
+      {n: 5, promise: "You will gain accurate, governed cost and profitability insights across the business.", beats: ["Cost allocation rules","Profit center governance","Real-time controlling","Vertical examples","LGP decision support"]},
+      {n: 6, promise: "You will automate compliance while keeping human primacy on material decisions.", beats: ["Rule-based controls","Audit trail automation","Regulatory mapping","Exception governance","LGP compliance continuity"]},
+      {n: 7, promise: "You will compare sovereign financials against traditional ERP finance modules.", beats: ["Legacy weaknesses","Sovereign advantages","Performance realism","Migration guidance","LGP framing"]},
+      {n: 8, promise: "You will see how strong sovereign financials enable the full ERP stack and generational prosperity.", beats: ["Module synthesis","Integration with other cores","Generational financial handoff","Next module preview","LGP call to action"]}]}
+
+  - {series: 5, title: "Treasury & Cash Management — Liquidity, Forecasting & Compliance", chapters: [
+      {n: 1, promise: "You will understand the visibility, control, and compliance gaps in legacy treasury systems.", beats: ["Cash visibility problems","Forecasting inaccuracies","Compliance burdens","The sovereign opportunity","LGP risk exposure"]},
+      {n: 2, promise: "You will maintain a verifiable, real-time view of all cash and liquidity positions.", beats: ["Unified cash ledger","Bank reconciliation automation","Liquidity pool governance","Atrium treasury views","LGP visibility"]},
+      {n: 3, promise: "You will build accurate, governed forecasts with human oversight on key assumptions.", beats: ["Forecast model governance","Scenario planning","Breath-gated adjustments","Variance tracking","LGP forecasting reliability"]},
+      {n: 4, promise: "You will control all outbound payments and banking relationships under constitutional rules.", beats: ["Payment approval workflows","Bank mandate management","Fraud prevention","Multi-bank support","LGP payment continuity"]},
+      {n: 5, promise: "You will govern short and long-term investments with full visibility and compliance.", beats: ["Investment policy enforcement","Financing structures","Risk monitoring","Atrium investment surface","LGP capital allocation"]},
+      {n: 6, promise: "You will automate treasury compliance while maintaining human primacy on material decisions.", beats: ["Regulatory mapping","Automated reporting","Audit trail generation","Exception governance","LGP compliance readiness"]},
+      {n: 7, promise: "You will evaluate sovereign treasury capabilities against traditional modules.", beats: ["Legacy limitations","Sovereign wins","Performance realism","Migration paths","LGP framing"]},
+      {n: 8, promise: "You will build treasury capabilities that serve multi-generational business prosperity.", beats: ["Full module synthesis","Integration with financials","Generational handoff","Atrium treasury cockpit","LGP close"]}]}
+
+  - {series: 5, title: "Supply Chain Execution — Procurement, Logistics & Inventory", chapters: [
+      {n: 1, promise: "You will see the fragmentation and trust issues in traditional supply chain systems.", beats: ["Legacy visibility gaps","Procurement compliance pain","Inventory accuracy problems","The sovereign opportunity","LGP disruption risk"]},
+      {n: 2, promise: "You will manage sourcing and procurement under constitutional rules and human oversight.", beats: ["Supplier governance","Purchase request flows","Breath-gated approvals","Contract management","LGP supplier continuity"]},
+      {n: 3, promise: "You will maintain accurate, receipted inventory records across locations.", beats: ["Immutable stock records","Receipted movements","Cycle counting governance","Atrium inventory views","LGP stock integrity"]},
+      {n: 4, promise: "You will govern logistics and fulfillment with full traceability.", beats: ["Shipment governance","Carrier management","Delivery confirmation","Multi-modal support","LGP delivery reliability"]},
+      {n: 5, promise: "You will align demand planning with governed supply execution.", beats: ["Forecast integration","Supply plan governance","Exception handling","Atrium planning surface","LGP coordination"]},
+      {n: 6, promise: "You will automate compliance and provide end-to-end verifiable traceability.", beats: ["Regulatory mapping","Traceability receipts","Audit package generation","Exception governance","LGP traceability"]},
+      {n: 7, promise: "You will compare sovereign supply chain execution against traditional modules.", beats: ["Legacy weaknesses","Sovereign advantages","Performance realism","Migration guidance","LGP framing"]},
+      {n: 8, promise: "You will build supply chain capabilities that endure and strengthen across generations.", beats: ["Module synthesis","Integration with core","Generational handoff","Atrium supply cockpit","Final LGP synthesis"]}]}
+
+  - {series: 5, title: "Manufacturing & Quality — Production, MES & Traceability", chapters: [
+      {n: 1, promise: "You will understand the visibility, quality, and compliance gaps in legacy manufacturing systems.", beats: ["Legacy MES limitations","Quality and traceability issues","Production scheduling pain","Sovereign opportunity","LGP disruption risk"]},
+      {n: 2, promise: "You will plan and schedule production under constitutional rules and human oversight.", beats: ["Master production scheduling","Breath-gated plan approval","Capacity governance","Atrium planning surface","LGP production reliability"]},
+      {n: 3, promise: "You will execute manufacturing operations with full governance and traceability.", beats: ["Work order governance","Real-time execution tracking","Operator confirmation flows","Exception handling","LGP shop floor integrity"]},
+      {n: 4, promise: "You will implement end-to-end quality control with immutable traceability.", beats: ["Quality rule enforcement","Receipted inspection events","Non-conformance governance","Atrium quality lens","LGP traceability"]},
+      {n: 5, promise: "You will govern materials, BOMs, and resources with full visibility.", beats: ["BOM governance","Material movement control","Resource allocation","Atrium resource views","LGP material continuity"]},
+      {n: 6, promise: "You will automate compliance reporting while keeping human primacy on key decisions.", beats: ["Regulatory mapping","Automated production reports","Audit trail generation","Exception governance","LGP compliance readiness"]},
+      {n: 7, promise: "You will compare sovereign manufacturing capabilities against traditional MES/ERP modules.", beats: ["Legacy limitations","Sovereign advantages","Performance realism","Migration guidance","LGP framing"]},
+      {n: 8, promise: "You will build manufacturing execution that strengthens across business generations.", beats: ["Module synthesis","Integration with supply chain","Generational handoff","Atrium manufacturing cockpit","Final LGP synthesis"]}]}
+
+  - {series: 5, title: "Project & Portfolio Management — Planning, Execution & Governance", chapters: [
+      {n: 1, promise: "You will see the visibility, governance, and compliance gaps in traditional project tools.", beats: ["Legacy PM tool limitations","Portfolio visibility problems","Compliance burdens","Sovereign opportunity","LGP project risk"]},
+      {n: 2, promise: "You will plan projects with constitutional rules and human oversight on key commitments.", beats: ["Project charter governance","Resource and budget approval","Breath-gated baselines","Atrium planning surface","LGP project alignment"]},
+      {n: 3, promise: "You will track and govern project execution with real-time verifiable progress.", beats: ["Task and milestone governance","Progress confirmation flows","Variance management","Atrium execution views","LGP delivery reliability"]},
+      {n: 4, promise: "You will control project budgets and costs under sovereign rules.", beats: ["Budget approval workflows","Cost tracking governance","Change request control","Atrium cost surfaces","LGP financial integrity"]},
+      {n: 5, promise: "You will govern project risks and issues with clear accountability.", beats: ["Risk register governance","Issue escalation flows","Mitigation approval","Atrium risk lens","LGP risk continuity"]},
+      {n: 6, promise: "You will automate project compliance while keeping human primacy.", beats: ["Regulatory mapping","Automated status reports","Audit package generation","Exception governance","LGP compliance readiness"]},
+      {n: 7, promise: "You will compare sovereign project capabilities against traditional PM software.", beats: ["Legacy tool weaknesses","Sovereign advantages","Integration realism","Migration guidance","LGP framing"]},
+      {n: 8, promise: "You will build project capabilities that become multi-generational business assets.", beats: ["Portfolio synthesis","Integration with other modules","Generational handoff","Atrium portfolio cockpit","Final LGP synthesis"]}]}
+
+  - {series: 5, title: "Asset & Maintenance Management — Lifecycle & Reliability", chapters: [
+      {n: 1, promise: "You will understand the visibility, reliability, and compliance gaps in legacy asset systems.", beats: ["Legacy EAM limitations","Maintenance scheduling pain","Compliance burdens","Sovereign opportunity","LGP asset risk"]},
+      {n: 2, promise: "You will maintain a verifiable registry of all physical and digital assets.", beats: ["Asset identity and provenance","Lifecycle stage governance","Receipted events","Atrium asset views","LGP asset continuity"]},
+      {n: 3, promise: "You will plan and schedule maintenance under constitutional rules.", beats: ["Preventive maintenance governance","Work order approval","Resource allocation","Atrium maintenance surface","LGP reliability"]},
+      {n: 4, promise: "You will execute maintenance with full governance and real-time condition data.", beats: ["Work execution governance","Condition-based triggers","Operator confirmation","Exception handling","LGP asset health"]},
+      {n: 5, promise: "You will govern spares and maintenance inventory with full traceability.", beats: ["Spares governance","Consumption tracking","Replenishment rules","Atrium spares views","LGP inventory alignment"]},
+      {n: 6, promise: "You will automate compliance and reliability reporting for assets.", beats: ["Regulatory mapping","Automated reliability reports","Audit trails","Exception governance","LGP reliability readiness"]},
+      {n: 7, promise: "You will compare sovereign asset capabilities against traditional EAM systems.", beats: ["Legacy weaknesses","Sovereign advantages","Performance realism","Migration guidance","LGP framing"]},
+      {n: 8, promise: "You will build asset capabilities that endure and strengthen across generations.", beats: ["Module synthesis","Integration with manufacturing","Generational handoff","Atrium asset cockpit","Final LGP synthesis"]}]}
+
+  - {series: 5, title: "Human Capital & Sovereign Payroll — Roles, Compensation & Continuity", chapters: [
+      {n: 1, promise: "You will see the compliance, privacy, and continuity issues in legacy HR systems.", beats: ["Legacy HR limitations","Payroll compliance pain","Data privacy risks","Sovereign opportunity","LGP people risk"]},
+      {n: 2, promise: "You will author and govern the organizational structure and roles.", beats: ["Role lattice governance","Organizational design","Multi-mandate support","Atrium org views","LGP role continuity"]},
+      {n: 3, promise: "You will manage compensation and payroll under constitutional rules.", beats: ["Payroll rule governance","Breath-gated payments","Tax and compliance automation","Atrium payroll surface","LGP compensation integrity"]},
+      {n: 4, promise: "You will govern the full employee lifecycle with verifiable records.", beats: ["Onboarding and offboarding","Performance and development governance","Training records","Atrium employee lens","LGP talent continuity"]},
+      {n: 5, promise: "You will automate HR compliance while maintaining human oversight.", beats: ["Regulatory mapping","Automated reporting","Audit trails","Exception governance","LGP compliance readiness"]},
+      {n: 6, promise: "You will manage HR across multiple entities with clean governance.", beats: ["Multi-mandate HR support","Global compliance rules","Scoped access","Atrium multi-entity views","LGP global continuity"]},
+      {n: 7, promise: "You will compare sovereign HR capabilities against traditional HRIS platforms.", beats: ["Legacy weaknesses","Sovereign advantages","Performance realism","Migration guidance","LGP framing"]},
+      {n: 8, promise: "You will build HR capabilities that strengthen family and business across generations.", beats: ["Module synthesis","Integration with other cores","Generational handoff","Atrium HR cockpit","Final LGP synthesis"]}]}
+
+  - {series: 5, title: "Compliance & Audit Automation — Standards Ingestion & Evidence", chapters: [
+      {n: 1, promise: "You will see why manual compliance creates massive overhead and risk.", beats: ["Legacy compliance pain","Audit preparation costs","Evidence fragmentation","Automation opportunity","LGP compliance risk"]},
+      {n: 2, promise: "You will automatically ingest and map external standards into your sovereign ERP.", beats: ["Standard ingestion flow","Mapping governance","Version control","Atrium standards surface","LGP regulatory alignment"]},
+      {n: 3, promise: "You will generate and collect immutable evidence for all compliance requirements.", beats: ["Receipted evidence events","Automated collection","Human witness on key evidence","Atrium evidence views","LGP audit readiness"]},
+      {n: 4, promise: "You will monitor compliance in real time with governed alerts and remediation.", beats: ["Real-time rule checking","Drift detection for compliance","Exception governance","Atrium compliance lens","LGP ongoing alignment"]},
+      {n: 5, promise: "You will generate complete, verifiable audit packages on demand.", beats: ["Audit package assembly","Receipted evidence bundles","External auditor access","Atrium audit tools","LGP audit continuity"]},
+      {n: 6, promise: "You will manage compliance across multiple standards and jurisdictions.", beats: ["Multi-standard mapping","Jurisdictional rules","Scoped compliance views","Atrium multi-jurisdiction surface","LGP global compliance"]},
+      {n: 7, promise: "You will compare sovereign compliance automation against traditional methods.", beats: ["Legacy compliance weaknesses","Sovereign decisive wins","Cost and risk realism","Migration guidance","LGP framing"]},
+      {n: 8, promise: "You will build compliance capabilities that become a multi-generational strength.", beats: ["Full module synthesis","Integration with core","Generational compliance handoff","Atrium compliance cockpit","Final LGP synthesis"]}]}
+
+  - {series: 5, title: "Revenue & Order-to-Cash — Contracts, Billing & Recognition", chapters: [
+      {n: 1, promise: "You will understand the compliance, timing, and visibility issues in legacy revenue systems.", beats: ["Legacy O2C pain points","Revenue recognition risks","Contract management gaps","Sovereign opportunity","LGP revenue integrity"]},
+      {n: 2, promise: "You will manage contracts and orders under constitutional rules.", beats: ["Contract governance","Order approval workflows","Breath-gated commitments","Atrium order surface","LGP contract continuity"]},
+      {n: 3, promise: "You will control billing and invoicing with full governance and traceability.", beats: ["Invoice generation rules","Breath-gated billing","Multi-currency support","Atrium billing views","LGP billing integrity"]},
+      {n: 4, promise: "You will automate revenue recognition while maintaining human oversight.", beats: ["Recognition rule governance","Automated calculation","Audit trail generation","Exception handling","LGP compliance readiness"]},
+      {n: 5, promise: "You will govern collections and credit with clear rules and visibility.", beats: ["Credit policy enforcement","Collections workflows","Breath-gated actions","Atrium collections surface","LGP cash flow reliability"]},
+      {n: 6, promise: "You will gain real-time, verifiable revenue insights for decision making.", beats: ["Analytics governance","Real-time dashboards","Variance analysis","Atrium revenue lens","LGP decision support"]},
+      {n: 7, promise: "You will compare sovereign revenue capabilities against traditional modules.", beats: ["Legacy weaknesses","Sovereign advantages","Performance realism","Migration guidance","LGP framing"]},
+      {n: 8, promise: "You will build revenue processes that support multi-generational business prosperity.", beats: ["Module synthesis","Integration with financials","Generational handoff","Atrium revenue cockpit","Final LGP synthesis"]}]}
+
+  - {series: 5, title: "Procurement-to-Pay — Sourcing, Contracts & Supplier Governance", chapters: [
+      {n: 1, promise: "You will see the compliance, cost, and relationship issues in legacy P2P.", beats: ["Legacy procurement pain","Supplier risk exposure","Compliance burdens","Sovereign opportunity","LGP procurement risk"]},
+      {n: 2, promise: "You will manage sourcing and supplier selection under constitutional rules.", beats: ["Sourcing governance","Supplier qualification","Breath-gated awards","Atrium sourcing surface","LGP supplier continuity"]},
+      {n: 3, promise: "You will govern contracts and POs with full traceability.", beats: ["Contract approval workflows","PO governance","Change management","Atrium contract views","LGP contract integrity"]},
+      {n: 4, promise: "You will automate 3-way matching while keeping human primacy on exceptions.", beats: ["Automated matching","Breath-gated payments","Exception governance","Atrium invoice surface","LGP payment reliability"]},
+      {n: 5, promise: "You will govern supplier performance with verifiable metrics.", beats: ["Performance scoring","Relationship governance","Remediation flows","Atrium supplier lens","LGP supplier alignment"]},
+      {n: 6, promise: "You will automate procurement compliance and gain governed spend insights.", beats: ["Regulatory mapping","Spend analytics governance","Audit trails","Exception handling","LGP spend transparency"]},
+      {n: 7, promise: "You will compare sovereign P2P against traditional procurement modules.", beats: ["Legacy weaknesses","Sovereign advantages","Performance realism","Migration guidance","LGP framing"]},
+      {n: 8, promise: "You will build procurement capabilities that strengthen supplier relationships across generations.", beats: ["Module synthesis","Integration with supply chain","Generational handoff","Atrium procurement cockpit","Final LGP synthesis"]}]}
+
+  - {series: 5, title: "Analytics & Decision Intelligence — Real-Time Insights with Provenance", chapters: [
+      {n: 1, promise: "You will see why legacy analytics often lack trust and governance.", beats: ["Data quality and provenance issues","Reporting silos","Compliance gaps","Sovereign opportunity","LGP decision risk"]},
+      {n: 2, promise: "You will build analytics directly on the immutable core for trustworthy insights.", beats: ["Single source analytics","Real-time querying","Provenance guarantees","Atrium analytics lens","LGP insight reliability"]},
+      {n: 3, promise: "You will govern analytics models and reports under constitutional rules.", beats: ["Model governance","Breath-gated report approval","Version control","Atrium reporting surface","LGP analytical integrity"]},
+      {n: 4, promise: "You will turn insights into governed decisions with human primacy.", beats: ["Insight to proposal flow","Breath-gated decisions","Scenario analysis","Atrium decision surface","LGP decision continuity"]},
+      {n: 5, promise: "You will apply advanced analytics while maintaining governance and provenance.", beats: ["Multi-dimensional modeling","Predictive governance","Scenario governance","Atrium advanced views","LGP predictive reliability"]},
+      {n: 6, promise: "You will ensure all analytics and reports are audit-ready and compliant.", beats: ["Analytics audit trails","Regulatory mapping","Automated validation","Exception governance","LGP compliance readiness"]},
+      {n: 7, promise: "You will compare sovereign analytics against traditional business intelligence platforms.", beats: ["Legacy BI weaknesses","Sovereign advantages","Performance realism","Integration guidance","LGP framing"]},
+      {n: 8, promise: "You will build analytics capabilities that become multi-generational business wisdom.", beats: ["Full module synthesis","Integration with core","Generational knowledge handoff","Atrium decision cockpit","Final LGP synthesis"]}]}
+
+  - {series: 5, title: "Multi-Entity & Consolidation — Global Structures & Intercompany", chapters: [
+      {n: 1, promise: "You will see the complexity and compliance issues in managing multiple entities.", beats: ["Legacy multi-entity pain","Consolidation reconciliation issues","Intercompany risks","Sovereign opportunity","LGP global risk"]},
+      {n: 2, promise: "You will design and govern organizational and legal entity structures.", beats: ["Entity registry governance","Ownership and control rules","Multi-mandate support","Atrium entity views","LGP structural continuity"]},
+      {n: 3, promise: "You will manage intercompany transactions with full governance and elimination.", beats: ["Intercompany rule governance","Breath-gated transactions","Elimination automation","Atrium intercompany surface","LGP transaction integrity"]},
+      {n: 4, promise: "You will perform accurate, governed consolidation and group reporting.", beats: ["Consolidation rules","Automated elimination","Currency translation","Atrium group views","LGP consolidated truth"]},
+      {n: 5, promise: "You will manage global compliance and tax across entities.", beats: ["Tax rule governance","Multi-jurisdiction mapping","Automated filings support","Atrium tax surface","LGP global compliance"]},
+      {n: 6, promise: "You will maintain clean governance and visibility across the group.", beats: ["Multi-mandate support","Scoped access rules","Consolidated dashboards","Atrium group cockpit","LGP global continuity"]},
+      {n: 7, promise: "You will compare sovereign multi-entity capabilities against traditional tools.", beats: ["Legacy weaknesses","Sovereign advantages","Performance realism","Migration guidance","LGP framing"]},
+      {n: 8, promise: "You will build multi-entity capabilities that support long-term global prosperity.", beats: ["Module synthesis","Integration with financials","Generational handoff","Atrium global cockpit","Final LGP synthesis"]}]}
+
+# ∞Δ∞ Pass-B beats recovered from Tiger transcript — 12 titles / 96 chapters / 96 promise / 96 beats. GB: merge by (title,n). ∞Δ∞

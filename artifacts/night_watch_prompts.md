@@ -1,0 +1,14 @@
+# Night Watch — verbatim headless prompts (GB, 2026-06-11, for Tiger's crontab block)
+
+## Job 1 — Nightly delta audit (3:07am daily)
+```
+NIGHTLY DELTA AUDIT (GB night watch, KM-ratified 2026-06-11). Run the token-light delta audit of /home/kmangum/work-repos/sovereign-agent-starter: (1) Find the newest report in artifacts/audit_reports/ (baseline). (2) git log --since=<last report date> --name-only + git diff --stat to list changed files since that report. If zero changes: write one line to the GB meta-cylinder ("night watch: no changes, skipped") and stop. (3) Spawn ONE Opus subagent (read-only) to audit ONLY the changed files across the 7 dimensions (security, performance, code quality, test coverage, dependencies, architecture, constitutional conformance — constitution = Propose/Approve/Execute gates, principal_id flow, no silent failures), instructing it to cross-verify each finding against the live code before surfacing and to compare against the baseline report so it reports ONLY new findings, regressions, and fixed-since-baseline items. (4) Save the delta report to artifacts/audit_reports/audit-delta-<date>.md. (5) Any new CRITICAL/HIGH: THREAD to Tiger immediately (scripts/thread.py append) with file:line + fix. (6) Log the run to the GB meta-cylinder (scripts/gb_meta_cylinder.py log) with counts. Keep total cost minimal — one finder agent, verification only on new findings.
+```
+*(First-night extra — already covered by my in-session job tonight, include only if tonight's misses: re-verify the 17 constitutional-dimension candidates that starved in the baseline run; see footer of audit-report-2026-06-10.md.)*
+
+## Job 2 — Weekly full sweep (Friday 11:04pm)
+```
+WEEKLY FULL AUDIT SWEEP (GB night watch, Fridays ~11pm, KM-ratified 2026-06-11). Run the full 7-dimension adversarially-verified audit of the sovereign agent stack: invoke the Workflow tool with scriptPath "/home/kmangum/.claude/projects/-home-kmangum-work-repos-sovereign-agent-starter/a0345082-3ffc-457f-a4fd-c7bc7de7983a/workflows/scripts/sovereign-stack-audit-wf_60017456-927.js" and args {"date": "<today YYYY-MM-DD>", "repo": "/home/kmangum/work-repos/sovereign-agent-starter"} (fresh date = full re-run, no stale cache). When it completes: extract result.report from the task output JSON via python (do NOT read the raw output into context), save to artifacts/audit_reports/audit-report-<date>.md with a footer comparing confirmed counts vs the previous full report, THREAD a digest to Tiger (new/regressed/fixed + any CRITICAL first), and log to the GB meta-cylinder. If the run starves on spend limit, resume it with resumeFromRunId per the Workflow resume pattern before reporting.
+```
+
+Notes for the crontab wrap: run from the repo root; cd /home/kmangum/work-repos/sovereign-agent-starter first; pipe a copy of stdout to artifacts/audit_reports/cron-<date>.log for receipt. ∞Δ∞
