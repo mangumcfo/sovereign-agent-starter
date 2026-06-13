@@ -19,6 +19,8 @@ import json
 import os
 from pathlib import Path
 
+from ._filecache import memoize_on
+
 
 def _thread_path() -> Path:
     """The THREAD ndjson. Defaults to the live coordination record; tests override via env."""
@@ -33,7 +35,12 @@ def _hash(prev: str, frm: str, to: str, ref: str, msg: str) -> str:
     return hashlib.sha256("|".join([prev, frm, to, ref, msg]).encode("utf-8")).hexdigest()
 
 
+@memoize_on(lambda: [_thread_path()])
 def load() -> list[dict]:
+    # Memoized on the THREAD file's (mtime,size) (audit 2026-06-13d #5/#6): GET /relays folded every
+    # 'relayed' card via find_reply→load (full 498KB parse per card per poll), and /dialogue re-parsed it
+    # too. Re-derives only on change — and append()'s write between its two load() calls bumps the stat
+    # key, so the second load() (for the .md mirror) still sees the fresh chain.
     p = _thread_path()
     if not p.exists():
         return []

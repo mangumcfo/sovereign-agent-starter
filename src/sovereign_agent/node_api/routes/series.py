@@ -353,9 +353,15 @@ def series_list():
     })
 
 
+def _thread_path() -> Path:
+    return Path(__file__).resolve().parents[4] / "memory" / "coordination" / "THREAD_Tiger_GB.ndjson"
+
+
+@memoize_on(lambda: [_thread_path()])
 def _thread_entries():
-    """The hash-chained Tiger↔GB THREAD as dialogue cards. Returns (entries, chain_ok). Read-only."""
-    p = Path(__file__).resolve().parents[4] / "memory" / "coordination" / "THREAD_Tiger_GB.ndjson"
+    """The hash-chained Tiger↔GB THREAD as dialogue cards. Returns (entries, chain_ok). Read-only.
+    Memoized on the THREAD's (mtime,size) (audit 2026-06-13d #6) — /dialogue re-parsed 498KB per poll."""
+    p = _thread_path()
     entries, ok = [], True
     if p.is_file():
         prev_hash = None
@@ -409,9 +415,12 @@ def _b51_cylinder_path() -> Path | None:
     return None
 
 
+@memoize_on(lambda limit=12: [p for p in [_b51_cylinder_path()] if p])
 def _b51_entries(limit: int = 12):
     """The latest `limit` entries of KM's live B51 Memory Cylinder, as dialogue cards. Returns
-    (entries_newest_first, merkle_root, cyl_id). Honest: per-entry receipt = content hash; merkle_root anchors."""
+    (entries_newest_first, merkle_root, cyl_id). Honest: per-entry receipt = content hash; merkle_root anchors.
+    Memoized on the cylinder's (mtime,size) (audit 2026-06-13d #6) — re-loaded the whole cylinder per poll.
+    NB: the single caller uses the default limit, so a stat-only key is correct here."""
     path = _b51_cylinder_path()
     if not path:
         return [], "", ""
