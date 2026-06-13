@@ -96,18 +96,26 @@ def feedback_intake():
     # A2 capture classification → automatic lane routing (mechanical batch / technical / judgment).
     category, route, defaulted = _classify(body)
     title = f"[{category}] {prefix}: {text[:72]}"
-    entry = get_obligation_ledger().open(
-        title=title,
-        owner=current_principal(),  # bind to authenticated principal, never the request body (audit 2026-06-10)
-        classification=body.get("classification", "C2"),
-        intent=text,
-        ref=ref,
-        material=route["material"],   # category drives the gate, not the caller (judgment=gated, mechanical=born-approved)
-        lgp=body.get("lgp"),
-        next_gate=route["gate"],
-        category=category,
-        lane=route["lane"],
-    )
+    try:
+        entry = get_obligation_ledger().open(
+            title=title,
+            owner=current_principal(),  # bind to authenticated principal, never the request body (audit 2026-06-10)
+            classification=body.get("classification", "C2"),
+            intent=text,
+            ref=ref,
+            material=route["material"],   # category drives the gate, not the caller (judgment=gated, mechanical=born-approved)
+            lgp=body.get("lgp"),
+            next_gate=route["gate"],
+            category=category,
+            lane=route["lane"],
+        )
+    except ValueError as exc:  # resolve-at-entry on a path-like source ref (audit 2026-06-13 W5 #7)
+        return jsonify({
+            "error": "unresolvable_ref",
+            "what": str(exc),
+            "why": "The feedback `source` is path-like but does not resolve — a pointer is never written false.",
+            "next_step": "Point `source` at a real file, or omit it / use a symbolic tag.",
+        }), 422
     return jsonify({"obligation": entry, "kind": kind, "source": ref,
                     "category": category, "lane": route["lane"],
                     "category_defaulted": defaulted}), 201

@@ -75,16 +75,24 @@ def obligations_open():
             "what": "An obligation needs a title.",
             "next_step": "POST /api/v1/obligations with JSON {\"title\": \"...\"}.",
         }), 400
-    entry = get_obligation_ledger().open(
-        title=title,
-        owner=current_principal(),  # bind to authenticated principal, never the request body (audit 2026-06-10)
-        classification=body.get("classification", "C2"),
-        intent=body.get("intent"),
-        ref=body.get("ref"),
-        material=bool(body.get("material", False)),
-        lgp=body.get("lgp"),            # P0-2: LGP travels through the HTTP layer too
-        next_gate=body.get("next_gate"),
-    )
+    try:
+        entry = get_obligation_ledger().open(
+            title=title,
+            owner=current_principal(),  # bind to authenticated principal, never the request body (audit 2026-06-10)
+            classification=body.get("classification", "C2"),
+            intent=body.get("intent"),
+            ref=body.get("ref"),
+            material=bool(body.get("material", False)),
+            lgp=body.get("lgp"),            # P0-2: LGP travels through the HTTP layer too
+            next_gate=body.get("next_gate"),
+        )
+    except ValueError as exc:  # resolve-at-entry: a path-like ref that doesn't resolve (audit 2026-06-13 W5 #7)
+        return jsonify({
+            "error": "unresolvable_ref",
+            "what": str(exc),
+            "why": "A path-like `ref` is validated at entry — a pointer is never written false.",
+            "next_step": "Pass a ref that resolves to a real file, or a symbolic ref (e.g. 'B11:veto-chapter').",
+        }), 422
     return jsonify(entry), 201
 
 

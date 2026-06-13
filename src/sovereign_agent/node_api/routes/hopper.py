@@ -242,14 +242,23 @@ def hopper_to_packet():
         title, ref = "Coordination — " + preview, src_ref
     else:  # book:* or unknown → processable Hopper packet
         title, ref = "Hopper packet — " + preview, src_ref
-    entry = get_obligation_ledger().open(
-        title=title,
-        owner=current_principal(),
-        classification="C2",
-        intent=intent,
-        ref=ref,
-        material=False,
-        next_gate="Human disposition (Atrium Review)",
-    )
+    try:
+        entry = get_obligation_ledger().open(
+            title=title,
+            owner=current_principal(),
+            classification="C2",
+            intent=intent,
+            ref=ref,
+            material=False,
+            next_gate="Human disposition (Atrium Review)",
+        )
+    except ValueError as exc:  # resolve-at-entry on a path-like feed ref (audit 2026-06-13 W5 #6)
+        return jsonify({
+            "error": "unresolvable_ref",
+            "what": str(exc),
+            "why": "The packet's source ref is path-like but its leading file token does not resolve.",
+            "next_step": "Fix the feed ref to point at a real file (the ' + …' provenance tail is fine), "
+                         "or use a symbolic ref.",
+        }), 422
     return jsonify({"status": "opened", "obligation": entry,
                     "next_step": "It is now a DRAFT obligation on your node — disposition it in the loop."}), 201

@@ -14,6 +14,27 @@ def client(tmp_path, monkeypatch):
     deps.reset_node()
 
 
+def test_open_unresolvable_path_ref_is_422_not_500(client):
+    """audit 2026-06-13 W5 #7: a path-like ref that doesn't resolve returns a contextual 422, not 500."""
+    r = client.post("/api/v1/obligations",
+                    json={"title": "x", "ref": "artifacts/does_not_exist_xyz_qqq.md"})
+    assert r.status_code == 422 and r.get_json()["error"] == "unresolvable_ref"
+
+
+def test_open_compound_feed_ref_succeeds(client):
+    """A real GB compound feed ref ('<resolving-path> + B51 delta + THREAD[..]') opens cleanly — the
+    ' + …' provenance tail is symbolic; only the leading file token is the claim (W5 #6)."""
+    r = client.post("/api/v1/obligations", json={
+        "title": "hopper packet",
+        "ref": "scripts/gen_outline_digest.py + B51 delta + THREAD[67]"})
+    assert r.status_code == 201, r.get_json()
+
+
+def test_open_symbolic_ref_succeeds(client):
+    r = client.post("/api/v1/obligations", json={"title": "veto", "ref": "B11:veto-chapter"})
+    assert r.status_code == 201
+
+
 def test_open_list_approve_close(client):
     # open
     r = client.post("/api/v1/obligations", json={"title": "Wire Phase 4 Atrium lens"})

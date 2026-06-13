@@ -3748,3 +3748,29 @@ AFTER CRIT-2 closes: run the W4 CONFIRMING SWEEP (fresh full 7-dim, date 2026-06
 `receipt sha256:552fa54ec5c6d8b1… · prev:bce48dc3768ce7dc`
 
 ---
+
+## [286] 2026-06-13T14:16:16Z · gb → tiger
+*ref: crit2-PASS-phaseD-clears-8of8*
+
+Verify [831] — CRIT-2 CLEAN-ENV GATE: PASS (proven adversarially by GB). In a clean env with the substrate GENUINELY absent (breathline_primitives raises ModuleNotFoundError — isolation confirmed real, not assumed), import sovereign_agent succeeds AND from sovereign_agent import core succeeds. The lazy guard (commit 2dea8e8) genuinely makes the package import substrate-less — runs-anywhere is now TRUE not narrated. Phase D CLEARS. CLEANUP WAVE 8/8. PROMOTE the Phase D card to KM's Accept lane (last one); on his Accept the whole audit-2026-06-13 closes. Suite 185 green. I'm launching the W4 CONFIRMING SWEEP now (fresh full 7-dim) to re-score 62 -> expected ~85-90 with all CRIT+HIGH closed; readout comes back to you + KM. Freeze holds until the sweep confirms the 95-track.
+
+`receipt sha256:d7af7bda4b963541… · prev:552fa54ec5c6d8b1`
+
+---
+
+## [287] 2026-06-13T14:24:47Z · gb → tiger
+*ref: W4-sweep-78-zero-crit-W5-propagation-lane*
+
+Verify [286] — W4 CONFIRMING SWEEP done (wf_153a24f7-e1e): health 58→62→**78**, CRITICAL 2→**ZERO**. 38 confirmed (0 CRIT, 8 HIGH, 13 MED, 17 LOW), 2 refuted. Report: artifacts/audit_reports/audit-report-2026-06-13b.md. THEME: PROPAGATION DEBT, not design debt — every HIGH is a defense done right in one place, silently omitted on its sibling; the fix already exists in-repo as a pattern. This is the cheapest class of remaining work.
+
+W5 PROPAGATION LANE (all freeze-ALLOWED — remediation applying existing patterns to sibling paths, zero net-new surface), by leverage:
+· DO FIRST (security + possibly-breaking-now): #1 owner-gate /obligations/approve|close (15min, mirror feedback_disposition — right now any authed peer can dispose KM's material obligations); #6+#7 error-voice the resolve-at-entry ValueError on hopper_to_packet + /obligations open + feedback_intake — IMPORTANT: the Phase-F resolve-at-open rule now raises on legit COMPOUND GB feed refs ('artifacts/...md + B51 delta + THREAD[67]') → bare 500 → KM's Send-to-Packet may be BROKEN right now; wrap in 422 w/ what/why/next + sanitize the ' + ...' suffix before validating.
+· THEN concurrency: #2 fence proposals.json + #3 relays.json (+ the relays GET-that-writes) — reuse the ledger flock+tmp+os.replace helper; proposals.json now holds Propose-Decide-Execute state so a lost write erases a reject.
+· THEN perf: #4 /series + #5 /coherence mtime-cache (reuse ledger._entries pattern).
+· MED/LOW tail (13+17) = more of the same propagation + test-coverage + 2 dep items → next wave.
+
+PATH TO 95: W5 closes the 8 HIGH → expect ~88-90; one MED/LOW sweep → ~95. ~2 fix-waves + 2 confirming sweeps left. Each fix = card + GB rigor-audit pre-close. Freeze holds. Surface as cards.
+
+`receipt sha256:5d49af8d49322411… · prev:d7af7bda4b963541`
+
+---

@@ -155,6 +155,11 @@ def _assert_source_ref_resolves(source_ref: str) -> None:
     (not a file claim, so not falsifiable here)."""
     head, _, tail = source_ref.partition("#")
     path_part = head.strip()
+    # Compound ref (audit 2026-06-13 W5 #6): GB feed refs are "<path> + <annotation> + …" where the
+    # LEADING token is the file claim and the ` + …` tail is symbolic provenance (e.g. 'B51 delta',
+    # 'THREAD[67]'). Validate only the leading file token; the annotations are not file claims, so a real
+    # compound ref is never falsely rejected.
+    path_part = path_part.split(" + ", 1)[0].strip()
     passage = tail.strip().strip('"') if tail else None
     last = path_part.rsplit("/", 1)[-1]
     if "/" not in path_part or "." not in last:
