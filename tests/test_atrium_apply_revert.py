@@ -15,6 +15,50 @@ def _git(repo, *args):
     subprocess.run(["git", *args], cwd=repo, check=True, capture_output=True)
 
 
+class _R:
+    def __init__(self, rc=0, out="", err=""):
+        self.returncode, self.stdout, self.stderr = rc, out, err
+
+
+def test_commit_failure_does_not_seal_or_close(tmp_path, monkeypatch):
+    """CRIT-1 (audit 2026-06-13d): a FAILED git commit must REVERT + mark_error + return non-zero —
+    never seal a cylinder or close the obligation with a false-success E2 receipt."""
+    repo = tmp_path / "books"
+    repo.mkdir()
+    f = repo / "x.txt"
+    f.write_text("edited")
+    monkeypatch.setattr(A, "REPOS", {"books": {"root": str(repo), "name": "t", "email": "t@t", "trailer": False}})
+
+    prop = {"id": "prop_x", "obligation_id": "obl_zzz", "decisions": {"g1": "accept"},
+            "groups": [{"id": "g1", "file": str(f), "kind": "books"}]}
+    monkeypatch.setattr(A, "_get", lambda path: {"proposals": [prop]})
+
+    def fake_apply(g, changed, created=None):
+        changed.setdefault("books", []).append(str(f))
+        return True, "books"
+    monkeypatch.setattr(A, "_apply_group", fake_apply)
+
+    def fake_git(root, args):
+        if args[:2] == ["rev-parse", "HEAD"]:
+            return _R(out="HEAD0\n")
+        if "commit" in args:
+            return _R(rc=1, err="pre-commit hook rejected the commit")   # the failure
+        return _R()
+    monkeypatch.setattr(A, "_git", fake_git)
+
+    rec = {"revert": 0, "errors": [], "subproc": 0}
+    monkeypatch.setattr(A, "_revert", lambda c, cr: rec.__setitem__("revert", rec["revert"] + 1))
+    monkeypatch.setattr(A, "_mark_error", lambda pid, reason: rec["errors"].append(reason))
+    monkeypatch.setattr(subprocess, "run", lambda *a, **k: (rec.__setitem__("subproc", rec["subproc"] + 1), _R())[1])
+    monkeypatch.setattr(A.sys, "argv", ["atrium_apply.py", "prop_x"])
+
+    rc = A.main()
+    assert rc == 5                                   # hard-failed before seal/close
+    assert rec["revert"] == 1                        # reverted
+    assert any("git commit failed" in e for e in rec["errors"])
+    assert rec["subproc"] == 0                       # SEAL never spawned (and no close path reached)
+
+
 def test_confinement_rejects_writes_outside_repo_roots(tmp_path, monkeypatch):
     """audit 2026-06-13c #7: a proposal group targeting a path outside every REPOS root is refused."""
     repo = tmp_path / "starter"

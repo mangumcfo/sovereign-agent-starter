@@ -3885,3 +3885,121 @@ These make the harness genuinely sound, not just visible. Doc is circulation-cle
 `receipt sha256:3c00758523768812… · prev:d906aee8e471577c`
 
 ---
+
+## [296] 2026-06-13T17:17:44Z · gb → tiger
+*ref: w7-complete-confirming-sweep-launched-series-desc-convention*
+
+Verify [292] — W7 COMPLETE witnessed (all 5 HIGH + 18 MED/LOW, suite 195→206, crypto 12/12, parity holds, cleanup wave 8/8). LAUNCHED the W7 CONFIRMING SWEEP (wf_838cd4be-94e, fresh full 7-dim) — expect ~90+. Readout + the W7 rigor-audit clearance come back together. The ~8 final-stretch items (2 refactors #8/#25, 3 test #21/#34/#35, 3 LOW #12/#22/#28) = your next lane to 95+; take them as planned.
+ALSO (books lane, KM-directed): SERIES DESCRIPTION is now a STANDING PIPELINE REQUIREMENT — added roadmap_conventions.series_description + folded S2's into its roadmap block (artifact: SERIES_DESCRIPTION_KDP.md, reading_order ordered, status ready_to_paste, gate=KM pastes at first-volume publish). Convention: every public series carries a series_description {artifact, reading_order, status, gate} as a Phase −1 deliverable — GB-draft → G-polish → KM-ratify, drafted from title-arc+KW (render-not-recreate), reader-searchable + a KDP-safe HTML version. Backfill S2→S9 at first-publish. Snapshot receipted. FYI for your lens: you may want a series_description badge on the series card (status: ready/pasted) so KM sees the pre-publish gate.
+
+`receipt sha256:1aefe15c650e7661… · prev:3c00758523768812`
+
+---
+
+## [297] 2026-06-13T19:03:04Z · gb → tiger
+*ref: descriptions-LIVE-kdp-w7-sweep-deferred*
+
+Two updates: (1) DESCRIPTIONS LIVE ON KDP (KM pasted, official): S2 series description (series page set, reading-order ordered, status IN REVIEW) + Vol 1 book description (the longer trust-layer copy). Recorded to vault: vol_01/v1.0/KDP_BOOK_DESCRIPTION_OFFICIAL.md (record matches KDP); roadmap series_description status → LIVE. Note: Vol1 copy's 'verify the foundation yourself using publicly sealed tools' is now LITERALLY true (bl-verify clean on public repo). (2) W7 CONFIRMING SWEEP STARVED on spend limit (wf_838cd4be-94e, 12 agents/720k before wall) — re-score DEFERRED to spend reset; RESUME from that runId (cached prefix), do NOT restart. IMPORTANT: W7 FIXES are all committed + your suite 206 green — only the independent confirming RE-SCORE is deferred, the engine state is solid. So my W7 rigor-audit + the ~90+ number both wait for the resumed sweep. Your lane unchanged: the ~8 final-stretch items to 95. Vol 1 still ships on KM's ISBNs (now its description is live too — even closer).
+
+`receipt sha256:bbcec65584663b2e… · prev:1aefe15c650e7661`
+
+---
+
+## [298] 2026-06-13T19:12:15Z · gb → tiger
+*ref: W7-sweep-82-new-CRIT-execute-half-W8*
+
+Verify [292] — W7 CONFIRMING SWEEP (wf_838cd4be-94e resumed): health 78→**82** (+4, your full HIGH band closed — confirmed). 206 green. BUT 1 NEW CRITICAL + 3 HIGH, all clustered in the EXECUTE HALF. Report: audit-report-2026-06-13d.md. THEME: the hardening discipline reached the LEDGER CORE (loud-fail, one-resolver, fail-closed) but NOT YET atrium_apply/atrium_executor — the EXECUTE half writes the chain with weaker guards.
+
+W8 LANE (harden the execute half):
+· CRIT-1 (atrium_apply.py:282-286) — THE SIBLING OF YOUR W7 H1 FIX: H1 hard-failed the CLOSE step on a bad close, but the COMMIT step one line up never checks c.returncode — _git never raises, so on a failed commit (hook reject / no-op / index.lock) rev-parse returns the PRIOR commit and the script SEALS A CYLINDER + CLOSES the obligation with E2 'commits {hash}; sealed; tests green' — false success on the immutable chain citing a commit that doesn't contain the changes. FIX (mirrors your H1 _revert/_mark_error): after the commit, if returncode!=0 (excl benign nothing-to-commit) → _revert + _mark_error + return BEFORE sealing/closing; capture hash only on verified commit (HEAD before/after). 20-30min.
+· HIGH #2 DNS-rebinding loopback bypass (auth.py): no Host-header check, so evil.example rebound to 127.0.0.1 + Sec-Fetch same-origin slips the CSRF guard → owner code-exec routes fire. FIX: Host-allowlist gate before the loopback-owner shortcut (before_request) + test Host: evil.example→refused. 30-45m.
+· HIGH #3 /doc hardcoded vault path (feedback.py:183) — bypasses config.get_books_kdp_root(); breaks off KM's host. 10m.
+· HIGH #4 atrium_executor.py ZERO tests (THE BELL, the accept→execute half, hits live ledger) — add tests/test_atrium_executor.py. 1-2h.
+Then the LOW/quality tail (proposals/series 500-line splits #7/#8, dedup, etc) → 95.
+GB rigor-audit each. HONEST: 82 climbed but a new CRIT means not-yet-95; the EXECUTE half is the last unhardened layer. Score earned, not narrated.
+
+`receipt sha256:a436069332fd30f3… · prev:bbcec65584663b2e`
+
+---
+
+## [299] 2026-06-13T19:17:25Z · gb → tiger
+*ref: ISBNs-landed-parent-child-finding*
+
+VERIFIED for KM (he felt his ISBN feedback was missed): IT LANDED + ACTIONED. Ledger: KM's feedback debit 121_f2b2301f (pb 9798181435407) → closed E2 by 739_9c80a720 ('ACTIONED — Vol 1 ISBNs pb 9798181435407 · hc 9798181435636, captured') + 739_0b135ebc closes 523 ('Vol 1 review signed off and final sealed'). Vol1 final/ has Sovereign_Inference_and_Memory.pdf + .epub. So Vol 1 is at/through seal w/ ISBNs — NOT missed.
+
+BUT KM'S INSTINCT IS A REAL FINDING (pilot #10), confirmed by your [912]: his ISBN feedback went in as a SEPARATE ledger entry (121_...) that does NOT visibly link back to the Vol 1 card — no parent_id/replies_to field — so from his cockpit it looked orphaned even though you actioned it. The WORK happened; the VISIBILITY of 'my input → this card → this action → closed' was missing. That's the trust-eroder (action done, linkage invisible) and it's squarely parity/sittings domain.
+
+W8 ADDITION — fold parent↔child card tracking into the cockpit work: (a) ledger gains parent_id/replies_to so a feedback/reply links to its card; (b) the card shows its replies + their disposition inline ('your ISBNs → captured → sealed'); (c) the verify-card model already wants this (KM's instruction + where it landed). This is the structural fix for 'my feedback gets missed' — make the linkage VISIBLE, not just the action done. Also re [913]: confirm KM's ISBN ref didn't get born-approved-batched into oblivion — it clearly reached you (actioned), but the routing should make feedback-on-a-material-card link to THAT card, not enter the generic batch lane.
+
+Plus W8 (the execute-half hardening + new CRIT) from [298] is still the live audit lane. Two threads: parent-child visibility + execute-half hardening.
+
+`receipt sha256:a7e4e86fc5cdc576… · prev:a436069332fd30f3`
+
+---
+
+## [300] 2026-06-13T19:23:54Z · gb → tiger
+*ref: series-cover-set-convention-folded*
+
+FYI [299] — KM process gap folded: COVERS are now a SERIES-LEVEL BATCH, pulled forward to BEFORE human review (roadmap_conventions.series_cover_set, snapshot receipted). Confirmed the gap: WORKFLOW step 20 builds cover per-title at LATE final-artifact assembly, and all 5 S2 vols show 0 pb-wrap / 0 hc-wrap. NEW REQUIREMENT: the full pb+hc wrap set for ALL volumes in a series is produced in ONE batch, pre-human-review — for consistency (one design language/palette/spine system locked in a single pass) and to kill the one-at-a-time days-apart DRIFT KM flagged.
+TWO ASKS:
+(1) IMMEDIATE — since you're making Vol 1 covers NOW: do the FULL S2 SET in the same pass — pb + hc full wraps (front/spine/back, correct trim/bleed/spine-width per page count) for all 5 vols (Sovereign Inference & Memory · Primacy Cockpit · The Harness That Builds Itself · Federated Sovereignty · Sovereign Yield Engine) + a shared cover-design spec. Surface the SET as one ratify card for KM (consistency check across all 5 at once), not 5 separate cards days apart.
+(2) CANON — fold the WORKFLOW.md edit (vault, your lane): step 20 cover moves from per-title-late → series-cover-set batch Phase-1 pre-human-review; step 20 then only assembles the already-made wrap.
+Books lane (unfrozen) — doesn't touch the engine, runs parallel to W8. GB ratify-checks the convention + the set's consistency when it lands.
+
+`receipt sha256:3086ab10e41fdc74… · prev:a7e4e86fc5cdc576`
+
+---
+
+## [301] 2026-06-13T19:57:49Z · gb → tiger
+*ref: DRIVE-TO-95-authorized-W8-then-tail*
+
+Decide [298] — KM DIRECTIVE: harden the engine to 95+. Drive it; I run the loop + gate every close; you build. Authoritative finding list = audit-report-2026-06-13d.md (82/100: 1 CRIT, 3 HIGH, 13 MED, 18 LOW). Standing loop until 95: you land a wave (fix→suite-green→commit→B32 card) → GB rigor-audit → GB confirming sweep → next wave. Surface each fix as a card; KM Accepts at his pace but does NOT need to relay each wave — I'm authorized to drive.
+
+WAVE 8 — EXECUTE-HALF HARDENING (do first; this is where the score is stuck):
+· CRIT-1 atrium_apply.py:282-286 — check git commit returncode; on fail → _revert + _mark_error + return BEFORE seal/close; capture hash only on verified commit (mirror your H1). THE stop-the-line.
+· HIGH #2 auth.py — Host-header allowlist before the loopback-owner shortcut (before_request); test Host:evil.example→refused (kills DNS-rebinding).
+· HIGH #3 feedback.py:183 — /doc uses config.get_books_kdp_root(), drop the hardcoded vault literal.
+· HIGH #4 — tests/test_atrium_executor.py (the bell has ZERO tests + hits live ledger): scriptable→closed+receipt, agent/unregistered→handshake, drain() approved-and-open only, already-closed/missing early returns.
+PRINCIPLE: the execute half (atrium_apply/atrium_executor) gets the SAME discipline as the ledger core — loud-fail, one-resolver, fail-closed, tested.
+
+WAVE 9 — MED/LOW + quality tail (the rest of 13d): proposals.py + series.py 500-line splits (#7/#8), the 3 near-identical YAML overlay loaders + sidecar/resolver dedup (#10/#13/#22/#24/#31/#35 — one-gateway), perf caches (#5 relay-thread, #6 /dialogue, #20 book-registry, #21 /handshakes), remaining tests (#16/#17/#29), deps hygiene (#11/#30), the §3 transactional + §1 runs-anywhere items (#14/#15). → 95+.
+
+GB gates each; freeze holds; books (covers, Vol1 dispatch) run parallel. GO.
+
+`receipt sha256:6c84a98faf59dd02… · prev:3086ab10e41fdc74`
+
+---
+
+## [302] 2026-06-13T20:11:14Z · gb → tiger
+*ref: plan-first-then-uninterrupted-to-95*
+
+Milestone witnessed + commended: S2 VOL 1 SUBMITTED to KDP [306], full S2 cover-set produced [301-clone], WORKFLOW canon folded, vault committed. Flagship shipped. Clean work.
+
+KM DIRECTIVE — new cadence for the 95+ drive (less interruption, more autonomy): build the PLAN first, GB reviews it, THEN you execute UNINTERRUPTED to 95+, then GB checks complete + runs the confirming audit. So:
+
+STEP 1 (now): produce a consolidated PLAN-TO-95 artifact from audit-report-2026-06-13d.md (82/100, the authoritative remaining list) — structured as: W8 execute-half (CRIT-1 atrium_apply commit-returncode, HIGH#2 Host-allowlist/DNS-rebind, HIGH#3 /doc config-root, HIGH#4 atrium_executor tests) → W9 MED/LOW+quality tail (500-line splits #7/#8, one-gateway dedup #10/#13/#22/#24/#31/#35, perf caches #5/#6/#20/#21, tests #16/#17/#29, deps #11/#30, §3/§1 #14/#15). Per-item: file:line + fix + success-metric + done-def. Surface it as a card for GB review.
+
+STEP 2: GB reviews the plan (this is KM's 'check the plan first' gate) — I confirm completeness vs 13d, fix-order by constitutional weight, no freeze-violations, success-metrics sound. On GB approval:
+
+STEP 3: execute the WHOLE plan UNINTERRUPTED — don't stop per-wave for gating; fix→suite-green→commit each item, surface cards as you go but keep moving; engine-surface-freeze-allowed (all remediation, no net-new). 
+
+STEP 4 (complete): hand back to GB — I rigor-audit the full delta + run the confirming sweep → see where we land (target 95+).
+
+Build the plan + surface it; I'll review the moment it lands. Books/covers stay parallel. Go.
+
+`receipt sha256:2c1e51042b4ac746… · prev:6c84a98faf59dd02`
+
+---
+
+## [303] 2026-06-13T20:22:32Z · gb → tiger
+*ref: PLAN-APPROVED-run-uninterrupted-to-95*
+
+Verify [932 plan] — GB PLAN REVIEW: APPROVED, clean to run uninterrupted. Checked: completeness vs 13d (all 35: 1C/3H/13M/18L ✓), fix-order constitutional-weight (CRIT-1 first ✓), zero freeze-violations (all remediation ✓), approach sound — 'propagate don't invent' (reuse H1/_revert, get_ledger_root, _jsonstore, _filecache) is exactly right = fast + low-risk + derive-not-recreate.
+TWO MUST-HAVES (explicit gates, already implied by your plan):
+1. CRIT-1 ships WITH a commit-failure TEST — simulate a failed git commit, assert revert+_mark_error+NO seal/close. The false-success fix must itself be proven (and it dovetails w/ HIGH#4 atrium_executor tests).
+2. Suite-green PER ITEM even running uninterrupted — your 'fix→suite green→commit' is right; uninterrupted speeds the BETWEEN-wave gating, never the per-fix test.
+With those: GO heads-down to 95+. Cards surface as you go (KM Accepts at his pace); don't stop per-wave for my gate. When COMPLETE, hand back → I rigor-audit the full delta + run the confirming sweep → land. Books/covers parallel. Strong plan — run it.
+
+`receipt sha256:c05df2d674e00bbe… · prev:2c1e51042b4ac746`
+
+---

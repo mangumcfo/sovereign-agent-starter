@@ -1744,5 +1744,37 @@
     "route": "principle",
     "status": "proposed",
     "created_at": "2026-06-13T01:32:46Z"
+  },
+  {
+    "id": "prop_1781372745949",
+    "session_ref": "b51:edit:vol_01_sovereign_inference_and_memory",
+    "obligation_id": "obl_20260613174544_418894b5",
+    "book": "vol_01_sovereign_inference_and_memory",
+    "note": "Couldn't auto-produce a diff. This usually means the request was too broad for one pass (e.g. 'scan the whole book') and timed out, or it wasn't a concrete manuscript edit. Point at a specific spot, or ask Tiger to run a full-book sweep.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "observation",
+    "status": "proposed",
+    "created_at": "2026-06-13T17:45:45Z"
+  },
+  {
+    "id": "prop_1781372892710",
+    "session_ref": "b51:edit:vol_02_the_primacy_cockpit",
+    "obligation_id": "obl_20260613174811_dc18253a",
+    "book": "vol_02_the_primacy_cockpit",
+    "note": "Couldn't auto-produce a diff. This usually means the request was too broad for one pass (e.g. 'scan the whole book') and timed out, or it wasn't a concrete manuscript edit. Point at a specific spot, or ask Tiger to run a full-book sweep.",
+    "info": true,
+    "cross_book": [],
+    "produced_by": "KM-1176",
+    "groups": [],
+    "reflection_mode": null,
+    "principle": null,
+    "route": "observation",
+    "status": "proposed",
+    "created_at": "2026-06-13T17:48:12Z"
   }
 ]

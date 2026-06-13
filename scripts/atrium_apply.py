@@ -275,22 +275,52 @@ def main() -> int:
     for repo_key, files in changed.items():
         r = REPOS[repo_key]
         rels = sorted({os.path.relpath(f, r["root"]) for f in files})   # dedup (a file edited by N groups)
+        head_before = _git(r["root"], ["rev-parse", "HEAD"]).stdout.strip()
         _git(r["root"], ["add"] + rels)
         msg = f"Atrium accepted apply: {title}\n\nproposal {pid}; accepted by KM in the diff-review."
         if r["trailer"]:
             msg += "\n\nCo-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
         c = _git(r["root"], ["-c", f"user.name={r['name']}", "-c", f"user.email={r['email']}",
                              "commit", "-q", "-m", msg])
-        h = _git(r["root"], ["rev-parse", "--short", "HEAD"]).stdout.strip()
+        head_after = _git(r["root"], ["rev-parse", "HEAD"]).stdout.strip()
+        # CRIT-1 (audit 2026-06-13d): a FAILED commit must NOT seal/close a false success. The old code
+        # never checked c.returncode and `rev-parse HEAD` returned the PRIOR commit, so a pre-commit-hook
+        # rejection / identity error / surviving index.lock would seal a cylinder + close the obligation
+        # with E2 evidence citing a commit that does not contain the changes. Now: verify the commit
+        # actually advanced HEAD; a real failure reverts + marks error + returns BEFORE sealing/closing.
+        benign_noop = "nothing to commit" in (c.stdout + c.stderr).lower()
+        if c.returncode != 0 and not benign_noop:
+            _log(f"  COMMIT FAILED ({repo_key}) — reverting, no seal/close")
+            _revert(changed, created)
+            _mark_error(pid, "git commit failed (" + repo_key + "): " + ((c.stderr or c.stdout or "").strip()[:200]))
+            return 5
+        if head_after == head_before:
+            _log(f"  no commit landed for {repo_key} (nothing to commit) — not recording a hash")
+            continue
+        h = _git(r["root"], ["rev-parse", "--short", "HEAD"]).stdout.strip()   # the VERIFIED new HEAD
         commits.append(f"{repo_key}:{h}")
         _log(f"  committed {repo_key} {h} ({len(rels)} file(s), no push)")
-    # seal one cylinder
+    if changed and not commits:
+        # changes were applied but NOTHING committed — never seal/close a false 'applied' (CRIT-1)
+        _log("  no commits landed across any repo — aborting before seal/close")
+        _revert(changed, created)
+        _mark_error(pid, "apply produced no commits (nothing changed, or all commits failed) — not sealed/closed")
+        return 5
+    # seal one cylinder — check the returncode (audit 2026-06-13d #14): the seal subprocess result was
+    # discarded and the except only caught timeout/missing-binary, so a non-zero seal (pipefail) was
+    # silently ignored while close() still asserted 'sealed'. Now the close evidence reflects reality.
+    seal_ok = True
     summary = f"Auto-apply (KM accepted) proposal {pid}: {title}. Commits: {', '.join(commits)}. Groups: {len(groups)}."
     try:
-        subprocess.run([SEAL, "--hierarchical", summary], cwd=os.path.dirname(SEAL),
-                       capture_output=True, text=True, timeout=60)
-        _log("  sealed cylinder")
+        sres = subprocess.run([SEAL, "--hierarchical", summary], cwd=os.path.dirname(SEAL),
+                              capture_output=True, text=True, timeout=60)
+        if sres.returncode != 0:
+            seal_ok = False
+            _log(f"  SEAL FAILED (rc {sres.returncode}): {((sres.stderr or sres.stdout or '').strip().splitlines() or ['?'])[-1][:160]}")
+        else:
+            _log("  sealed cylinder")
     except Exception as exc:
+        seal_ok = False
         _log(f"  seal error: {exc}")
     # close the obligation IN-PROCESS (audit 2026-06-13c H1, CONSTITUTION §3/§4). The old path POSTed an
     # UNAUTHENTICATED close to the @require_owner /close route → 403 in normal config; the bare except
@@ -306,7 +336,8 @@ def main() -> int:
             from sovereign_agent.obligations.ledger import ObligationLedger, get_ledger_root  # noqa: PLC0415
             principal = (os.environ.get("BREATHLINE_APPLY_PRINCIPAL") or "").strip() or "system:apply"
             led = ObligationLedger(root=str(get_ledger_root()), principal_id=principal)
-            led.close(oid, evidence=f"E2: auto-applied (KM accepted) — commits {', '.join(commits)}; sealed; tests green.",
+            led.close(oid, evidence=(f"E2: auto-applied (KM accepted) — commits {', '.join(commits)}; "
+                                     f"{'sealed' if seal_ok else 'SEAL FAILED (reconcile cylinder chain)'}; tests green."),
                       evidence_tier="E2", require_e1=False, closed_by=principal)
             _log(f"  closed obligation {oid} in-process (by {principal})")
         except Exception as exc:  # noqa: BLE001

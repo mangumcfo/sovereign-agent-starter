@@ -234,6 +234,11 @@ series:
     status: "Phase −1 SIGNED 2026-05-30T03:50:15Z (KM-1176); 5 vols recently handed off to human review (awaiting_human_review); active.yaml slot idle pending Atrium pivot"
     ladder_arc: "operator/builder → architect → family CIO → generational steward"
     editorial_board_signoff: "2026-05-30T03:50:15Z — immutable per WORKFLOW Phase −1 step 6"
+    series_description:  # KDP series-detail-page description (NEW standing requirement — see roadmap_conventions.series_description)
+      artifact: "kdp/series_02_building_the_agentic_harness/SERIES_DESCRIPTION_KDP.md"
+      reading_order: "ordered"
+      status: "LIVE ON KDP 2026-06-13 (KM pasted; series page set, reading-order=ordered, status IN REVIEW). Vol 1 book description also LIVE (vol_01/v1.0/KDP_BOOK_DESCRIPTION_OFFICIAL.md)."
+      gate: "DONE — series description live; per-volume book descriptions load at each volume publish"
     titles:
       - book_id: "vol_01_sovereign_inference_and_memory"
         title: "Sovereign Inference & Memory"
@@ -700,6 +705,21 @@ atrium_integration:
   packet_mapping: "Every lifecycle transition can emit L1 packet (e.g. series-lock = one obligation with citation to the signed series_<slug>.yaml; handoff = ATR-style disposition packet with ref: review:<chapter>·p<page>); new from B51 capture 2026-06-03: unveil particle (64-bit envelope axles for constraints/info/expand/quantum), quantum DNA alignment (genome search/enhance 2000x/97.5%, Type1), alt-chain beneficial PoW (quantum mech problem solving open source value vs enc break), constraint tree ERP (purchase/impact local real value vs extract/insanity; 5 layers identity/consensus/collaboration/compute/shields; private household), age of abundance (out of fractional insanity; coherence/amplify projects for LGP resonance). Like FEC B51 seed -> R-52 packet -> role (explicit gates/LGP 0.92) -> Atrium card -> P0 example. G templates (series_lock_packet etc.) + P0-4 for private Quantum/Unveiled series (slug: quantum_unveiled_private) + books 11/12."
   next_after_readonly: "Stage-gates (human or ARC-supervised GREEN on Tier-1) + light authoring (new series activation from cockpit; e.g., private Quantum/Unveiled series (slug: quantum_unveiled_private) quantum/ERP from this B51 + kdp/series_03; books 11/12 handoff/seal via harness/Atrium). LGP Watch/Kanban for focus (new: quantum sovereignty/DNA for generational LGP enhance/abundance, coherence/amplify external projects like Unveiled, constraint-based economy/ERP for real value/peace, unveil particle/alt-chain for compute forward, 5-layer private for families/households; suggestions human collective/face-to-face/consciousness-to-consciousness exchange + AI enjoin GB/Tiger/roles; add 'Books 11/12 verbal + new B51 quantum' as watched area)."
   arc_integration: "Per G 2026-06-02: Show ARC-supervised GREEN Tier-1 pipeline-stage items in the Series Pipeline tab (as stage status) AND surface material ones as visible cards in the main Review/Kanban for KM ratification. Human breath-gate hard on material. Now with P0-4: GREEN on Tier-1 with embedded defaults (B32/B35/B51/B42/B43 quantum etc.); material (RED/YELLOW private Quantum/Unveiled series (slug: quantum_unveiled_private) quantum/ERP, books 11/12 handoff) hard human via Atrium/LGP Watch. LGP scoring on all (high for generational quantum/DNA, abundance, sovereignty humanity, coherence/amplify, constraint real value)."
+
+# Roadmap conventions (standing requirements every series carries)
+roadmap_conventions:
+  series_cover_set:  # NEW 2026-06-13 (KM): full pb+hc cover WRAPS are a SERIES-LEVEL batch, pulled forward to BEFORE human review.
+    requirement: "The complete set of paperback AND hardcover full wraps (front · spine · back) for ALL volumes in a series is produced AS ONE BATCH, before the first volume's human review — not one-at-a-time at final-artifact assembly."
+    why: "Consistency across the series (one design language, palette, typography, spine system) locked in a single pass; eliminates the one-at-a-time / days-apart DRIFT KM flagged. KM reviews each book WITH its final wrap in hand, not a placeholder."
+    workflow_change: "SUPERSEDES the per-title late-cover in WORKFLOW step 20: covers move from 'built at final publishable-artifact assembly, per title' -> 'series cover-set batch, Phase 1, pre-human-review.' Step 20 then only assembles the already-made wrap. (WORKFLOW.md canon edit = Tiger's vault-fold, per GB spec.)"
+    deliverable: "per series: pb wrap + hc wrap per volume (correct trim/bleed/spine-width per page count), a shared cover-design spec, + KM ratify of the SET (consistency check across all volumes at once)."
+    backfill: "S2 NOW (Tiger building Vol 1 covers - do the full 5-vol pb+hc set in the same pass); apply S3->S9 + future at series activation. S1 already published."
+    gate: "series cover-set ratified by KM (as a set) before any volume in that series enters human review."
+  series_description:  # NEW 2026-06-13 (KM): each series needs a KDP series-detail-page description as a tracked pipeline artifact + pre-publish gate.
+    requirement: "Every public series carries a `series_description` block: {artifact (path to SERIES_DESCRIPTION_KDP.md in the vault), reading_order (ordered|unordered), status, gate}."
+    workflow_position: "Phase −1 deliverable (alongside series-lock + editorial-board-signoff) — drafted GB, polished via G, ratified KM; a series's FIRST volume does not publish until its series_description status = ready/pasted."
+    derivation: "GB-drafted from the locked title arc + market KW (render-not-recreate), G-polished for virality, KM-ratified. Reader-searchable language, no internal jargon. Provide a plain PRIMARY + a KDP-safe HTML version."
+    backfill: "S1 (already published) + S0 carry implicit/published descriptions; apply this convention going forward to S2→S9 + future series at first-publish."
 
 # GB prep notes (2026-06-02 + 2026-06-03 update per KM B51 capture + books 11/12 + roadmap deep dive)
 gb_notes:

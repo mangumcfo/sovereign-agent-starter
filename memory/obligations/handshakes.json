@@ -448,5 +448,41 @@
     "what": "approved, no registered executor: \u270d Decide \u2014 Canonical human-first surface (consolidate the 3-surface sp",
     "status": "pending",
     "created_at": "2026-06-13T16:58:26Z"
+  },
+  {
+    "id": "hs_1781372791824_50",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "kdp_isbn:vol_01",
+    "what": "approved, no registered executor: \u270d Provide Vol 1 ISBNs (paperback + hardcover) \u2014 KDP dispatch bundle",
+    "status": "pending",
+    "created_at": "2026-06-13T17:46:31Z"
+  },
+  {
+    "id": "hs_1781372809491_51",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "b51:edit:vol_01_sovereign_inference_and_memory",
+    "what": "approved, no registered executor: Hopper packet \u2014 [vol_01_sovereign_inference_and_memory] I've revised t",
+    "status": "pending",
+    "created_at": "2026-06-13T17:46:49Z"
+  },
+  {
+    "id": "hs_1781372906724_52",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "b51:edit:vol_02_the_primacy_cockpit",
+    "what": "approved, no registered executor: Hopper packet \u2014 [vol_02_the_primacy_cockpit] We should create all the ",
+    "status": "pending",
+    "created_at": "2026-06-13T17:48:26Z"
+  },
+  {
+    "id": "hs_1781379508039_53",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "series_cover_set:s2",
+    "what": "approved, no registered executor: \u270d Ratify \u2014 S2 cover set (all 5 volumes' paperback + hardcover wraps) \u2014",
+    "status": "pending",
+    "created_at": "2026-06-13T19:38:28Z"
   }
 ]
