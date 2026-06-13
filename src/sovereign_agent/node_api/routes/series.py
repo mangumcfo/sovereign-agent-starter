@@ -30,9 +30,8 @@ from ..auth import require_principal
 
 bp = Blueprint("series", __name__, url_prefix="/api/v1")
 
-# Playbooks dir flows from config (BREATHLINE_BOOKS_VAULT, legacy path is a resolved candidate) so the
-# trackers resolve on any host; None when no vault is present (the overlay simply no-ops) — runs_anywhere.
-_PLAYBOOKS_DIR = config.get_playbooks_dir()
+# Playbooks dir flows from config (BREATHLINE_BOOKS_VAULT) — resolved PER-CALL in _asin_cands/_channel_cands
+# (audit 2026-06-13d #34) so a re-pointed vault is honored, not frozen at import. None → overlay no-ops.
 
 # Title fields the read-only card needs (everything else in the projection is GB working detail).
 _TITLE_FIELDS = (
@@ -83,8 +82,8 @@ def _chapter_index() -> dict:
 
 def _asin_cands() -> list:
     explicit = os.environ.get("ASIN_TRACKER")
-    return ([Path(explicit)] if explicit
-            else [_PLAYBOOKS_DIR / "ASIN_TRACKER.yaml"] if _PLAYBOOKS_DIR else [])
+    pdir = config.get_playbooks_dir()   # per-call (audit 2026-06-13d #34) — honors a re-pointed vault
+    return ([Path(explicit)] if explicit else [pdir / "ASIN_TRACKER.yaml"] if pdir else [])
 
 
 @memoize_on(_asin_cands)
@@ -132,8 +131,8 @@ def _publishing_index() -> dict:
 
 def _channel_cands() -> list:
     explicit = os.environ.get("CHANNEL_TRACKER")
-    return ([Path(explicit)] if explicit
-            else [_PLAYBOOKS_DIR / "CHANNEL_TRACKER.yaml"] if _PLAYBOOKS_DIR else [])
+    pdir = config.get_playbooks_dir()   # per-call (audit 2026-06-13d #34)
+    return ([Path(explicit)] if explicit else [pdir / "CHANNEL_TRACKER.yaml"] if pdir else [])
 
 
 @memoize_on(_channel_cands)

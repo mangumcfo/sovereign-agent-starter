@@ -144,8 +144,7 @@ def _packeted_refs():
     read ONLY from OBLIGATION_LEDGER_ROOT and silently returned an empty set when that env var was
     unset — while the ledger itself falls back to <repo>/memory/obligations — so on a default node the
     dedup no-op'd and re-surfaced already-packeted cards (the exact pileup it exists to prevent)."""
-    from ..deps import get_obligation_ledger  # noqa: PLC0415
-    led = get_obligation_ledger()
+    led = get_obligation_ledger()   # module-level binding (audit 2026-06-13d #25 — no cycle, no re-import)
     return led.refs("debit")   # public read-gateway (audit 2026-06-13c #15)
 
 

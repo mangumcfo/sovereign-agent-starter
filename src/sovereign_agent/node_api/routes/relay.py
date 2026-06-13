@@ -164,6 +164,7 @@ def relay_send(relay_id: str):
 
 @bp.post("/relay/<relay_id>/dismiss")
 @require_principal
+@require_owner
 def relay_dismiss(relay_id: str):
     """Archive a relay card (handled out-of-band, or no longer needed)."""
     def _dismiss(items):

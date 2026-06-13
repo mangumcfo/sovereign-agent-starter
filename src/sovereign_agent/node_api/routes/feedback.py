@@ -23,6 +23,7 @@ import os
 from flask import Blueprint, jsonify, request
 
 from ...obligations import AlreadyClosedError
+from .._jsonstore import read_json_cached, sidecar_store
 from ..auth import current_principal, require_principal, require_owner
 from ..deps import get_obligation_ledger
 
@@ -275,18 +276,13 @@ def _ring_the_bell(obligation_id: str, principal: str = "system:bell") -> None:
 @require_principal
 def handshakes():
     """A3 — the handshakes row: agent-to-agent residue (executor pending / awaiting GB / awaiting Tiger) so
-    any not-yet-closed work is ALWAYS visible to KM, never silently stuck. Reads the executor's store."""
-    from pathlib import Path as _P  # noqa: PLC0415
-    led_root = os.environ.get("OBLIGATION_LEDGER_ROOT")
-    base = _P(led_root).parent if led_root else _P(os.path.expanduser("~/.breathline"))
-    store = _P(os.environ.get("HANDSHAKES_STORE") or (base / "handshakes.json"))
-    items = []
-    if store.exists():
-        try:
-            items = [h for h in (json.loads(store.read_text(encoding="utf-8")) or [])
-                     if h.get("status") != "done"]
-        except (OSError, ValueError):
-            items = []
+    any not-yet-closed work is ALWAYS visible to KM, never silently stuck. Reads the executor's store.
+
+    One resolver + cached (audit 2026-06-13d #10/#13/#21/#24/#35): the path comes from the SAME
+    `sidecar_store` the writer (atrium_executor) uses — no inline reimplementation that could drift — and
+    the GET read is memoized like the sibling stores."""
+    store = sidecar_store("handshakes.json", "HANDSHAKES_STORE")
+    items = [h for h in read_json_cached(store, []) if h.get("status") != "done"]
     items.sort(key=lambda x: x.get("created_at", ""), reverse=True)
     return jsonify({"meta": {"count": len(items), "doctrine": "every approved packet is working or visible — never stuck"},
                     "handshakes": items})

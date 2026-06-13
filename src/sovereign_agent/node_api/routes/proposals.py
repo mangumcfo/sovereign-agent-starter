@@ -213,12 +213,11 @@ def recompile():
 
 
 def _book_registry() -> dict:
-    """Helix increment #1 — the deterministic title→artifacts registry (single source of truth)."""
+    """Helix increment #1 — the deterministic title→artifacts registry (single source of truth).
+    Memoized (audit 2026-06-13d #20): /book_kdp called this 6×/request via _artifact_path; now cached."""
     p = Path(__file__).resolve().parents[4] / "memory" / "book_artifacts_registry.json"
-    try:
-        return json.loads(p.read_text(encoding="utf-8")).get("books", {})
-    except (OSError, ValueError):
-        return {}
+    data = read_json_cached(p, {})
+    return data.get("books", {}) if isinstance(data, dict) else {}
 
 
 def _resolve_book_id(book: str) -> str:

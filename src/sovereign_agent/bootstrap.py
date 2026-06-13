@@ -162,8 +162,6 @@ def connect_to_breathline(
 
 def _auto_detect_context() -> str:
     """Lightweight context detection based on environment and common layouts."""
-    import os
-    from pathlib import Path
 
     cwd = Path.cwd()
 

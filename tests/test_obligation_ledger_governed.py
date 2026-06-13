@@ -69,6 +69,25 @@ def test_ungated_standalone_material_is_fail_closed(tmp_path):
     assert led.verify_chain() is True
 
 
+def test_external_gate_mode_does_not_auto_approve(tmp_path):
+    """audit 2026-06-13d #16: gate_mode='external' returns a PENDING disposition — it must NOT flip the
+    obligation to approved, and a material obligation must stay un-closeable (out-of-band human gate)."""
+    from sovereign_agent.obligations.node_integration import wire_node_ledger
+
+    class FakeNode:
+        def _self_attest(self, event, details):
+            return {"memory_root": "merkle_root_deadbeef", "event": event, "details": details}
+
+    led = wire_node_ledger(root=tmp_path, node=FakeNode(), gate_mode="external", principal_id="km-1176")
+    ob = led.open("external-gated material", material=True)
+    with pytest.raises(PermissionError):
+        led.approve(ob["id"], approved_by="km-1176")          # external → not granted
+    assert not any(e.get("type") == "approval" and e.get("approves") == ob["id"]
+                   and e.get("disposition") == "approved" for e in led._entries())
+    with pytest.raises(PermissionError):
+        led.close(ob["id"], evidence="/x hash a1b2c3d4e5f60718")  # material + un-approved → blocked
+
+
 def test_node_integration_smoke_real_compliance(tmp_path):
     """Wire the REAL ComplianceEngine via node_integration; a close must carry a node receipt."""
     from sovereign_agent.obligations.node_integration import wire_node_ledger

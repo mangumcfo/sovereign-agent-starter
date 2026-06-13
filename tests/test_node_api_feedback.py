@@ -128,3 +128,20 @@ def test_doc_serves_whitelisted_and_refuses_traversal(owner_client, tmp_path):
     assert owner_client.get("/api/v1/doc?path=/etc/passwd").status_code == 404
     # non-doc extension under a root is refused (only .md/.txt/.yaml served)
     assert owner_client.get("/api/v1/doc?path=artifacts/../src/sovereign_agent/node_api/server.py").status_code == 404
+
+
+def test_handshakes_filters_done_and_tolerates_malformed(owner_client, tmp_path, monkeypatch):
+    """audit 2026-06-13d #29: /handshakes returns only non-'done' residue, correct meta.count, and
+    degrades to an empty list (no 500) on a malformed store."""
+    import json
+    store = tmp_path / "handshakes.json"
+    store.write_text(json.dumps([
+        {"id": "hs1", "status": "pending", "created_at": "2026-06-13T01:00:00Z"},
+        {"id": "hs2", "status": "done", "created_at": "2026-06-13T02:00:00Z"},
+    ]), encoding="utf-8")
+    monkeypatch.setenv("HANDSHAKES_STORE", str(store))
+    body = owner_client.get("/api/v1/handshakes").get_json()
+    assert [h["id"] for h in body["handshakes"]] == ["hs1"] and body["meta"]["count"] == 1
+    store.write_text("{ broken json", encoding="utf-8")
+    r2 = owner_client.get("/api/v1/handshakes")
+    assert r2.status_code == 200 and r2.get_json()["handshakes"] == []
