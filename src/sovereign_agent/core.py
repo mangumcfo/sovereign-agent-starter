@@ -17,14 +17,16 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from breathline_primitives import (
+# Lazy crypto surface (audit 2026-06-13 CRIT-2): import sovereign_agent must not hard-fail when the
+# sealed substrate is absent. Names resolve on first USE; call sites are unchanged.
+from ._lazy_bp import (
     generate_keypair,
     sign,
     verify,
     MerkleTree,
     hash_function,
+    secp256k1_curve,
 )
-from breathline_primitives.layer1 import secp256k1_curve
 
 # Optional deep sovereignty via real kernel primitives (graceful if absent)
 try:

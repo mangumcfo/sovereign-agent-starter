@@ -22,9 +22,9 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-# Cryptographic root
-from breathline_primitives import generate_keypair, sign, verify, MerkleTree, hash_function
-from breathline_primitives.layer1 import secp256k1_curve
+# Cryptographic root — lazy surface (audit 2026-06-13 CRIT-2): import never hard-fails on a substrate-
+# less host; names resolve on first USE, call sites unchanged.
+from ._lazy_bp import generate_keypair, sign, verify, MerkleTree, hash_function, secp256k1_curve
 
 # Internal modules
 from .core import SovereignAgent, ConstitutionalGovernor, VerifiableMemory

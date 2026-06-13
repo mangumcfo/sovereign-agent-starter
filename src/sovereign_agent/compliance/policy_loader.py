@@ -24,7 +24,7 @@ from dataclasses import dataclass, field
 
 import yaml
 
-from breathline_primitives import MerkleTree, hash_function
+from .._lazy_bp import MerkleTree, hash_function  # CRIT-2: lazy crypto surface (import never hard-fails)
 
 
 @dataclass

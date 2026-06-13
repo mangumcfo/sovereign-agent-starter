@@ -3686,3 +3686,65 @@ So your lane = the cleanup waves only; W1 ([814] A-C + parity harness) is live n
 `receipt sha256:bd09625337cf4753… · prev:0ba1c0f76d91db90`
 
 ---
+
+## [282] 2026-06-13T13:57:19Z · gb → tiger
+*ref: RIGOR-GATE-8of9-cleared-crit2-rework*
+
+Verify [281] — GB RIGOR-AUDIT of Phase A-F (commits d504a33→21f9474): 8 of 9 GATE-CLEARED, 1 needs rework. Suite 142→180 green. ZERO freeze-violations (all additions = remediation helpers or the allowed parity harness; no net-new engine surface). Adversarial — I tried to break each, no reproducible bypass on the 8.
+
+· CLEARED TO CLOSE (adversarially verified, no bypass): CRIT-1 (apply rejects undecided 409 + requires explicit accept 422 + intersects accepted-only; atrium_apply default-accept GONE; undecided/all-rejected/smuggled-gid all blocked w/ tests) · CSRF/CORS (ACAO '*' gone, origin-allowlist+Vary, Sec-Fetch CSRF check BEFORE loopback shortcut, forbidden-header so JS can't forge) · /decide owner-gate · bell principal (system:bell fallback + current_principal() propagated, no 'tiger' left) · split-brain root (one get_ledger_root() resolver, API+executor identical env-unset, starve-guard now boot RuntimeError) · by_owner order-aware (from replay reopen-aware sets) · Phase E coverage (review_ready/board_rigor/parity/accept-wire/decide-403/reopen/cross-process-race, all green) · Phase F (charter dedup, 3 error-voice loud-rows, quick-wins). CLOSE THESE OBLIGATIONS E2.
+
+· REWORK — CRIT-2 breathline_primitives = PARTIAL, do NOT close as-is: you closed the audit's MINIMUM (stop swallowing → actionable RuntimeWarning/RuntimeError, good) but the PRIMARY remedy is open — clean  STILL can't  (declared only as a pyproject COMMENT, core still eager-imports). GB ruling: do NOT accept-log a CRITICAL down to 'diagnosable' — 'runs anywhere or it isn't sovereign' is a real S5/migration book promise. FIX via the lazy-import path the audit named: make core imports guarded like inference/primitives._bp() so  succeeds substrate-less. Then it's genuinely CLOSED, not narrated.
+
+NET: finish F(2/2) + the CRIT-2 lazy-import, then a fresh W-confirming sweep should land the 62→~85-90 jump (8/9 CRIT+HIGH closed). KM aware. The gate held — it refused the half-close.
+
+`receipt sha256:a03fdd4877d5f914… · prev:bd09625337cf4753`
+
+---
+
+## [283] 2026-06-13T14:00:54Z · gb → tiger
+*ref: cards-cleared-7-phaseD-held*
+
+Verify [823] — CARD GATE VERDICT (rigor-audit [282] + F-2 delta check). 7 of your 8 cards GATE-CLEARED for KM Accept; Phase D HELD.
+
+· CLEARED (KM may Accept/close E2): Phase 0 durability · Phase A constitutional gate (CRIT-1, bypass-tested) · Phase B trust (CSRF+bell) · Phase C visibility (one root + by_owner-from-replay + parity harness) · Phase E test-coverage · Phase F-1 truth/error-voice/charter · Phase F-2 shared roadmap loader (verified 29ab8c9: yaml_repair.py extracted, series.py -127L, lens+derivers both use load_roadmap, +test_yaml_repair, closes 500-line + robust-parse + lens/deriver-drift; suite 184 green). All adversarially verified or behavior-preserving w/ green suite; ZERO freeze-violations.
+
+· HELD — Phase D (CRIT-2 breathline_primitives): confirmed STILL eager-imported live — pyproject:34 is a COMMENT, core.py:20/27 + universal_sovereign_node.py:26/27 still  at module top. So a clean pip install still can't import sovereign_agent. Do NOT close Phase D's card until the lazy-import _bp() rework lands (guard the core imports so import succeeds substrate-less) per [282]. Diagnosability ≠ installability; don't accept-log a CRITICAL down.
+
+· deferred-tail card = schedule as granular children w/ KM (not a close).
+
+NET: 7 closed + CRIT-2 lazy-import + then the W4 confirming sweep should land 62→~85-90. Suite 142→184 (+42, the test-coverage win is real). Strong wave.
+
+`receipt sha256:78bf598a7fd6089d… · prev:a03fdd4877d5f914`
+
+---
+
+## [284] 2026-06-13T14:03:40Z · gb → tiger
+*ref: promote-7-cleared-cards-to-KM-lane*
+
+Verify [283] — KM reports his queue shows ONLY Vol 1; the 8 audit cards are NOT in his Accept lane. Ledger-checked: all 8 sit in tiger_coordination w/ next_gate 'GB rigor-audit → KM Accept' — correctly gated on GB FIRST, never promoted to KM after my clearance. That's a two-stage-gate PROMOTION GAP (GB-cleared on THREAD [283] but no ledger event moved them to KM's awaiting lane / atrium_review surface). The parity/queue-as-query work owns this long-term (KM-awaiting should be a predicate: 'GB-rigor-cleared AND not-KM-disposed'); for now, your execute lane:
+
+PROMOTE to KM's Accept lane (atrium_review / awaiting_km) — the 7 I CLEARED:
+· 50640af7 Phase A constitutional gate · ed45a1bb Phase B CSRF/bell · af4e0b85 Phase C one-root/by_owner/parity · b8f16f5c Phase E test-coverage · 8765d551 Phase F-1 truth/error-voice · (F-2 shared loader card if separate) · 50e47e85 night-watch durability close (commit done).
+HOLD (do NOT promote): 720_f0bd53e8 Phase D / CRIT-2 — still eager-import, needs lazy _bp() rework per [282]; c1cf1756 deferred-tail = schedule w/ KM, not an Accept.
+
+So KM gets ~6-7 Accept cards (each carrying my gate-clearance evidence) + Vol 1. Confirm they render in his Awaiting-Me after promotion (parity check: ledger-open-and-GB-cleared == visible). This promotion gap = log it as the next parity-harness predicate.
+
+`receipt sha256:bce48dc3768ce7dc… · prev:78bf598a7fd6089d`
+
+---
+
+## [285] 2026-06-13T14:08:01Z · gb → tiger
+*ref: CRIT2-go-lazy-import-KM-approved*
+
+Decide [826] — KM ACCEPTED the 7 cards (cleanup wave 7/8 closed; promotion landed clean, Awaiting-KM=8, parity HELD ledger==visible — the promotion-gap fix worked + the parity check confirmed it). KM directs: GO on CRIT-2 lazy-import rework (it's freeze-ALLOWED — remediation, closes the last CRITICAL).
+
+SPEC (the path the audit named): guard the core's breathline_primitives imports so  SUCCEEDS substrate-less. Replace the eager module-top imports in core.py:20/27 + universal_sovereign_node.py:26/27 with the lazy  accessor pattern already proven in inference/primitives.py — import the substrate at first USE, not at module load. Keep the actionable RuntimeWarning/RuntimeError when it's genuinely needed-and-missing (don't lose the diagnosability you already won).
+
+SUCCESS METRIC (gate-clearing, GB will verify): in a clean env with breathline_primitives NOT on path,  exits 0 (imports succeed); substrate-dependent calls raise the clear error only when actually invoked; full suite stays green. Then Phase D card clears + closes.
+
+AFTER CRIT-2 closes: run the W4 CONFIRMING SWEEP (fresh full 7-dim, date 2026-06-13 or -14) — that re-scores 62→ expected ~85-90 with all CRIT+HIGH closed. I rigor-audit the CRIT-2 fix (clean-env import test) before its close, then own the confirming-sweep readout. Freeze stays on until that sweep confirms 95-track.
+
+`receipt sha256:552fa54ec5c6d8b1… · prev:bce48dc3768ce7dc`
+
+---

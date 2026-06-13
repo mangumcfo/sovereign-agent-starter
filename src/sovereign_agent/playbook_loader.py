@@ -20,7 +20,7 @@ from typing import Any, Dict, List, Optional, Union
 
 import yaml  # We may need to add pyyaml; for now assume available or use safe load
 
-from breathline_primitives import MerkleTree, hash_function
+from ._lazy_bp import MerkleTree, hash_function  # CRIT-2: lazy crypto surface (import never hard-fails)
 from .role_binder import bind_role, BoundRole
 from . import config as sovereign_config
 

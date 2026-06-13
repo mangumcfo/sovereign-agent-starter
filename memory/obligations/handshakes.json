@@ -358,5 +358,68 @@
     "what": "approved, no registered executor: Decide: authorize one node restart to activate new endpoints (lane chr",
     "status": "pending",
     "created_at": "2026-06-12T18:35:24Z"
+  },
+  {
+    "id": "hs_1781359600472_40",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "audit_accept:phase_f2",
+    "what": "approved, no registered executor: \u270d Accept \u2014 Audit 2026-06-13 Phase F-2 \u00b7 shared roadmap loader (GB-clea",
+    "status": "pending",
+    "created_at": "2026-06-13T14:06:40Z"
+  },
+  {
+    "id": "hs_1781359601977_41",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "audit_accept:phase_f1",
+    "what": "approved, no registered executor: \u270d Accept \u2014 Audit 2026-06-13 Phase F-1 \u00b7 truth + error-voice + charter ",
+    "status": "pending",
+    "created_at": "2026-06-13T14:06:41Z"
+  },
+  {
+    "id": "hs_1781359602960_42",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "audit_accept:phase_e",
+    "what": "approved, no registered executor: \u270d Accept \u2014 Audit 2026-06-13 Phase E \u00b7 test coverage for the untested g",
+    "status": "pending",
+    "created_at": "2026-06-13T14:06:42Z"
+  },
+  {
+    "id": "hs_1781359606075_43",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "audit_accept:phase_c",
+    "what": "approved, no registered executor: \u270d Accept \u2014 Audit 2026-06-13 Phase C \u00b7 one ledger root + parity harness",
+    "status": "pending",
+    "created_at": "2026-06-13T14:06:46Z"
+  },
+  {
+    "id": "hs_1781359608433_44",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "audit_accept:phase_b",
+    "what": "approved, no registered executor: \u270d Accept \u2014 Audit 2026-06-13 Phase B \u00b7 CSRF/CORS + bell principal (GB-c",
+    "status": "pending",
+    "created_at": "2026-06-13T14:06:48Z"
+  },
+  {
+    "id": "hs_1781359611007_45",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "audit_accept:phase_a",
+    "what": "approved, no registered executor: \u270d Accept \u2014 Audit 2026-06-13 Phase A \u00b7 Propose\u2192Decide\u2192Execute gate (CRI",
+    "status": "pending",
+    "created_at": "2026-06-13T14:06:51Z"
+  },
+  {
+    "id": "hs_1781359613103_46",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "audit_accept:phase_0",
+    "what": "approved, no registered executor: \u270d Accept \u2014 Audit 2026-06-13 Phase 0 \u00b7 Durability seal (GB-cleared)",
+    "status": "pending",
+    "created_at": "2026-06-13T14:06:53Z"
   }
 ]
