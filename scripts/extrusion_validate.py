@@ -141,8 +141,11 @@ def distribution():
     try:
         import yaml
         d = yaml.safe_load(ROADMAP.read_text()) or {}
-    except Exception:  # noqa
-        return []
+    except Exception as e:  # noqa: BLE001
+        # Audit 2026-06-13 (Error Voice §4): never swallow → a silent [] reads as "all channels covered"
+        # and can still report GATE: PASS. Surface a LOUD sentinel row instead.
+        return [{"book": "⚠ ROADMAP PARSE ERROR", "series": "?",
+                 "kdp": f"unparseable ({e})", "social": "⚠", "federation": "⚠", "_error": str(e)}]
     rows = []
     for s in d.get("series", []):
         for t in (s.get("titles") or []):

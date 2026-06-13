@@ -28,7 +28,6 @@ from __future__ import annotations
 
 import uuid
 
-import yaml
 from flask import Blueprint, jsonify, request
 
 from ..auth import current_principal, require_principal
@@ -134,6 +133,7 @@ def specs_validate():
             next_step='POST {"yaml": "<spec yaml>", "declared_parent": "<id|null>"}.',
         )), 400
 
+    import yaml  # noqa: PLC0415 — lazy (audit 2026-06-13): keep the module's yaml-optional discipline
     issues = []
     parsed = None
     try:

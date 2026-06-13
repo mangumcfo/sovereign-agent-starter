@@ -159,12 +159,17 @@ def _assert_source_ref_resolves(source_ref: str) -> None:
     last = path_part.rsplit("/", 1)[-1]
     if "/" not in path_part or "." not in last:
         return  # symbolic ref — not a file claim
-    roots = [
-        Path.cwd(),
-        Path("/home/kmangum/work-repos/mangumcfo/breathline-books-vault"),
-        Path("/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp"),
-        Path(__file__).resolve().parents[3],  # repo root
-    ]
+    # Runs-anywhere (audit 2026-06-13): resolve against config-derived roots, not hardcoded operator
+    # vault literals (a genuinely-resolvable passage failed on any other host). Falls back to cwd +
+    # repo-root; config getters return None on a vault-less host (then only cwd/repo are tried).
+    from .. import config  # noqa: PLC0415 — lazy to avoid import cycles
+    roots = [Path.cwd(), Path(__file__).resolve().parents[3]]
+    books = config.get_books_kdp_root()
+    if books:
+        roots += [Path(books), Path(books).parent]    # kdp root + the vault root above it
+    plays = config.get_playbooks_dir()
+    if plays:
+        roots.append(Path(plays))
     resolved = next((r / path_part for r in roots if (r / path_part).is_file()), None)
     if resolved is None:
         raise ValueError(
@@ -320,6 +325,11 @@ class ObligationLedger:
           structure/technical/judgment) and the lane it routed to (batch | discrete). Travel WITH the
           obligation so triage never lands downstream — the 36% 'other' is killed at capture, not after.
         """
+        # Resolve-at-entry (audit 2026-06-13): a path-like `ref` sealed at open() must resolve, the same
+        # resolve-or-symbolic-or-raise rule close()'s source_ref obeys — a pointer is never written false.
+        # Symbolic refs (e.g. 'viewer:B12 ch3', 'review_ready:vol_01') pass through untouched.
+        if ref:
+            _assert_source_ref_resolves(ref)
         entry = {
             "type": "debit",
             "id": _entry_id(),
@@ -427,8 +437,12 @@ class ObligationLedger:
             )
         # Human primacy (CYL-006): a MATERIAL obligation cannot EXECUTE (close with work-done) until it
         # has cleared the breath-gate. A rejection is exempt — refusing is itself the human disposition.
-        if (self.gate is not None and ob and ob.get("material")
-                and not rejected and not self._is_approved(obligation_id)):
+        # FAIL-CLOSED (audit 2026-06-13 MED): the guard no longer depends on `self.gate is not None`. A
+        # gate-less ledger (e.g. the bell executor's raw ObligationLedger) must NOT mean "no gate to
+        # satisfy" — it means "cannot self-approve here". The approval lives on the shared chain (the API
+        # approves on the gated ledger before spawning the executor), so `_is_approved` still passes for
+        # realized paths; a direct CLI close on an un-approved material packet is now correctly blocked.
+        if (ob and ob.get("material") and not rejected and not self._is_approved(obligation_id)):
             raise PermissionError(
                 f"'{obligation_id}' is material and has not cleared the breath-gate; "
                 f"call approve() (human disposition) before close."

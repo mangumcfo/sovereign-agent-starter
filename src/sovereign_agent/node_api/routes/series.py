@@ -95,15 +95,25 @@ def _publishing_index() -> dict:
             data = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
         except (OSError, ValueError):
             continue
+        import logging  # noqa: PLC0415
         out = {}
         for section in ("books", "executive_series"):
             for bid, b in (data.get(section) or {}).items():
                 if not isinstance(b, dict):
                     continue
-                state = _MAP.get(str(b.get("status", "")).strip())
-                if not state:
-                    continue
+                raw = str(b.get("status", "")).strip()
+                state = _MAP.get(raw)
                 eb = b.get("ebook") if isinstance(b.get("ebook"), dict) else {}
+                if not state:
+                    # Error Voice §4 (audit 2026-06-13): an UNMAPPED non-empty status must SCREAM, not
+                    # vanish — surface it with a loud sentinel + log so a new KDP status is never silently
+                    # dropped from the publishing index.
+                    if raw:
+                        logging.getLogger("breathline.series").warning(
+                            "⚠ UNMAPPED KDP status '%s' for %s — add it to _MAP", raw, bid)
+                        out[bid] = {"publishing_state": f"⚠ unmapped:{raw}",
+                                    "asin": eb.get("asin"), "release": b.get("release")}
+                    continue
                 out[bid] = {"publishing_state": state, "asin": eb.get("asin"), "release": b.get("release")}
         return out
     return {}
@@ -138,12 +148,18 @@ def _channel_index() -> dict:
 def _dispatch_gate_summary(channel_index: dict) -> dict:
     """The batched G1 Dispatch Gate (Distribution Spec §2): ONE recurring card listing all staged dispatches
     across channels — KM looks once, accepts once. Counts staged rows so the surface never pings per-item."""
-    staged = []
+    staged, other = [], []
     for bid, chans in channel_index.items():
         for ch, st in chans.items():
-            if isinstance(st, dict) and st.get("state") == "staged":
-                staged.append({"book_id": bid, "channel": ch, "note": st.get("note", "")})
+            if not isinstance(st, dict):
+                continue
+            s = st.get("state")
+            row = {"book_id": bid, "channel": ch, "state": s, "note": st.get("note", "")}
+            (staged if s == "staged" else other).append(row)
+    # Error Voice §4 (audit 2026-06-13): non-staged channel states are surfaced in `other` instead of
+    # silently dropped — a new/unknown channel state can never vanish from the dispatch summary.
     return {"staged_count": len(staged), "staged": staged,
+            "other_count": len(other), "other": other,
             "gate": "G1 — Dispatch Gate (batched)", "doctrine": "one look, one Accept, all channels"}
 
 

@@ -51,12 +51,21 @@ def test_close_mints_and_links_node_receipt(tmp_path):
     assert credit["receipt"]["node_receipt"]["receipt_hash"] == "node_rcpt_abc123def456"
 
 
-def test_ungated_standalone_unchanged(tmp_path):
-    # Phase-1 behavior: no gate/attestor => material flag is not enforced, no node receipt
+def test_ungated_standalone_material_is_fail_closed(tmp_path):
+    # audit 2026-06-13 (fail-closed): a gate-less ledger must NOT mean "no gate to satisfy". A material
+    # obligation still cannot close without a recorded approval; a non-material one is unaffected; and
+    # with no attestor wired, no node receipt is minted (the Phase-1 receipt shape is preserved).
     led = ObligationLedger(root=tmp_path)
-    ob = led.open("standalone", material=True)
+    ob = led.open("standalone-material", material=True)
+    with pytest.raises(PermissionError):
+        led.close(ob["id"], evidence="~/proof.json")        # no approval → blocked
+    led.approve(ob["id"], approved_by="km-1176")            # record the human disposition
     credit = led.close(ob["id"], evidence="~/proof.json")
     assert "node_receipt" not in credit["receipt"]
+    assert led.verify_chain() is True
+
+    nb = led.open("standalone-nonmaterial", material=False)
+    led.close(nb["id"], evidence="~/proof.json")           # non-material closes freely (unchanged)
     assert led.verify_chain() is True
 
 

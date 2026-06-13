@@ -20,7 +20,7 @@ from __future__ import annotations
 import os
 import sys
 from pathlib import Path
-from typing import Optional
+from typing import Any, Dict, Optional
 
 # Default locations to search (in order of preference)
 # These cover the common work-repos layout used across the Constitutional Federation projects.

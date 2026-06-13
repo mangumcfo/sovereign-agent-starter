@@ -214,6 +214,18 @@ class ComplianceEngine:
     # ------------------------------------------------------------------
     # Policy & Risk
     # ------------------------------------------------------------------
+    @staticmethod
+    def _charter_v7_ack_required(action_class: str, context: Dict) -> bool:
+        """True iff a material action lacks the required Charter V.7 acknowledgement (case-INSENSITIVE).
+        Audit 2026-06-13: hoisted from two duplicated in-line guards whose case handling diverged (one
+        lowercased, one did not) — the lowercasing guard's trigger set was a strict superset, making the
+        second guard unreachable dead code. One helper, one consistent rule."""
+        if context.get("charter_v7_ack") is not False:
+            return False
+        ac = (action_class or "").lower()
+        materiality = str(context.get("materiality", "")).lower()
+        return any(k in ac or k in materiality for k in ("board", "filing", "external", "material"))
+
     def run_policy_compliance_check(
         self,
         role_spec: Dict,
@@ -249,9 +261,9 @@ class ComplianceEngine:
                 policy_refs=policy_refs,
             )
 
-        # Explicit Charter V.7 acknowledgement enforcement for high-materiality actions (supports fail_closed_demo)
-        materiality = str(context.get("materiality", "")).lower()
-        if context.get("charter_v7_ack") is False and any(k in action_class.lower() or k in materiality for k in ["board", "filing", "external", "material"]):
+        # Explicit Charter V.7 acknowledgement enforcement for high-materiality actions (supports
+        # fail_closed_demo). One hoisted, case-insensitive guard (audit 2026-06-13).
+        if self._charter_v7_ack_required(action_class, context):
             return ComplianceVerdict(
                 approved=False,
                 risk_score=0.9,
@@ -312,15 +324,8 @@ class ComplianceEngine:
                 required.append("Human sign-off (high materiality)")
                 rationale.append("High-materiality action class")
 
-            # Explicit Charter V.7 acknowledgement check for material actions (used by fail_closed_demo)
-            if context.get("charter_v7_ack") is False and any(k in action_class or k in str(context.get("materiality", "")) for k in ["board", "filing", "external", "material"]):
-                return ComplianceVerdict(
-                    approved=False,
-                    risk_score=0.9,
-                    rationale=["Charter V.7 acknowledgement required but not provided"],
-                    required_approvals=["Compliance Guardian sign-off"],
-                    policy_refs=policy_refs,
-                )
+            # (audit 2026-06-13) the duplicate Charter-V.7 ack guard that lived here was unreachable dead
+            # code — the case-insensitive guard hoisted to the top already fires for its every case.
 
         approved = score < 0.75 or self.mode == "sovereign"
 

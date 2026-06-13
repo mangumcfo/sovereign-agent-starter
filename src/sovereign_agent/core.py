@@ -13,7 +13,7 @@ All cryptography and attestation use the sealed foundation.
 from __future__ import annotations
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -89,7 +89,7 @@ class ConstitutionalGovernor:
         return {
             "score": round(score, 3),
             "rationale": rationale,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "principles_checked": list(self.PRINCIPLES.keys()),
         }
 
@@ -148,7 +148,7 @@ class VerifiableMemory:
         data = {
             "version": self.version,
             "leaves": [l.hex() for l in self.leaves],
-            "updated_at": datetime.utcnow().isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
         }
         self.storage_path.write_text(json.dumps(data, indent=2))
 
@@ -156,7 +156,7 @@ class VerifiableMemory:
         """Append with self-attestation."""
         entry = {
             "data_hash": hash_function(data).hex(),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "metadata": metadata or {},
         }
         leaf = hash_function(json.dumps(entry, sort_keys=True).encode())
@@ -223,7 +223,7 @@ class SovereignAgent:
         payload = {
             "event": event,
             "details": details,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
         leaf = hash_function(json.dumps(payload, sort_keys=True).encode())
         root = self.memory.append(leaf, {"type": "self_attestation", "event": event})

@@ -32,6 +32,11 @@ bp = Blueprint("proposals", __name__, url_prefix="/api/v1")
 # runs_anywhere). Endpoints that need a real file already 404 when the artifact is absent.
 _VAULT = str(config.get_books_kdp_root() or "")
 
+# Book number → registry book_id (audit 2026-06-13: was duplicated in recompile() + _resolve_book_id();
+# adding Book 13 meant two edits). One constant; each caller keeps its OWN fallback (they differ).
+_BOOK_NUM_TO_ID = {"10": "10_scaling_enterprise", "11": "11_ma_due_diligence",
+                   "12": "12_agentic_enterprise"}
+
 
 def _store_path() -> Path:
     explicit = os.environ.get("PROPOSALS_STORE")
@@ -205,8 +210,7 @@ def recompile():
     body = request.get_json(silent=True) or {}
     book = (body.get("book") or "").strip()
     m = re.search(r"Book (\d+)", book)
-    sub = {"10": "10_scaling_enterprise", "11": "11_ma_due_diligence",
-           "12": "12_agentic_enterprise"}.get(m.group(1) if m else "")
+    sub = _BOOK_NUM_TO_ID.get(m.group(1) if m else "")
     if not sub:
         return jsonify({"error": "unknown_book", "what": f"No build mapping for '{book}'."}), 400
     vault = os.path.join(_VAULT, "agentic_playbooks")
@@ -234,8 +238,7 @@ def _resolve_book_id(book: str) -> str:
     import re
     m = re.search(r"Book (\d+)", book)
     if m:
-        return {"10": "10_scaling_enterprise", "11": "11_ma_due_diligence",
-                "12": "12_agentic_enterprise"}.get(m.group(1), "")
+        return _BOOK_NUM_TO_ID.get(m.group(1), "")
     return {"the sealing hand": "the_sealing_hand", "breath & echo": "breath_and_echo"}.get(book.lower(), book)
 
 
@@ -522,14 +525,17 @@ def seeit():
 
 
 @bp.get("/export/packet")
+@require_principal
 @require_owner
 def export_packet_route():
     """R22-1 Evidence-Packet Exports — assemble obligations into ONE self-verifying evidence bundle
     {manifest, receipts[], merkle_proof, chain_range, sha}. Owner-gated; deterministic; the bundle
-    self-verifies on a clean machine (`export_packet.py verify <bundle>`). Engine for S5_37 Clean Exit."""
+    self-verifies on a clean machine (`export_packet.py verify <bundle>`). Engine for S5_37 Clean Exit.
+    (audit 2026-06-13: @require_principal restored above @require_owner — was unreachable even by owner.)"""
     import sys as _sys  # noqa: PLC0415
     repo = Path(__file__).resolve().parents[4]
-    _sys.path.insert(0, str(repo / "scripts"))
+    if str(repo / "scripts") not in _sys.path:      # dedup-guard (audit: unbounded sys.path growth)
+        _sys.path.insert(0, str(repo / "scripts"))
     import export_packet as _EP  # noqa: PLC0415
     ids = [x.strip() for x in (request.args.get("obl_ids") or "").split(",") if x.strip()]
     if not ids:
@@ -549,7 +555,8 @@ def actions_route():
     Filters: type/principal/obligation/since/until. Each row cites its leaf + inclusion proof + root."""
     import sys as _sys  # noqa: PLC0415
     repo = Path(__file__).resolve().parents[4]
-    _sys.path.insert(0, str(repo / "scripts"))
+    if str(repo / "scripts") not in _sys.path:      # dedup-guard (audit: unbounded sys.path growth)
+        _sys.path.insert(0, str(repo / "scripts"))
     import actions_projection as _AP  # noqa: PLC0415
     led_root = get_ledger_root()      # ONE resolver (audit 2026-06-13)
     g = request.args.get
