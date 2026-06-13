@@ -71,19 +71,28 @@ def create_app() -> Flask:
     app.register_blueprint(relay_routes.bp)
     app.register_blueprint(placeholder_routes.bp)
 
-    # --- CORS — minimal viable for Atrium local development ---
-    # Atrium is served either from file:// (origin "null") during single-file
-    # demo, or from a localhost dev server. We allow both for the Track A3
-    # cutover window. Production deployments will tighten this in a follow-up
-    # (read from a node-local allowlist).
+    # --- CORS — explicit node-local allowlist (audit 2026-06-13 HIGH) ---
+    # The old `Access-Control-Allow-Origin: *` let any page the operator visited read this
+    # local-first node's responses. We now echo ONLY an Origin present in the node-local allowlist
+    # (BREATHLINE_NODE_ALLOWED_ORIGINS, comma-separated; default = the loopback origins the cockpit
+    # is served from). Unknown origins get no ACAO header at all. NOTE: CORS governs response
+    # READ-ability, not whether a cross-origin POST fires — the CSRF stop for state-changing routes
+    # lives in auth.require_principal (Sec-Fetch-Site check on the loopback shortcut).
+    allowed = [o.strip() for o in os.environ.get(
+        "BREATHLINE_NODE_ALLOWED_ORIGINS",
+        "http://127.0.0.1:8421,http://localhost:8421").split(",") if o.strip()]
+
     @app.after_request
     def _attach_cors_headers(response):
-        # contract_v1.yaml binds to 127.0.0.1 by default; the Node API is a
-        # local-first surface. Permissive CORS is acceptable for development.
-        response.headers.setdefault("Access-Control-Allow-Origin", "*")
-        response.headers.setdefault("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-        response.headers.setdefault("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept")
-        response.headers.setdefault("Access-Control-Max-Age", "300")
+        from flask import request as _req  # noqa: PLC0415
+        origin = _req.headers.get("Origin")
+        if origin and origin in allowed:
+            response.headers["Access-Control-Allow-Origin"] = origin
+            response.headers.setdefault("Vary", "Origin")
+            response.headers.setdefault("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+            response.headers.setdefault("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept")
+            response.headers.setdefault("Access-Control-Allow-Credentials", "true")
+            response.headers.setdefault("Access-Control-Max-Age", "300")
         return response
 
     @app.before_request
@@ -150,6 +159,21 @@ def cli_serve() -> None:
 
     if args.dev:
         os.environ["BREATHLINE_NODE_API_DEV"] = "1"
+
+    # Dev-mode host guard (audit 2026-06-13 MED): dev mode accepts a no-Authorization request as
+    # 'dev:anonymous' and any 'dev:<label>' verbatim — those labels become the audit actor
+    # (owner/decided_by/closed_by). That is acceptable ONLY on loopback. Refuse to start dev mode bound
+    # to a non-loopback interface, where unauthenticated callers could self-assign any principal.
+    _dev = args.dev or (os.environ.get("BREATHLINE_NODE_API_DEV", "").strip().lower()
+                        in ("1", "true", "yes", "on"))
+    _loopback_hosts = {"127.0.0.1", "::1", "localhost", "::ffff:127.0.0.1"}
+    if _dev and args.host not in _loopback_hosts:
+        sys.stderr.write(
+            f"REFUSING TO START: dev mode (bearer check OFF) on non-loopback host '{args.host}'.\n"
+            "  why:  dev principals are self-assigned and never audit-trustworthy; exposing them off\n"
+            "        loopback lets any caller forge the audit actor (owner/decided_by/closed_by).\n"
+            "  fix:  bind --host 127.0.0.1 for dev, or run without --dev (real bearer auth) off-loopback.\n")
+        raise SystemExit(2)
 
     app = create_app()
 

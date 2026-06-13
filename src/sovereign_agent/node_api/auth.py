@@ -104,6 +104,23 @@ def _is_loopback() -> bool:
     return ra in {"127.0.0.1", "::1", "::ffff:127.0.0.1", "localhost"}
 
 
+_SAFE_METHODS = {"GET", "HEAD", "OPTIONS"}
+
+
+def _is_cross_site_browser_write(req) -> bool:
+    """CSRF detector (audit 2026-06-13 HIGH). A page the operator visits can issue a cross-origin POST to
+    the loopback node (drive-by CSRF → code execution) — the browser is the confused deputy the loopback-
+    trust shortcut ignores. `Sec-Fetch-Site` is a forbidden header name: JS cannot set or forge it, and
+    modern browsers stamp it on every request. A genuine cross-origin/cross-site browser write carries
+    'cross-site' or 'same-site'; the operator's own same-origin cockpit carries 'same-origin'; non-browser
+    clients (curl, the bell executor's urllib) omit it entirely. So we block ONLY the unsafe-method,
+    browser-cross-context case — without burdening the operator's own UI or any CLI/agent caller."""
+    if req.method in _SAFE_METHODS:
+        return False
+    site = (req.headers.get("Sec-Fetch-Site") or "").lower()
+    return site in ("cross-site", "same-site")
+
+
 def require_principal(fn: Callable):
     """
     Decorator: enforce principal_id-bearer auth on a route.
@@ -139,6 +156,19 @@ def require_principal(fn: Callable):
         # any request that DOES present a token fall through to real verification.
         loop_owner = _loopback_owner()
         if loop_owner and _is_loopback() and not token:
+            # CSRF defense (audit 2026-06-13 HIGH): the token-less loopback shortcut is the operator's
+            # own-machine convenience — but it must NOT bless a cross-site browser write (drive-by CSRF
+            # to code execution). Block that one case; everything else keeps the shortcut.
+            if _is_cross_site_browser_write(request):
+                return jsonify({
+                    "error": "csrf_blocked",
+                    "what": "A cross-site browser request cannot use the loopback-owner shortcut for a "
+                            "state-changing route.",
+                    "why": "Sec-Fetch-Site indicates this POST came from another origin — the classic "
+                           "drive-by CSRF vector against a local-first node.",
+                    "next_step": "Call from the node's own cockpit (same-origin) or present the owner "
+                                 "bearer token.",
+                }), 403
             g.principal_id = loop_owner
             g.auth_dev_mode = False
             g.auth_loopback = True

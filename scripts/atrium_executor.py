@@ -34,10 +34,18 @@ def _ledger_root() -> str:
     return os.environ.get("OBLIGATION_LEDGER_ROOT") or str(REPO / "memory" / "obligations" / "atrium_review")
 
 
+def _principal() -> str:
+    """The principal that authored this bell write. Audit 2026-06-13 HIGH (CONSTITUTION §1, no hardcoded
+    principals): the chain write must attribute to the OPERATOR who clicked Accept — propagated from
+    `_ring_the_bell` via BREATHLINE_BELL_PRINCIPAL. Falls back to an EXPLICIT system actor ('system:bell')
+    when invoked standalone (e.g. --drain), never the old constant 'tiger'."""
+    return (os.environ.get("BREATHLINE_BELL_PRINCIPAL", "") or "").strip() or "system:bell"
+
+
 def _ledger():
     sys.path.insert(0, str(REPO / "src"))
     from sovereign_agent.obligations import ObligationLedger  # noqa: PLC0415
-    return ObligationLedger(root=_ledger_root(), principal_id="tiger")
+    return ObligationLedger(root=_ledger_root(), principal_id=_principal())
 
 
 def _hs_path() -> Path:
@@ -66,7 +74,7 @@ def _handshake(frm: str, to: str, ref: str, what: str, status: str = "pending") 
 
 def _close(led, oid: str, evidence: str, tier: str = "E2") -> bool:
     try:
-        led.close(oid, evidence=evidence, evidence_tier=tier, require_e1=False, closed_by="tiger")
+        led.close(oid, evidence=evidence, evidence_tier=tier, require_e1=False, closed_by=_principal())
         return True
     except Exception as exc:  # noqa: BLE001
         print(f"  close note {oid}: {exc}")

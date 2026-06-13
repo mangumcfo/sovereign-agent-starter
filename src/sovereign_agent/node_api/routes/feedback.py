@@ -227,11 +227,16 @@ def doc():
                     "next_step": "Cards may hand .md/.yaml docs under artifacts/, scripts/, or the books vault kdp/."}), 404
 
 
-def _ring_the_bell(obligation_id: str) -> None:
+def _ring_the_bell(obligation_id: str, principal: str = "system:bell") -> None:
     """THE BELL — on KM's Accept, spawn the executor for this packet (detached; clone of /produce's spawn).
     Turns approval into automatic execution + receipt back in the cockpit, so 'processing' means working,
     never waiting. Best-effort: a spawn failure is logged, never blocks the disposition (the --drain
-    backstop catches anything missed)."""
+    backstop catches anything missed).
+
+    PRINCIPAL PROPAGATION (audit 2026-06-13 HIGH, CONSTITUTION §1): the executor mutates the hash-chained
+    ledger; its write must attribute to the OPERATOR who clicked Accept, not a hardcoded 'tiger'. We pass
+    `principal` (current_principal()) through BREATHLINE_BELL_PRINCIPAL so the credit, its receipt, and the
+    actions projection all name the real authorizer."""
     import logging  # noqa: PLC0415
     import subprocess  # noqa: PLC0415
     import sys  # noqa: PLC0415
@@ -243,6 +248,7 @@ def _ring_the_bell(obligation_id: str) -> None:
             return
         env = dict(os.environ)
         env["PYTHONPATH"] = str(repo / "src")
+        env["BREATHLINE_BELL_PRINCIPAL"] = principal or "system:bell"
         subprocess.Popen([sys.executable, str(script), obligation_id], cwd=str(repo), env=env,
                          stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
     except Exception as exc:  # noqa: BLE001 — the bell must never break the human gate
@@ -295,7 +301,9 @@ def feedback_disposition(obligation_id: str):
     try:
         if action == "accept":
             entry = led.approve(obligation_id, approved_by=current_principal())
-            _ring_the_bell(obligation_id)   # Accept IS the ignition — spawn the registered executor
+            # Accept IS the ignition — spawn the registered executor, carrying the authenticated
+            # principal so the bell's chain write names the Accept-clicker (audit 2026-06-13 HIGH).
+            _ring_the_bell(obligation_id, current_principal())
             return jsonify({"action": "accept", "obligation": entry, "executor": "spawned"})
         entry = led.close(
             obligation_id,
