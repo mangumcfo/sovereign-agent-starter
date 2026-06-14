@@ -27,6 +27,7 @@ from ._lazy_bp import (
     hash_function,
     secp256k1_curve,
 )
+from .ndjson import read_ndjson  # the ONE tolerant ndjson reader (Universalize Wave §1)
 
 # Optional deep sovereignty via real kernel primitives (graceful if absent)
 try:
@@ -134,28 +135,51 @@ class VerifiableMemory:
     """
 
     def __init__(self, storage_path: Path):
-        self.storage_path = storage_path
+        self.storage_path = Path(storage_path)
         self.storage_path.parent.mkdir(parents=True, exist_ok=True)
+        # Append-only NDJSON leaf log (Universalize Wave §4): one line per leaf instead of rewriting the
+        # whole-file JSON on every append. Kills the O(n²) that fired on every obligation close.
+        self.log_path = self.storage_path.with_suffix(".ndjson")
         self.leaves: List[bytes] = []
         self.version = 0
+        self._root_cache: Optional[tuple] = None   # (len(leaves), root_bytes) — memoize root for reads
         self._load()
 
     def _load(self):
-        if self.storage_path.exists():
-            data = json.loads(self.storage_path.read_text())
-            self.leaves = [bytes.fromhex(l) for l in data.get("leaves", [])]
-            self.version = data.get("version", 0)
+        """Prefer the append-only leaf log; migrate a legacy whole-file JSON ONCE if that's all we have.
+        Leaf ORDER is preserved end-to-end so the Merkle root is byte-identical across the migration (G5)."""
+        if self.log_path.exists():
+            self._load_log()
+        elif self.storage_path.exists():
+            self._migrate_legacy_json()
 
-    def _save(self):
-        data = {
-            "version": self.version,
-            "leaves": [l.hex() for l in self.leaves],
-            "updated_at": datetime.now(timezone.utc).isoformat(),
-        }
-        self.storage_path.write_text(json.dumps(data, indent=2))
+    def _load_log(self):
+        # Tolerant read via the ONE gateway (§1): a leaf log truncated mid-append loads its clean prefix.
+        res = read_ndjson(self.log_path)
+        self.leaves = [bytes.fromhex(e["leaf"]) for e in res.entries if e.get("leaf")]
+        self.version = res.entries[-1].get("version", len(self.leaves)) if res.entries else 0
+
+    def _migrate_legacy_json(self):
+        """One-time migration of the legacy {version, leaves:[hex…]} whole-file JSON into the append-only
+        NDJSON leaf log — SAME leaves, SAME order, so get_root() is byte-identical before and after (G5)."""
+        data = json.loads(self.storage_path.read_text())
+        leaves_hex = data.get("leaves", [])
+        self.leaves = [bytes.fromhex(lh) for lh in leaves_hex]
+        self.version = data.get("version", len(self.leaves))
+        with self.log_path.open("w", encoding="utf-8") as f:
+            for i, lh in enumerate(leaves_hex):
+                f.write(json.dumps({"leaf": lh, "version": i + 1}, sort_keys=True) + "\n")
+        # The legacy JSON is left in place as a frozen pre-migration artifact; _load() prefers the log now.
+
+    def _append_leaf(self, leaf: bytes):
+        """O(1) persist: append ONE leaf line to the NDJSON log (no whole-file rewrite)."""
+        with self.log_path.open("a", encoding="utf-8") as f:
+            f.write(json.dumps({"leaf": leaf.hex(), "version": self.version,
+                                "ts": datetime.now(timezone.utc).isoformat()}, sort_keys=True) + "\n")
 
     def append(self, data: bytes, metadata: Optional[Dict] = None) -> bytes:
-        """Append with self-attestation."""
+        """Append with self-attestation. O(1)-amortized: one in-memory append + one appended log line;
+        the Merkle root is recomputed once (same MerkleTree → identical root value) and memoized."""
         entry = {
             "data_hash": hash_function(data).hex(),
             "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -164,18 +188,20 @@ class VerifiableMemory:
         leaf = hash_function(json.dumps(entry, sort_keys=True).encode())
         self.leaves.append(leaf)
         self.version += 1
-
-        tree = MerkleTree(self.leaves)
-        root = tree.get_root()
-
-        self._save()
-        return root
+        self._append_leaf(leaf)
+        self._root_cache = None        # invalidate; get_root() recomputes once for the new leaf count
+        return self.get_root()
 
     def get_root(self) -> Optional[bytes]:
         if not self.leaves:
             return None
-        tree = MerkleTree(self.leaves)
-        return tree.get_root()
+        # Memoize the root on the leaf count (Universalize Wave §4): repeated reads between appends are O(1).
+        # Uses the SAME MerkleTree(self.leaves) so the root VALUE is byte-identical to the pre-wave behavior.
+        if self._root_cache is not None and self._root_cache[0] == len(self.leaves):
+            return self._root_cache[1]
+        root = MerkleTree(self.leaves).get_root()
+        self._root_cache = (len(self.leaves), root)
+        return root
 
     def inherit_from_parent(self, parent_root: bytes):
         """Support generational handoff."""
