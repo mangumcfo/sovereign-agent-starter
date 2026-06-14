@@ -85,10 +85,10 @@ def _assert_root_not_starved(root):
     raises."""
     import logging
     from pathlib import Path
+    from ..obligations.ledger import get_ledger_root  # THE one resolver (Universalize Wave §2/G3)
     log = logging.getLogger("breathline.ledger")
     try:
-        served = Path(root).expanduser() if root else (Path(__file__).resolve().parents[3]
-                                                       / "memory" / "obligations" / "atrium_review")
+        served = Path(root).expanduser() if root else get_ledger_root()
         sf = served / "obligations.ndjson"
         served_n = sum(1 for _ in sf.open()) if sf.exists() else 0
         base = served.parent if served.name != "obligations" else served

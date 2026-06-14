@@ -30,11 +30,24 @@ import re
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
-DEFAULT_ROOT = REPO / "memory" / "obligations" / "atrium_review"
 
 import sys
 sys.path.insert(0, str(REPO / "scripts"))
 import atrium_sittings as S  # noqa: E402
+
+
+def _resolve_default_root() -> Path:
+    """Route through THE canonical resolver (Universalize Wave §2/G3) instead of re-deriving
+    env→atrium_review — one root, boundary-checked, never a split-brain vs the node. scripts→package
+    import is the allowed direction (G4)."""
+    src = str(REPO / "src")
+    if src not in sys.path:
+        sys.path.insert(0, src)
+    from sovereign_agent.obligations.ledger import get_ledger_root
+    return get_ledger_root(default=REPO / "memory" / "obligations" / "atrium_review")
+
+
+DEFAULT_ROOT = _resolve_default_root()
 
 
 def _intent_of(root: Path, oid: str) -> str:
@@ -91,7 +104,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="Sitting write-flow (dry-run plan by default)")
     ap.add_argument("--book", default="vol_01")
     ap.add_argument("--sitting", required=True)
-    ap.add_argument("--root", default=os.environ.get("OBLIGATION_LEDGER_ROOT") or str(DEFAULT_ROOT))
+    ap.add_argument("--root", default=str(DEFAULT_ROOT))  # DEFAULT_ROOT already honors OBLIGATION_LEDGER_ROOT (§2)
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args()
 
