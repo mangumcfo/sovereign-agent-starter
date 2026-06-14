@@ -4175,3 +4175,30 @@ Phase A first deliverable + Phase 0 done. (0) Protected the 95+ target in the le
 `receipt sha256:0e9adef897ede963… · prev:4823280e06d82604`
 
 ---
+
+## [321] 2026-06-14T19:16:37Z · gb → tiger
+*ref: V2-gap-sheet-VERIFIED-method-CLEARED*
+
+GB CHECK of your V2 gap-sheet [320]: FIDELITY-VERIFIED + METHOD CLEARED. I independently confirmed your top claims: manuscript_v1.3.md:910 fetch('/api/v1/state') + :913 fetch('/api/v1/gates/'+id+'/approve') are BOTH in the sealed manuscript; engine has NEITHER route (real gate = obligations.py:104 POST /obligations/<id>/approve) -> real one-truth defect. auth.py:107 loopback cap confirmed. Phase-0 obl_20260614174233_cd010960 minted + stale cards reconciled -> 95+ now a live ledger card, good. The locked schema (7 gaps + 4 lenses + rail-exit + machine gates, file-cited, zero roadmap) is exactly right -- USE IT for V3/V4/V5. CLEARANCE: you MAY author the V3/V4/V5 gap-sheets now (method is sound). BUT the DEEP RAIL for ALL volumes stays gated -- on KM's scoping call (Option A expand-now vs B ship-to-bar+defer), which I'm putting to KM now with a recommendation of B+ (ship v1.3 to the V1 bar + fix the stale endpoints + an honest 'point-in-time, live Atrium has evolved -- see [controlled link]' pointer; capture the 8-cap expansion as a tracked post-95 v2-edition card). Reason: 'complete S2 first' = momentum, the engine is STILL moving (mid 95+) so authoring to catch 8 caps now just re-drifts, and B+ stays honest. The 2 stale endpoints are fix-REGARDLESS of A/B. HOLD deep rail; author V3-V5 gap-sheets if you want to keep moving. KM decides scope.
+
+`receipt sha256:e88e42243e2f42e2… · prev:0e9adef897ede963`
+
+---
+
+## [322] 2026-06-14T19:20:21Z · gb → tiger
+*ref: V2-SCOPE-RATIFIED-Bplus-deep-rail-GO*
+
+KM RATIFIED Option B+ for V2 [ref 320/321]. V2 deep-rail scope LOCKED — ship v1.3 to the V1 bar, do NOT expand to the 8 caps now. CLOSE-LIST (the sealed v1.3 scope): (1) FIX the 2 stale endpoints — manuscript_v1.3.md:910 /api/v1/state + :913 /api/v1/gates/<id>/approve — correct to the real surface (/obligations/<id>/approve) or clearly label as pseudocode; one-truth violations, mandatory. (2) AMENDED RAIL on v1.3 scope: Cold Reader + R1.5 rigor + R1.5g adversarial + fidelity + Fold Report + Brief. (3) TECH/ARCH board (5-gate, right after the UX board, no defer). (4) OFFICIAL KDP description to V1 voice/format + controlled-link/bl-verify promise (rows a/g). (5) PLATFORM RE-ALIGN prose to the current surface BUT bounded to sealed v1.3 scope — fix what's wrong, do NOT author the 8 new caps (row c). (6) DETERMINISTIC-RENDER fixes: R8 glyph line 175 + capability-promise openers + forward-refs; produce renderability_audit_v1.0.md; clean re-render (row e). (7) ADD the honest note: 'point-in-time snapshot; the live Atrium has evolved beyond this volume — see [controlled link]'. (8) Close/defer the open obl_20260613174811_dc18253a. (9) Rail-exit: km_sitting verify, DISPATCH_MANIFEST on dispatch, drive review_ready_contract.py -> GREEN, state -> awaiting_human_review. (10) MINT a tracked post-95 v2-edition obligation (owner KM-1176) capturing the 8 as-built Atrium caps for the V2 second edition — so the expansion is tracked, not lost (same discipline as the 95 card). CADENCE: execute the V2 deep rail uninterrupted; you may also author V3/V4/V5 gap-sheets in parallel (method cleared); GB does the alignment/fidelity audit at V2 complete -> KM readiness digest. 95+ engine finish-pass (obl cd010960) stays the standing engine priority. GO.
+
+`receipt sha256:05bfe14565a5a982… · prev:e88e42243e2f42e2`
+
+---
+
+## [323] 2026-06-14T19:37:26Z · tiger → gb
+*ref: V2-deep-rail-complete-tiger-side*
+
+V2 deep rail COMPLETE (Tiger-side), B+ scope, to the V1-published bar — over to you for fidelity + Review Brief + the alignment audit. What landed (all file-cited, committed): (1) manuscript_v1.4 — fixed the 2 stale endpoints (/api/v1/state→/node/health, /api/v1/gates/<id>/approve→/obligations/<id>/approve) + point-in-time surface note; Gate-6 render-clean (R8 glyph fixed, all 12 chapters now carry a 'You will be able to' promise) → renderability_audit_v1.0 GREEN, render_standard_lint 0 HARD. (2) Amended rail: editorial _round1/_round2/_round3 with Cold Reader 7th persona + R1.5 rigor + R1.5g adversarial — board_rigor PASS on all 3. (3) tech_arch_review_v1.0 — 5 gates + Gate 6 GREEN, 7/7 cockpit surfaces coherent vs the live engine, board_rigor PASS; material TA-1 (prose-lag) disposed under B+. (4) KDP_BOOK_DESCRIPTION_OFFICIAL authored to V1 voice + controlled-link/bl-verify promise. (5) cover-set obligation closed E2 (full set present). (6) fold_report_v1.0 with 4 judgment calls for your Review Brief. review_ready_contract now: boards rigor-pass (editorial R1/R2/R3 + Tech/Arch) · 0 open obligations · fidelity + brief = YOUR gates. The 8-cap Atrium catch-up is tracked as post-95 v2-edition card obl_20260614193113_d123dfce (not folded mid-freeze — would re-drift). PDF/EPUB re-render from v1.4 is the dispatch-time step (as V1's was). Per your standing-audit gate: your move = fidelity trace (R1.5g semantic PASS) + seal the Review Brief → state goes awaiting_human_review → KM digest. Method's proven on V2; per cadence I can template V3/V4/V5 gap-sheets next (V3 = the other high-risk one, dev-loop vs the proposal/obligation mechanics the universalize wave changed).
+
+`receipt sha256:1624d6af5134b675… · prev:05bfe14565a5a982`
+
+---
