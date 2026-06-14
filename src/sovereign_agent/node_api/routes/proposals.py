@@ -336,11 +336,7 @@ def export_packet_route():
     {manifest, receipts[], merkle_proof, chain_range, sha}. Owner-gated; deterministic; the bundle
     self-verifies on a clean machine (`export_packet.py verify <bundle>`). Engine for S5_37 Clean Exit.
     (audit 2026-06-13: @require_principal restored above @require_owner — was unreachable even by owner.)"""
-    import sys as _sys  # noqa: PLC0415
-    repo = Path(__file__).resolve().parents[4]
-    if str(repo / "scripts") not in _sys.path:      # dedup-guard (audit: unbounded sys.path growth)
-        _sys.path.insert(0, str(repo / "scripts"))
-    import export_packet as _EP  # noqa: PLC0415
+    from ...evidence.export_packet import build_packet  # packaged module (Universalize Wave §5 — no scripts/ on sys.path)
     ids = [x.strip() for x in (request.args.get("obl_ids") or "").split(",") if x.strip()]
     if not ids:
         return jsonify(route_error(
@@ -350,7 +346,7 @@ def export_packet_route():
             next_step="Add ?obl_ids=A,B,C (comma-separated obligation ids).")), 400
     led_root = get_ledger_root()      # ONE resolver (audit 2026-06-13)
     try:
-        bundle = _EP.build_packet(ids, led_root)
+        bundle = build_packet(ids, led_root)
     except ValueError as e:
         return jsonify(route_error(
             error="no_entries",
@@ -365,12 +361,8 @@ def export_packet_route():
 def actions_route():
     """R22-2 Queryable actions projection — verifiable rows over the Merkle leaves (read-only).
     Filters: type/principal/obligation/since/until. Each row cites its leaf + inclusion proof + root."""
-    import sys as _sys  # noqa: PLC0415
-    repo = Path(__file__).resolve().parents[4]
-    if str(repo / "scripts") not in _sys.path:      # dedup-guard (audit: unbounded sys.path growth)
-        _sys.path.insert(0, str(repo / "scripts"))
-    import actions_projection as _AP  # noqa: PLC0415
+    from ...evidence.actions_projection import query_actions  # packaged module (Universalize Wave §5 — no scripts/ on sys.path)
     led_root = get_ledger_root()      # ONE resolver (audit 2026-06-13)
     g = request.args.get
-    return jsonify(_AP.query_actions(led_root, type=g("type"), principal=g("principal"),
-                                     obligation=g("obligation"), since=g("since"), until=g("until")))
+    return jsonify(query_actions(led_root, type=g("type"), principal=g("principal"),
+                                 obligation=g("obligation"), since=g("since"), until=g("until")))

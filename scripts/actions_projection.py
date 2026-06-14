@@ -19,117 +19,26 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
-import os
+import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 
 
-def _resolve_default_root() -> Path:
-    """Route through THE canonical resolver (audit 2026-06-13d #31) so this script can NEVER resolve a
-    different root than the node API / bell executor — the split-brain get_ledger_root() exists to prevent.
-    Same semantics as before (OBLIGATION_LEDGER_ROOT → atrium_review), now single-sourced + boundary-checked."""
-    import sys
+def _import_core():
+    """Thin CLI wrapper (Universalize Wave §5): the core now lives in the installed package. scripts→package
+    is the allowed import direction (G4); package code never depends on this script."""
     src = str(REPO / "src")
     if src not in sys.path:
         sys.path.insert(0, src)
+    from sovereign_agent.evidence.actions_projection import query_actions, verify_proof
     from sovereign_agent.obligations.ledger import get_ledger_root
-    return get_ledger_root(default=REPO / "memory" / "obligations" / "atrium_review")
+    return query_actions, verify_proof, get_ledger_root
 
 
-DEFAULT_ROOT = _resolve_default_root()
-
-_CACHE: dict = {}   # (path, mtime, size) -> (leaves, layers)
-_ACTION = {"debit": "open", "approval": "approve", "credit": "close", "reopen": "reopen"}
-
-
-def _h(b: bytes) -> bytes:
-    return hashlib.sha256(b).digest()
-
-
-def _layers(leaves: list[str]) -> list[list[bytes]]:
-    """All Merkle levels (leaf → root), odd node duplicates last — matches export_packet._merkle_root."""
-    level = [bytes.fromhex(x) for x in leaves]
-    out = [level]
-    while len(level) > 1:
-        if len(level) % 2:
-            level = level + [level[-1]]
-            out[-1] = level
-        level = [_h(level[i] + level[i + 1]) for i in range(0, len(level), 2)]
-        out.append(level)
-    return out
-
-
-def _proof(layers: list[list[bytes]], index: int) -> list[dict]:
-    proof, idx = [], index
-    for lvl in layers[:-1]:
-        sib = idx ^ 1
-        if sib < len(lvl):
-            proof.append({"hash": lvl[sib].hex(), "right": sib > idx})
-        idx //= 2
-    return proof
-
-
-def verify_proof(leaf_hex: str, proof: list[dict], root_hex: str) -> bool:
-    h = bytes.fromhex(leaf_hex)
-    for step in proof:
-        s = bytes.fromhex(step["hash"])
-        h = _h(h + s) if step["right"] else _h(s + h)
-    return h.hex() == root_hex
-
-
-def _ledger(root: Path):
-    f = root / "obligations.ndjson"
-    st = f.stat()
-    key = (str(f), st.st_mtime_ns, st.st_size)
-    if key not in _CACHE:
-        rows = [json.loads(l) for l in f.read_text(encoding="utf-8").splitlines() if l.strip()]
-        leaves = [e["hash"] for e in rows if e.get("hash")]
-        _CACHE.clear()
-        _CACHE[key] = (rows, leaves, _layers(leaves))
-    return _CACHE[key]
-
-
-def _entity(e: dict) -> str | None:
-    return e.get("id") or e.get("closes") or e.get("approves") or e.get("reopens")
-
-
-def query_actions(root: Path, *, type=None, principal=None, obligation=None,
-                  since=None, until=None) -> dict:
-    rows, leaves, layers = _ledger(root)
-    root_hex = layers[-1][0].hex() if leaves else _h(b"").hex()
-    out = []
-    leaf_index = {}
-    li = 0
-    for e in rows:
-        if not e.get("hash"):
-            continue
-        idx = li; li += 1
-        et = e.get("type")
-        if type and _ACTION.get(et, et) != type and et != type:
-            continue
-        if principal and e.get("principal_id") != principal and e.get("closed_by") != principal \
-                and e.get("approved_by") != principal:
-            continue
-        if obligation and _entity(e) != obligation:
-            continue
-        ts = str(e.get("timestamp", ""))[:10]
-        if since and ts and ts < since:
-            continue
-        if until and ts and ts > until:
-            continue
-        out.append({
-            "action": _ACTION.get(et, et),
-            "obligation": _entity(e),
-            "principal": e.get("principal_id"),
-            "timestamp": e.get("timestamp"),
-            "leaf": e["hash"],
-            "merkle_proof": _proof(layers, idx),
-            "root": root_hex,
-        })
-    return {"root": root_hex, "count": len(out), "read_only": True, "actions": out}
+query_actions, verify_proof, _get_ledger_root = _import_core()
+DEFAULT_ROOT = _get_ledger_root(default=REPO / "memory" / "obligations" / "atrium_review")
 
 
 def main() -> int:
