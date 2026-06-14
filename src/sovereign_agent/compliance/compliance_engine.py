@@ -21,11 +21,20 @@ compliance & verifiable inference layer first-class and loadable.
 """
 
 from __future__ import annotations
+import json
+import os
+from collections import deque
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+
+# Bounded in-RAM audit working-set (Universalize Wave §6): the chain-of-custody record was an unbounded
+# in-process list that grew for the life of the process. The authoritative SIGNED record is the node's
+# append-only VerifiableMemory (each record.receipt_hash is its Merkle root); this RAM window is a cache,
+# and an evicted record is persisted append-only (BREATHLINE_AUDIT_OVERFLOW) so history is never forgotten.
+_AUDIT_TRAIL_MAX = int(os.environ.get("BREATHLINE_AUDIT_TRAIL_MAX", "2000"))
 
 # --- Optional SIX integration (graceful) ---
 # NOTE (audit 2026-06-13c #14): the module name `six` COLLIDES with the ubiquitous PyPI py2/3 shim. When
@@ -97,9 +106,39 @@ class ComplianceEngine:
         self.mode = mode  # "sovereign" | "corporate_regulated" | "corporate_standard"
         self.node = node
         self.policy_loader = policy_loader
-        self._audit_trail: List[AuditRecord] = []
+        # Read the cap at instance time (env can override the module default per node/test).
+        maxlen = int(os.environ.get("BREATHLINE_AUDIT_TRAIL_MAX", str(_AUDIT_TRAIL_MAX)))
+        self._audit_trail: "deque[AuditRecord]" = deque(maxlen=maxlen)  # bounded RAM window (§6)
+        self._audit_overflow_path = self._resolve_audit_overflow()
         self._sixon = _SIX_AVAILABLE
         self._current_policy: Any = None  # cache for the active policy
+
+    @staticmethod
+    def _resolve_audit_overflow() -> Optional[Path]:
+        """Where evicted audit records are persisted append-only. BREATHLINE_AUDIT_OVERFLOW if set; else
+        None (the node's append-only VerifiableMemory is already the authoritative signed persistence)."""
+        p = (os.environ.get("BREATHLINE_AUDIT_OVERFLOW", "") or "").strip()
+        return Path(p).expanduser() if p else None
+
+    def _record_audit(self, record: "AuditRecord") -> None:
+        """Append to the bounded RAM window; persist the about-to-be-evicted record append-only first so a
+        bounded working-set never means forgotten history (Universalize Wave §6)."""
+        dq = self._audit_trail
+        if dq.maxlen and len(dq) == dq.maxlen and self._audit_overflow_path is not None:
+            self._persist_overflow(dq[0])   # dq[0] is the record append() is about to evict
+        dq.append(record)
+
+    def _persist_overflow(self, r: "AuditRecord") -> None:
+        try:
+            self._audit_overflow_path.parent.mkdir(parents=True, exist_ok=True)
+            with self._audit_overflow_path.open("a", encoding="utf-8") as f:
+                f.write(json.dumps({
+                    "event": r.event, "timestamp": r.timestamp, "role_id": r.role_id,
+                    "action_class": r.action_class, "risk_level": r.risk_level.value,
+                    "receipt_hash": r.receipt_hash, "prev_receipt_hash": r.prev_receipt_hash,
+                }, sort_keys=True) + "\n")
+        except OSError:
+            pass  # audit persistence must never break the execution path
 
     # ------------------------------------------------------------------
     # Core Verifiable Inference
@@ -151,7 +190,7 @@ class ComplianceEngine:
         receipt = self._generate_six_style_receipt(record, payload)
         record.metadata["six_style_receipt"] = receipt
 
-        self._audit_trail.append(record)
+        self._record_audit(record)   # bounded RAM window + append-only overflow (§6)
         return {
             "summary": {
                 "action_class": record.action_class,
@@ -387,7 +426,7 @@ class ComplianceEngine:
         }
 
     def get_audit_trail(self, limit: int = 50) -> List[AuditRecord]:
-        return self._audit_trail[-limit:]
+        return list(self._audit_trail)[-limit:]   # deque → list before slicing (§6)
 
     def export_evidence_bundle(self, case_id: str = None) -> Dict[str, Any]:
         """

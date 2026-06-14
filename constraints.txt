@@ -1,5 +1,4 @@
-# Reproducible constraints lock for the Docker/CI path (audit 2026-06-13c #32 — regenerated from the
-# green test env; the prior pins had drifted from what actually runs).
+# Reproducible constraints lock for the Docker/CI path.
 #
 # Use with:  pip install -e . -c constraints.txt            (core: pyyaml + flask)
 #       or:  pip install -e .[crypto-assurance,dev] -c constraints.txt
@@ -8,8 +7,16 @@
 # Flask 4.x / PyYAML 7.x cannot silently install and break the JSON provider / yaml lenses.
 # breathline_primitives is intentionally absent — it is the private sealed substrate (see pyproject).
 #
-# Verified against: Python 3.12.3, suite 225 green (2026-06-13d — re-confirmed against the live env:
-# PyYAML 6.0.1 · Flask 3.1.3 · cryptography 46.0.4 · pytest 9.0.2).
+# ── Provenance (Universalize Wave §6 — honest deps: record HOW these pins were captured, never hand-edit) ──
+# These pins were read from the actual green test environment, NOT hand-authored. To regenerate after a
+# dependency bump, re-run the suite green, then capture from the SAME interpreter:
+#     python3 -c "import sys,platform; print(sys.version.split()[0], platform.platform())"
+#     python3 -c "import importlib.metadata as m; \
+#                 [print(f'{p}=={m.version(p)}') for p in ('PyYAML','Flask','cryptography','pytest')]"
+# Captured:
+#     interpreter : Python 3.12.3
+#     platform    : Linux-6.17.0-23-generic-x86_64-with-glibc2.39
+#     suite       : 237 green (2026-06-13, Universalize Wave)
 PyYAML==6.0.1
 Flask==3.1.3
 cryptography==46.0.4
