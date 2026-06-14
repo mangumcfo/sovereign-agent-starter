@@ -23,6 +23,8 @@ from enum import Enum
 from pathlib import Path
 from typing import Optional
 
+from ..ndjson import read_ndjson  # the ONE tolerant ndjson reader (Universalize Wave §1)
+
 # POSIX advisory lock for the write-fence. Guarded so the module imports on non-POSIX platforms
 # (audit 2026-06-13: pyproject claims requires-python>=3.10 with no OS restriction, but a top-level
 # `import fcntl` hard-failed on Windows at package load). On a platform without fcntl the fence degrades
@@ -227,6 +229,7 @@ class ObligationLedger:
         # stale prefix. Cache tuple: (entries, key, parsed_byte_size, head_bytes).
         if not self.path.exists():
             self._entries_cache = ([], None, 0, b"")
+            self._chain_status = read_ndjson(self.path)  # clean empty read
             return []
         st = self.path.stat()
         key = (st.st_mtime_ns, st.st_size)
@@ -247,10 +250,19 @@ class ObligationLedger:
                             self._entries_cache = (out, key, st.st_size, prev_head)
                             return out
                 except (OSError, ValueError, UnicodeDecodeError):
-                    pass   # boundary/rewrite scramble → fall through to a full re-parse
-        raw = self.path.read_bytes()
-        out = [json.loads(s) for s in raw.decode("utf-8").splitlines() if s.strip()]
-        self._entries_cache = (out, key, len(raw), raw[: self._ENTRIES_HEAD])
+                    pass   # boundary/rewrite scramble OR truncated tail → full TOLERANT re-parse below
+        # FULL tolerant parse via the ONE gateway (Universalize Wave §1/G2): a truncated TRAILING line is
+        # quarantined (the chain still loads on its clean prefix, and repair_chain can rewrite it); a corrupt
+        # MIDDLE line flags chain_corrupt so verify_chain() returns False and routes degrade loudly.
+        res = read_ndjson(self.path)
+        self._chain_status = res
+        out = res.entries
+        with self.path.open("rb") as f:
+            head = f.read(self._ENTRIES_HEAD)
+        # When a tail was quarantined or a hole was found, do NOT cache a byte offset — force a full
+        # re-parse on the next change so the completed/repaired line is re-read (disable the tail fast path).
+        parsed_size = 0 if (res.repair_required or res.chain_corrupt) else key[1]
+        self._entries_cache = (out, key, parsed_size, head)
         return out
 
     def iter_entries(self):
@@ -321,14 +333,21 @@ class ObligationLedger:
         recomputes prev_hash + hash so the chain is internally valid again, and rewrites the ndjson — backing
         up the original to obligations.ndjson.forked.<n> first. Held under the same write-fence. The repaired
         chain re-hashes content (the fork already broke cryptographic continuity); the backup preserves the
-        raw forked record for audit. Returns {repaired, was_valid, entries, backup}."""
+        raw forked record for audit. Returns {repaired, was_valid, entries, backup}.
+
+        Universalize Wave §1/G2: repair also survives + heals a TRUNCATED TRAILING line. The tolerant reader
+        loads the clean prefix (dropping the dangling partial line) instead of raising — so repair_chain can
+        run at all — and a dangling tail forces a rewrite even when the clean prefix verifies, because leaving
+        the partial line in place would turn it into a corrupt MIDDLE line on the next append."""
         lock_path = self.root / "obligations.lock"
         with open(lock_path, "a+") as lock:
             _flock_ex(lock)
             try:
-                if self.verify_chain():
-                    return {"repaired": False, "was_valid": True, "entries": len(self._entries()), "backup": None}
-                entries = self._entries()
+                entries = self._entries()                       # populates self._chain_status
+                status = getattr(self, "_chain_status", None)
+                truncated_tail = bool(status and status.repair_required and not status.chain_corrupt)
+                if self.verify_chain() and not truncated_tail:
+                    return {"repaired": False, "was_valid": True, "entries": len(entries), "backup": None}
                 n = 0
                 while (self.root / f"obligations.ndjson.forked.{n}").exists():
                     n += 1
@@ -726,8 +745,16 @@ class ObligationLedger:
 
     def _recompute_chain(self) -> bool:
         """Full hash-walk from genesis — the O(n) ground truth behind the memoized verify_chain."""
+        entries = self._entries()
+        # A corrupt MIDDLE line is a hole in the committed chain (Universalize Wave §1/G2): the gateway
+        # already dropped it and flagged chain_corrupt — the chain is NOT valid regardless of the surviving
+        # links. A truncated trailing line (repair_required without chain_corrupt) is an interrupted append,
+        # not a committed hole, so the clean prefix can still verify.
+        status = getattr(self, "_chain_status", None)
+        if status is not None and status.chain_corrupt:
+            return False
         prev = "genesis"
-        for e in self._entries():
+        for e in entries:
             if e.get("prev_hash") != prev:
                 return False
             if e.get("hash") != _hash({k: v for k, v in e.items() if k != "hash"}):

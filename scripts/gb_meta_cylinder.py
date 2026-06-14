@@ -39,12 +39,17 @@ def _now() -> str:
 def _hash(obj: dict) -> str:
     return hashlib.sha256(json.dumps(obj, sort_keys=True).encode()).hexdigest()[:16]
 
+def _load_entries(path: Path = CYLINDER) -> list:
+    """Tolerant read via the ONE package gateway (Universalize Wave §1/G2): a truncated tail no longer
+    bricks GB's cylinder tool. scripts→package is the allowed import direction (G4)."""
+    src = str(Path(__file__).resolve().parents[1] / "src")
+    if src not in sys.path:
+        sys.path.insert(0, src)
+    from sovereign_agent.ndjson import read_ndjson
+    return read_ndjson(path).entries
+
 def _append(entry: dict) -> dict:
-    entries = []
-    if CYLINDER.exists():
-        for line in CYLINDER.read_text().splitlines():
-            if line.strip():
-                entries.append(json.loads(line))
+    entries = _load_entries()
     entry["prev_hash"] = entries[-1]["hash"] if entries else "genesis"
     entry["hash"] = _hash({k: v for k, v in entry.items() if k not in ("hash",)})
     with CYLINDER.open("a") as f:
@@ -67,14 +72,12 @@ def replay(since: Optional[str] = None, query: Optional[str] = None, limit: int 
         print("No cylinder yet.")
         return
     entries = []
-    for line in CYLINDER.read_text().splitlines():
-        if line.strip():
-            e = json.loads(line)
-            if since and e["timestamp"] < since:
-                continue
-            if query and query.lower() not in (e.get("content","") + e.get("ref","")).lower():
-                continue
-            entries.append(e)
+    for e in _load_entries():
+        if since and e["timestamp"] < since:
+            continue
+        if query and query.lower() not in (e.get("content","") + e.get("ref","")).lower():
+            continue
+        entries.append(e)
     for e in entries[-limit:]:
         print(f"[{e['timestamp']}] {e['type']}: {e['content'][:120]}... (ref: {e.get('ref')}) hash:{e['hash']}")
     print(f"Total matching: {len(entries)}")
@@ -86,9 +89,7 @@ def verify():
     prev = "genesis"
     ok = True
     count = 0
-    for line in CYLINDER.read_text().splitlines():
-        if not line.strip(): continue
-        e = json.loads(line)
+    for e in _load_entries():
         if e.get("prev_hash") != prev:
             print(f"Chain break at {e['timestamp']}: prev {e.get('prev_hash')} != {prev}")
             ok = False
@@ -105,10 +106,10 @@ def last_entry():
     if not CYLINDER.exists():
         print("No cylinder yet.")
         return None
-    lines = [l for l in CYLINDER.read_text().splitlines() if l.strip()]
-    if not lines:
+    entries = _load_entries()
+    if not entries:
         return None
-    e = json.loads(lines[-1])
+    e = entries[-1]
     print("=== LATEST CYLINDER ENTRY ===")
     print(f"Timestamp: {e['timestamp']}")
     print(f"Type: {e['type']}")
@@ -124,14 +125,14 @@ def manifest():
     if not CYLINDER.exists():
         print("No cylinder yet.")
         return
-    lines = [l for l in CYLINDER.read_text().splitlines() if l.strip()]
-    if not lines:
+    entries = _load_entries()
+    if not entries:
         print("Cylinder empty.")
         return
-    e = json.loads(lines[-1])
+    e = entries[-1]
     m = {
         "file": str(CYLINDER),
-        "total_entries": len(lines),
+        "total_entries": len(entries),
         "last_ts": e["timestamp"],
         "last_hash": e["hash"],
         "last_prev_hash": e["prev_hash"],
@@ -139,7 +140,7 @@ def manifest():
         "last_ref": e.get("ref", "n/a"),
         "last_content_preview": e["content"][:140] + ("..." if len(e["content"]) > 140 else "")
     }
-    total = len(lines)
+    total = len(entries)
     print(f"=== {total} CYLINDER MANIFEST (run after every GB turn to see proof of update) ===")
     print(json.dumps(m, indent=2, sort_keys=True))
     print("=== Compare last_hash / total_entries to prior run. Hash changed + count +1 = updated. ===")
@@ -150,10 +151,10 @@ def generate_receipt(type_: str, summary: str, ref: Optional[str] = None) -> str
     if not CYLINDER.exists():
         print("No cylinder.")
         return ""
-    lines = [l for l in CYLINDER.read_text().splitlines() if l.strip()]
-    if not lines:
+    entries = _load_entries()
+    if not entries:
         return ""
-    e = json.loads(lines[-1])
+    e = entries[-1]
     receipt = f"CYL-RECEIPT {e['timestamp']} | {type_} | hash:{e['hash']} | prev:{e['prev_hash']} | ref:{ref or 'n/a'} | summary: {summary}"
     # Append to human-readable receipts file
     receipts_file = CYLINDER.parent / "GB_Cylinder_Receipts.md"
@@ -177,15 +178,7 @@ def analyze(limit: int = 15):
     if not cyl_path.exists():
         print("No cylinder yet.")
         return
-    entries = []
-    for line in cyl_path.read_text().splitlines():
-        line = line.strip()
-        if not line: continue
-        try:
-            e = json.loads(line)
-            entries.append(e)
-        except Exception:
-            pass
+    entries = _load_entries(cyl_path)
     n = len(entries)
     print(f"=== CYLINDER SELF-SCAN @ {n} entries (run for GB meta self-optimization) ===")
     print(f"File: {cyl_path}")

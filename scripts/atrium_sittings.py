@@ -50,8 +50,13 @@ DEFAULT_ROOT = _resolve_default_root()
 
 
 def _rows(root: Path) -> list[dict]:
-    f = root / "obligations.ndjson"
-    return [json.loads(l) for l in f.read_text(encoding="utf-8").splitlines() if l.strip()]
+    # Tolerant read via the ONE package gateway (Universalize Wave §1/G2): scripts→package is allowed (G4).
+    import sys
+    src = str(REPO / "src")
+    if src not in sys.path:
+        sys.path.insert(0, src)
+    from sovereign_agent.ndjson import read_ndjson
+    return read_ndjson(root / "obligations.ndjson").entries
 
 
 def _txt(o: dict) -> str:

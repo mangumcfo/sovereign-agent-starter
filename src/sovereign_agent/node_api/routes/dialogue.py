@@ -17,6 +17,7 @@ from pathlib import Path
 
 from flask import Blueprint, jsonify
 
+from ...ndjson import read_ndjson  # the ONE tolerant ndjson reader (Universalize Wave §1)
 from .._filecache import memoize_on
 from ..auth import require_principal
 
@@ -31,27 +32,22 @@ def _thread_path() -> Path:
 def _thread_entries():
     """The hash-chained Tiger↔GB THREAD as dialogue cards. Returns (entries, chain_ok). Read-only.
     Memoized on the THREAD's (mtime,size) (audit 2026-06-13d #6) — /dialogue re-parsed 498KB per poll."""
-    p = _thread_path()
-    entries, ok = [], True
-    if p.is_file():
-        prev_hash = None
-        for line in p.read_text(encoding="utf-8").splitlines():
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                e = json.loads(line)
-            except ValueError:
-                continue
-            if prev_hash is not None and e.get("prev") and e.get("prev") != prev_hash:
-                ok = False
-            prev_hash = e.get("hash")
-            entries.append({
-                "n": e.get("n"), "ts": e.get("ts"), "from": e.get("from"), "to": e.get("to"),
-                "ref": e.get("ref", ""), "msg": e.get("msg", ""),
-                "receipt": (e.get("hash") or "")[:16], "prev": (e.get("prev") or "")[:12],
-                "source": "thread",
-            })
+    # Tolerant read via the ONE gateway (Universalize Wave §1/G2): the THREAD is read through the same
+    # primitive as every other ndjson chain — a truncated tail no longer drops the whole dialogue lens, and
+    # a corrupt middle line flags chain_ok=False (loud) rather than being silently skipped.
+    res = read_ndjson(_thread_path())
+    entries, ok = [], not res.chain_corrupt
+    prev_hash = None
+    for e in res.entries:
+        if prev_hash is not None and e.get("prev") and e.get("prev") != prev_hash:
+            ok = False
+        prev_hash = e.get("hash")
+        entries.append({
+            "n": e.get("n"), "ts": e.get("ts"), "from": e.get("from"), "to": e.get("to"),
+            "ref": e.get("ref", ""), "msg": e.get("msg", ""),
+            "receipt": (e.get("hash") or "")[:16], "prev": (e.get("prev") or "")[:12],
+            "source": "thread",
+        })
     entries.reverse()  # newest first
     return entries, ok
 

@@ -25,6 +25,7 @@ from pathlib import Path
 
 from flask import Blueprint, jsonify, request
 
+from ...ndjson import read_ndjson_cached  # the ONE tolerant + memoized ndjson reader (Universalize Wave §1/§3)
 from ..auth import current_principal, require_principal
 from ..errors import route_error
 from ..deps import get_obligation_ledger
@@ -104,16 +105,8 @@ def _cards_from_feed(path: Path):
     sole writer (fence); this only consumes. Each line is a curated suggestion already targeted to a
     lane/series — so Send-to-Packet routes correctly (no more Book-11 mis-route). Skips the _genesis
     schema line. Returns a list of cards carrying lane/series_ref/lgp_hint/priority/ref for traceability."""
-    import json as _json
     cards = []
-    for line in path.read_text(encoding="utf-8").splitlines():
-        line = line.strip()
-        if not line:
-            continue
-        try:
-            r = _json.loads(line)
-        except ValueError:
-            continue
+    for r in read_ndjson_cached(path).entries:   # tolerant + memoized gateway (Universalize Wave §1/§3)
         if r.get("_genesis") or not r.get("one_line_intent"):
             continue
         cards.append({

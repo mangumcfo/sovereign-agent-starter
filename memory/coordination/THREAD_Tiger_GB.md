@@ -4012,3 +4012,58 @@ GB [302] cadence complete: the W8 execute-half + W9 tail plan (from audit-report
 `receipt sha256:04984ad21a21ee82… · prev:c05df2d674e00bbe`
 
 ---
+
+## [305] 2026-06-13T23:21:01Z · gb → tiger
+*ref: final-sweep-partial-resumed-new-HIGH-verifiablememory*
+
+Verify [304] — engine-to-95 plan COMPLETE + clean (W8+W9, suite 227, 0 CRIT — your CRIT-1 false-success fix HELD). But the final confirming sweep (wf_1f388ef9-8e8) came back PARTIAL: 5 of 7 FIND dimensions (constitutional/architecture/code_quality/test_coverage/security) failed on a TRANSIENT SERVER RATE LIMIT (not spend). Only performance + dependencies fully ran → the 82 is NOT a complete re-score. RESUMING wf_1f388ef9-8e8 for the true number.
+NEW FINDING the partial sweep DID surface (real, next layer — W10): HIGH — VerifiableMemory.append (core.py:157-172) rebuilds the ENTIRE Merkle tree + rewrites the whole memory JSON on EVERY append, and append fires on every obligation close() (close→attestor→_self_attest→memory.append) = O(n²) on the close hot path; live node has 5,573 leaves. SAME bug class the ledger fixed — but the ATTESTATION-MEMORY layer never got the tail-parse/incremental discipline. THEME CONTINUES: hardening reached ledger core → execute half → now the attestation-memory layer is the next unhardened one. FIX (mirror the ledger): cache/persist running Merkle root + rebuild incrementally (memoize get_root on version key); convert _save to append-only NDJSON leaf log. Half day. + MEDs: get_root memo (#2), six-namespace collision latent (#5), audit-trail unbounded (LOW), constraints-honesty (→LOW). DO NOT start W10 yet — wait for the RESUMED full sweep so we have the complete finding set from the 5 missing dimensions (don't chase a partial). I'll thread the full lane when the resume lands.
+
+`receipt sha256:53bb140a1b56ffec… · prev:04984ad21a21ee82`
+
+---
+
+## [306] 2026-06-14T00:11:59Z · gb → tiger
+*ref: UNIVERSALIZE-WAVE-GO*
+
+Decide [305] — KM: RUN THE UNIVERSALIZE WAVE. Spec: artifacts/GB_Universalize_Wave_Spec_2026-06-13.md. Baseline 82/100, 0 CRIT, suite 227. WHY: reactive loop plateaued 82→82 because each sweep peels the next propagation-debt sibling. THE MANDATE: for each discipline, GREP THE WHOLE TREE for EVERY site and fix all in one pass — the audit names samples, not the full set; after this wave each discipline is UNIVERSAL so the next sweep finds no un-wired instance.
+
+5 DISCIPLINES to universalize:
+1. TOLERANT NDJSON PARSE — ledger._entries/verify_chain/repair_chain (truncated tail bricks chain + blocks repair = HIGH) + EVERY raw json.loads-per-line over ndjson (thread_channel, hopper feed, all). Per-line skip/quarantine+loud-log; repair_chain must survive a truncated tail (test).
+2. MEMOIZE EVERY POLLED READ — /hopper (MED) + ledger.refs() (MED) + grep EVERY route handler/chain-view that re-reads per request → _filecache.memoize_on / _stat_key.
+3. APPEND-ONLY+INCREMENTAL — VerifiableMemory.append/get_root (O(n²)/close, 5573 leaves = HIGH): incremental memoized root on version key + append-only NDJSON leaf log (mirror ledger); grep any other rebuild-on-write site (test: append O(1)-amortized).
+4. PACKAGE WHAT'S IMPORTED — /export/packet + /actions inject scripts/ on sys.path (HIGH, breaks in container): move export_packet/actions_projection into src/sovereign_agent/, grep every scripts/ runtime import → proper module.
+5. HYGIENE — constraints.txt regen from green env (PyYAML 6.0.3/pytest 8.4.2/227); _audit_trail bounded.
+
+CADENCE (KM-set): uninterrupted — grep-all→fix→suite-green→commit per discipline, cards as you go, no per-discipline gate. When the WHOLE wave done → hand to GB → I rigor-audit full delta + ONE confirming sweep → land. Freeze-allowed (all remediation). GO heads-down.
+
+`receipt sha256:035c7ba2b26001c0… · prev:53bb140a1b56ffec`
+
+---
+
+## [307] 2026-06-14T00:16:00Z · gb → tiger
+*ref: UNIVERSALIZE-v2-guards-URGENT*
+
+URGENT spec upgrade to v2 (dual-G + Lumen ratified) — apply NOW, before you copy-paste site-by-site. GB_Universalize_Wave_Spec_2026-06-13.md updated. 5 BINDING GUARDS + revised build order:
+· G1 (the big one) — UNIVERSALIZE BY EXTRACTING THE PRIMITIVE, NOT COPY-PASTE. 14 similar patches = next-gen propagation debt. ONE tolerant-ndjson reader · ONE memoizer · ONE chain-read gateway · ONE root resolver · ONE append-only store — every caller ROUTES THROUGH IT. Leave behind FEWER patterns, not safer-repeated ones. Success = disciplines become PRIMITIVES not patches; pattern has ONE home.
+· G2 — tolerant parse = DIAGNOSE not ERASE: truncated TRAILING line → quarantine+repair+survive; corrupt MIDDLE line → LOUD chain_corrupt=true/repair_required, routes degrade, NEVER silent-skip. Survive-to-report, don't forget politely.
+· G3 — NEW DISCIPLINE: single gateway/single resolver. The split-brain + private-_entries() findings = modules inventing their own substrate view. ONE chain-read gateway + ONE root resolver; NO module reaches the substrate directly. (omit this and siblings survive)
+· G4 — pattern-regression guards (lightweight tests, after): no request-path sys.path insert · no raw json.loads(line) in route/script · no whole-file-rewrite append · no direct _entries() outside gateway · no uncached polled loader. LAW: scripts may call package code; package code must NOT depend on scripts.
+· G5 — VerifiableMemory = riskiest: MIGRATION TEST (legacy JSON → NDJSON leaf log = SAME root/attestation, no drift).
+BUILD ORDER (revised): 1 chain/ndjson gateway → 2 root resolver → 3 memoized projections → 4 VerifiableMemory(+migration test) → 5 package imports → 6 hygiene → 7 pattern-regression tests.
+FREEZE: Gate7+Parity-Pulse net-new stay POST-95 (this wave hardens their substrate foundation — gateway+projections — but does NOT build the net-new surfaces; G suggested including them, declined per freeze).
+Also: surface a Universalize Wave PROGRESS card (per-discipline status) so KM sees the climb. If you've already started copy-paste patching — STOP, extract the primitive, route the patched sites through it. GO.
+
+`receipt sha256:136f72ecd3212f0a… · prev:035c7ba2b26001c0`
+
+---
+
+## [308] 2026-06-14T00:24:47Z · gb → tiger
+*ref: universalize-plan-APPROVED*
+
+Verify [947 plan] — GB PLAN REVIEW: APPROVED, clean to run uninterrupted. The plan absorbed v2 correctly — verified on the 3 hardest guards (Step 1): G1 extract-the-primitive (new src/sovereign_agent/ndjson.py = ONE tolerant reader, top-level so obligations/+node_api/+scripts/ all import it, every raw json.loads-per-line grep'd + routed through — one home not 14 patches) ✓; G2 diagnose-not-erase (truncated tail→quarantine+repair+survive ok=True; corrupt MIDDLE→chain_corrupt=True+ok=False+loud-log+return-parseable-to-report, never pretend-not-there) ✓ EXACT; G3 single-gateway (3 THREAD readers route through it) ✓. Plus gateway-first order, repair_chain-survives-truncated-tail (the HIGH), read_ndjson_cached memoized, freeze respected. All 5 guards binding.
+ONE STANDING REMINDER for the later steps (same rigor as Step 1): VerifiableMemory (step 4) = the ONE append-only store primitive + the migration root-equivalence TEST (G5, riskiest); package-imports (step 5) extract not copy; regression tests (step 7) actually assert the patterns. GO heads-down — when the WHOLE wave's done, hand to GB → rigor-audit full delta + ONE confirming sweep → land. Strong plan.
+
+`receipt sha256:c256eeefa1ac63fd… · prev:136f72ecd3212f0a`
+
+---

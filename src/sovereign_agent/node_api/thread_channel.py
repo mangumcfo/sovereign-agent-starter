@@ -19,6 +19,7 @@ import json
 import os
 from pathlib import Path
 
+from ..ndjson import read_ndjson  # the ONE tolerant ndjson reader (Universalize Wave §1)
 from ._filecache import memoize_on
 
 
@@ -41,10 +42,9 @@ def load() -> list[dict]:
     # 'relayed' card via find_reply→load (full 498KB parse per card per poll), and /dialogue re-parsed it
     # too. Re-derives only on change — and append()'s write between its two load() calls bumps the stat
     # key, so the second load() (for the .md mirror) still sees the fresh chain.
-    p = _thread_path()
-    if not p.exists():
-        return []
-    return [json.loads(l) for l in p.read_text(encoding="utf-8").splitlines() if l.strip()]
+    # Tolerant read via the ONE gateway (Universalize Wave §1/G2): a THREAD truncated mid-append no longer
+    # raises and blanks every relay card — the clean prefix loads; a corrupt middle line surfaces loudly.
+    return read_ndjson(_thread_path()).entries
 
 
 def _render_md(entries: list[dict]) -> None:

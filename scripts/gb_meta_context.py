@@ -122,18 +122,12 @@ def get_latest_hmc(limit=3):
 
 def get_recent_cylinder(limit=5):
     """Pull recent cylinder entries for historical meta threads (LGP, Book/Breath to Code, coordination)."""
-    if not CYLINDER.exists():
-        return []
-    entries = []
-    with open(CYLINDER) as f:
-        for line in f:
-            if line.strip():
-                try:
-                    e = json.loads(line)
-                    entries.append(e)
-                except:
-                    pass
-    return entries[-limit:]
+    # Tolerant read via the ONE package gateway (Universalize Wave §1/G2). scripts→package allowed (G4).
+    src = str(Path(__file__).resolve().parents[1] / "src")
+    if src not in sys.path:
+        sys.path.insert(0, src)
+    from sovereign_agent.ndjson import read_ndjson
+    return read_ndjson(CYLINDER).entries[-limit:]
 
 def get_forward_path_p0():
     """Summarize current P0 from forward path for grounding."""

@@ -27,9 +27,14 @@ MD = ROOT / "THREAD_Tiger_GB.md"
 
 
 def _load() -> list:
-    if not NDJSON.exists():
-        return []
-    return [json.loads(l) for l in NDJSON.read_text(encoding="utf-8").splitlines() if l.strip()]
+    # Tolerant read via the ONE package gateway (Universalize Wave §1/G2): a THREAD truncated mid-append
+    # no longer raises and bricks the CLI. scripts→package import is the allowed direction (G4).
+    import sys
+    src = str(Path(__file__).resolve().parents[1] / "src")
+    if src not in sys.path:
+        sys.path.insert(0, src)
+    from sovereign_agent.ndjson import read_ndjson
+    return read_ndjson(NDJSON).entries
 
 
 def _hash(prev: str, frm: str, to: str, ref: str, msg: str) -> str:
