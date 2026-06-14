@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Breathline Book↔Code Workflow — Living Map (2026-06-14)</title>
+<style>
+  :root{
+    --navy:#1B2A4A; --navy2:#24395f; --gold:#C5A55A; --paper:#f7f5ef; --ink:#1d2330;
+    --green:#2e7d57; --amber:#b8860b; --red:#9e3b3b; --slate:#5b6b86; --line:#cdd4e0;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font:15px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+  header{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;padding:28px 32px;border-bottom:4px solid var(--gold)}
+  header h1{margin:0 0 4px;font-size:24px;letter-spacing:.3px}
+  header .sub{color:#cdd6e8;font-size:13px}
+  header .seal{float:right;color:var(--gold);font-size:22px;letter-spacing:2px}
+  main{max-width:1180px;margin:0 auto;padding:26px 24px 60px}
+  h2{color:var(--navy);font-size:18px;margin:34px 0 6px;border-left:4px solid var(--gold);padding-left:10px}
+  h2 small{font-weight:400;color:var(--slate);font-size:12px;margin-left:8px}
+  .note{color:var(--slate);font-size:13px;margin:2px 0 14px}
+  .rail{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch}
+  .phase{flex:1;min-width:150px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:12px 13px;position:relative}
+  .phase .tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--slate)}
+  .phase h3{margin:3px 0 6px;font-size:14px;color:var(--navy)}
+  .phase ul{margin:0;padding-left:16px;font-size:12.5px;color:#33415c}
+  .phase li{margin:2px 0}
+  .arrow{align-self:center;color:var(--gold);font-size:22px;font-weight:700;flex:0 0 auto}
+  .gate{background:#fff7e6;border:2px solid var(--gold)}
+  .gate .tag{color:var(--amber)}
+  .auto{border-top:3px solid var(--slate)}
+  .ship{border-top:3px solid var(--green)}
+  .lane{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px}
+  .card{flex:1;min-width:280px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+  .card.book{border-top:4px solid var(--gold)}
+  .card.engine{border-top:4px solid var(--navy)}
+  .card.fwd{border-top:4px solid var(--slate)}
+  .card h3{margin:0 0 8px;font-size:15px;color:var(--navy)}
+  .steps{list-style:none;margin:0;padding:0;font-size:13px}
+  .steps li{padding:5px 0 5px 22px;position:relative;border-bottom:1px dashed #e3e7ef}
+  .steps li:last-child{border-bottom:0}
+  .steps li::before{content:"●";position:absolute;left:4px;color:var(--gold);font-size:11px;top:6px}
+  .steps li.g::before{content:"✔";color:var(--green)}
+  .steps li.h::before{content:"◆";color:var(--amber)}
+  .pill{display:inline-block;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:10px;margin-left:6px;vertical-align:middle}
+  .p-green{background:#e3f3ea;color:var(--green)}
+  .p-amber{background:#fbf0d6;color:var(--amber)}
+  .p-slate{background:#e9edf4;color:var(--slate)}
+  .p-red{background:#f6e3e3;color:var(--red)}
+  table{border-collapse:collapse;width:100%;margin-top:8px;font-size:13px;background:#fff}
+  th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+  th{background:var(--navy);color:#fff;font-weight:600;font-size:12px}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;font-size:12.5px;color:var(--slate)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .dot{width:11px;height:11px;border-radius:50%;display:inline-block}
+  footer{max-width:1180px;margin:0 auto;padding:18px 24px 50px;color:var(--slate);font-size:12.5px;border-top:1px solid var(--line)}
+  .banner{background:var(--navy);color:#fff;border-radius:8px;padding:14px 18px;margin:18px 0;font-size:14px}
+  .banner b{color:var(--gold)}
+</style>
+</head>
+<body>
+<header>
+  <span class="seal">∞Δ∞</span>
+  <h1>Breathline Book↔Code Workflow — Living Map</h1>
+  <div class="sub">Series-Pipeline rail · book defines the UX · one human gate · everything in the cockpit &nbsp;·&nbsp; rendered 2026-06-14 from WORKFLOW.md + current practice</div>
+</header>
+<main>
+
+  <div class="banner"><b>One sentence:</b> ideas → sorted → combined → <b>extruded book↔code together</b> (co-extrusion) → boards + fidelity + render gate it → <b>one human gate (KM Accept)</b> → ship. The cockpit (Atrium) is where every card surfaces for that one gate.</div>
+
+  <h2>1 · The rail, end to end <small>Phase −1 → Ship · the only human gate is Phase 2</small></h2>
+  <p class="note">Phases −1 → 1 are AI-side and autonomous (no human review). The human touches the work at exactly one place: Phase 2.</p>
+  <div class="rail">
+    <div class="phase auto"><div class="tag">Phase −1</div><h3>Series lock</h3><ul><li>Roadmap + series plan locked</li><li>Pre-AI editorial review</li><li><b>Series cover set</b> — one batch, all vols</li></ul></div>
+    <div class="arrow">→</div>
+    <div class="phase auto"><div class="tag">Phase 0</div><h3>Per-title kickoff</h3><ul><li>Outline (G-validated)</li><li>Slot opens (sequential lockout)</li></ul></div>
+    <div class="arrow">→</div>
+    <div class="phase auto"><div class="tag">Phase 1 · autonomous</div><h3>AI-side dev + co-extrusion</h3><ul><li>Manuscript v1.x</li><li>Editorial R1 / R2 / R3</li><li>17.5 Book-to-UX board</li><li>17.6 Tech/Arch board (6 gates)</li><li>Code+tests extruded <i>with</i> the book</li><li>Build artifact → <b>awaiting_human_review</b></li></ul></div>
+    <div class="arrow">→</div>
+    <div class="phase gate"><div class="tag">Phase 2 · HUMAN GATE</div><h3>◆ KM handoff</h3><ul><li>Review Brief (3–7 calls)</li><li>KM <b>Accept / ratify</b> only</li><li>diff-review surface (orig vs board)</li><li>km sitting verify</li></ul></div>
+    <div class="arrow">→</div>
+    <div class="phase ship"><div class="tag">Phase 3</div><h3>Ship</h3><ul><li>Dispatch manifest + KDP</li><li>Living-spec extraction</li><li>Slot closes → next title</li></ul></div>
+  </div>
+
+  <h2>2 · Inside Phase 1 — the Review-Ready Rail (R1) <small>what gates a book before it can reach the human</small></h2>
+  <p class="note">A book cannot reach KM until all four R1 gates are green (machine-checked: <code>scripts/review_ready_contract.py</code>). The boards prove depth (<code>board_rigor.py</code> — no rubber stamps).</p>
+  <div class="lane">
+    <div class="card book"><h3>Boards executed (rigor-pass)</h3><ul class="steps">
+      <li class="g">Editorial R1 — stylistic/structural <span class="pill p-slate">+ Cold Reader (7th persona)</span></li>
+      <li class="g">Editorial R2 — disciplinary/functional <span class="pill p-slate">R1.5 rigor</span></li>
+      <li class="g">Editorial R3 — scholarly/currency <span class="pill p-slate">R1.5g adversarial</span></li>
+      <li class="g">Book-to-UX board (17.5) — book defines the UX</li>
+      <li class="g">Tech/Arch board (17.6) — 5 gates + Gate 6, co-extrusion coherence</li>
+    </ul></div>
+    <div class="card book"><h3>Obligations · Fidelity · Brief</h3><ul class="steps">
+      <li class="g">Obligations closed — every finding → B32 obligation (closed or deferred-with-reason)</li>
+      <li class="g">Fidelity PASS — GB semantic trace: every claim resolves to a live source (not just a hash)</li>
+      <li class="h">Review Brief sealed — GB writes the one-page, 3–7 judgment calls for KM</li>
+      <li>Gate 6 Renderability — receipt-box / one-truth / honest-stub / capability-promise (Deterministic-Render Standard)</li>
+    </ul></div>
+  </div>
+
+  <h2>3 · The re-validation rail <small>for already-sealed books (V2–V5) — delta-close to the published bar, not rebuild</small></h2>
+  <p class="note">A book sealed before the standard evolved is re-validated against the <b>published bar (V1)</b> + the current engine. The diagnostic (gap-sheet) is surfaced and GB-checked <b>before</b> deep work.</p>
+  <div class="rail">
+    <div class="phase"><div class="tag">diagnose</div><h3>Gap-sheet</h3><ul><li>book vs bar + current standard</li><li>file:line evidence, no roadmap</li><li><b>GB checks before deep work</b></li></ul></div>
+    <div class="arrow">→</div>
+    <div class="phase"><div class="tag">truth</div><h3>Fix drift</h3><ul><li>stale endpoints → live routes</li><li>Gate-6 render fixes</li><li>point-in-time notes</li></ul></div>
+    <div class="arrow">→</div>
+    <div class="phase"><div class="tag">rigor</div><h3>Amended rail + Tech/Arch</h3><ul><li>Cold Reader · R1.5 · R1.5g</li><li>5 gates + Gate 6</li></ul></div>
+    <div class="arrow">→</div>
+    <div class="phase"><div class="tag">surface</div><h3>Description + covers + re-render</h3><ul><li>official KDP description</li><li>cover-set consistency</li><li>deterministic re-render</li></ul></div>
+    <div class="arrow">→</div>
+    <div class="phase gate"><div class="tag">HUMAN GATE</div><h3>◆ Fold + Brief → KM</h3><ul><li>GB fidelity + Review Brief</li><li>KM Accept → awaiting_human_review</li></ul></div>
+  </div>
+  <p class="note"><b>V2 (The Primacy Cockpit) just ran this rail:</b> gap-sheet → fixed 2 stale endpoints + render → amended rail + Tech/Arch GREEN → KDP description → Fold Report → GB fidelity PASS + Brief → <b>KM accepted (B+) → awaiting_human_review</b>. The 8-capability Atrium catch-up is tracked as a post-95 v2-edition card, not folded mid-freeze.</p>
+
+  <h2>4 · Two tracks, one cockpit <small>the book track and the engine-hardening track run in parallel</small></h2>
+  <div class="lane">
+    <div class="card book"><h3>📚 Book track <span class="pill p-amber">active</span></h3><ul class="steps">
+      <li class="g">S2 V1 — published (the bar)</li>
+      <li class="g">S2 V2 — rail complete → awaiting_human_review</li>
+      <li>S2 V3 — next (high drift-risk: dev-loop vs current proposal/obligation mechanics)</li>
+      <li>S2 V4 · V5 — gap-sheet → rail</li>
+      <li class="h">Series surface-harden → readiness digest for KM</li>
+    </ul></div>
+    <div class="card engine"><h3>⚙ Engine 95+ hardening <span class="pill p-slate">standing · post-S2-harden</span></h3>
+      <p class="note" style="margin:0 0 6px">Tracked card <code>obl_…cd010960</code> — protected so it can't drift.</p>
+      <ul class="steps">
+      <li>#1 VerifiableMemory O(n²) Merkle → incremental accumulator (leaf→segment→checkpoint→global)</li>
+      <li>#2 CI + pytest path config</li>
+      <li>#3 wire constraints into install paths</li>
+      <li>#4 atrium_executor false-close hardening</li>
+      <li>then MED/LOW band → 95+</li>
+    </ul></div>
+  </div>
+
+  <h2>5 · How new work slots in <small>all post-95; the rail + the substrate this map shows are their foundation</small></h2>
+  <table>
+    <tr><th>Stream</th><th>What it is</th><th>Where it slots</th><th>Status</th></tr>
+    <tr><td><b>ERP S3 → S5</b></td><td>S3 Programmable Sovereign ERP (4-vol constitutional root) → S5 full ERP (32-title projection); S5 titles inherit from their S3 root</td><td><b>Phase 1B</b> executable-spec arc (book→backend); the rail's co-extrusion + Tech/Arch board</td><td><span class="pill p-slate">post-95 · S5 gated on S3 V4 fill</span></td></tr>
+    <tr><td><b>Signed inheritance objects</b></td><td>parent_policy_id + inherited + delta per derived volume — makes the S5 wave sublinear &amp; honest (no invisible inheritance)</td><td>book-pipeline scaffolding, parallel; design against the real S3→S5 map</td><td><span class="pill p-slate">build-now-converged · parallel</span></td></tr>
+    <tr><td><b>Gate 7</b></td><td>constitution-at-birth (birth-hardening of a new node)</td><td>net-new surface — after 95+ (engine freeze)</td><td><span class="pill p-red">frozen until 95+</span></td></tr>
+    <tr><td><b>Parity Pulse</b></td><td>cockpit visibility: polled surfaces consume projections, not raw files</td><td>net-new surface — after 95+; stands on §3 memoized projections + the gateway</td><td><span class="pill p-red">frozen until 95+</span></td></tr>
+  </table>
+
+  <h2>6 · The cockpit discipline <small>one human gate · everything as cards</small></h2>
+  <p class="note">Every stream above surfaces as a <b>card in Atrium</b> for KM's review &amp; disposition — no parallel decisions outside the cockpit. KM initiates (forward/save), the agents amplify (draft/prep), KM gates (Accept/send). The breath-gate is the loudest object on the screen.</p>
+  <div class="legend">
+    <span><span class="dot" style="background:var(--slate)"></span> autonomous (AI-side, no human)</span>
+    <span><span class="dot" style="background:var(--gold)"></span> book track</span>
+    <span><span class="dot" style="background:var(--navy)"></span> engine track</span>
+    <span><span class="dot" style="background:var(--amber)"></span> ◆ human gate (KM Accept)</span>
+    <span><span class="dot" style="background:var(--green)"></span> ✔ gate green / shipped</span>
+    <span><span class="dot" style="background:var(--red)"></span> frozen until 95+</span>
+  </div>
+
+</main>
+<footer>
+  Living map — regenerate from <code>breathline-books-vault/WORKFLOW.md</code> + the current rail practice when either evolves.
+  Source gates: <code>review_ready_contract.py</code> (R1) · <code>board_rigor.py</code> (no rubber stamps) ·
+  <code>render_standard_lint.py</code> (Gate 6) · <code>GB_Deterministic_Render_Standard_2026-06-12.md</code>.
+  &nbsp; ∞Δ∞ &nbsp; One human gate. Everything in the cockpit.
+</footer>
+</body>
+</html>
