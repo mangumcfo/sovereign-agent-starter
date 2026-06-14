@@ -319,13 +319,13 @@ def seeit():
     """seeit — derived operator-docs surface (render-not-recreate). Serves artifacts/seeit_content.json:
     core harness mechanics rendered from sealed S2 passages (+ citations/hashes) + the per-chapter
     walkthroughs S1 B10-12 link to. Regenerate with scripts/build_seeit.py (auto-refresh on book updates)."""
+    # Memoized on (mtime,size) (Universalize Wave §3): a polled derived-docs surface; the content file is
+    # GB-sole-write and changes rarely, so re-parsing it per poll was waste.
     p = Path(__file__).resolve().parents[4] / "artifacts" / "seeit_content.json"
-    try:
-        return jsonify(json.loads(p.read_text(encoding="utf-8")))
-    except (OSError, ValueError):
-        return jsonify({"_meta": {"surface": "seeit", "ok": False,
-                                  "note": "seeit content not built — run scripts/build_seeit.py"},
-                        "topics": [], "walkthroughs": []})
+    fallback = {"_meta": {"surface": "seeit", "ok": False,
+                          "note": "seeit content not built — run scripts/build_seeit.py"},
+                "topics": [], "walkthroughs": []}
+    return jsonify(read_json_cached(p, fallback))
 
 
 @bp.get("/export/packet")

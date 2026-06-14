@@ -80,6 +80,18 @@ def test_evidence_classifier():
     assert classify_evidence("rcpt_abc123 at /a/b.py hash a1b2c3d4e5f60718") == EvidenceTier.E2_VERIFIED
 
 
+def test_refs_memoized_on_stat_key(tmp_path):
+    """Universalize Wave §3: refs() (called per GET /hopper poll to dedup packeted cards) re-derives the
+    ref set only when the chain file changes — same object back on an unchanged file."""
+    led = ObligationLedger(root=tmp_path)
+    led.open("a", ref="r-1")
+    first = led.refs("debit")
+    assert led.refs("debit") is first           # unchanged file → cached set object
+    led.open("b", ref="r-2")                    # an append bumps the stat key
+    second = led.refs("debit")
+    assert second is not first and "r-2" in second
+
+
 def test_boundary_refuses_live_cylinder_dir(tmp_path):
     """#7 (HARD): the ledger refuses any root inside the live Tiger cylinder infra."""
     bad = tmp_path / "Tiger_1a" / "cylinders"

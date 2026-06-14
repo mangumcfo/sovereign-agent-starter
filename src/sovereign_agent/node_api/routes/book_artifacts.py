@@ -129,11 +129,11 @@ def recompile():
 @require_principal
 def book_artifacts():
     """The full title→artifacts registry (receipt + per-title present flags) — the pipeline/coherence read this."""
+    # Memoized on (mtime,size) (Universalize Wave §3): the pipeline + coherence lenses poll this registry;
+    # re-parsing it per request was the same waste the sibling _book_registry() already fixed with the cache.
     p = Path(__file__).resolve().parents[4] / "memory" / "book_artifacts_registry.json"
-    try:
-        return jsonify(json.loads(p.read_text(encoding="utf-8")))
-    except (OSError, ValueError):
-        return jsonify({"_meta": {"ok": False, "note": "registry not built — run scripts/build_book_registry.py"}, "books": {}})
+    fallback = {"_meta": {"ok": False, "note": "registry not built — run scripts/build_book_registry.py"}, "books": {}}
+    return jsonify(read_json_cached(p, fallback))
 
 
 @bp.get("/book_pdf")

@@ -19,6 +19,7 @@ from flask import Blueprint, jsonify
 
 from ...ndjson import read_ndjson  # the ONE tolerant ndjson reader (Universalize Wave §1)
 from .._filecache import memoize_on
+from .._jsonstore import read_json_cached
 from ..auth import require_principal
 
 bp = Blueprint("dialogue", __name__, url_prefix="/api/v1")
@@ -145,7 +146,9 @@ def crypto_assurance():
     f = repo / "artifacts" / "crypto" / "assurance_status.json"
     if not f.is_file():
         return jsonify({"status": "not-run", "what": "crypto_assurance has not run yet"})
-    try:
-        return jsonify(json.loads(f.read_text(encoding="utf-8")))
-    except Exception as e:  # noqa: BLE001
-        return jsonify({"status": "ERROR", "what": str(e)}), 500
+    # Memoized on (mtime,size) (Universalize Wave §3): the cockpit polls this chip; the daily status file
+    # changes once a day, so re-parsing it per poll was pure waste.
+    data = read_json_cached(f, None)
+    if data is None:
+        return jsonify({"status": "ERROR", "what": "assurance_status.json is unreadable or malformed"}), 500
+    return jsonify(data)

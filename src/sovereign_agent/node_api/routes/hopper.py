@@ -26,6 +26,7 @@ from pathlib import Path
 from flask import Blueprint, jsonify, request
 
 from ...ndjson import read_ndjson_cached  # the ONE tolerant + memoized ndjson reader (Universalize Wave §1/§3)
+from .._filecache import memoize_on
 from ..auth import current_principal, require_principal
 from ..errors import route_error
 from ..deps import get_obligation_ledger
@@ -57,11 +58,14 @@ def _preview(text: str) -> str:
     return t[:_PREVIEW] + ("…" if len(t) > _PREVIEW else "")
 
 
+@memoize_on(lambda path: [path])
 def _cards_from_session(path: Path):
     """Parse a B51 capture into hopper cards. Handles BOTH formats:
       - export session.yaml  (export.session_id + entries[].source)
       - live HMC json        (top-level id/name + entries[].source_guess + tombstone fields)
-    yaml.safe_load reads JSON too (JSON ⊂ YAML). Returns (cards, session_id) or ([], None)."""
+    yaml.safe_load reads JSON too (JSON ⊂ YAML). Returns (cards, session_id) or ([], None).
+    Memoized on the session file's (mtime,size) (Universalize Wave §3) — GET /hopper re-parsed the
+    capture every poll though the session rarely changes between polls."""
     import yaml
     try:
         data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}

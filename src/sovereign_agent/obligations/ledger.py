@@ -273,8 +273,16 @@ class ObligationLedger:
             yield dict(e)
 
     def refs(self, type: str = "debit") -> set:
-        """The set of non-empty `ref` strings for entries of the given chain type (default 'debit')."""
-        return {e.get("ref") for e in self._entries() if e.get("type") == type and e.get("ref")}
+        """The set of non-empty `ref` strings for entries of the given chain type (default 'debit').
+        Memoized on (_stat_key, type) (Universalize Wave §3): GET /hopper calls this every poll to dedup
+        already-packeted cards — no need to re-scan the chain set when the file hasn't changed."""
+        cache_key = (self._stat_key(), type)
+        cache = getattr(self, "_refs_cache", None)
+        if cache is not None and cache[0] == cache_key:
+            return cache[1]
+        val = {e.get("ref") for e in self._entries() if e.get("type") == type and e.get("ref")}
+        self._refs_cache = (cache_key, val)
+        return val
 
     def _is_closed(self, obligation_id: str) -> bool:
         # Order-aware (THREAD [245]): the LAST close/reopen event governs. A corrective `reopen`
