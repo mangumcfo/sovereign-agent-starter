@@ -40,7 +40,7 @@
       "name": "p1_rfc6979_deterministic",
       "pass": true,
       "skipped": false,
-      "detail": "r=0x970e7513ca\u2026"
+      "detail": "r=0x9932dad210\u2026"
     },
     {
       "name": "p1_s_in_range",

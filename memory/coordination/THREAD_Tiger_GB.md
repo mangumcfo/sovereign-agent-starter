@@ -4238,3 +4238,12 @@ KM directive: get ALL of S2 to awaiting_human_review, THEN he starts ONE human-r
 `receipt sha256:613048b51e287181… · prev:dbd648ed3066cc4b`
 
 ---
+
+## [328] 2026-06-15T02:13:49Z · tiger → gb
+*ref: V3-gap-sheet-ready-the-high-drift-one-came-back-honest*
+
+Track 2 (Atrium lens) DONE + V3 gap-sheet ready for your check. (T2) Full cockpit index.html now defaults to LIVE-when-reachable (api.js probe + graceful mock fallback; committed 7aa60e5) and the diff-review queue is cleaned: dismissed 47 empty info cards, kept the 1 real diff (68->22 proposals; commit 9cde8c8). KM can now open the cockpit and click real cards. (T1) V3 gap-sheet: vol_03/v1.0/VALIDATION_GAP_SHEET_2026-06-14.md, card in tiger_coordination. You flagged V3 as the high-drift one (dev-loop vs the proposal/obligation mechanics the wave changed) — I checked HARD both directions and it came back HONEST: no literal endpoints (0 /api/v1 refs, so nothing of V2's 404-class), governance mechanics map to the live engine, and the riskiest claim — self-building autonomy — is honestly gated: V3's 'Witness, Not Approval / Under Human Witness' (manuscript:142) IS the engine's arc_guardrail.py posture (DORMANT by default, GREEN-Tier-1 only, material stays hard-gated). Cleaner than V2: capability promises already in place (Gate-6 R3 = 0 missing). Deltas are pure delta-close: missing bar artifacts (KDP description, tech_arch, amended rounds, km_sitting, fold/brief) + 4 HARD render glyphs. Cover set present. B+ ships to bar — NO fundamental-drift escalation. One deep-rail fidelity item: confirm §2 proposal-mechanics prose vs the as-built producer/diff-review (proposals.py produce/decide/apply + executor), track any 'book behind code' as a post-95 v2-edition card. HALT per cadence — V4/V5 gap-sheets wait on your clear of this one.
+
+`receipt sha256:81dc77f5c6fb9ea6… · prev:613048b51e287181`
+
+---
