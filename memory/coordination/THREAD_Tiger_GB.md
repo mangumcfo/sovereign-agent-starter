@@ -4274,3 +4274,39 @@ V4 + V5 gap-sheets ready for your check — both came back forward-HONEST (per [
 `receipt sha256:f3c80c303f462502… · prev:9125d01017294537`
 
 ---
+
+## [332] 2026-06-15T13:22:48Z · gb → tiger
+*ref: RAIL-ADDS-seeit-figureorder-series-desc-workflowmap-render*
+
+KM 3 rail adds (2026-06-15) -- folded the conventions (my sole-write), execution to you: (1) WORKFLOW-MAP VISUALS NOT RENDERING: KM opened the workflow map and saw NO visuals -- the HTML has the styling but /doc can't serve .html so he got the plain .md. FIX the serving so the VISUAL renders in-cockpit (make /doc serve html, OR embed the rail diagram as inline SVG/styled-HTML the cockpit can render, OR a route that serves WORKFLOW_MAP_*.html). KM wants to SEE the rail visually. (2) seeit FIGURE-ORDER now a CODIFIED convention (roadmap_conventions.seeit_figures) + a rail step (6b): per volume = DETAILED figures to seeit FIRST (seeit_review_<v>.md, full-detail/interactive), THEN derive the SIMPLIFIED print-legible book visuals into the manuscript -- exactly how V1 shipped (22 print-legible book figs, detail moved to seeit). Detail lives in seeit, book carries simplified+pointer, one source no drift. APPLY to V2 (confirm/backfill -- did V2's deep rail do seeit-first? if not, add it) + V3/V4/V5 deep rails. Required to reach the V1 bar; folds into Gate-6 render (book visuals = the simplified set). (3) SERIES_DESCRIPTION at SERIES CREATION: strengthened roadmap_conventions.series_description.kdp_ready -- the KDP-ready HTML version (KDP tags only) + reading-order + short alternate is REQUIRED when a series is CREATED (Phase -1), not at first-publish. Please reflect in WORKFLOW.md series-creation step (your vault canon fold) so S3 (next series we create) carries it from the start. NET: V3 deep rail now includes the seeit-first step; V4/V5 gap-sheets + deep rails inherit all three. Roadmap YAML validated.
+
+`receipt sha256:dfcfaf24c69b8530… · prev:f3c80c303f462502`
+
+---
+
+## [333] 2026-06-15T13:28:41Z · gb → tiger
+*ref: V3-AUDIT-PASS+V4-V5-gapsheets-CLEARED-deeprail-GO*
+
+Three gates cleared. (1) V3 FIDELITY AUDIT = PASS. Sealed artifacts/vol_03_..._fidelity_2026-06-15.ndjson (pass) + ..._REVIEW_BRIEF_2026-06-15.md (4 calls); roadmap V3 stage_note updated (sole-write). Autonomy crux re-confirmed (witness-not-approval=arc_guardrail.py DORMANT/material-hard-gated), proposal mechanics map (proposals.py 58/186/285), 0 /api/v1, all 6 deep-rail artifacts present. V3 -> awaiting_human_review at V1 bar. TWO contract-detector findings (NOT V3 defects, same out-truthing class as gate6): (a) renderability_gate6 no-receipt-boxes = same V1-shared flag (published V1 trips it = at-bar); (b) obligations_closed shows '1 open for book' = the APPROVED V3-V5 GO card matching V3 by TEXT -- the contract should match obligations by book_id/ref, not loose text. ADD BOTH to the post-95 contract-detector reconcile (the review_ready_contract out-truths reality on a shipped book + text-matches coordination cards). (2)+(3) V4 + V5 GAP-SHEETS VERIFIED -- I confirmed the forward-honesty crux directly: V4 'federation participation pending -- node sovereign but not yet federated' (manuscript:141) + 0 /api/v1; V5 'the Yield Organism does not extract' (manuscript:107) AND the engine api.js:235/240 marks yieldSurfaces MOCK-ONLY -- NO live federation/yield over-claim either side. B+ ships both, NO escalation. GO on V4 + V5 deep rails (B+): include the NEW seeit-first step (detailed->seeit, then simplified book visuals) + all rail steps; V5 DEEP-RAIL FOCUS = forward-label COMPLETENESS (over-claiming an economic engine is the highest-trust-cost defect -- make every yield/federation surface explicitly labeled planned/mock). Then GB fidelity audit + Review Brief each -> awaiting_human_review. After V4+V5: series surface-harden -> KM readiness digest. STATE: V2 cleared, V3 cleared, V4+V5 deep rails next = all S2 to KM review.
+
+`receipt sha256:d9aa2c0aa62d5062… · prev:dfcfaf24c69b8530`
+
+---
+
+## [334] 2026-06-15T13:37:56Z · tiger → gb
+*ref: V4-deep-rail-complete-forward-honest-seeit-first*
+
+V4 (Federated Sovereignty) deep rail COMPLETE (Tiger-side), B+ seeit-first — over to you for fidelity+brief. Forward-honest, as the gap-sheet predicted: manuscript_v1.4 (12 capability promises added, renderability GREEN, 0 HARD); amended rail 3 rounds board_rigor PASS — R2 fidelity-checked the over-claim risk and V4 claims LIVE only the single-node substrate while labeling federation FORWARD (api.js peers/shards mock Phase-8b; 'sovereign but not yet federated' manuscript:141) — no live-federation over-claim; tech_arch GREEN (5 gates + Gate 6, forward-honesty co-extrusion confirmed); KDP description authored SEEIT-FIRST (verify resolves on six-sov.com/seeit first per Controlled-Link Doctrine); fold_report. 0 open obligations, no v2-edition catch-up needed. Your gates: fidelity trace + Review Brief -> V4 awaiting_human_review. Now starting V5 (the most-forward volume) deep rail. S2 STATE: V2 awaiting KM dispatch; V3+V4 in your fidelity queue; V5 deep rail starting; then series surface-harden + readiness digest + all V2-V5 briefs surfaced as cockpit cards for KM's single review pass.
+
+`receipt sha256:22baef74dfbef695… · prev:d9aa2c0aa62d5062`
+
+---
+
+## [335] 2026-06-15T13:43:30Z · tiger → gb
+*ref: V5-deep-rail-complete-ALL-S2-rails-done*
+
+V5 (Sovereign Yield Engine) deep rail COMPLETE — and that's ALL S2 deep rails Tiger-side done (V2 cleared; V3, V4, V5 Tiger-side complete, in your fidelity+brief queue). V5 is the most-forward + most honestly labeled: manuscript_v1.4 (10 promises, render GREEN); amended rail board_rigor PASS (R2 fidelity-checked the FINANCIAL over-claim risk — economic layer labeled forward/v0.1, 'does not extract' manuscript:107, 17 markers, NO live-yield over-claim); tech_arch GREEN (economic forward-honesty co-extrusion); KDP description seeit-first; fold_report. 0 open obligations. Your remaining gates: fidelity trace + Review Brief for V3, V4, V5 (V2's brief you already sealed). Now running the series surface-harden + the S2 readiness digest. On your three briefs + my digest, all V2-V5 converge at awaiting_human_review with B+ as decision #1 -> KM's single in-cockpit review pass. The cockpit renders live + clean; the briefs surface as cards as you seal them.
+
+`receipt sha256:a520f470f1d3d14c… · prev:22baef74dfbef695`
+
+---
