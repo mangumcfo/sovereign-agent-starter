@@ -4,30 +4,32 @@
   "checks": [
     {
       "check": "boards_executed",
-      "pass": true,
-      "detail": "editorial_round1=rigor-pass \u00b7 editorial_round2=rigor-pass \u00b7 editorial_round3=rigor-pass \u00b7 book_to_ux=present \u00b7 technical=rigor-pass",
+      "pass": false,
+      "detail": "editorial_round1=rigor-pass \u00b7 editorial_round2=rigor-pass \u00b7 editorial_round3=rigor-pass \u00b7 book_to_ux=present \u00b7 technical=rigor-pass \u00b7 renderability_gate6=no-receipt-boxes",
       "statuses": {
         "editorial_round1": "rigor-pass",
         "editorial_round2": "rigor-pass",
         "editorial_round3": "rigor-pass",
         "book_to_ux": "present",
-        "technical": "rigor-pass"
+        "technical": "rigor-pass",
+        "renderability_gate6": "no-receipt-boxes"
       },
-      "gap": ""
+      "gap": "renderability_gate6: Gate 6 RED \u2014 manuscript has no Receipt boxes (Helix anchor missing)"
     },
     {
       "check": "obligations_closed",
       "pass": false,
-      "detail": "3 open for book (1 blocking, 2 deferred)",
-      "gap": "close or defer-with-reason: obl_20260611200250_28ae0e1d",
+      "detail": "2 open for book (2 blocking, 0 deferred)",
+      "gap": "close or defer-with-reason: obl_20260613011503_5b1b1c53, obl_20260613174544_418894b5",
       "blocking_ids": [
-        "obl_20260611200250_28ae0e1d"
+        "obl_20260613011503_5b1b1c53",
+        "obl_20260613174544_418894b5"
       ]
     },
     {
       "check": "fidelity_passed",
       "pass": false,
-      "detail": "verdict: fail",
+      "detail": "no fidelity record for book",
       "gap": "GB fidelity trace must record PASS (semantic source-trace)"
     },
     {
@@ -38,7 +40,8 @@
     }
   ],
   "gaps": [
-    "close or defer-with-reason: obl_20260611200250_28ae0e1d",
+    "renderability_gate6: Gate 6 RED \u2014 manuscript has no Receipt boxes (Helix anchor missing)",
+    "close or defer-with-reason: obl_20260613011503_5b1b1c53, obl_20260613174544_418894b5",
     "GB fidelity trace must record PASS (semantic source-trace)",
     "GB seals one-page Review Brief w/ 3\u20137 judgment calls"
   ],
@@ -46,6 +49,6 @@
     "contract": "Review-Ready Rail R1 v1.0",
     "spec": "artifacts/GB_ReviewReady_Rail_Spec_2026-06-10.md",
     "book_dir": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/series_02_building_the_agentic_harness/vol_01_sovereign_inference_and_memory/v1.0",
-    "evaluated_at": "2026-06-11T20:22:20Z"
+    "evaluated_at": "2026-06-14T20:11:51Z"
   }
 }

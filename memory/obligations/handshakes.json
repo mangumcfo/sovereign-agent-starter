@@ -484,5 +484,23 @@
     "what": "approved, no registered executor: \u270d Ratify \u2014 S2 cover set (all 5 volumes' paperback + hardcover wraps) \u2014",
     "status": "pending",
     "created_at": "2026-06-13T19:38:28Z"
+  },
+  {
+    "id": "hs_1781472773419_54",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/series_02_building_the_agentic_harness/vol_03_governed_dev_loop_and_self_building_harness/v1.0/manuscript_v1.3.md",
+    "what": "approved, no registered executor: S2 V3-V5 deep-rail (gap-sheets first, GB-checked)",
+    "status": "pending",
+    "created_at": "2026-06-14T21:32:53Z"
+  },
+  {
+    "id": "hs_1781472874569_55",
+    "from": "tiger",
+    "to": "tiger",
+    "ref": "/home/kmangum/work-repos/sovereign-agent-starter/artifacts/audit_reports/audit-report-2026-06-14.md",
+    "what": "approved, no registered executor: Engine 82->95: the 4-HIGH finish-pass (standing engine priority)",
+    "status": "pending",
+    "created_at": "2026-06-14T21:34:34Z"
   }
 ]

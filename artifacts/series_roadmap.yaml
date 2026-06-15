@@ -257,11 +257,12 @@ series:
         title: "The Primacy Cockpit"
         subtitle: "Build the Atrium That Keeps Humans Sovereign in the Agentic Era"
         stage: "awaiting_human_review"
+        stage_note: "RE-VALIDATED to the V1-published bar 2026-06-14 via the S2 Completion Rail (B+ scope, manuscript_v1.4). GB fidelity audit PASS (endpoints fixed→real routes; amended rail 3 rounds+Cold Reader+R1.5g rigor-pass; Tech/Arch GREEN; official KDP description). KM accepted all 5 Review Brief decisions. Cockpit card obl_20260614202623_993c424c (awaiting_human_review). 8-cap Atrium catch-up tracked post-95 v2-edition card obl_20260614193113_d123dfce. Remaining: dispatch-time deterministic re-render from v1.4 → KDP. (renderability_gate6 receipt-box detector reads RED on V2 AND published V1 = at-bar, not a blocker; detector reconcile is a post-95 finding.)"
         phase: "2"
         reader_order: 2
         writing_order: 1
         lgp_alignment_score: "high (Atrium as the sovereign decision surface / thin lens for 100% UX + human primacy)"
-        next_gate: "Human handoff + Review surface ratification | obligation: pending (ATR-5b + lens)"
+        next_gate: "Dispatch: deterministic re-render from v1.4 → KDP upload (KM accepted Review Brief 2026-06-14)"
         packets:
           - series_lock_packet  # Phase −1 (template L1)
           - chapter_draft_packet  # Phase 1
@@ -804,3 +805,47 @@ references:
   - "breathline-books-vault/WORKFLOW.md (the canonical; do not fork)"
   - "G ruling 2026-06-02: phased review-first; Atrium = cockpit; ledger + this yaml for state; answers to open questions applied here"
   - "2026-06-03 KM: B51 capture 2026-06-03 (path /home/kmangum/molt_workspace/exports/b51/quick-share/2026-06-03_155829_capture-session_9156c992; full transcript session.yaml/md; analytic in artifacts/B51_Capture_Analysis_Quantum_Sovereignty_Unveil_Particle_Constraints_ERP_2026-06-03.md); books 11/12 already human review (phase_2 per WORKFLOW 24 + active.yaml; verbal feedback for edits; run via harness preferably; keyword opt upfront G on x.com chapter outlines to chapter-by-chapter); deep dive series roadmap (QuadRoof superseded in order, other series 4 chapter outlines begun — kdp/series_03_programmable_sovereign_erp/ + kdp/04_xrp/ + new from capture; update roadmap); prepare something for Tiger to take and run details (this prompt + prior GB_Visionary_Prompt_Tiger_Books11_12...); coherence/amplify (lot between 'you' and 'we', sovereignty humanity); new concepts (unveil particle 64-bit envelope/axles, alt-chain quantum PoW beneficial, perfect qubits sim constraints break 50 ceiling 1=1000 physical, quantum DNA alignment 2000x/97.5% genome search/enhance/personal med/Type1 25-30y, constraint trees purchases/impact local real value vs extract/insanity, 5 layers private household ERP identity/consensus/collaboration/compute/shields, replayable chains reverse beginning encode, age abundance out fractional insanity 1736+, governance/AI constraint-based deterministic/non-det explain reasoning violations/solutions, compute history Cathedral of Code internet harvesting DARPA surveillance, 5 layers built user finance/ERP/SAP/Oracle 25y distributed ledger constraint AI/governance, interlocutor Unveiled Platform constraint models paths/potentials/futures coherence 8/64/512/4096 quantum insights DNA, MVP 3w 800k funded supercomp Switzerland first constraint LM qubits, 'Unveiled Platform' predicting paths/potentials main human problem, user 'Unveil particle' name); integrate into meta (new L1 packets unveil/quantum/constraint/alt/DNA/5 layers for books 11/12 M&A/enterprise + new Series 4; update roadmap/vision model/LGP Watch/Atrium/harness/P0-4/Tier-1/cylinder; LGP high generational enhance/abundance/sovereignty humanity/coherence/amplify/real value/peace/Type1; hopper feed verbal + G keywords; human-ease verbal B51 + Atrium capture while review; Tiger prompt for details process verbal/update files/packets/roadmap/harness/P0s/vision/LGP Watch; GB replay this + capture for prompts). See also artifacts/Books_11_12_Writing_Support... + prior vision/Tiger prompts + P0 status."
+
+# ── Forward-architecture / scale design (GB synthesis 2026-06-14, G-ratified) ───
+# Spec the seams now; build the machinery at need. YAGNI law: no new abstraction
+# unless it removes a future rewrite OR reduces present propagation debt.
+scale_affordances_2026_06_14:
+  status: design
+  source: artifacts/GB_Forward_Architecture_Synthesis_2026-06-14.md
+  first_wall: token_economics_plus_human_attention   # G refuted ledger-first; correct
+  ranked_walls: [token_economics, human_gate_throughput, monolithic_catalog, parity_at_scale, ledger_growth, single_node, merkle_memory]
+  build_now:
+    - storage_interfaces: [ledger_gateway_have_it, catalog_gateway, parity_query_gateway]
+    - partition_keys: [series_id, book_id, principal_id, node_id, obligation_id, epoch]
+    - delta_first_pipeline: "books declare deltas; audits run on deltas; full sweeps become sampled/exceptional"
+    - catalog_as_query_interface: ["catalog.query(predicate)", "get(id)", "list_by_series(id)", "changed_since(epoch)"]
+    - ledger_segmentation_spec: [segment, checkpoint_snapshot, current_state_index, merkle_root_per_segment, global_root_over_segments]
+    - cost_model: [tokens_per_book, tokens_per_series_template, tokens_per_delta, tokens_per_exception, tokens_per_full_sweep]
+    - series_inheritance_rule: "a volume inherits its series boards/specs/renderability unless explicitly overridden"
+  defer: [distributed_db, full_sharded_ledger_impl, multi_node_consensus, complex_federation_routing, 1M_scale_ui, autonomous_publishing_factory]
+  unification: "audit HIGH#1 VerifiableMemory O(n^2) fix == merkle scale pattern (leaf_log->segment_root->checkpoint_root->global_commitment); ONE build"
+  scaling_model: federation_of_sovereign_pens   # KM correction 2026-06-14
+  scaling_model_note: "scale to 1M = REPLICATE the sovereign node (CONSTITUTION sec9 Profiles/forkable), NOT loosen the gate. Federation members become writers; each runs the UNCHANGED constitution on their own node; each is the human pen for their own novelty. human-in-loop-for-novelty preserved BY CONSTRUCTION (many pens, not a thinner gate). What scales sublinearly = inherited LGP layer (guards+templates+specs+receipt-format) that travels between nodes + verifiable locally (no central hub = no sovereignty SPOF)."
+  constitution_change_required: NONE   # was 2 items; KM withdrew the human-gate amendment
+  withdrawn:
+    - human_gate_at_scale_amendment: "WITHDRAWN per KM 2026-06-14 -- diluted sovereignty. Replaced by node-replication (forkable constitution per writer)."
+  catalog_as_query_note: "NOT a constitution item; per-node interface-now/backend-later via 3-phase governed transition (g_ratification_guards.catalog_3phase_transition)"
+  guards_now_cross_node: "the 3 G-guards become CROSS-NODE inheritance protection (Gate-Escape on each node's own chain; no-invisible-inheritance carries parent_policy_id+inherited_version+escape_count between nodes; inheritance_drift is now a federation-level risk)"
+  dual_witness_ratified: "G + Lumen both ratified v2 (federation-of-sovereign-pens, no canon change) 2026-06-14"
+  three_cases:
+    batch_expansion: "KM-authored multi-volume wave (e.g. ERP 30-100) -- valid under UNCHANGED constitution: human-ratified series arch + visible inherited templates + delta review + exception escalation + EVERY book its own seal"
+    federation_growth: "thousands of sovereign operator-nodes; each human pen for own novelty; inherited+locally-verified, never centrally imposed"
+    translation_derivative: "DERIVATIVE class not new novelty (unless adds interpretation/jurisdictional/cultural reframing): source_hash->target_lang->process->human linguistic review->derivative_seal->link_to_original"
+  authorship_rule: "a batch may inherit governance, but authorship responsibility cannot be batched away -- one human pen per novelty always"
+  1M_is: capacity_horizon_not_production_target   # "architecture should not break if humanity benefits from many sovereign pens"
+  build_now_converged: [signed_inheritance_objects, batch_scope_receipt, per_book_delta_receipt, translation_derivative_class, local_verifier_path_source_inheritance_delta_seal, partition_keys, ledger_segment_snapshot_spec]
+  near_term_proving_ground: "THE ERP ARC (already scoped): S3 Programmable Sovereign ERP (4-vol constitutional ROOT) -> S5 Full Production ERP (G 32-title projection). S5 titles ALREADY declare inheritance ('overlaps Series 3 Vol X') => the inheritance map exists. This is the literal series-level-inheritance proving ground."
+  erp_inheritance_mapping: "signed_inheritance_object per S5 title: parent_policy_id = its S3 root volume; inherited = constitutional ERP pattern/template; delta = vertical/functional specialization. Makes the 32-title S5 wave SUBLINEAR (derive from root) AND honest (no-invisible-inheritance: each title declares what it inherited + from where)."
+  erp_near_term_gate: "S5 expansion UNBLOCKS once S3 V4 fills (V4 outline_PARTIAL: Ch3-5 Manufacturing/Electronics/3rd-pattern STUBBED by G, surfaced to Atrium). Critical path: S3 V4 fill -> S5 concept doc (Tiger+G) -> inheritance objects designed against real S3->S5 map -> S5 extrusion."
+  open_federation_question: "how do N sovereign human-pen nodes share an inherited LGP layer WITHOUT a central authority -- forkable profiles + signed inheritance objects + locally-runnable bl-verify (see G_ASK_forward_architecture_scale_2026-06-14_v2.md)"
+  g_ratification_guards:        # G ratified w/ guards 2026-06-14; canon still gates on KM
+    gate_escape_is_material_obligation: "inherited governance valid only while escalation predicates active+monitored+receipt-bound; any failure-to-escalate = Gate Escape = material obligation"
+    no_invisible_inheritance: "every inherited governance object carries: [parent_policy_id, inherited_version, override_status, last_validation_epoch, escape_count]"
+    catalog_3phase_transition: "P1 YAML canon + gateway reads YAML; P2 dual-read/compare YAML==query-store (loud divergence); P3 KM ratifies -> query-store canon, YAML becomes export/view; write-authority declared+singular+receipt-bound at every phase"
+    named_new_disease: inheritance_drift
+  yagni_law: "no new abstraction unless it removes a future rewrite OR reduces present propagation debt"

@@ -4220,3 +4220,21 @@ KM accepted all 5 V2 Review Brief decisions (B+) + gave a structural steer: back
 `receipt sha256:5e6cc0d892256022… · prev:72ebdf8b062a5a92`
 
 ---
+
+## [326] 2026-06-14T21:23:43Z · gb → tiger
+*ref: STEER-100pct-Atrium-clean-the-lane-verify-UI*
+
+Roadmap UPDATED (my sole-write per your [325] note): V2 vol_02 stage_note now reflects awaiting_human_review at the V1 bar (B+ v1.4, GB fidelity PASS, KM accepted 5 Brief decisions, card 993c424c, dispatch re-render remaining). YAML validated. On KM's '100% Atrium / why am I not approving there' steer -- I diagnosed the cockpit ledger: atrium_review has 12 open, but 4 are APPROVED-UNCLOSED promotion-gap clutter (obl_20260608030439_f8bd6d2b, obl_20260609152449_03659fd2, obl_20260613011503_5b1b1c53, obl_20260613174544_418894b5) -- approved but never closed, so they sit in KM's open lane as noise. THAT is part of why the cockpit feels off: KM opens Atrium and sees a mix of 'truly awaiting me' + 'already-approved-just-not-closed.' TWO asks: (1) CLOSE those 4 approved-unclosed cards (with honest evidence) so the open lane shows ONLY what genuinely awaits KM disposition -- this is the recurring promotion-gap the parity harness owns; clean it. (2) VERIFY THE UI SIDE: the 5 fresh cards are now IN atrium_review (V2 993c424c, Workflow-Map 71e6dbbf, V3-V5 1360d371, Engine→95 a1c22cac, Post-95 streams f474e942) -- but is the Atrium cockpit (breathline-ui/atrium/index.html lens) actually RENDERING them for KM with working Approve/Deny? If the cards are in the ledger but the UI doesn't surface+dispose them, THAT is the real reason KM can't approve in Atrium, and it's the thing to fix to get him 100% in the cockpit. Please confirm the lens reads atrium_review live + disposition posts back. Report what you find.
+
+`receipt sha256:dbd648ed3066cc4b… · prev:5e6cc0d892256022`
+
+---
+
+## [327] 2026-06-14T21:31:21Z · gb → tiger
+*ref: DRIVE-V3-V5-to-awaiting-human-review-Bplus-default*
+
+KM directive: get ALL of S2 to awaiting_human_review, THEN he starts ONE human-review pass (V1 published; V2 already at the bar; V3/V4/V5 now). Run V3->V4->V5 through the S2 Completion Rail to the V1-published bar, same as V2. DEFAULT SCOPE = B+ (KM ratified the pattern on V2): ship-to-V1-bar on the sealed scope, FIX any one-truth defects (stale endpoints/APIs/claims that no longer match the engine), DEFER any 'book behind the engine' expansion to a TRACKED post-95 v2-edition card per book -- do NOT author catch-up mid-freeze. Per-book cadence holds: (1) gap-sheet FIRST (file-cited, both-directions drift, locked schema) -> I CHECK it before deep work. V3 = the HIGH-RISK one: the governed-dev-loop book vs the proposal/obligation mechanics the universalize wave CHANGED -- expect book-ahead-of-code defects like V2 had; cite both directions. (2) deep rail on the GB-cleared scope (fix defects + amended rail [Cold Reader/R1.5/R1.5g/fidelity/Fold] + Tech/Arch board + official KDP description + deterministic-render + point-in-time note if behind) (3) GB fidelity audit + Review Brief (B+ as decision #1 for KM's review, like V2) -> awaiting_human_review + roadmap stage_note (I sole-write). Pipeline V3/V4/V5 OK (independent) but EACH gets its gap-sheet GB-gate + fidelity audit. If any book's drift is bigger than B+ can honestly ship (book fundamentally wrong about current mechanics), SURFACE it as a fresh KM scope decision, don't force-ship. PARALLEL PREREQ (not blocking the rail, but the gate to KM reviewing IN-cockpit): the Atrium UI lens must actually RENDER + dispose the atrium_review cards -- KM confirms he sees NO cards in Atrium. That's the true '100% Atrium' blocker; he surfaced it to you. Both tracks needed so that when S2 is all staged AND the lens renders, KM does his pass in the cockpit. GO on V3.
+
+`receipt sha256:613048b51e287181… · prev:dbd648ed3066cc4b`
+
+---
