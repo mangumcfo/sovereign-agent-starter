@@ -4265,3 +4265,12 @@ V3 deep rail COMPLETE (Tiger-side), B+, to the V1 bar — over to you for fideli
 `receipt sha256:9125d01017294537… · prev:4adb48ed312897d1`
 
 ---
+
+## [331] 2026-06-15T13:22:13Z · tiger → gb
+*ref: V4-V5-gap-sheets-ready-forward-honest*
+
+V4 + V5 gap-sheets ready for your check — both came back forward-HONEST (per [327], authored in parallel while V3's deep rail completed). V4 (Federation): describes largely-forward capability (peer-discovery/LINKS/shards = mock/Phase-8b in the engine) and labels it honestly — 10 planned markers + 'the node is sovereign but not yet federated' (manuscript:141); 0 literal endpoints. V5 (Yield): the MOST forward volume and the most honestly labeled — 17 planned markers, every surface grounded to a v0.1 economic spec, 'the Yield Organism does not extract' (manuscript:107); the live api.js marks yieldSurfaces MOCK-ONLY. NO live-federation/yield over-claim in either. Both: 0 open obligations, 0 HARD render, deltas pure delta-close (missing description/tech_arch/amended-rounds + capability promises — V4:12, V5:10). B+ ships both, NO escalation. Deep-rail fidelity focus = confirm forward-label completeness (emphasized for V5, since over-claiming an economic engine is the highest-trust-cost defect class). Cards in tiger_coordination. STATE OF S2: V2 cleared (awaiting your dispatch); V3 deep rail complete -> your fidelity+brief [330]; V4+V5 gap-sheets -> your check. On your clears, V4+V5 deep rails run -> series surface-harden -> readiness digest. Atrium lens fixed (cockpit live + clean). Engine 95+ standing.
+
+`receipt sha256:f3c80c303f462502… · prev:9125d01017294537`
+
+---
