@@ -19,7 +19,6 @@ import json
 import re
 import subprocess
 import sys
-from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -129,7 +128,7 @@ def _static_packet(dry_run: bool) -> dict:
 def run(titles: list[str] | None, dry_run: bool) -> int:
     drift = _drift_by_title()
     if not titles:
-        titles = [t for t, _ in Counter({t: len(c) for t, c in drift.items()}).most_common(3)]
+        titles = sorted(drift.keys())   # SCALED (KM [378] #2): all drift titles nightly; --titles for a subset
     packets = [_book_code_packet(t, drift.get(t, [])) for t in titles] + [_static_packet(dry_run)]
 
     out_dir = SCOUT / "packets" / _today()
