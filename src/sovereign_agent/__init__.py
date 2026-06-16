@@ -43,7 +43,7 @@ from .universal_sovereign_node import (
     create_universal_sovereign_node,
 )
 from .bootstrap import connect_to_breathline, __breathline_phrase__, cli_connect
-from .universal_sovereign_node import create_universal_sovereign_node, cli_create_node
+from .universal_sovereign_node import cli_create_node
 
 __version__ = "0.3.0-universal-node"
 __all__ = [

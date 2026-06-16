@@ -16,7 +16,7 @@ artifact: read-only over the canonical files, write-once per date.
 Output: artifacts/pipeline_snapshots/series_pipeline_<date>.yaml  (header: date · content_hash · coverage health)
 """
 from __future__ import annotations
-import sys, os, json, hashlib, datetime
+import sys, json, hashlib, datetime
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
@@ -71,7 +71,6 @@ def main():
 
     # Idempotency: if today's snapshot already matches this content, do nothing (no churn).
     if out.exists():
-        prev = _coverage_of(out)
         if yaml.safe_load(out.read_text(encoding="utf-8")).get("content_hash") == meta["content_hash"]:
             print(f"unchanged — {out.name} already current (content_hash {meta['content_hash'][:16]})")
             return 0

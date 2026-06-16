@@ -19,7 +19,6 @@ import os
 import sys
 import json
 import argparse
-from datetime import datetime
 from pathlib import Path
 
 B51_BASE = Path("/home/kmangum/molt_workspace/exports/b51")
@@ -278,7 +277,7 @@ if __name__ == "__main__":
             active = (p, json.loads(p.read_text()))
         if active:
             p, d = active
-            print(f"=== CURRENT UNSEALED HMC VIEW (live json tail) ===")
+            print("=== CURRENT UNSEALED HMC VIEW (live json tail) ===")
             print(f"Active cyl: {d.get('id')}  entries:{len(d.get('entries',[]))}  started:{d.get('started_at','?')[:16]}")
             print("Latest entries (most recent first in UI sense; tail of live data):")
             ents = d.get("entries", [])[-args.limit:]
@@ -329,7 +328,7 @@ if __name__ == "__main__":
             new_state = {"cyl_id": cyl_id, "path": str(p), "last_entry_count": curr, "last_mtime": p.stat().st_mtime}
             state_path.parent.mkdir(parents=True, exist_ok=True)
             state_path.write_text(json.dumps(new_state, indent=2))
-            print(f"=== B51 DELTA (live unsealed only -- new since last scan) ===")
+            print("=== B51 DELTA (live unsealed only -- new since last scan) ===")
             print(f"Active: {cyl_id}  total:{curr} (was {last_c})  +{new_n} new")
             print(f"Source: {p} (direct live write, not exports)")
             shown = 0

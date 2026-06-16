@@ -24,7 +24,6 @@ class FamilyCfoDemoAgent:
             action_class = payload.get("action_class", "produce_forecast_artifact")
 
         horizon = int(payload.get("forecast_horizon", 3))
-        focus = payload.get("focus", "generational_wealth")
 
         # Beautiful, realistic demo output (real structure, real numbers)
         result = {

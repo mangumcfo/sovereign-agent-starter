@@ -19,8 +19,6 @@ Storage is a node-local JSON file beside the ledger — the RECEIPT of record is
 """
 from __future__ import annotations
 
-import json
-import os
 import time
 from pathlib import Path
 

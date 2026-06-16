@@ -16,7 +16,7 @@ This makes the USN the true executable capstone for the Agentic AI Playbooks ser
 from __future__ import annotations
 import json
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 import yaml  # pyyaml is a declared core dependency (pyproject) — required at import (audit 2026-06-13c #31)
 

@@ -26,7 +26,6 @@ silent fakes).
 
 from __future__ import annotations
 
-import uuid
 
 from flask import Blueprint, jsonify, request
 

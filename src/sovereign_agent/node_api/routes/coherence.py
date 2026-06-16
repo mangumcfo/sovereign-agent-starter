@@ -11,7 +11,6 @@ reconciliation rows. Read-only; no writes.
 from __future__ import annotations
 
 import hashlib
-import json
 import os
 import re
 from pathlib import Path

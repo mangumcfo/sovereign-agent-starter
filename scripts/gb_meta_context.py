@@ -27,7 +27,6 @@ It improves on the previous B51 scanner by:
 Run after every major user steer on process/format/arc.
 """
 
-import os
 import sys
 import json
 import argparse
@@ -252,7 +251,7 @@ def build_context_pack():
 def generate_handoff(for_ai, pack):
     """Generate ready message + suggested attachments for the target AI."""
     if for_ai == "TIGER":
-        msg = f"""Tiger,
+        msg = """Tiger,
 
 GB meta here. Per the current meta arc (LGP, Book to Code via co-extrusion in WORKFLOW.md with the new Tech/Arch Review Board, Breath to Code via direct HMC/B51 as human memory source), GB maintains the live unsealed B51 scans (delta only-new from the active cyl json in ~/.local/share/human-memory-cylinder/sessions/, never exports) so the meta layer always has fresh human context. User relies on GB to keep you (Tiger) grounded on the current HMC ("Tiger should check the HMC as well").
 
@@ -270,7 +269,7 @@ Grounded on Objective. LGP.
 [Attachment package: this message + scripts/gb_meta_context.py + forward path (P0) + role doc + series_roadmap excerpt on atrium_integration]"""
         attachments = ["scripts/gb_meta_context.py", "artifacts/GB_Prioritized_Forward_Path.md (P0 section)", "artifacts/GB_Meta_Visionary_Role_and_Constitutional_Memory_Cylinder.md", "artifacts/series_roadmap.yaml (atrium_integration + hopper notes)"]
     elif for_ai in ("G_X", "G_GROK"):
-        msg = f"""G,
+        msg = """G,
 
 GB (local meta in the sovereign-agent-starter repo) checking alignment on the meta arc.
 
@@ -303,7 +302,7 @@ def main():
     # Friendly delta summary (only new since last, from live unsealed)
     d = pack.get("b51_delta", {})
     if d.get("active_cyl"):
-        print(f"\n--- B51 DELTA (live unsealed only, new since last GB scan) ---")
+        print("\n--- B51 DELTA (live unsealed only, new since last GB scan) ---")
         print(f"Active: {d['active_cyl']} (total now {d.get('current_count')}, was {d.get('previous_count')})")
         print(f"New entries since last: {d.get('new_since_last_scan')}")
         for ne in d.get("new_entries", []):

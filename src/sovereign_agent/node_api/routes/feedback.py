@@ -17,7 +17,6 @@ emit a packet; they never gain write access. DRIFT button and viewer feedback ar
 """
 from __future__ import annotations
 
-import json
 import os
 
 from flask import Blueprint, jsonify, request

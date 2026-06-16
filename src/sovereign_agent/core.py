@@ -12,7 +12,6 @@ All cryptography and attestation use the sealed foundation.
 
 from __future__ import annotations
 import json
-import os
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -22,7 +21,6 @@ from typing import Any, Dict, List, Optional
 from ._lazy_bp import (
     generate_keypair,
     sign,
-    verify,
     hash_function,
     secp256k1_curve,
 )
@@ -109,7 +107,6 @@ class ConstitutionalGovernor:
         try:
             # For now we treat "role execution" as a lightweight elevation.
             # A fuller implementation would build a proper Spec + ElevationProposal.
-            critic = self.kernel_critic
             # Minimal conformance: if the role has a spec body we consider it plausible
             verdict = "CONFORMS" if role_spec else "DRIFT"
             report = {"verdict": verdict, "findings": ["Phase-1 kernel gate (lightweight)"]}

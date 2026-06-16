@@ -5,7 +5,7 @@ Focus: Sovereign wealth preservation, yield generation, antifragile assets,
 and explicit LGP (Lasting Generational Prosperity) scoring.
 """
 
-from typing import Dict, Any, List
+from typing import Dict, Any
 
 
 class EconomicEngine:

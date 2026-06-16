@@ -16,7 +16,6 @@ Book ↔ code anchor (Tech/Arch 17.6):
 from __future__ import annotations
 
 from enum import Enum
-from typing import Optional
 
 from .receipts import build_receipt
 

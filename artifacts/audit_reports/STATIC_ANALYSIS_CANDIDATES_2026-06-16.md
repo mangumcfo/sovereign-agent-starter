@@ -1,5 +1,13 @@
 # Static-Analysis Candidates — Engine #8/M1 (ruff + vulture + coverage) — 2026-06-16
 
+> **REMOVE BATCH APPLIED (KM-approved, gated) — 2026-06-16.** `ruff check --select F --fix` + 3 dead-local
+> deletions (`core.py` `critic`, `pipeline_snapshot.py` `prev`, `family_cfo_demo/role.py` `focus`) →
+> **37 F-findings cleared, 19 net LOC removed, suite 279 green / 0 skipped** (no `obligations/` touched →
+> ledger equivalence snapshot N/A). **2 deliberately NOT removed:** the `yaml` import in `gen_outline_digest.py`
+> (availability-probe `try/except ImportError` → KEEP), and `original_payload` in `compliance_engine.py:222`
+> (a function **parameter** — removal is a signature change → moved to **REVIEW** for KM). The REVIEW bucket
+> (complexity + capabilities stubs) is untouched, pending KM's per-item disposition.
+
 **Pass:** `scripts/static_scan.sh` (reproducible — same code → same set). **This pass changed NO source code.**
 Removals/fixes are a **separate KM-gated commit** (re-run 279 suite + ledger equivalence snapshot if
 `obligations/` is touched). Tooling: ruff 0.15.17 (F + C90≤10 + E722/E741) · vulture 2.16 (@80, whitelisted)

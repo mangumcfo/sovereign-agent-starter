@@ -6,7 +6,7 @@ Can be simulated (demos) or wired to real ticketing / approval systems.
 """
 
 from dataclasses import dataclass
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Optional
 from enum import Enum
 
 
