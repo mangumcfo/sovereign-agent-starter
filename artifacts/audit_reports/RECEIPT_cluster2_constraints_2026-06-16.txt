@@ -1,0 +1,41 @@
+# RECEIPT — Engine 95+ map cluster #2 (constraints lock) — receipt-gated close (thread [358])
+# Generated 2026-06-16 UTC · commit b561274 · branch claude/kdp-dispatch
+# Method: FRESH venv installed WITH `-c constraints.txt` (the reproducible constrained path),
+#         BREATHLINE_SEALED_ROOT set. This is the env GB requires the receipt from.
+
+== 1. constraints.txt pins (exact ==) ==
+PyYAML==6.0.3
+Flask==3.1.3
+cryptography==46.0.7
+pytest==9.1.0
+
+== 2. pip freeze of the constrained venv (the 4 locked packages) ==
+PyYAML==6.0.3
+Flask==3.1.3
+cryptography==46.0.7
+pytest==9.1.0
+
+== 3. MATCH CHECK (each pin == frozen resolved version) ==
+  [OK] PyYAML       pin==6.0.3   resolved==6.0.3
+  [OK] Flask        pin==3.1.3   resolved==3.1.3
+  [OK] cryptography pin==46.0.7  resolved==46.0.7
+  [OK] pytest       pin==9.1.0   resolved==9.1.0
+  RESULT: ALL MATCH
+
+== 4. test_constraints_lock.py GREEN in this constrained env ==
+  tests/test_constraints_lock.py::test_constraints_file_has_exact_pins PASSED
+  tests/test_constraints_lock.py::test_every_pin_matches_the_installed_version PASSED
+  tests/test_constraints_lock.py::test_cryptography_clears_the_cve_floor PASSED
+  3 passed
+
+== 5. full suite in the constrained env ==
+  274 passed / 0 skipped
+
+# Reproduce:
+#   python3 -m venv /tmp/v && /tmp/v/bin/pip install -c constraints.txt -e ".[dev,crypto-assurance]"
+#   BREATHLINE_SEALED_ROOT=<sealed> /tmp/v/bin/python -m pytest tests/test_constraints_lock.py -v
+#   BREATHLINE_SEALED_ROOT=<sealed> /tmp/v/bin/python -m pytest        # full suite
+#
+# Also verified in the AMBIENT user-site (GB [356]): after `pip install --user -c constraints.txt`,
+# local `pytest` is green there too (same 274 / 0 skipped) — the lock test guards both envs equally.
+# ∞Δ∞ verify-before-claim: no "green" asserted without this receipt.
