@@ -50,7 +50,9 @@ demo = []
 # `cryptography` lib as its independent reference (audit 2026-06-13c #13) — declared here + pinned in
 # constraints.txt so a clean install can run the crypto cadence instead of silently degrading it to RED.
 crypto-assurance = [
-    "cryptography>=42,<47",
+    # CVE-safe floor raised to >=46.0.7 (audit 2026-06-16 MED, baseline-#12): the now-load-bearing
+    # constraints lock made the sub-floor pin authoritative, so the floor must clear the known CVE band.
+    "cryptography>=46.0.7,<47",
 ]
 dev = [
     "pytest>=7.0",

@@ -44,12 +44,22 @@ jobs:
           print("substrate OK:", breathline_primitives.__file__)
           PY
 
-      - name: Run the full test suite
-        run: pytest -rs
+      - name: Run the full test suite (+ JUnit report for the skip guard)
+        run: pytest -p no:cacheprovider --junitxml=/tmp/report.xml
 
-      - name: Zero-skip guard (GB [351] #2 — a silent skip is lost coverage, fail RED)
+      - name: Zero-skip guard (a silent skip is lost coverage — fail RED, robustly)
+        # GB [351] #2 intent (no silent false-green) WITHOUT the structural false-RED of grepping summary
+        # text (audit 2026-06-16 #b): read the AUTHORITATIVE skipped count from the JUnit XML, not a grep.
+        if: always()
         run: |
-          pytest -rs -q | tee /tmp/pytest_summary.txt
-          if grep -qE '[0-9]+ skipped' /tmp/pytest_summary.txt; then
-            echo "::error::tests skipped with the substrate present — coverage silently lost"; exit 1
-          fi
+          python - <<'PY'
+          import sys, xml.etree.ElementTree as ET
+          root = ET.parse("/tmp/report.xml").getroot()
+          suites = root.findall(".//testsuite") or ([root] if root.tag == "testsuite" else [])
+          skipped = sum(int(s.get("skipped", "0")) for s in suites)
+          total = sum(int(s.get("tests", "0")) for s in suites)
+          print(f"tests={total} skipped={skipped}")
+          if skipped:
+              print("::error::tests skipped with the substrate present — coverage silently lost")
+              sys.exit(1)
+          PY
