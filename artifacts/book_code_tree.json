@@ -4493,13 +4493,18 @@
   ],
   "code_tree": [
     {
+      "path": "src/sovereign_agent/_lazy_bp.py",
+      "size": 3587,
+      "purpose": "Lazy breathline_primitives surface (audit 2026-06-13 CRIT-2)."
+    },
+    {
       "path": "src/sovereign_agent/_portal_launcher.py",
       "size": 1288,
       "purpose": "Thin launcher shim for the 'start-sovereign-portal' console script."
     },
     {
       "path": "src/sovereign_agent/bootstrap.py",
-      "size": 10463,
+      "size": 10420,
       "purpose": "Pure Python Bootstrap for breathline_primitives."
     },
     {
@@ -4508,33 +4513,18 @@
       "purpose": "Breath Inventory Tier-1 defaults (P0-4) — the 'always approve on' cluster, embedded."
     },
     {
-      "path": "src/sovereign_agent/capabilities/economics.py",
-      "size": 4889,
-      "purpose": "Economic / Yield Capability Module — Enhanced for Generational Use"
-    },
-    {
-      "path": "src/sovereign_agent/capabilities/legacy.py",
-      "size": 2798,
-      "purpose": "Legacy & Estate Capability Module — Enhanced for Multi-Generational Use"
-    },
-    {
-      "path": "src/sovereign_agent/capabilities/research.py",
-      "size": 1058,
-      "purpose": "Research Capability Module (with attestation)"
-    },
-    {
       "path": "src/sovereign_agent/compliance/compliance_engine.py",
-      "size": 19637,
+      "size": 22894,
       "purpose": "ComplianceEngine + VerifiableInference — Sovereign bridge to Playbook 6 + SIX patterns."
     },
     {
       "path": "src/sovereign_agent/compliance/human_approval_gate.py",
-      "size": 3995,
+      "size": 4318,
       "purpose": "HumanApprovalGate + EscalationPolicy — lightweight, sovereign, configurable."
     },
     {
       "path": "src/sovereign_agent/compliance/policy_loader.py",
-      "size": 7305,
+      "size": 7351,
       "purpose": "PolicyLoader — Rich, dynamic loader for Playbook 6-style governance policies."
     },
     {
@@ -4544,7 +4534,7 @@
     },
     {
       "path": "src/sovereign_agent/core.py",
-      "size": 12335,
+      "size": 14876,
       "purpose": "SovereignAgent - Robust Generational Agent Core"
     },
     {
@@ -4554,7 +4544,7 @@
     },
     {
       "path": "src/sovereign_agent/demo_roles/family_cfo_demo/role.py",
-      "size": 2387,
+      "size": 2327,
       "purpose": "family_cfo_demo role handler (pure, self-contained, no external dependencies)."
     },
     {
@@ -4573,6 +4563,16 @@
       "purpose": "Data-Room Classifier — extruded from AI Agents for M&A (Book 11), Ch 2:"
     },
     {
+      "path": "src/sovereign_agent/evidence/actions_projection.py",
+      "size": 3987,
+      "purpose": "Queryable actions projection core (R22-2) — the importable package home (Universalize Wave §5, G4 law)."
+    },
+    {
+      "path": "src/sovereign_agent/evidence/export_packet.py",
+      "size": 4591,
+      "purpose": "Evidence-Packet Export core (R22-1) — the importable package home (Universalize Wave §5, G4 law)."
+    },
+    {
       "path": "src/sovereign_agent/inference/primitives.py",
       "size": 3724,
       "purpose": "Sealed-primitives adapter (TA-1 path (a), KM 2026-06-11)."
@@ -4584,7 +4584,7 @@
     },
     {
       "path": "src/sovereign_agent/inference/six.py",
-      "size": 5496,
+      "size": 5468,
       "purpose": "SIX — the Sovereign Inference Exchange (co-extrusion of *Sovereign Inference & Memory* Ch 2)."
     },
     {
@@ -4594,7 +4594,7 @@
     },
     {
       "path": "src/sovereign_agent/kernel_integration.py",
-      "size": 5008,
+      "size": 5723,
       "purpose": "Kernel Primitives Integration — Sovereign bridge to breathline-federation/platform/kernel/primitives."
     },
     {
@@ -4603,18 +4603,38 @@
       "purpose": "B51 — the human-memory attention stream (co-extrusion of *Sovereign Inference & Memory* Ch 4)."
     },
     {
+      "path": "src/sovereign_agent/merkle_accumulator.py",
+      "size": 3827,
+      "purpose": "Incremental frontier Merkle accumulator — Engine 95+ HIGH #1 (card cd010960, thread [350/351])."
+    },
+    {
+      "path": "src/sovereign_agent/ndjson.py",
+      "size": 5179,
+      "purpose": "Tolerant NDJSON reader — the ONE chain-read line parser (Universalize Wave §1, guards G1+G2+G3)."
+    },
+    {
+      "path": "src/sovereign_agent/node_api/_filecache.py",
+      "size": 1667,
+      "purpose": "mtime/size-keyed memoization for file-derived lens projections (audit 2026-06-13 W5 #4/#5/#15)."
+    },
+    {
+      "path": "src/sovereign_agent/node_api/_jsonstore.py",
+      "size": 4599,
+      "purpose": "Fenced node-local JSON store (audit 2026-06-13 W5 #2/#3/#11; closes LOW #25)."
+    },
+    {
       "path": "src/sovereign_agent/node_api/auth.py",
-      "size": 9707,
+      "size": 11748,
       "purpose": "principal_id-bearer auth middleware."
     },
     {
       "path": "src/sovereign_agent/node_api/deps.py",
-      "size": 5267,
+      "size": 5247,
       "purpose": "Singleton wiring of the Python core for the Node API process."
     },
     {
       "path": "src/sovereign_agent/node_api/errors.py",
-      "size": 4218,
+      "size": 5034,
       "purpose": "Loud, contextual error builder per CONSTITUTION §4 and contract_v1.yaml."
     },
     {
@@ -4623,18 +4643,28 @@
       "purpose": "Thin-waist JSON shim — translate Python-native receipt types into JSON"
     },
     {
+      "path": "src/sovereign_agent/node_api/routes/book_artifacts.py",
+      "size": 13392,
+      "purpose": "Section — Book Artifacts + KDP Dispatch (extracted from proposals.py, audit 2026-06-13d #7)."
+    },
+    {
       "path": "src/sovereign_agent/node_api/routes/coherence.py",
-      "size": 7294,
+      "size": 7804,
       "purpose": "Section — Book↔Code Coherence (Step D)."
     },
     {
+      "path": "src/sovereign_agent/node_api/routes/dialogue.py",
+      "size": 7671,
+      "purpose": "Section — Dialogue + crypto-assurance (extracted from series.py, audit 2026-06-13d #8)."
+    },
+    {
       "path": "src/sovereign_agent/node_api/routes/feedback.py",
-      "size": 16698,
+      "size": 18772,
       "purpose": "Section — Feedback & Awaiting-KM (Atrium Loop-Closure R2, Wave 1 — the B12 Pilot Kit)."
     },
     {
       "path": "src/sovereign_agent/node_api/routes/hopper.py",
-      "size": 12602,
+      "size": 13411,
       "purpose": "Section — Hopper lane (read → one-gate write)."
     },
     {
@@ -4644,22 +4674,22 @@
     },
     {
       "path": "src/sovereign_agent/node_api/routes/obligations.py",
-      "size": 5973,
+      "size": 8147,
       "purpose": "Section — Obligations (R-23 Phase 3)."
     },
     {
       "path": "src/sovereign_agent/node_api/routes/placeholders.py",
-      "size": 17331,
+      "size": 18313,
       "purpose": "Contract sections B, D, E, F — real thin handlers (Track E1, 2026-05-30)."
     },
     {
       "path": "src/sovereign_agent/node_api/routes/proposals.py",
-      "size": 27278,
+      "size": 18993,
       "purpose": "Section — Proposals (Step C: diff-review)."
     },
     {
       "path": "src/sovereign_agent/node_api/routes/relay.py",
-      "size": 7635,
+      "size": 9264,
       "purpose": "Section — Agent Channel relay (A1, GB meta-review #1: \"KM is the message bus\")."
     },
     {
@@ -4669,18 +4699,33 @@
     },
     {
       "path": "src/sovereign_agent/node_api/routes/series.py",
-      "size": 29150,
+      "size": 20712,
       "purpose": "Section — Series Pipeline (ATR-7 lens, read-only)."
     },
     {
       "path": "src/sovereign_agent/node_api/server.py",
-      "size": 8803,
+      "size": 9011,
       "purpose": "Flask app factory + CLI entry for the Node API."
     },
     {
       "path": "src/sovereign_agent/node_api/thread_channel.py",
-      "size": 4662,
+      "size": 5330,
       "purpose": "Agent Channel — node-side adapter onto the receipted Tiger↔GB THREAD (A1)."
+    },
+    {
+      "path": "src/sovereign_agent/node_api/yaml_repair.py",
+      "size": 4986,
+      "purpose": "Resilient roadmap YAML loader (audit 2026-06-13 — extracted from routes/series.py)."
+    },
+    {
+      "path": "src/sovereign_agent/obligations/_locking.py",
+      "size": 1217,
+      "purpose": "POSIX advisory-lock write-fence helpers — extracted verbatim from ledger.py (audit 2026-06-16 #6)."
+    },
+    {
+      "path": "src/sovereign_agent/obligations/_util.py",
+      "size": 896,
+      "purpose": "Pure id / hash / time helpers for the obligation ledger — extracted verbatim from ledger.py"
     },
     {
       "path": "src/sovereign_agent/obligations/arc_guardrail.py",
@@ -4688,8 +4733,13 @@
       "purpose": "ARC — Autonomic Review Cadence guardrail (card-first, DORMANT by default)."
     },
     {
+      "path": "src/sovereign_agent/obligations/evidence.py",
+      "size": 1257,
+      "purpose": "Evidence tiers (E0/E1/E2) + the classifier — extracted verbatim from ledger.py (audit 2026-06-16 #6)."
+    },
+    {
       "path": "src/sovereign_agent/obligations/ledger.py",
-      "size": 38142,
+      "size": 28522,
       "purpose": "ObligationLedger — node-local B32 obligation ledger (R-23 Phase 1)."
     },
     {
@@ -4698,18 +4748,33 @@
       "purpose": "Wire the node's real governance into the ObligationLedger (R-23 Phase 2)."
     },
     {
+      "path": "src/sovereign_agent/obligations/projection.py",
+      "size": 8269,
+      "purpose": "Pure projection functions over an obligation-chain `entries` list — extracted verbatim from the"
+    },
+    {
+      "path": "src/sovereign_agent/obligations/provenance.py",
+      "size": 2679,
+      "purpose": "R22-3 source-citation provenance validator — extracted verbatim from ledger.py (audit 2026-06-16 #6)."
+    },
+    {
+      "path": "src/sovereign_agent/obligations/roots.py",
+      "size": 3161,
+      "purpose": "Ledger-root resolution + the hard boundary against the live seal chain — extracted verbatim from"
+    },
+    {
       "path": "src/sovereign_agent/playbook_loader.py",
-      "size": 12744,
+      "size": 12809,
       "purpose": "PlaybookLoader - Enhanced for Universal Sovereign Node"
     },
     {
       "path": "src/sovereign_agent/role_binder.py",
-      "size": 9600,
+      "size": 9590,
       "purpose": "RoleBinder - Dynamic binding of YAML specs to Python handlers."
     },
     {
       "path": "src/sovereign_agent/universal_sovereign_node.py",
-      "size": 15492,
+      "size": 15822,
       "purpose": "Universal Sovereign Node"
     }
   ],
@@ -4813,26 +4878,33 @@
   ],
   "findings": {
     "orphan_code": [
+      "src/sovereign_agent/_lazy_bp.py",
       "src/sovereign_agent/_portal_launcher.py",
       "src/sovereign_agent/bootstrap.py",
       "src/sovereign_agent/breath_inventory.py",
-      "src/sovereign_agent/capabilities/legacy.py",
-      "src/sovereign_agent/capabilities/research.py",
       "src/sovereign_agent/compliance/policy_loader.py",
       "src/sovereign_agent/config.py",
       "src/sovereign_agent/core.py",
       "src/sovereign_agent/demo_roles/federation_procurement_coordinator/role.py",
       "src/sovereign_agent/demo_roles/general_sovereign_demo/role.py",
+      "src/sovereign_agent/evidence/actions_projection.py",
+      "src/sovereign_agent/evidence/export_packet.py",
       "src/sovereign_agent/inference/primitives.py",
       "src/sovereign_agent/inference/receipts.py",
       "src/sovereign_agent/inference/six.py",
       "src/sovereign_agent/kernel_integration.py",
       "src/sovereign_agent/memory/b51.py",
+      "src/sovereign_agent/merkle_accumulator.py",
+      "src/sovereign_agent/ndjson.py",
+      "src/sovereign_agent/node_api/_filecache.py",
+      "src/sovereign_agent/node_api/_jsonstore.py",
       "src/sovereign_agent/node_api/auth.py",
       "src/sovereign_agent/node_api/deps.py",
       "src/sovereign_agent/node_api/errors.py",
       "src/sovereign_agent/node_api/json_provider.py",
+      "src/sovereign_agent/node_api/routes/book_artifacts.py",
       "src/sovereign_agent/node_api/routes/coherence.py",
+      "src/sovereign_agent/node_api/routes/dialogue.py",
       "src/sovereign_agent/node_api/routes/feedback.py",
       "src/sovereign_agent/node_api/routes/hopper.py",
       "src/sovereign_agent/node_api/routes/node.py",
@@ -4843,6 +4915,13 @@
       "src/sovereign_agent/node_api/routes/roles.py",
       "src/sovereign_agent/node_api/server.py",
       "src/sovereign_agent/node_api/thread_channel.py",
+      "src/sovereign_agent/node_api/yaml_repair.py",
+      "src/sovereign_agent/obligations/_locking.py",
+      "src/sovereign_agent/obligations/_util.py",
+      "src/sovereign_agent/obligations/evidence.py",
+      "src/sovereign_agent/obligations/projection.py",
+      "src/sovereign_agent/obligations/provenance.py",
+      "src/sovereign_agent/obligations/roots.py",
       "src/sovereign_agent/playbook_loader.py",
       "src/sovereign_agent/role_binder.py"
     ],
@@ -5587,7 +5666,7 @@
       "01_investor_guide#ch11",
       "01_investor_guide#ch9"
     ],
-    "orphan_count": 32,
+    "orphan_count": 46,
     "unrendered_count": 734,
     "intentional_unrendered_count": 3
   },
@@ -5601,17 +5680,17 @@
       "git ls-tree src/",
       "book_code_map.yaml"
     ],
-    "generated_at": "2026-06-13T13:55:25Z",
+    "generated_at": "2026-06-16T19:56:51Z",
     "n_series": 12,
     "n_chapters": 737,
-    "n_modules": 44,
+    "n_modules": 57,
     "edge_count": 12,
     "derived_edge_count": 12,
-    "orphan_count": 32,
+    "orphan_count": 46,
     "unrendered_count": 734,
     "intentional_unrendered_count": 3,
     "map_present": true,
-    "content_hash": "256490202b4b2cbb",
+    "content_hash": "eb61e2c1e76ba791",
     "note": "Edges READ from book_code_map.yaml (GB sole-write). Absent map → audit shell (all code orphan / all chapters unrendered) — findings mode working, not an error."
   }
 }

@@ -1,0 +1,28 @@
+title_id: 05_crypto
+status: yellow
+green_items: []
+yellow_items:
+- item: 18 chapters have no code edge (unrendered)
+  source: artifacts/book_code_tree.json
+  location: findings.unrendered_chapters
+  reason: 'Book↔Code drift: chapters in this title carry no edge in book_code_map.yaml.'
+  action: 'Human: mark each narrative (n/a) or queue for render — the scout does not
+    decide which.'
+  confidence: 'Derived deterministically from book_code_tree.json: 18 unrendered chapter
+    ids.'
+  evidence_ref: artifacts/book_code_tree.json#unrendered_chapters
+  sample:
+  - 05_crypto#ch1
+  - 05_crypto#ch10
+  - 05_crypto#ch11
+  - 05_crypto#ch12
+  - 05_crypto#ch13
+red_items: []
+top_next_tasks:
+- task: Review 18 unrendered chapters for 05_crypto (mark n/a or queue render)
+  evidence_ref: artifacts/book_code_tree.json#unrendered_chapters
+  effort: S (triage)
+blocked_by: []
+evidence_refs:
+- artifacts/book_code_tree.json#unrendered_chapters
+confidence: Deterministic deriver over book_code_tree.json findings (18 ids for 05_crypto).

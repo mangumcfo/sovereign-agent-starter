@@ -1,0 +1,12 @@
+# /goal Scout — DETERMINISTIC overnight cadence (ratified GB_goal_Scout_Synthesis_2026-06-15.md; KM [374/375]).
+# DO NOT INSTALL until the 3-title pilot proves zero-slop (GB [375] refinement #1: a nightly cron must never
+# fire un-validated packets). Build now, run the pilot via `scout_run.py --dry-run`, KM+GB review, THEN install.
+#
+# Install (only after pilot clean): crontab -l > /tmp/ct && cat scripts/cron/SCOUT_CRONTAB.txt >> /tmp/ct && crontab /tmp/ct
+#
+# What it runs: deterministic derivers ONLY — no LLM agent, ~zero tokens, propose-only (writes packets under
+# artifacts/scout/ and posts candidate proposals KM+GB disposition; never creates a real obligation, commits,
+# or seals). The expensive/judgment lanes stay Atrium-gated (one human gate), exactly like the crypto cadence.
+#
+# Nightly 03:10: refresh Book↔Code drift → refresh static-scan delta → derive+lint+propose the packets.
+10 3 * * * python3 scripts/build_book_code_tree.py >/dev/null 2>&1; python3 scripts/scout_run.py >> artifacts/scout/cron-$(date +\%Y\%m\%d).log 2>&1
