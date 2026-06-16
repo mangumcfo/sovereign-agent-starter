@@ -61,6 +61,14 @@ dev = [
     "build>=1.0",
     "twine>=4.0",
 ]
+# Static-analysis / maturity tooling (audit 2026-06-16 #8/M1 + M3). Analysis-only — NOT runtime/test surface,
+# so deliberately NOT pinned in constraints.txt (keeps the constraints lock to the 4 core pins).
+analysis = [
+    "ruff>=0.5",        # lint: unused imports/vars (dead), mccabe complexity (§5 ≤10), bare-except
+    "vulture>=2.14",    # dead-symbol static finder (functions/classes/methods)
+    "coverage>=7.0",    # use-evidence (never-executed code under the suite)
+    "pip-audit>=2.7",   # M3: dependency CVE scan (complements the constraints lock + crypto floor)
+]
 
 [project.scripts]
 breathline-connect = "sovereign_agent.bootstrap:cli_connect"
@@ -95,3 +103,20 @@ include-package-data = true
 pythonpath = ["src", "scripts"]
 testpaths = ["tests"]
 addopts = "-q"
+
+# Static-analysis bar (audit 2026-06-16 #8/M1). SMALL + explicit — no style wall: the curated rules surface
+# DEAD code (F: unused imports/vars/redefines) + COMPLEXITY over the constitutional §5 ≤10 bar (C90) + two
+# correctness smells (bare-except E722, ambiguous names E741). Line-length / multi-statement style (E501/E702)
+# are house style and deliberately NOT enforced here (a separate cosmetic pass if ever wanted).
+[tool.ruff]
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["F", "C90", "E722", "E741"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10   # CONSTITUTION §5: function complexity ≤10 (GB [369] refinement #2)
+
+[tool.vulture]
+min_confidence = 80
+paths = ["src", "scripts", "analysis/vulture_whitelist.py"]

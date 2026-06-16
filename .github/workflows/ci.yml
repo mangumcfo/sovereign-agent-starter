@@ -63,3 +63,11 @@ jobs:
               print("::error::tests skipped with the substrate present — coverage silently lost")
               sys.exit(1)
           PY
+
+      - name: Dependency CVE scan (M2/M3 — pip-audit; complements the constraints lock + crypto floor)
+        # Advisory-first (audit 2026-06-16 M3): surfaces known CVEs in the resolved deps without gating the
+        # build yet (continue-on-error). Harden to a hard gate once the baseline is clean.
+        continue-on-error: true
+        run: |
+          pip install pip-audit
+          pip-audit --desc || true
