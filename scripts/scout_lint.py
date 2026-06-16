@@ -84,34 +84,40 @@ def _packet_token_estimate(packet: dict) -> int:
     return len(json.dumps(packet, ensure_ascii=False)) // 4
 
 
-def lint_packet(packet: dict, existing_obligations: set | None = None) -> tuple[bool, list[str]]:
-    """Packet-level auto-REJECT (spec §4). Returns (ok, rejects[]). Only ok=True packets reach Atrium."""
-    rejects = []
-    tasks = packet.get("top_next_tasks") or []
-    refs = packet.get("evidence_refs") or []
-    if not refs:
-        rejects.append("no evidence_refs (mandatory)")
-    if len(tasks) > MAX_TASKS:
-        rejects.append(f">{MAX_TASKS} tasks ({len(tasks)})")
+def _packet_rule_rejects(packet: dict) -> list[str]:
+    """The flat packet-level rules (spec §4), kept separate so lint_packet stays ≤10 complexity (§5)."""
+    r = []
+    if not (packet.get("evidence_refs") or []):
+        r.append("no evidence_refs (mandatory)")
+    if len(packet.get("top_next_tasks") or []) > MAX_TASKS:
+        r.append(f">{MAX_TASKS} tasks ({len(packet.get('top_next_tasks') or [])})")
     if not packet.get("title_id"):
-        rejects.append("no title_id")
+        r.append("no title_id")
     if not _justified(packet.get("confidence")):
-        rejects.append("packet confidence not justified (no basis)")
-    if _packet_token_estimate(packet) > TOKEN_CAP:
-        rejects.append(f"exceeds token cap (~{_packet_token_estimate(packet)} > {TOKEN_CAP})")
-    blob = " ".join(str(packet.get(k, "")) for k in ("note", "summary"))
-    if _OUT_OF_FIT.search(blob):
-        rejects.append("contains prose/architecture (out of fit-gate)")
-    # Every top_next_task must state why (evidence_ref) — "cannot state why it matters" → reject.
+        r.append("packet confidence not justified (no basis)")
+    est = _packet_token_estimate(packet)
+    if est > TOKEN_CAP:
+        r.append(f"exceeds token cap (~{est} > {TOKEN_CAP})")
+    if _OUT_OF_FIT.search(" ".join(str(packet.get(k, "")) for k in ("note", "summary"))):
+        r.append("contains prose/architecture (out of fit-gate)")
+    return r
+
+
+def _task_rejects(tasks: list, existing_obligations: set | None) -> list[str]:
+    """Per-task: must cite (state why) and must not duplicate an existing obligation."""
+    r = []
     for i, t in enumerate(tasks):
         if not (isinstance(t, dict) and (t.get("evidence_ref") or t.get("source"))):
-            rejects.append(f"task[{i}] has no evidence_ref (cannot state why)")
-    # Duplicate-of-existing-obligation guard.
-    if existing_obligations:
-        for i, t in enumerate(tasks):
-            key = (t.get("task") or "").strip().lower()
-            if key and key in existing_obligations:
-                rejects.append(f"task[{i}] duplicates an existing obligation")
+            r.append(f"task[{i}] has no evidence_ref (cannot state why)")
+        elif existing_obligations and (t.get("task") or "").strip().lower() in existing_obligations:
+            r.append(f"task[{i}] duplicates an existing obligation")
+    return r
+
+
+def lint_packet(packet: dict, existing_obligations: set | None = None) -> tuple[bool, list[str]]:
+    """Packet-level auto-REJECT (spec §4). Returns (ok, rejects[]). Only ok=True packets reach Atrium."""
+    rejects = _packet_rule_rejects(packet) + _task_rejects(packet.get("top_next_tasks") or [],
+                                                           existing_obligations)
     return (len(rejects) == 0), rejects
 
 
