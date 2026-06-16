@@ -27,12 +27,36 @@ sys.path.insert(0, str(REPO / "scripts"))
 import scout_lint  # noqa: E402
 
 TREE = REPO / "artifacts" / "book_code_tree.json"
+ROADMAP = REPO / "artifacts" / "series_roadmap.yaml"
 SCOUT = REPO / "artifacts" / "scout"
 BASELINE = SCOUT / "static_baseline.json"
+
+# Stage filter (KM [380] Option A): surface drift ONLY on WRITTEN/actionable titles; exclude pure
+# concept-stage / roadmap books (the "isn't written yet" noise). A manuscript exists at these stages.
+WRITTEN_STAGES = {"published", "sealed", "awaiting_human_review", "review_ready", "phase_2_iteration"}
 
 
 def _today() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+
+def _title_stages() -> dict:
+    """book_id → stage from series_roadmap.yaml (the authoritative written/concept signal)."""
+    import yaml
+    out: dict[str, str] = {}
+
+    def walk(o):
+        if isinstance(o, dict):
+            if o.get("book_id") and o.get("stage"):
+                out[o["book_id"]] = str(o["stage"]).split("/")[0].split()[0].strip().lower()
+            for v in o.values():
+                walk(v)
+        elif isinstance(o, list):
+            for v in o:
+                walk(v)
+
+    walk(yaml.safe_load(ROADMAP.read_text(encoding="utf-8")))
+    return out
 
 
 # ── Book↔Code drift packets (per title) — deterministic from book_code_tree.json findings ───────────
@@ -72,6 +96,29 @@ def _book_code_packet(title_id: str, chapters: list[str]) -> dict:
         "blocked_by": [],
         "evidence_refs": ["artifacts/book_code_tree.json#unrendered_chapters"],
         "confidence": f"Deterministic deriver over book_code_tree.json findings ({n} ids for {title_id}).",
+    }
+
+
+# ── orphan-code packet — KM [380] actionable class: code with no rendered chapter ───────────────────
+def _orphan_packet() -> dict:
+    orphans = [o for o in json.loads(TREE.read_text())["findings"].get("orphan_code", [])
+               if (REPO / o).is_file()]                         # keep only resolving paths
+    n = len(orphans)
+    return {
+        "title_id": "orphan-code", "status": "yellow",
+        "green_items": [], "red_items": [],
+        "yellow_items": [{
+            "item": f"{n} code modules with no book edge (orphan)",
+            "source": "artifacts/book_code_tree.json", "location": "findings.orphan_code",
+            "reason": "Code with no rendered-chapter edge — tie to a chapter (book_code_map.yaml) or remove as dead.",
+            "action": "Human: per module, tie to a chapter or disposition as dead (e.g. the capabilities/ stubs).",
+            "confidence": f"Deterministic from book_code_tree.json: {n} orphan modules, each resolving.",
+            "evidence_ref": "artifacts/book_code_tree.json#orphan_code", "sample": orphans[:6]}],
+        "top_next_tasks": [{"task": f"Disposition orphan module: {o}", "evidence_ref": o, "effort": "S"}
+                           for o in orphans[:5]],
+        "blocked_by": [],
+        "evidence_refs": ["artifacts/book_code_tree.json#orphan_code"],
+        "confidence": f"Deterministic deriver; {n} orphan modules with no book edge.",
     }
 
 
@@ -127,9 +174,15 @@ def _static_packet(dry_run: bool) -> dict:
 # ── runner ───────────────────────────────────────────────────────────────────────────────────────
 def run(titles: list[str] | None, dry_run: bool) -> int:
     drift = _drift_by_title()
+    stages = _title_stages()
+    excluded: list[str] = []
     if not titles:
-        titles = sorted(drift.keys())   # SCALED (KM [378] #2): all drift titles nightly; --titles for a subset
-    packets = [_book_code_packet(t, drift.get(t, [])) for t in titles] + [_static_packet(dry_run)]
+        # SCALED (KM [378] #2) + STAGE-FILTERED (KM [380] Option A): all WRITTEN drift titles; concept-stage
+        # (the "isn't written yet" noise) is excluded BY STAGE and counted — not silently suppressed.
+        titles = sorted(t for t in drift if stages.get(t) in WRITTEN_STAGES)
+        excluded = sorted(t for t in drift if stages.get(t) not in WRITTEN_STAGES)
+    packets = ([_book_code_packet(t, drift.get(t, [])) for t in titles]
+               + [_orphan_packet(), _static_packet(dry_run)])
 
     out_dir = SCOUT / "packets" / _today()
     rej_dir = SCOUT / "rejected" / _today()
@@ -148,6 +201,8 @@ def run(titles: list[str] | None, dry_run: bool) -> int:
 
     print(f"scout_run {_today()} — {len(clean)} clean / {len(rejected)} rejected "
           f"(dry_run={dry_run}; {'NO candidates posted' if dry_run else 'candidates posted to proposals'})")
+    if excluded:
+        print(f"  stage-filter: excluded {len(excluded)} concept-stage title(s) (not written yet) — signal over volume")
     for tid, _ in clean:
         print(f"  CLEAN  {tid}")
     for tid, rj in rejected:
