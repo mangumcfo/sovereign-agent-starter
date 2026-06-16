@@ -5,8 +5,14 @@
 > **37 F-findings cleared, 19 net LOC removed, suite 279 green / 0 skipped** (no `obligations/` touched →
 > ledger equivalence snapshot N/A). **2 deliberately NOT removed:** the `yaml` import in `gen_outline_digest.py`
 > (availability-probe `try/except ImportError` → KEEP), and `original_payload` in `compliance_engine.py:222`
-> (a function **parameter** — removal is a signature change → moved to **REVIEW** for KM). The REVIEW bucket
-> (complexity + capabilities stubs) is untouched, pending KM's per-item disposition.
+> (a function **parameter** — removal is a signature change → moved to **REVIEW** for KM).
+>
+> **REVIEW item RULED + APPLIED — capabilities/ stubs (KM [372], 2026-06-16):** KM ruled the `capabilities/`
+> forward-stubs (`economics.py` `EconomicEngine` · `legacy.py` `LegacyPlanner` · `research.py` `ResearchModule`)
+> **REMOVE-as-dead** (unreferenced since initial commit, not on the active roadmap; Authoritative-Pattern-Rule
+> + YAGNI — re-add when a backing book needs them). Removed (gated): **195 LOC, suite 279 green, vulture
+> capabilities findings → 0, no new findings surfaced.** Remaining REVIEW = only the 19 complexity>10 functions
+> (tracked M-tail debt, `scripts/` mains — no churn) + `original_payload` param. **Hygiene tail #1–#8 fully closed.**
 
 **Pass:** `scripts/static_scan.sh` (reproducible — same code → same set). **This pass changed NO source code.**
 Removals/fixes are a **separate KM-gated commit** (re-run 279 suite + ledger equivalence snapshot if
