@@ -1,0 +1,27 @@
+# RECEIPT — Engine 95+ FULL CLOSE of the LOW/MED tail (thread [362/363]) — 2026-06-16T15:45:20Z
+# branch claude/kdp-dispatch · canonical -c constraints.txt venv · BREATHLINE_SEALED_ROOT set
+
+== #2b constraints-lock scope wording ==
+  constraints.txt header now: 'FULLY governs CI/crypto-assurance/dev; Docker [portal] = core pins only'
+
+== #5 setuptools upper bound ==
+4:requires = ["setuptools>=68.0,<81"]
+
+== #4b governance truth-in-naming + fail-fast ==
+  live-route simulate_* hits: 0 (0 = clean)
+  approve/deny routes now call record_disposition (real=True) — test: test_breath_gate_approve_records_real_disposition PASSED
+  execute() fail-fast on material+unapproved — test: test_execute_refuses_unapproved_material PASSED
+
+== #6 ledger.py 790 -> under the 500 ceiling (EXTRACTION, not abstraction) ==
+  ledger.py: 499 lines (was 790; ceiling 500)
+  extracted: _util(26) _locking(34) evidence(27) roots(62) provenance(45) projection(168) — pure concerns
+  #7 dedupe folded: _write_fence() context manager (was duplicated in _append+repair_chain); _require() guard
+
+== #6 MANDATORY equivalence snapshot (GB [363]) — byte-identical pre/post on the LIVE + synthetic chains ==
+  digest covers: get_ledger_root + replay + verify_chain + full_log + manifest + entries, per chain
+  RESULT: BYTE-IDENTICAL ✓ (atrium_review 1127 · tiger_coordination 182 · synthetic 13 entries)
+  PRE  sha: 7110ed8077e6e6b28863911d6107de33
+  POST sha: 7110ed8077e6e6b28863911d6107de33
+
+== suite (canonical -c venv) ==
+  279 passed / 0 skipped (was 275; +4 GB-check tests: projection-delegation ×3, #4b live-route ×1)

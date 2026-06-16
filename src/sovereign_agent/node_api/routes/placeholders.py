@@ -219,7 +219,9 @@ def breath_gate_approve(gate_id: str):
     The LIVE constitutional gate for material *obligations* is POST /obligations/<id>/approve (ledger-
     backed). Use that for obligation dispositions; this surface is the compliance-engine breath-gate."""
     gate = get_approval_gate()
-    result = gate.simulate_approval(gate_id, approver=current_principal())
+    # Truth-in-naming (audit 2026-06-16 #4b): the LIVE route records a REAL disposition by the
+    # authenticated principal — not a simulation. simulate_* stay genuinely test-only.
+    result = gate.record_disposition(gate_id, status="approved", approver=current_principal())
     if result.get("status") == "unknown_request":
         return jsonify(build_error(
             code="GATE_NOT_FOUND",
@@ -238,7 +240,9 @@ def breath_gate_deny(gate_id: str):
     Owner-gated (audit 2026-06-13c #6): the refusal is a constitutional human act, owner-only."""
     body = request.get_json(silent=True) or {}
     gate = get_approval_gate()
-    result = gate.simulate_denial(gate_id, approver=current_principal(), reason=body.get("reason", ""))
+    # Truth-in-naming (audit 2026-06-16 #4b): real disposition, not a simulation.
+    result = gate.record_disposition(gate_id, status="denied", approver=current_principal(),
+                                     reason=body.get("reason", ""))
     if result.get("status") == "unknown_request":
         return jsonify(build_error(
             code="GATE_NOT_FOUND",

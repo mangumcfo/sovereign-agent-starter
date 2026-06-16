@@ -53,6 +53,8 @@ class HumanApprovalGate:
         return req_id
 
     def simulate_approval(self, req_id: str, approver: str = "Compliance Officer (simulated)") -> Dict:
+        """TEST-ONLY stand-in (audit 2026-06-16 #4b). The live /breath_gate/<id>/approve route records a
+        REAL disposition via record_disposition(); this simulated path is for tests/demos only."""
         if req_id not in self._pending:
             return {"status": "unknown_request"}
         # In a real system this would be an external workflow callback
@@ -66,7 +68,8 @@ class HumanApprovalGate:
         }
 
     def simulate_denial(self, req_id: str, approver: str = "Compliance Officer (simulated)", reason: str = "") -> Dict:
-        """Symmetric to simulate_approval: an explicit human DENY of a pending request."""
+        """TEST-ONLY stand-in (audit 2026-06-16 #4b), symmetric to simulate_approval — an explicit human DENY.
+        The live /breath_gate/<id>/deny route records a REAL disposition via record_disposition()."""
         if req_id not in self._pending:
             return {"status": "unknown_request"}
         self._pending.pop(req_id, None)  # leaves the pending queue once disposed

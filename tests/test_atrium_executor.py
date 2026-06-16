@@ -93,3 +93,18 @@ def test_close_failure_is_not_a_false_success(led, tmp_path, monkeypatch):
     assert after._is_closed(ob["id"]) is False               # obligation stays OPEN, never falsely closed
     hs = json.loads((tmp_path / "handshakes.json").read_text())
     assert any(h.get("status") == "apply_close_failed" for h in hs)   # residue is visible, not swallowed
+
+
+def test_execute_refuses_unapproved_material(led, tmp_path):
+    """Engine 95+ #4b-ii fail-fast: a MATERIAL obligation that hasn't cleared the breath-gate is refused at
+    execute() top (returns 1, stays OPEN, blocked_unapproved residue) — defense-in-depth ahead of the
+    downstream ledger.close() gate. Non-material packets are unaffected (covered by the other tests)."""
+    import json
+
+    ob = led.open("material packet", ref="distribution:b12", classification="C2", material=True)
+    rc = E.execute(ob["id"])
+    assert rc == 1                                           # refused, not a false success
+    after = _fresh(led)
+    assert after._is_closed(ob["id"]) is False              # stays OPEN — never executed unapproved
+    hs = json.loads((tmp_path / "handshakes.json").read_text())
+    assert any(h.get("status") == "blocked_unapproved" for h in hs)

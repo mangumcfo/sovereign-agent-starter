@@ -1,5 +1,7 @@
 [build-system]
-requires = ["setuptools>=68.0"]
+# setuptools upper-bounded (audit 2026-06-16 #5): same class of guard as pyyaml<7 / flask<4 — an unbounded
+# build requirement let an unknown future major install silently. <81 keeps current (68–80) and blocks 81+.
+requires = ["setuptools>=68.0,<81"]
 build-backend = "setuptools.build_meta"
 
 [project]

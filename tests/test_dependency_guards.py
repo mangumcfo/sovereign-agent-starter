@@ -52,14 +52,15 @@ def test_import_succeeds_without_substrate():
 
 
 def test_flock_shim_degrades_loud_when_fcntl_absent(monkeypatch):
-    from sovereign_agent.obligations import ledger
-    monkeypatch.setattr(ledger, "_HAS_FCNTL", False)
-    monkeypatch.setattr(ledger, "_FLOCK_WARNED", False)
+    # The write-fence flock shim now lives in obligations._locking (audit 2026-06-16 #6 extraction).
+    from sovereign_agent.obligations import _locking
+    monkeypatch.setattr(_locking, "_HAS_FCNTL", False)
+    monkeypatch.setattr(_locking, "_FLOCK_WARNED", False)
     with warnings.catch_warnings(record=True) as caught:
         warnings.simplefilter("always")
-        ledger._flock_ex(None)      # no-op on non-POSIX; must warn
-        ledger._flock_un(None)      # no-op, no crash
-        ledger._flock_ex(None)      # second call must NOT warn again (one-time)
+        _locking._flock_ex(None)      # no-op on non-POSIX; must warn
+        _locking._flock_un(None)      # no-op, no crash
+        _locking._flock_ex(None)      # second call must NOT warn again (one-time)
     runtime_warnings = [w for w in caught if issubclass(w.category, RuntimeWarning)]
     assert len(runtime_warnings) == 1
     assert "write fence is NOT enforced" in str(runtime_warnings[0].message)
@@ -67,13 +68,13 @@ def test_flock_shim_degrades_loud_when_fcntl_absent(monkeypatch):
 
 def test_flock_ex_uses_fcntl_when_present(monkeypatch):
     """When fcntl IS present the fence is real (no warning, calls flock)."""
-    from sovereign_agent.obligations import ledger
-    if not ledger._HAS_FCNTL:
+    from sovereign_agent.obligations import _locking
+    if not _locking._HAS_FCNTL:
         pytest.skip("fcntl not available on this platform")
     calls = []
-    monkeypatch.setattr(ledger._fcntl, "flock", lambda fd, op: calls.append((fd, op)))
+    monkeypatch.setattr(_locking._fcntl, "flock", lambda fd, op: calls.append((fd, op)))
 
     class _FO:
         def fileno(self): return 7
-    ledger._flock_ex(_FO())
+    _locking._flock_ex(_FO())
     assert calls and calls[0][0] == 7

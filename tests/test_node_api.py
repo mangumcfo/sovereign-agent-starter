@@ -188,6 +188,24 @@ def test_breath_gate_deny_unknown_404(owner_client):
     assert rv.get_json()["code"] == "GATE_NOT_FOUND"
 
 
+def test_breath_gate_approve_records_real_disposition(owner_client):
+    """Engine 95+ #4b: the LIVE approve route routes through record_disposition (real=True, real UTC
+    timestamp) — NOT the TEST-ONLY simulate_approval (which set timestamp='simulated' and no 'real' key).
+    get_approval_gate() is a process-wide singleton, so the request created here is the one the route sees."""
+    from sovereign_agent.compliance.human_approval_gate import ApprovalRequest
+    from sovereign_agent.node_api.deps import get_approval_gate
+
+    rid = get_approval_gate().request_approval(ApprovalRequest(
+        action_class="x", role_id="r", principal_id="p", risk_level="low",
+        rationale="t", required_approvers=["owner"]))
+    rv = owner_client.post(f"/api/v1/breath_gate/{rid}/approve")
+    assert rv.status_code == 200
+    body = rv.get_json()
+    assert body["status"] == "approved"
+    assert body.get("real") is True               # record_disposition marker — proves NOT simulate_approval
+    assert body.get("timestamp") != "simulated"
+
+
 def test_audit_cylinders_shape(client):
     body = client.get("/api/v1/audit/cylinders").get_json()
     assert "cylinders" in body and "count" in body

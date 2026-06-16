@@ -153,6 +153,15 @@ def execute(oid: str) -> int:
     if led._is_closed(oid):
         print(f"already closed {oid}")
         return 0
+    # Fail-fast defense-in-depth (audit 2026-06-16 #4b-ii): the material breath-gate is enforced downstream
+    # at ledger.close() (PermissionError), but refuse a material+unapproved packet HERE too so it never even
+    # enters a packet-class handler. Non-material packets (the scriptable classes) are unaffected.
+    if o.get("material") and not led._is_approved(oid):
+        _handshake("tiger", "tiger", o.get("ref") or "",
+                   f"execute refused — material + unapproved (breath-gate not cleared): {(o.get('title') or '')[:60]}",
+                   status="blocked_unapproved")
+        print(f"  REFUSED {oid} — material obligation has not cleared the breath-gate")
+        return 1
     ref = o.get("ref") or ""
     cls = ref.split(":")[0] if ":" in ref else ref
     handler = _REGISTRY.get(cls)

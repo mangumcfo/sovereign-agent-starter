@@ -1,4 +1,8 @@
-# Reproducible constraints lock for the Docker/CI path.
+# Reproducible constraints lock — scope note (audit 2026-06-16 #2b):
+#   - It FULLY governs the CI / crypto-assurance / dev path (pyyaml, flask, cryptography, pytest).
+#   - On the Docker / sovereign-install `.[portal]` path only the CORE pins apply (pyyaml + flask) —
+#     cryptography/pytest are dev/crypto-assurance-only and are NOT pulled into the [portal] runtime,
+#     so a constraint on them is simply inert there (constraints only bind what is actually installed).
 #
 # Use with:  pip install -e . -c constraints.txt            (core: pyyaml + flask)
 #       or:  pip install -e .[crypto-assurance,dev] -c constraints.txt
