@@ -17,6 +17,8 @@
 #     interpreter : Python 3.12.3
 #     platform    : Linux-6.17.0-23-generic-x86_64-with-glibc2.39
 #     suite       : 237 green (2026-06-13, Universalize Wave)
+#     re-verified : 270 green (2026-06-15, Engine 95+ finish-pass HIGH #3) — pins recaptured from the green
+#                   interpreter, unchanged; Dockerfile + sovereign-install.sh now install WITH -c constraints.txt.
 PyYAML==6.0.1
 Flask==3.1.3
 cryptography==46.0.4

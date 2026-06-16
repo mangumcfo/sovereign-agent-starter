@@ -70,3 +70,26 @@ def test_drain_only_approved_and_open(led):
     after = _fresh(led)
     assert after._is_closed(approved["id"]) is True           # approved+open → executed (closed)
     assert after._is_closed(unapproved["id"]) is False        # not approved → left open
+
+
+def test_close_failure_is_not_a_false_success(led, tmp_path, monkeypatch):
+    """Engine 95+ HIGH #4 (card cd010960): when the ledger close FAILS at commit time, the scriptable
+    executor must NOT report success. It returns non-zero, the obligation stays visibly OPEN, and an
+    apply_close_failed handshake records the residue — the false-close that exited 0 is gone."""
+    import json
+
+    from sovereign_agent.obligations.ledger import ObligationLedger as OL
+
+    ob = led.open("distribution packet", ref="distribution:b12", classification="C2")
+
+    def boom(self, *a, **k):  # simulate a commit/disk failure inside ledger.close
+        raise RuntimeError("simulated ledger commit failure")
+
+    monkeypatch.setattr(OL, "close", boom)
+
+    rc = E.execute(ob["id"])
+    assert rc == 1                                            # NOT a false 0 (the bug)
+    after = _fresh(led)
+    assert after._is_closed(ob["id"]) is False               # obligation stays OPEN, never falsely closed
+    hs = json.loads((tmp_path / "handshakes.json").read_text())
+    assert any(h.get("status") == "apply_close_failed" for h in hs)   # residue is visible, not swallowed

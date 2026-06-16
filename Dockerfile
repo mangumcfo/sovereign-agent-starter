@@ -28,9 +28,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends git \
     && rm -rf /var/lib/apt/lists/*
 
 # Install the package (context = this repo). Copy metadata first for a cached dependency layer.
-COPY pyproject.toml README.md ./
+# Engine 95+ HIGH #3 (card cd010960): install WITH the reproducible constraints lock so a future
+# Flask 4.x / PyYAML 7.x cannot silently install and break the JSON provider / yaml lenses.
+COPY pyproject.toml README.md constraints.txt ./
 COPY src ./src
-RUN pip install --no-cache-dir -e ".[portal]"
+RUN pip install --no-cache-dir -c constraints.txt -e ".[portal]"
 
 # Node-local, persistent ledger root (mount a volume here to keep the hash-chained ledger across runs).
 RUN mkdir -p /data/obligations

@@ -82,12 +82,29 @@ def _close(led, oid: str, evidence: str, tier: str = "E2") -> bool:
         return False
 
 
+def _close_or_residue(led, o, evidence: str, to: str = "tiger") -> bool:
+    """Close with an E2 receipt; on FAILURE record an apply_close_failed handshake (mirror atrium_apply) so
+    the still-OPEN obligation is visible residue, and report False so the caller returns non-zero.
+
+    Engine 95+ HIGH #4 (card cd010960): the scriptable handlers used to DISCARD _close()'s bool and return 0
+    (success) while the obligation stayed OPEN — a false success on a silent close failure. They now honor it:
+    a close failure is hard, never a green exit (the same discipline as atrium_apply's apply_close_failed)."""
+    if _close(led, o["id"], evidence):
+        return True
+    _handshake("tiger", to, o.get("ref") or "",
+               f"close FAILED — obligation OPEN, not closed: {(o.get('title') or '')[:70]}",
+               status="apply_close_failed")
+    print(f"  CLOSE FAILED {o['id']} — obligation OPEN, no false success")
+    return False
+
+
 # ── packet-class executors ────────────────────────────────────────────────────────────────────────
 def _exec_distribution(led, o) -> int:
     """Scriptable: a distribution packet's flips are KM's manual KDP toggles; the bell advances the
     CHANNEL_TRACKER for the dispatched books and closes the obligation with a receipt."""
-    _close(led, o["id"], "E2: distribution packet executed by the bell — CHANNEL_TRACKER reflects the "
-                         "dispatched state; pre-order titles flip at-live.")
+    if not _close_or_residue(led, o, "E2: distribution packet executed by the bell — CHANNEL_TRACKER reflects "
+                                     "the dispatched state; pre-order titles flip at-live."):
+        return 1
     print(f"  executed distribution: {o['id']}")
     return 0
 
@@ -95,7 +112,8 @@ def _exec_distribution(led, o) -> int:
 def _exec_status_confirm(led, o) -> int:
     """Scriptable: status/confirm packets (e.g. b12 republish, editorial format-approval) — the work is
     already staged; the bell records the receipt + closes."""
-    _close(led, o["id"], f"E2: bell confirmed + closed — {(o.get('title') or '')[:80]}")
+    if not _close_or_residue(led, o, f"E2: bell confirmed + closed — {(o.get('title') or '')[:80]}"):
+        return 1
     print(f"  confirmed+closed: {o['id']}")
     return 0
 

@@ -82,13 +82,21 @@ echo "Upgrading pip / setuptools / wheel..."
 pip install --upgrade pip setuptools wheel >/dev/null
 
 # 2. Install the package (this is the big win — no more manual PYTHONPATH for the USN)
+# Engine 95+ HIGH #3 (card cd010960): install WITH the reproducible constraints lock when present, so the
+# transitive surface (Flask / PyYAML / cryptography) resolves to the same green-tested versions every time.
 echo "Installing sovereign-agent-starter (editable, with portal extras)..."
 
 if pip show sovereign-agent-starter >/dev/null 2>&1; then
     echo "  (Package already present — upgrading in place...)"
 fi
 
-pip install -e ".[portal]" >/dev/null 2>&1
+CONSTRAINTS_ARG=""
+if [ -f "$SCRIPT_DIR/constraints.txt" ]; then
+    CONSTRAINTS_ARG="-c $SCRIPT_DIR/constraints.txt"
+    echo "  (Using reproducible constraints lock: constraints.txt)"
+fi
+# shellcheck disable=SC2086
+pip install $CONSTRAINTS_ARG -e ".[portal]" >/dev/null 2>&1
 
 echo -e "${GREEN}✓ Package installed cleanly into venv${NC}"
 

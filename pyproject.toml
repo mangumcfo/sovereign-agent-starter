@@ -83,3 +83,11 @@ where = ["src"]
 
 [tool.setuptools]
 include-package-data = true
+
+# Engine 95+ HIGH #2 (card cd010960): make `pytest` from the repo root collect + run with NO PYTHONPATH env.
+# pythonpath puts the un-installed source on sys.path so `import sovereign_agent` resolves; scripts/ is added
+# because several tests import the atrium_* tooling. testpaths keeps collection deterministic.
+[tool.pytest.ini_options]
+pythonpath = ["src", "scripts"]
+testpaths = ["tests"]
+addopts = "-q"

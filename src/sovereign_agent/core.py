@@ -23,11 +23,11 @@ from ._lazy_bp import (
     generate_keypair,
     sign,
     verify,
-    MerkleTree,
     hash_function,
     secp256k1_curve,
 )
 from .ndjson import read_ndjson  # the ONE tolerant ndjson reader (Universalize Wave §1)
+from .merkle_accumulator import MerkleAccumulator  # incremental frontier root (Engine 95+ HIGH #1)
 
 # Optional deep sovereignty via real kernel primitives (graceful if absent)
 try:
@@ -142,8 +142,11 @@ class VerifiableMemory:
         self.log_path = self.storage_path.with_suffix(".ndjson")
         self.leaves: List[bytes] = []
         self.version = 0
-        self._root_cache: Optional[tuple] = None   # (len(leaves), root_bytes) — memoize root for reads
         self._load()
+        # Incremental frontier accumulator (Engine 95+ HIGH #1): replaces the per-append full-tree rebuild
+        # (was O(n^2) across n appends). Built ONCE from the loaded leaves in O(n log n); each subsequent
+        # append is O(log n). Root is byte-identical to MerkleTree(self.leaves).get_root() (equivalence gate).
+        self._acc = MerkleAccumulator.from_leaves(self.leaves)
 
     def _load(self):
         """Prefer the append-only leaf log; migrate a legacy whole-file JSON ONCE if that's all we have.
@@ -189,19 +192,12 @@ class VerifiableMemory:
         self.leaves.append(leaf)
         self.version += 1
         self._append_leaf(leaf)
-        self._root_cache = None        # invalidate; get_root() recomputes once for the new leaf count
-        return self.get_root()
+        # O(log n): update only the right frontier. Root stays byte-identical to MerkleTree(self.leaves).
+        return self._acc.append(leaf)
 
     def get_root(self) -> Optional[bytes]:
-        if not self.leaves:
-            return None
-        # Memoize the root on the leaf count (Universalize Wave §4): repeated reads between appends are O(1).
-        # Uses the SAME MerkleTree(self.leaves) so the root VALUE is byte-identical to the pre-wave behavior.
-        if self._root_cache is not None and self._root_cache[0] == len(self.leaves):
-            return self._root_cache[1]
-        root = MerkleTree(self.leaves).get_root()
-        self._root_cache = (len(self.leaves), root)
-        return root
+        # O(1): the accumulator holds the current root (byte-identical to MerkleTree(self.leaves).get_root()).
+        return self._acc.get_root()
 
     def inherit_from_parent(self, parent_root: bytes):
         """Support generational handoff."""
