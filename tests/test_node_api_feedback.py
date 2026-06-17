@@ -147,3 +147,38 @@ def test_handshakes_filters_done_and_tolerates_malformed(owner_client, tmp_path,
     store.write_text("{ broken json", encoding="utf-8")
     r2 = owner_client.get("/api/v1/handshakes")
     assert r2.status_code == 200 and r2.get_json()["handshakes"] == []
+
+
+def test_reply_on_open_gate_attaches_and_never_batches(owner_client):
+    """finding:feedback_misroute_2026-06-13 (52acd023): a reply typed ON an open human-gated card is
+    INPUT — it must ATTACH to that card (carry its obligation_id) and NEVER be auto-batched into
+    invisibility. Root cause of 'KM's feedback gets missed': his ISBNs were born-approved as [wording]
+    into batch:mechanical and never linked to the card."""
+    # 1) an open human-gated 'provide value' card (e.g. "provide Vol 1 ISBNs")
+    parent = _mint(owner_client, text="Provide the Vol 1 ISBNs", category="judgment").get_json()["obligation"]
+    assert parent["next_gate"] == "Human disposition"
+    # 2) KM replies on that card with the value, classified (or defaulting) as mechanical wording
+    r = owner_client.post("/api/v1/feedback", json={
+        "text": "978-1-..., 978-1-...", "category": "wording", "reply_to": parent["id"]})
+    assert r.status_code == 201
+    body = r.get_json()
+    # the reply is NOT batched (would have been invisible) — it routes to a visible discrete lane...
+    assert body["lane"] != "batch"
+    assert body["replies_to"] == parent["id"]          # ...and ATTACHES to the parent card
+    assert body["obligation"]["ref"] == f"card:{parent['id']}"   # carries the parent obligation_id
+    assert body["obligation"]["material"] is False     # input, not a new KM-decision, but visible+linked
+
+
+def test_plain_mechanical_still_batches_when_no_reply_to(owner_client):
+    """Guard: the fix only fires for replies to an OPEN gate — a free-standing wording edit still batches
+    (the burden-removal for genuine mechanical edits is preserved)."""
+    body = owner_client.post("/api/v1/feedback", json={"text": "fix a typo", "category": "wording"}).get_json()
+    assert body["lane"] == "batch" and body["replies_to"] is None
+
+
+def test_reply_to_closed_or_missing_id_does_not_attach(owner_client):
+    """A reply_to that does not resolve to an OPEN obligation is ignored (no false attach); the packet
+    classifies normally — a pointer is never written false."""
+    body = owner_client.post("/api/v1/feedback", json={
+        "text": "stray", "category": "wording", "reply_to": "obl_does_not_exist"}).get_json()
+    assert body["replies_to"] is None and body["lane"] == "batch"

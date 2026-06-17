@@ -1,0 +1,60 @@
+_doc: Append-only baseline of every book_id that reached published/sealed. The merge
+  source-of-truth for the series_roadmap projection (f77db98c). roadmap_sealed_guard.py
+  fails if a regeneration drops any of these.
+sealed_book_ids:
+  01_cfos_finance:
+    series: Agentic AI Playbooks for Executives (Series 1)
+    title: AI Agents for CFOs
+    stage: sealed
+  01_strategic_finance:
+    series: Mangum Executive Foundational (Series 0)
+    title: Strategic Finance for Growth
+    stage: published
+  02_executives_decisions:
+    series: Agentic AI Playbooks for Executives (Series 1)
+    title: AI Agents for Executives
+    stage: sealed
+  02_harnessing_ai:
+    series: Mangum Executive Foundational (Series 0)
+    title: Harnessing Artificial Intelligence
+    stage: published
+  03_blueprint:
+    series: Mangum Executive Foundational (Series 0)
+    title: Blueprint for Brilliance
+    stage: published
+  03_leading_agents:
+    series: Agentic AI Playbooks for Executives (Series 1)
+    title: Leading with AI Agents
+    stage: sealed
+  04_supply_chain:
+    series: Agentic AI Playbooks for Executives (Series 1)
+    title: AI Agents for Supply Chain
+    stage: sealed
+  05_crypto:
+    series: Mangum Executive Foundational (Series 0)
+    title: Cryptocurrency Decoded
+    stage: published
+  05_hr_talent:
+    series: Agentic AI Playbooks for Executives (Series 1)
+    title: AI Agents for HR
+    stage: sealed
+  06_compliance_audit:
+    series: Agentic AI Playbooks for Executives (Series 1)
+    title: AI Agents for Compliance
+    stage: sealed
+  07_sales_revenue:
+    series: Agentic AI Playbooks for Executives (Series 1)
+    title: AI Agents for Sales & Revenue Operations
+    stage: sealed
+  08_manufacturing_ops:
+    series: Agentic AI Playbooks for Executives (Series 1)
+    title: AI Agents for Manufacturing
+    stage: sealed
+  09_multi_agent:
+    series: Agentic AI Playbooks for Executives (Series 1)
+    title: Multi-Agent AI Systems
+    stage: sealed
+  the_sealing_hand:
+    series: Metalayer Companion — One Arc, Two Altitudes (Private)
+    title: The Sealing Hand
+    stage: sealed

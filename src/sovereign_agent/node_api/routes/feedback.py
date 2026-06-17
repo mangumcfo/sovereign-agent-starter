@@ -79,6 +79,21 @@ def _source_ref(body: dict) -> str:
     return (body.get("source") or "atrium:feedback").strip()
 
 
+def _reply_to(body: dict) -> str:
+    """The obligation id this feedback REPLIES TO (a value/input typed ON an open gate card)."""
+    return (body.get("reply_to") or body.get("on_card") or body.get("replies_to") or "").strip()
+
+
+def _open_obligation(led, oid: str) -> dict | None:
+    """Resolve an OPEN obligation by id (None if absent/closed). No getter on the ledger — scan opens."""
+    if not oid:
+        return None
+    for o in led.open_obligations():
+        if o.get("id") == oid:
+            return o
+    return None
+
+
 @bp.post("/feedback")
 @require_principal
 def feedback_intake():
@@ -97,6 +112,19 @@ def feedback_intake():
     # A2 capture classification → automatic lane routing (mechanical batch / technical / judgment).
     category, route, defaulted = _classify(body)
     title = f"[{category}] {prefix}: {text[:72]}"
+
+    # FIX finding:feedback_misroute_2026-06-13 (52acd023, GB→Tiger [390]): a reply typed ON an open
+    # human-gated card is INPUT (KM answering a 'provide value' card), NOT a mechanical edit. It must
+    # (1) ATTACH to that card — carry its obligation_id in the ref — and (2) NEVER be auto-batched into
+    # invisibility. Root cause of "my feedback gets missed": KM's ISBNs were born-approved into
+    # batch:mechanical and never linked to the card. Same view-out-truthing-the-ledger disease the
+    # parity harness guards — generalized to feedback↔card linkage.
+    parent = _open_obligation(get_obligation_ledger(), _reply_to(body))
+    if parent is not None:
+        ref = f"card:{parent['id']}"                       # (1) attach: carry the parent obligation id
+        if route["lane"] == "batch":                       # (2) a reply to an open gate is never mechanical
+            category, route, defaulted = "technical", _CATEGORIES["technical"], False
+        title = f"[input→{parent['id'][-8:]}] {prefix}: {text[:60]}"
     try:
         entry = get_obligation_ledger().open(
             title=title,
@@ -118,7 +146,8 @@ def feedback_intake():
             next_step="Point `source` at a real file, or omit it / use a symbolic tag.")), 422
     return jsonify({"obligation": entry, "kind": kind, "source": ref,
                     "category": category, "lane": route["lane"],
-                    "category_defaulted": defaulted}), 201
+                    "category_defaulted": defaulted,
+                    "replies_to": parent["id"] if parent else None}), 201
 
 
 def _awaiting(led) -> list:
