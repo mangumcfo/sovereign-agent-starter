@@ -324,16 +324,19 @@ def _check_artifact_package(bdir: Path | None, book_id: str) -> dict:
             "gap": ("artifact package incomplete: " + "; ".join(issues)) if issues else None}
 
 
-# Calibrated S2 quality bar (KM 2026-06-18, V3 regression). S2 V1=16.5k/10ch (~1455/ch), V2=19.1k/12ch.
-# The floor enforces S2-comparable SUBSTANCE so a thin volume can never reach review_ready on structure alone.
-_S2_BAR = {"total_words": 14000, "avg_words_per_chapter": 1200, "min_chapter_words": 1000,
+# Calibrated S2 quality bar — measured from the actual S2 V1 anchor 2026-06-18 (KM "calibrate against actual S2"):
+#   S2 V1 = 14,484w total · 9 chapters avg 1,375w, MIN 874w · + a 2,104w appendix.
+# So: depth bars (avg, min) apply to CHAPTERS (S2's own min is 874, well under a naive 1000 floor — a naive
+# floor would fail S2 itself); the TOTAL bar spans everything (appendices carry real weight, as S2's does).
+_S2_BAR = {"total_words": 13500, "avg_chapter_words": 1200, "min_chapter_words": 850,
            "seeit_pages_min_ratio": 0.8}  # >= 0.8 * chapters (≈ one /seeit page per chapter)
 
 
 def _check_substance(bdir: Path | None, book_id: str) -> dict:
     """Substance gate (KM 2026-06-18, the V3 regression): a volume must match the calibrated S2 DEPTH bar —
-    total words, per-chapter depth, and /seeit coverage — not just pass structural gates. Closes the hole that
-    let a ~6.8k-word volume reach review_ready beside ~16-19k-word S2 volumes."""
+    chapter depth + total words + /seeit coverage — not just pass structural gates. Thresholds are MEASURED
+    from the S2 V1 anchor so the gate could not fail S2 itself (its min chapter is 874w; appendices count to
+    total, not to the per-chapter floor). Closes the hole that let a ~6.8k-word volume reach review_ready."""
     import os  # noqa: PLC0415
     name = "substance_s2_bar"
     if not bdir:
@@ -342,12 +345,17 @@ def _check_substance(bdir: Path | None, book_id: str) -> dict:
     if not mss:
         return {"check": name, "pass": False, "detail": "no manuscript", "gap": "no manuscript"}
     text = mss[-1].read_text(encoding="utf-8", errors="ignore")
-    parts = re.split(r"(?m)^#{1,2} (?:Chapter|Appendix)", text)
-    chap_words = [len(p.split()) for p in parts[1:]] or [0]
-    total = sum(chap_words); nch = len(chap_words)
-    avg = total // nch if nch else 0
+    # split chapters vs appendices: depth bars on chapters; total over all sections (S2's own shape)
+    pieces = re.split(r"(?m)^(#{1,2} (?:Chapter|Appendix)[^\n]*)", text)
+    chap_words, appx_words = [], []
+    for k in range(1, len(pieces), 2):
+        head = pieces[k]; w = len(pieces[k + 1].split()) if k + 1 < len(pieces) else 0
+        (appx_words if "Appendix" in head else chap_words).append(w)
+    chap_words = chap_words or [0]
+    nch = len(chap_words)
+    total = sum(chap_words) + sum(appx_words)
+    avg = sum(chap_words) // nch
     thin = [i + 1 for i, w in enumerate(chap_words) if w < _S2_BAR["min_chapter_words"]]
-    # /seeit coverage for this book
     seeit_root = Path(os.environ.get("BREATHLINE_SEEIT_ROOT", os.path.expanduser("~/six-sov-www/seeit")))
     seeit_n = 0
     ex = seeit_root / "exercises.py"
@@ -356,13 +364,13 @@ def _check_substance(bdir: Path | None, book_id: str) -> dict:
     issues = []
     if total < _S2_BAR["total_words"]:
         issues.append(f"total {total}w < S2 floor {_S2_BAR['total_words']}w")
-    if avg < _S2_BAR["avg_words_per_chapter"]:
-        issues.append(f"avg {avg}w/ch < S2 floor {_S2_BAR['avg_words_per_chapter']}w/ch")
+    if avg < _S2_BAR["avg_chapter_words"]:
+        issues.append(f"chapter avg {avg}w < S2 floor {_S2_BAR['avg_chapter_words']}w")
     if thin:
         issues.append(f"{len(thin)} chapters under {_S2_BAR['min_chapter_words']}w (ch {thin})")
     if seeit_n < int(_S2_BAR["seeit_pages_min_ratio"] * nch):
-        issues.append(f"/seeit {seeit_n} pages < {int(_S2_BAR['seeit_pages_min_ratio']*nch)} (≈ one per chapter)")
-    detail = f"total={total}w · avg={avg}w/ch · thin={len(thin)} · seeit={seeit_n}/{nch}ch"
+        issues.append(f"/seeit {seeit_n} < {int(_S2_BAR['seeit_pages_min_ratio']*nch)} (≈ one per chapter)")
+    detail = f"total={total}w · chapters={nch}@avg{avg}w · appx={len(appx_words)} · seeit={seeit_n}/{nch}ch"
     return {"check": name, "pass": not issues, "detail": detail,
             "gap": ("below S2 bar: " + "; ".join(issues)) if issues else None}
 
