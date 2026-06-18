@@ -127,9 +127,11 @@ def _cards_from_feed(path: Path):
             "ref": r.get("ref", ""),
             "source_entry_hash": r.get("source_entry_hash", ""),
         })
-        if len(cards) >= _MAX_CARDS * 2:  # curated feed → allow a few more than raw
-            break
-    # priority high first, then by recency (feed order)
+        # NO in-loop cap (KM 2026-06-18: the old break collected only the OLDEST _MAX_CARDS*2 from the feed,
+        # so the NEWEST high-priority cards — e.g. the series-flow-model gate — were dropped before they could
+        # sort to the top and were invisible to KM. Collect ALL; sort + cap downstream so newest live cards win.)
+    # priority high first, then RECENCY DESC within each priority (newest first). Two stable sorts:
+    cards.sort(key=lambda c: c.get("ts", ""), reverse=True)   # recency: newest first
     cards.sort(key=lambda c: 0 if c.get("priority") == "high" else (1 if c.get("priority") == "normal" else 2))
     return cards
 
@@ -171,6 +173,9 @@ def hopper_list():
         # is untouched; the lens just stops showing a card once an obligation exists for it.
         packeted = _packeted_refs()
         cards = [c for c in cards if not _card_packeted(c, packeted)]
+        # Cap AFTER collect-all + recency-sort + Sent-to-Packet filter, so the cap keeps the NEWEST live
+        # high-priority cards (the flow-model gate), never the oldest. (KM 2026-06-18 'I don't see a card'.)
+        cards = cards[:_MAX_CARDS * 2]
         return jsonify({
             "meta": {"live": True, "iron_clad": True, "source": feed,
                      "note": ("GB iron-clad feed — structured, lane-targeted suggestions distilled from your "
