@@ -324,12 +324,12 @@ def _check_artifact_package(bdir: Path | None, book_id: str) -> dict:
             "gap": ("artifact package incomplete: " + "; ".join(issues)) if issues else None}
 
 
-# Calibrated S2 quality bar — measured from the actual S2 V1 anchor 2026-06-18 (KM "calibrate against actual S2"):
-#   S2 V1 = 14,484w total · 9 chapters avg 1,375w, MIN 874w · + a 2,104w appendix.
-# So: depth bars (avg, min) apply to CHAPTERS (S2's own min is 874, well under a naive 1000 floor — a naive
-# floor would fail S2 itself); the TOTAL bar spans everything (appendices carry real weight, as S2's does).
-_S2_BAR = {"total_words": 13500, "avg_chapter_words": 1200, "min_chapter_words": 850,
-           "seeit_pages_min_ratio": 0.8}  # >= 0.8 * chapters (≈ one /seeit page per chapter)
+# Calibrated S2 FLOOR — measured from the FULL S2 set 2026-06-18 (GB [422] catch: a gate must PASS S2, not
+# exceed it). S2 totals: v01 14,484 · v02 17,312 · v04 10,589 · v05 15,046 → S2 MIN = vol_04 (10,589w, 12ch
+# avg 882, min 480). The floor sits at/just below that minimum so NO real S2 volume is RED-blocked; the
+# blocking Cold-Reader/quality verdict (GB-owned) enforces the *target* above this regression floor.
+_S2_BAR = {"total_words": 10500, "avg_chapter_words": 850, "min_chapter_words": 450,
+           "seeit_pages_min_ratio": 1.0}  # >= one /seeit page per chapter (GB floor; S2 runs ~1.2/ch)
 
 
 def _check_substance(bdir: Path | None, book_id: str) -> dict:
