@@ -81,8 +81,11 @@ def _check_gate6_renderability(bdir: Path) -> dict:
     if not mss:
         return {"pass": False, "status": "no-manuscript", "detail": "no manuscript to render-check"}
     text = mss[-1].read_text(encoding="utf-8", errors="ignore")
-    boxes = text.count("\U0001F4E6 Receipt Box")
-    sections = len(re.findall(r"^# (?:Chapter \d+|Appendix )", text, re.M))
+    # GB reconcile 2026-06-18: count the R8-safe "▣ RECEIPT" marker the manuscripts actually use.
+    # Render Standard R8 HARD-bans emoji glyphs, so "📦 Receipt Box" can never appear — counting it
+    # made Gate 6 unsatisfiable (standards contradiction; GB owns both standards). ▣ is print-safe.
+    boxes = text.count("▣ RECEIPT")
+    sections = len(re.findall(r"^#{1,2} (?:Chapter \d+|Appendix )", text, re.M))  # match ## chapter headers too
     if boxes == 0:
         return {"pass": False, "status": "no-receipt-boxes",
                 "detail": "Gate 6 RED — manuscript has no Receipt boxes (Helix anchor missing)"}
@@ -293,11 +296,39 @@ def mint_review_packet(book_id: str, label: str, extra: list[str]) -> str | None
     return entry.get("id")
 
 
+def _check_artifact_package(bdir: Path | None, book_id: str) -> dict:
+    """Artifact-package gate (KM 2026-06-18, GB [414]): review_ready CANNOT flip without the human-reviewable
+    package — a formatted PDF + figures + cover + /seeit pages + KDP structure. Closes the rail gap that let
+    V3 reach review_ready on .md + brief alone, with no readable book for KM to actually review."""
+    import os  # noqa: PLC0415
+    name = "artifact_package"
+    if not bdir:
+        return {"check": name, "pass": False, "detail": "book dir not found", "gap": "no book dir"}
+    final = bdir / "final"
+    pdfs = list(final.glob("*.pdf")) if final.exists() else []
+    figs = list((bdir / "figures").glob("*.png")) if (bdir / "figures").exists() else []
+    covers = (list(final.glob("cover*.png")) + list(final.glob("cover*.jpg"))) if final.exists() else []
+    seeit_root = Path(os.environ.get("BREATHLINE_SEEIT_ROOT", os.path.expanduser("~/six-sov-www/seeit")))
+    seeit_ok = False
+    ex = seeit_root / "exercises.py"
+    if ex.exists():
+        txt = ex.read_text(encoding="utf-8", errors="ignore").lower()
+        seeit_ok = any(tok in txt for tok in ("helix", "s3v3", "vol_03_helix"))
+    issues = []
+    if not pdfs:    issues.append("no formatted PDF in final/")
+    if not figs:    issues.append("figures/ empty")
+    if not covers:  issues.append("no cover in final/")
+    if not seeit_ok: issues.append("no /seeit pages for this book")
+    detail = f"pdf={'Y' if pdfs else 'N'} · figures={len(figs)} · cover={'Y' if covers else 'N'} · seeit={'Y' if seeit_ok else 'N'}"
+    return {"check": name, "pass": not issues, "detail": detail,
+            "gap": ("artifact package incomplete: " + "; ".join(issues)) if issues else None}
+
+
 def evaluate(book_id: str, extra: list[str]) -> dict:
     bdir = _book_dir(book_id)
     refs = _book_refs(book_id, extra)
     checks = [_check_boards(bdir), _check_obligations(refs), _check_fidelity(refs),
-              _check_review_brief(bdir, book_id, extra)]
+              _check_review_brief(bdir, book_id, extra), _check_artifact_package(bdir, book_id)]
     ready = all(c["pass"] for c in checks)
     return {
         "book_id": book_id, "review_ready": ready,
