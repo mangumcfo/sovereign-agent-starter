@@ -495,13 +495,37 @@ def _check_render_fidelity(bdir: Path | None, book_id: str) -> dict:
             "gap": ("render divergence vs S2 pen: " + "; ".join(c["detail"] for c in fails)) if fails else None}
 
 
+def _check_production_standards(bdir: Path | None, book_id: str) -> dict:
+    """production_standards (KM-ratified 2026-06-18): the manuscript matches the S2 'pen' as enforceable layout
+    rules — no editing artifacts, S2-style flat clickable TOC, chapter-end order (receipt closes the chapter),
+    no clumped callout/back-matter lists, figures placed beside their prose. Criteria load from
+    book_standards/book_standard.yaml#production_standards. Delegates to scripts/book_lint.py."""
+    name = "production_standards"
+    if not bdir:
+        return {"check": name, "pass": False, "detail": "book dir not found", "gap": "no book dir"}
+    mss = sorted(p for p in bdir.glob("manuscript_v*.md") if re.match(r"manuscript_v[0-9.]+\.md$", p.name))
+    if not mss:
+        return {"check": name, "pass": False, "detail": "no manuscript", "gap": "no manuscript"}
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import book_lint
+        r = book_lint.lint(str(mss[-1]))
+    except Exception as e:
+        return {"check": name, "pass": False, "detail": f"lint error: {e}"[:90], "gap": f"book_lint failed: {e}"}
+    fails = [c for c in r["checks"] if not c["pass"]]
+    detail = " · ".join(f"{c['check']}={'ok' if c['pass'] else 'RED'}" for c in r["checks"])
+    return {"check": name, "pass": r["pass"], "detail": detail[:90],
+            "gap": ("S2-pen layout divergence: " + "; ".join(c["detail"] for c in fails)) if fails else None}
+
+
 def evaluate(book_id: str, extra: list[str]) -> dict:
     bdir = _book_dir(book_id)
     refs = _book_refs(book_id, extra)
     checks = [_check_boards(bdir), _check_obligations(refs), _check_fidelity(refs),
               _check_review_brief(bdir, book_id, extra), _check_artifact_package(bdir, book_id),
               _check_substance(bdir, book_id), _check_canonical_toolchain(bdir, book_id),
-              _check_book_structure(bdir, book_id), _check_render_fidelity(bdir, book_id)]
+              _check_book_structure(bdir, book_id), _check_render_fidelity(bdir, book_id),
+              _check_production_standards(bdir, book_id)]
     ready = all(c["pass"] for c in checks)
     return {
         "book_id": book_id, "review_ready": ready,
