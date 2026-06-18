@@ -465,13 +465,43 @@ def _check_book_structure(bdir: Path | None, book_id: str) -> dict:
             "gap": ("missing S1/S2 sections: " + "; ".join(miss)) if miss else None}
 
 
+def _check_render_fidelity(bdir: Path | None, book_id: str) -> dict:
+    """render_fidelity (KM-ratified 2026-06-18): the BUILT PDF must match the S2 'pen' at the rendered-page
+    level — approved font families only (no stray DejaVu/emoji), no raw markdown leaking to the reader, no
+    source glyph that forces a font fallback. Closes the root cause of the V3 render drift: every other gate
+    reasoned at the .md/marker level; this one validates what the page actually renders (pdffonts + pdftotext).
+    Criteria load from book_standards/book_standard.yaml#render_fidelity (the machine source of truth)."""
+    name = "render_fidelity"
+    if not bdir:
+        return {"check": name, "pass": False, "detail": "book dir not found", "gap": "no book dir"}
+    fin = bdir / "final"
+    pdfs = sorted(p for p in fin.glob("*.pdf")) if fin.exists() else []
+    pdfs = [p for p in pdfs if not re.search(r"wrap|cover", p.name, re.I)]
+    if not pdfs:
+        return {"check": name, "pass": False, "detail": "no built PDF in final/", "gap": "no PDF to lint"}
+    pdf = max(pdfs, key=lambda p: p.stat().st_size)  # the manuscript PDF (largest non-cover)
+    mss = sorted(p for p in bdir.glob("manuscript_v*.md")
+                 if re.match(r"manuscript_v[0-9.]+\.md$", p.name))
+    source = str(mss[-1]) if mss else None
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import pdf_parity_lint
+        r = pdf_parity_lint.lint(str(pdf), source)
+    except Exception as e:  # poppler missing or import error — surface, don't silently pass
+        return {"check": name, "pass": False, "detail": f"lint error: {e}"[:90], "gap": f"render lint failed: {e}"}
+    fails = [c for c in r["checks"] if not c["pass"]]
+    detail = f"{pdf.name}: " + (" · ".join(c["detail"] for c in r["checks"]))
+    return {"check": name, "pass": r["pass"], "detail": detail[:90],
+            "gap": ("render divergence vs S2 pen: " + "; ".join(c["detail"] for c in fails)) if fails else None}
+
+
 def evaluate(book_id: str, extra: list[str]) -> dict:
     bdir = _book_dir(book_id)
     refs = _book_refs(book_id, extra)
     checks = [_check_boards(bdir), _check_obligations(refs), _check_fidelity(refs),
               _check_review_brief(bdir, book_id, extra), _check_artifact_package(bdir, book_id),
               _check_substance(bdir, book_id), _check_canonical_toolchain(bdir, book_id),
-              _check_book_structure(bdir, book_id)]
+              _check_book_structure(bdir, book_id), _check_render_fidelity(bdir, book_id)]
     ready = all(c["pass"] for c in checks)
     return {
         "book_id": book_id, "review_ready": ready,
