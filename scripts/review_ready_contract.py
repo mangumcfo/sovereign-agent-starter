@@ -70,14 +70,19 @@ def _book_dir(book_id: str) -> Path | None:
     return None
 
 
+def _vkey(p: Path) -> tuple:
+    """Numeric version sort key so manuscript_v1.10 > v1.9 (string sort gets this wrong)."""
+    return tuple(int(n) for n in re.findall(r"\d+", p.name))
+
+
 def _check_gate6_renderability(bdir: Path) -> dict:
     """Tech/Arch GATE 6 — Renderability (Deterministic-Render Writing Standard v1.0, GB-sealed 2026-06-12).
     Binding. The structural floor checked here: every major section ends with a Receipt box (the Helix
     validation anchor — Gate 6's explicit success criterion). Full Gate-6 rigor (one-truth · every promise
     has a render target · zero dishonest stubs) lives in the tech_arch board's rigor block; this bars the
     box-less manuscript that can never extrude deterministically."""
-    mss = sorted(p for p in bdir.glob("manuscript_v*.md")
-                 if re.match(r"manuscript_v[0-9.]+\.md$", p.name))  # exclude changelog/sidecars
+    mss = sorted((p for p in bdir.glob("manuscript_v*.md")
+                 if re.match(r"manuscript_v[0-9.]+\.md$", p.name)), key=_vkey)  # exclude changelog/sidecars
     if not mss:
         return {"pass": False, "status": "no-manuscript", "detail": "no manuscript to render-check"}
     text = mss[-1].read_text(encoding="utf-8", errors="ignore")
@@ -342,7 +347,7 @@ def _check_substance(bdir: Path | None, book_id: str) -> dict:
     name = "substance_s2_bar"
     if not bdir:
         return {"check": name, "pass": False, "detail": "book dir not found", "gap": "no book dir"}
-    mss = sorted(p for p in bdir.glob("manuscript_v*.md") if re.match(r"manuscript_v[0-9.]+\.md$", p.name))
+    mss = sorted((p for p in bdir.glob("manuscript_v*.md") if re.match(r"manuscript_v[0-9.]+\.md$", p.name)), key=_vkey)
     if not mss:
         return {"check": name, "pass": False, "detail": "no manuscript", "gap": "no manuscript"}
     text = mss[-1].read_text(encoding="utf-8", errors="ignore")
@@ -378,7 +383,8 @@ def _check_substance(bdir: Path | None, book_id: str) -> dict:
 
 # canonical_toolchain gate (GB spec 2026-06-18): a volume must be built with the proven S1/S2 tools, not
 # per-volume ad-hoc scripts. Verified mechanically via the volume's toolchain.json provenance.
-_CANON_ALLOW = {"build_v1.0.py", "generate_images.py", "chartgen.py", "generate_wraps_standard.py", "build_pages.py"}
+_CANON_ALLOW = {"build_v1.0.py", "generate_svg_v1.0.py", "svg_toolkit.py", "generate_images.py", "chartgen.py",
+                "generate_wraps_standard.py", "build_pages.py"}  # generate_svg + svg_toolkit = the ratified SVG figure tool (Visual Standard v2.0, S2+)
 _CANON_ADHOC = {"build_pdf.py", "gen_cover.py", "gen_figures.py", "gen_figures_more.py"}
 
 
@@ -437,7 +443,7 @@ def _check_book_structure(bdir: Path | None, book_id: str) -> dict:
     name = "book_structure"
     if not bdir:
         return {"check": name, "pass": False, "detail": "book dir not found", "gap": "no book dir"}
-    mss = sorted(p for p in bdir.glob("manuscript_v*.md") if re.match(r"manuscript_v[0-9.]+\.md$", p.name))
+    mss = sorted((p for p in bdir.glob("manuscript_v*.md") if re.match(r"manuscript_v[0-9.]+\.md$", p.name)), key=_vkey)
     if not mss:
         return {"check": name, "pass": False, "detail": "no manuscript", "gap": "no manuscript"}
     t = mss[-1].read_text(encoding="utf-8", errors="ignore")
@@ -480,8 +486,8 @@ def _check_render_fidelity(bdir: Path | None, book_id: str) -> dict:
     if not pdfs:
         return {"check": name, "pass": False, "detail": "no built PDF in final/", "gap": "no PDF to lint"}
     pdf = max(pdfs, key=lambda p: p.stat().st_size)  # the manuscript PDF (largest non-cover)
-    mss = sorted(p for p in bdir.glob("manuscript_v*.md")
-                 if re.match(r"manuscript_v[0-9.]+\.md$", p.name))
+    mss = sorted((p for p in bdir.glob("manuscript_v*.md")
+                 if re.match(r"manuscript_v[0-9.]+\.md$", p.name)), key=_vkey)
     source = str(mss[-1]) if mss else None
     try:
         sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -503,7 +509,7 @@ def _check_production_standards(bdir: Path | None, book_id: str) -> dict:
     name = "production_standards"
     if not bdir:
         return {"check": name, "pass": False, "detail": "book dir not found", "gap": "no book dir"}
-    mss = sorted(p for p in bdir.glob("manuscript_v*.md") if re.match(r"manuscript_v[0-9.]+\.md$", p.name))
+    mss = sorted((p for p in bdir.glob("manuscript_v*.md") if re.match(r"manuscript_v[0-9.]+\.md$", p.name)), key=_vkey)
     if not mss:
         return {"check": name, "pass": False, "detail": "no manuscript", "gap": "no manuscript"}
     try:
