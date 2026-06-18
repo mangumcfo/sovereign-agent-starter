@@ -413,12 +413,51 @@ def _check_canonical_toolchain(bdir: Path | None, book_id: str) -> dict:
             "gap": ("canonical_toolchain: " + "; ".join(issues)) if issues else None}
 
 
+# book_structure gate (KM 2026-06-18, the V3 'same pen' regression): a volume must follow the established
+# S1/S2 manuscript convention — front matter + per-chapter scaffolding + back matter — not a per-book shape.
+# Required sections measured from the S2 V1 template.
+_STRUCT_FRONT = ["About This Series", "Table of Contents", "Preflight", "Executive Brief"]
+_STRUCT_BACK = ["See It Work", "Reader Resources", "About the Author", "Also by Kenneth Mangum", "Connect"]
+
+
+def _check_book_structure(bdir: Path | None, book_id: str) -> dict:
+    """book_structure (KM 2026-06-18): the manuscript must carry the S1/S2 book convention — front matter
+    (copyright/ISBN page, About This Series, Table of Contents, Preflight, Executive Brief), per-chapter
+    scaffolding (Industry Signal + Your Next Steps on every chapter), and back matter (See It Work, Reader
+    Resources, About the Author, Also by Kenneth Mangum, Connect). Closes the 'not from the same pen' gap."""
+    name = "book_structure"
+    if not bdir:
+        return {"check": name, "pass": False, "detail": "book dir not found", "gap": "no book dir"}
+    mss = sorted(p for p in bdir.glob("manuscript_v*.md") if re.match(r"manuscript_v[0-9.]+\.md$", p.name))
+    if not mss:
+        return {"check": name, "pass": False, "detail": "no manuscript", "gap": "no manuscript"}
+    t = mss[-1].read_text(encoding="utf-8", errors="ignore")
+    n_chap = len(re.findall(r"(?m)^# Chapter \d+", t)) or len(re.findall(r"(?m)^#{1,2} Chapter \d+", t))
+    miss = []
+    miss += [f"front:{s}" for s in _STRUCT_FRONT if s not in t]
+    if "Copyright" not in t or "ISBN" not in t:
+        miss.append("front:copyright/ISBN page")
+    n_signal = t.count("## Industry Signal")
+    n_steps = t.count("## Your Next Steps")
+    # threshold = n_chap - 1: measured to pass the S2 anchor (S2 V1 carries 8 Industry Signals across 9 chapters)
+    floor = max(1, n_chap - 1)
+    if n_chap and n_signal < floor:
+        miss.append(f"per-chapter:Industry Signal ({n_signal}/{n_chap} chapters)")
+    if n_chap and n_steps < floor:
+        miss.append(f"per-chapter:Your Next Steps ({n_steps}/{n_chap} chapters)")
+    miss += [f"back:{s}" for s in _STRUCT_BACK if s not in t]
+    detail = f"chapters={n_chap} · signal={n_signal} · steps={n_steps} · front+back sections present"
+    return {"check": name, "pass": not miss, "detail": detail[:90],
+            "gap": ("missing S1/S2 sections: " + "; ".join(miss)) if miss else None}
+
+
 def evaluate(book_id: str, extra: list[str]) -> dict:
     bdir = _book_dir(book_id)
     refs = _book_refs(book_id, extra)
     checks = [_check_boards(bdir), _check_obligations(refs), _check_fidelity(refs),
               _check_review_brief(bdir, book_id, extra), _check_artifact_package(bdir, book_id),
-              _check_substance(bdir, book_id), _check_canonical_toolchain(bdir, book_id)]
+              _check_substance(bdir, book_id), _check_canonical_toolchain(bdir, book_id),
+              _check_book_structure(bdir, book_id)]
     ready = all(c["pass"] for c in checks)
     return {
         "book_id": book_id, "review_ready": ready,
