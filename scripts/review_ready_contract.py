@@ -421,10 +421,19 @@ _STRUCT_BACK = ["See It Work", "Reader Resources", "About the Author", "Also by 
 
 
 def _check_book_structure(bdir: Path | None, book_id: str) -> dict:
-    """book_structure (KM 2026-06-18): the manuscript must carry the S1/S2 book convention — front matter
-    (copyright/ISBN page, About This Series, Table of Contents, Preflight, Executive Brief), per-chapter
-    scaffolding (Industry Signal + Your Next Steps on every chapter), and back matter (See It Work, Reader
-    Resources, About the Author, Also by Kenneth Mangum, Connect). Closes the 'not from the same pen' gap."""
+    """book_structure (KM 2026-06-18; hardened 2026-06-18 eve after GB's rendered-PDF read): the manuscript must
+    carry the S1/S2 book convention — front matter (copyright/ISBN page, About This Series, Table of Contents,
+    Preflight, Executive Brief), per-chapter scaffolding (all THREE convention elements: Worked Example +
+    Industry Signal + Your Next Steps), and back matter (See It Work, Reader Resources, About the Author, Also by
+    Kenneth Mangum, Connect). Closes the 'not from the same pen' gap.
+
+    GB's PDF read caught that the gate passed V3 on 2 of the 3 elements (Industry Signal + Your Next Steps) while
+    Worked Example was wholly absent (0 boxes) — the metric-based gate missed what an eye on the rendered artifact
+    saw. The fix adds the Worked Example floor. CALIBRATION (pass-S2-not-exceed-it): measured Worked Example
+    counts across the S2 anchor are V1=4/9ch, V2=1/12ch, V4=2/12ch, V5=5/10ch — so the absolute S2 minimum is 1
+    (V2). The floor is therefore Worked Example >= 1: high enough to catch a whole missing element type (V3's old
+    0), low enough never to block a real S2 volume. A per-chapter floor would FAIL three of four S2 volumes — the
+    recurring over-strict-gate mistake. The craft target (match the chosen V1 pen, ~4) is separate from this floor."""
     name = "book_structure"
     if not bdir:
         return {"check": name, "pass": False, "detail": "book dir not found", "gap": "no book dir"}
@@ -439,14 +448,19 @@ def _check_book_structure(bdir: Path | None, book_id: str) -> dict:
         miss.append("front:copyright/ISBN page")
     n_signal = t.count("## Industry Signal")
     n_steps = t.count("## Your Next Steps")
+    n_worked = len(re.findall(r"(?m)^#{1,2} Worked Example", t))
     # threshold = n_chap - 1: measured to pass the S2 anchor (S2 V1 carries 8 Industry Signals across 9 chapters)
     floor = max(1, n_chap - 1)
     if n_chap and n_signal < floor:
         miss.append(f"per-chapter:Industry Signal ({n_signal}/{n_chap} chapters)")
     if n_chap and n_steps < floor:
         miss.append(f"per-chapter:Your Next Steps ({n_steps}/{n_chap} chapters)")
+    # Worked Example floor = 1 (the measured S2 minimum, V2=1/12). Catches a whole missing element type (V3's old
+    # 0) without blocking a real S2 volume; a per-chapter floor would fail 3 of 4 S2 volumes.
+    if n_chap and n_worked < 1:
+        miss.append(f"convention-element:Worked Example absent ({n_worked} labeled boxes; need >=1, S2 floor)")
     miss += [f"back:{s}" for s in _STRUCT_BACK if s not in t]
-    detail = f"chapters={n_chap} · signal={n_signal} · steps={n_steps} · front+back sections present"
+    detail = f"chapters={n_chap} · worked={n_worked} · signal={n_signal} · steps={n_steps} · front+back present"
     return {"check": name, "pass": not miss, "detail": detail[:90],
             "gap": ("missing S1/S2 sections: " + "; ".join(miss)) if miss else None}
 
