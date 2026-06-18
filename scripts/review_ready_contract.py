@@ -305,9 +305,10 @@ def _check_artifact_package(bdir: Path | None, book_id: str) -> dict:
     if not bdir:
         return {"check": name, "pass": False, "detail": "book dir not found", "gap": "no book dir"}
     final = bdir / "final"
-    pdfs = list(final.glob("*.pdf")) if final.exists() else []
-    figs = list((bdir / "figures").glob("*.png")) if (bdir / "figures").exists() else []
-    covers = (list(final.glob("cover*.png")) + list(final.glob("cover*.jpg"))) if final.exists() else []
+    pdfs = [p for p in (final.glob("*.pdf") if final.exists() else []) if "wrap" not in p.name.lower()]
+    figs = (list((bdir / "images").glob("fig*.png")) if (bdir / "images").exists() else
+            (list((bdir / "figures").glob("*.png")) if (bdir / "figures").exists() else []))  # canonical images/ first
+    covers = (list(final.glob("cover*wrap*")) + list(final.glob("cover*.png")) + list(final.glob("cover*.jpg"))) if final.exists() else []
     seeit_root = Path(os.environ.get("BREATHLINE_SEEIT_ROOT", os.path.expanduser("~/six-sov-www/seeit")))
     seeit_ok = False
     ex = seeit_root / "exercises.py"
@@ -375,12 +376,49 @@ def _check_substance(bdir: Path | None, book_id: str) -> dict:
             "gap": ("below S2 bar: " + "; ".join(issues)) if issues else None}
 
 
+# canonical_toolchain gate (GB spec 2026-06-18): a volume must be built with the proven S1/S2 tools, not
+# per-volume ad-hoc scripts. Verified mechanically via the volume's toolchain.json provenance.
+_CANON_ALLOW = {"build_v1.0.py", "generate_images.py", "chartgen.py", "generate_wraps_standard.py", "build_pages.py"}
+_CANON_ADHOC = {"build_pdf.py", "gen_cover.py", "gen_figures.py", "gen_figures_more.py"}
+
+
+def _check_canonical_toolchain(bdir: Path | None, book_id: str) -> dict:
+    """canonical_toolchain (GB 2026-06-18): the production package was built with the canonical S1/S2 chain,
+    not per-volume ad-hoc scripts. Reads toolchain.json provenance; RED if missing, if any producer is not in
+    the allowlist, or if an ad-hoc producer script is present in the volume. No provenance -> RED (honest)."""
+    import json as _json  # noqa: PLC0415
+    name = "canonical_toolchain"
+    if not bdir:
+        return {"check": name, "pass": False, "detail": "book dir not found", "gap": "no book dir"}
+    tj = bdir / "toolchain.json"
+    if not tj.exists():
+        return {"check": name, "pass": False, "detail": "no toolchain.json",
+                "gap": "no build provenance — record toolchain.json (canonical producers per artifact)"}
+    try:
+        prov = (_json.loads(tj.read_text(encoding="utf-8")) or {}).get("producers", {})
+    except ValueError:
+        return {"check": name, "pass": False, "detail": "toolchain.json invalid", "gap": "toolchain.json not valid JSON"}
+    issues = []
+    non_allow = [f"{k}={v}" for k, v in prov.items() if v not in _CANON_ALLOW]
+    if non_allow:
+        issues.append("non-canonical producer(s): " + ", ".join(non_allow))
+    for need in ("pdf", "figures", "cover", "seeit"):
+        if need not in prov:
+            issues.append(f"missing provenance: {need}")
+    adhoc_present = sorted(p.name for p in bdir.glob("*.py") if p.name in _CANON_ADHOC)
+    if adhoc_present:
+        issues.append("ad-hoc production script(s) present: " + ", ".join(adhoc_present))
+    detail = "producers=" + ",".join(f"{k}:{v}" for k, v in prov.items())
+    return {"check": name, "pass": not issues, "detail": detail[:90],
+            "gap": ("canonical_toolchain: " + "; ".join(issues)) if issues else None}
+
+
 def evaluate(book_id: str, extra: list[str]) -> dict:
     bdir = _book_dir(book_id)
     refs = _book_refs(book_id, extra)
     checks = [_check_boards(bdir), _check_obligations(refs), _check_fidelity(refs),
               _check_review_brief(bdir, book_id, extra), _check_artifact_package(bdir, book_id),
-              _check_substance(bdir, book_id)]
+              _check_substance(bdir, book_id), _check_canonical_toolchain(bdir, book_id)]
     ready = all(c["pass"] for c in checks)
     return {
         "book_id": book_id, "review_ready": ready,
