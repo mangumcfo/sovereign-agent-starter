@@ -559,21 +559,23 @@ def _check_forward_reference(bdir: Path | None, book_id: str) -> dict:
     text, msname = _latest_ms_text(bdir)
     if not text:
         return {"check": name, "pass": False, "detail": "no manuscript", "gap": "no manuscript to scan"}
-    lines = text.splitlines()
     fwd_pat = re.compile(r"\[current\s*·\s*forward\]|\bforward edge\b|deferred to v\d|in a (?:later|future) series", re.I)
-    unclosed = []
-    total = 0
-    for i, l in enumerate(lines):
-        if fwd_pat.search(l):
-            total += 1
-            window = " ".join(lines[max(0, i - 2):i + 4])
-            # a genuine forward must name a closing series (Series N / S-N) nearby
-            if not re.search(r"Series\s+\d|\bS\d\b", window):
-                unclosed.append(l.strip()[:56])
+    ser_pat = re.compile(r"Series\s+\d|\bS\d\b")
+    # SECTION-level check (D2 intent): a forward must name its closing series somewhere in the SAME section
+    # (between ## headings) — not on the literal same line. The section names the closure once.
+    sections = re.split(r"(?m)^#{1,3}\s", text)
+    total, unclosed = 0, []
+    for sec in sections:
+        fwds = fwd_pat.findall(sec)
+        if fwds:
+            total += len(fwds)
+            if not ser_pat.search(sec):
+                head = sec.strip().split("\n", 1)[0][:48]
+                unclosed.append(head)
     ok = (not crit) or not unclosed
     return {"check": name, "pass": ok,
-            "detail": f"{total} forward refs · {len(unclosed)} without a named closing series ({msname})"[:90],
-            "gap": None if ok else f"D2 — forwards lack a named closing series/closure plan: {unclosed[:2]}"}
+            "detail": f"{total} forward refs · {len(unclosed)} sections without a named closing series ({msname})"[:90],
+            "gap": None if ok else f"D2 — forward sections lack a named closing series/closure plan: {unclosed[:2]}"}
 
 
 def _check_keyword_discipline(bdir: Path | None, book_id: str) -> dict:
