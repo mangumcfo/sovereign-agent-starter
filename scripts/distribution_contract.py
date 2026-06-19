@@ -262,13 +262,50 @@ def _check_gb_sample_read(book_id: str, std: dict) -> dict:
             "gap": None if ok else "awaiting GB rendered sample-read (PASS) — the no-slop gate"}
 
 
+def _check_no_orphan_markup(book_id: str, std: dict) -> dict:
+    """no_orphan_markup (Tiger [447], the distribution analog of render_fidelity#banned_reader_artifacts):
+    no raw/orphaned markdown reaches the reader. Plain channels (x/carousel) carry NO markdown; the markdown
+    channel (substack) must have BALANCED emphasis per line — odd ** or odd single * renders as literal
+    asterisks on Substack (the slop GB's sample read caught). Banned-pattern list LOADS from
+    distribution_standard.yaml#quality_bar.banned_reader_artifacts (built-in default until GB seals it)."""
+    name = "no_orphan_markup"
+    qb = std.get("quality_bar") or {}
+    banned = qb.get("banned_reader_artifacts") or [r"```", r"\[VISUAL:", r"</?[a-zA-Z]+>"]
+    dd = _dist_dir(book_id)
+    issues = []
+    # plain-text channels: no markdown emphasis at all
+    for a in ("x_thread", "linkedin_carousel"):
+        j = _read_json(dd / f"{a}.json")
+        if j and "**" in json.dumps(j.get("content", ""), ensure_ascii=False):
+            issues.append(f"{a}: raw '**'")
+    # markdown channel: emphasis must be balanced per line
+    j = _read_json(dd / "substack_excerpt.json")
+    if j:
+        body = (j.get("content") or {}).get("newsletter") or (j.get("content") or {}).get("excerpt") or ""
+        for ln in body.splitlines():
+            if ln.count("**") % 2:
+                issues.append(f"substack orphan **: '{ln.strip()[:44]}'")
+            elif len(re.findall(r"(?<!\*)\*(?!\*)", ln)) % 2:
+                issues.append(f"substack orphan *: '{ln.strip()[:44]}'")
+    # banned reader-artifact patterns across all reader text
+    blob = "\n".join(json.dumps(_read_json(dd / f"{a}.json") or {}, ensure_ascii=False)
+                     for a in v1_asset_set(std))
+    for pat in banned:
+        if re.search(pat, blob):
+            issues.append(f"banned artifact /{pat}/")
+    ok = not issues
+    return {"check": name, "pass": ok,
+            "detail": ("clean — balanced emphasis, no raw markup" if ok else f"{len(issues)} issue(s): {issues[0]}")[:90],
+            "gap": None if ok else f"orphaned/raw markup reaches the reader: {'; '.join(issues[:3])}"}
+
+
 # ============================ AGGREGATE + MINT + MAIN ============================
 
 def evaluate(book_id: str) -> dict:
     std = load_standard()
     checks = [_check_asset_completeness(book_id, std), _check_voice_brand(book_id, std),
-              _check_format_specs(book_id, std), _check_derive_provenance(book_id, std),
-              _check_gb_sample_read(book_id, std)]
+              _check_format_specs(book_id, std), _check_no_orphan_markup(book_id, std),
+              _check_derive_provenance(book_id, std), _check_gb_sample_read(book_id, std)]
     ready = all(c["pass"] for c in checks)
     return {
         "book_id": book_id, "distribution_ready": ready, "checks": checks,

@@ -14,6 +14,28 @@ import dist_common as C
 LO, HI = 800, 1500
 
 
+def _clean_para(p: str) -> str:
+    """Strip only BLOCK markers (heading/blockquote/list bullet) — never inline emphasis. The old greedy
+    ^[#>*\\-\\s]+ ate the leading * / ** of full-line pullquotes & bold callouts, orphaning the closer
+    (the reader-facing slop GB's sample read caught). Bullets are '* '/'- ' (marker+SPACE); emphasis is
+    '*word'/'**word' (no space) — so a space-anchored bullet strip leaves emphasis intact."""
+    p = p.rstrip()
+    p = re.sub(r"^\s{0,3}#{1,6}\s+", "", p)     # ATX heading
+    p = re.sub(r"^\s{0,3}>\s?", "", p)          # blockquote
+    p = re.sub(r"^\s{0,3}[-+]\s+", "", p)       # list bullet - / +
+    p = re.sub(r"^\s{0,3}\*\s+", "", p)         # list bullet '* ' (star THEN space, not emphasis)
+    return _balance(p.strip())
+
+
+def _balance(p: str) -> str:
+    """Safety net: no orphaned emphasis reaches the reader. Odd ** (or odd single *) → strip the strays."""
+    if p.count("**") % 2:
+        p = p.replace("**", "")
+    if len(re.findall(r"(?<!\*)\*(?!\*)", p)) % 2:
+        p = re.sub(r"(?<!\*)\*(?!\*)", "", p)
+    return p
+
+
 def _trim_words(text: str, n: int) -> str:
     words = text.split()
     if len(words) <= n:
@@ -35,9 +57,17 @@ def generate(book_id: str) -> dict:
     for c in chapters:
         if used is None and c.get("body"):
             used = c["label"]
-        for p in c["body"]:
-            p = re.sub(r"^[#>*\-\s]+", "", p).strip()
-            if not p:
+        in_code = False
+        for raw in c["body"]:
+            st = raw.strip()
+            if st.startswith("```"):           # code-fence toggle — skip code blocks entirely
+                in_code = not in_code
+                continue
+            if in_code or st.startswith("|") or st.startswith("[VISUAL"):  # code / table / figure marker
+                continue
+            p = re.sub(r"\[VISUAL:[^\]]*\]", "", raw)   # inline figure markers
+            p = _clean_para(p)
+            if not p or "```" in p:
                 continue
             w = C.word_count(p)
             if wc + w > HI and wc >= LO:

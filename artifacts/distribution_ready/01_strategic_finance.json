@@ -21,6 +21,12 @@
       "gap": null
     },
     {
+      "check": "no_orphan_markup",
+      "pass": true,
+      "detail": "clean \u2014 balanced emphasis, no raw markup",
+      "gap": null
+    },
+    {
       "check": "derive_provenance",
       "pass": true,
       "detail": "sealed_commit=4cd4f3afb2 \u00b7 3 assets traced",
@@ -29,7 +35,7 @@
     {
       "check": "gb_sample_read",
       "pass": false,
-      "detail": "GB sample read: not recorded",
+      "detail": "GB sample read: fail",
       "gap": "awaiting GB rendered sample-read (PASS) \u2014 the no-slop gate"
     }
   ],
@@ -40,6 +46,6 @@
     "contract": "Distribution Rail v1.0",
     "standard": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/book_standards/distribution_standard.yaml",
     "standard_version": "1.0",
-    "evaluated_at": "2026-06-19T16:48:30Z"
+    "evaluated_at": "2026-06-19T17:05:37Z"
   }
 }
