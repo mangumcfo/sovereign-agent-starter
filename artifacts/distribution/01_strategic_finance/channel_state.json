@@ -1,0 +1,47 @@
+{
+  "book_id": "01_strategic_finance",
+  "channels": {
+    "linkedin": {
+      "state": "staged",
+      "ts": "2026-06-19T16:51:52Z",
+      "detail": "NEEDS CREDS: set LINKEDIN_ACCESS_TOKEN, LINKEDIN_AUTHOR_URN"
+    },
+    "x": {
+      "state": "staged",
+      "ts": "2026-06-19T16:51:52Z",
+      "detail": "NEEDS CREDS: set X_ACCESS_TOKEN"
+    },
+    "substack": {
+      "state": "staged",
+      "ts": null,
+      "detail": "client pending (Substack next) \u2014 staged"
+    }
+  },
+  "drip": [
+    {
+      "slot": "day-0 burst",
+      "date": "2026-06-19"
+    },
+    {
+      "slot": "day 3",
+      "date": "2026-06-22"
+    },
+    {
+      "slot": "day 7",
+      "date": "2026-06-26"
+    },
+    {
+      "slot": "day 14",
+      "date": "2026-07-03"
+    },
+    {
+      "slot": "day 21",
+      "date": "2026-07-10"
+    },
+    {
+      "slot": "day 30",
+      "date": "2026-07-19"
+    }
+  ],
+  "mode": "live"
+}
