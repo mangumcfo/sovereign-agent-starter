@@ -339,7 +339,14 @@ def _check_distribution_quality_board(book_id: str, std: dict) -> dict:
     if crit.get("brand_source") == "series_canonical":
         allb = json.dumps([xt, car, sub], ensure_ascii=False).lower()
         if "sovereign library" in allb:
-            issues.append("brand: 'sovereign library' (use series canonical)")
+            issues.append("brand: 'sovereign library' in asset text (use series canonical)")
+        # GB [456]: also scan the carousel RENDER files (a stale .svg slipped the json-only check)
+        cdir = dd / "linkedin_carousel"
+        if cdir.exists():
+            for f in cdir.glob("slide_*.svg"):
+                if "sovereign" in f.read_text(encoding="utf-8", errors="ignore").lower():
+                    issues.append("carousel render still says 'sovereign library' (stale file)")
+                    break
     if crit.get("visual_stimulation") == "carousel":
         m = car.get("meta", {})
         if not (m.get("figures_used") or m.get("cover_art")):

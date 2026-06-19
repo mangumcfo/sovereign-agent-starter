@@ -187,7 +187,7 @@ def generate(book_id: str) -> dict:
 
     dd = C.dist_dir(book_id)
     cdir = dd / "linkedin_carousel"; cdir.mkdir(exist_ok=True)
-    for f in cdir.glob("slide_*.png"):
+    for f in cdir.glob("slide_*"):   # clear ALL stale slide files (png + any old .svg) — GB [456] brand bug
         f.unlink()
     content = []
     for i, (kind, s) in enumerate(slides, 1):

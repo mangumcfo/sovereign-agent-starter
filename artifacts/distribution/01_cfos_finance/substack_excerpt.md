@@ -66,8 +66,6 @@ Several themes run through every chapter and deserve early mention because they 
 
 **Human-in-the-loop** is non-negotiable. Agents handle the data. Humans handle the judgment. The 80/20 ratio inverts — giving you more time for the work that matters, not less work overall.
 
-**Redeployment, not reduction.** Smart executives use agent-freed capacity to tackle higher-value problems, not to cut headcount. The ROI calculator in Appendix B is built on this principle.
-
 ---
 
 This is **AI Agents for CFOs**, part of *Agentic AI Playbooks for Executives*. Get the full playbook on Amazon — search **"AI Agents for CFOs Mangum."** New playbook every week.

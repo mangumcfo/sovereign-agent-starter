@@ -11,7 +11,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import dist_common as C
 
-LO, HI = 600, 1100   # GB [454]: shorter + scannable, Reader's-Digest discipline (was 800-1500)
+LO, HI = 820, 1050   # GB [454]/[456]: scannable Reader's-Digest length; 820 floor keeps format_specs(800+) happy
 SERIES = {"agentic_playbooks": "Agentic AI Playbooks for Executives", "kdp_root": "The Executive Series"}
 
 

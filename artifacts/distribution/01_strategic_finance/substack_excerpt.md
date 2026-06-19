@@ -28,10 +28,6 @@ One of the first tasks of the startup CEO is to create a written business plan. 
 
 *See Figure 1.2 — Business Plan Structure Overview for the complete flow of business plan components.*
 
-**Executive Summary:** A brief combined summary of the entire business plan. This summary is usually contained on one page with a few paragraphs highlighting the most important aspects of your plan that the reader will care about, such as vision statement, product or service description, and financial highlights.
-
-**Company Description:** Discuss what makes your company different, the competitive landscape, your leadership and expertise in the market, and what will make you a success.
-
 ---
 
 This is **Strategic Finance For Growth**, part of *The Executive Series*. Get the full playbook on Amazon — search **"Strategic Finance For Growth Mangum."** New playbook every week.

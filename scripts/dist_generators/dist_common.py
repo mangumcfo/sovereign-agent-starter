@@ -110,25 +110,64 @@ def word_count(text: str) -> int:
     return len(re.findall(r"\b\w+\b", text))
 
 
+def social_safe(s: str) -> bool:
+    """A line fit to stand alone on social (GB [456]): NOT a bare section header, NOT a book-internal
+    cross-ref, NOT a sentence fragment, long enough to carry an idea."""
+    s = s.strip()
+    if len(s) < 30:
+        return False
+    if "|" in s or s.count("$") > 2:                              # markdown table row / number dump
+        return False
+    if s.rstrip().endswith(":"):                                  # header ("When to Move to Stage 2:")
+        return False
+    if re.search(r"\(see\b|\bsee\s+(chapter|insourcing|appendix)|\b(in|see)\s+chapter\s*\d|\bchapter\s+\d", s, re.I):
+        return False                                              # book-internal cross-ref leaking out
+    if re.search(r"\b(his|her)\s+career\b|career spans|\bKenneth\b|\bMangum\b|\bthe author\b", s, re.I):
+        return False                                              # author bio / third-person about the author
+    if s[:1].islower():                                           # fragment ("goes hand in hand with…")
+        return False
+    words = s.split()
+    cap = sum(1 for w in words if w[:1].isupper())
+    if len(words) <= 7 and cap / max(1, len(words)) > 0.6 and not re.search(r"[.!?]", s):
+        return False                                              # bare Title-Case title ("McKinsey 7S Model")
+    if not re.search(r"\b[a-z]{3,}\b", s):                        # must read like prose, not a label
+        return False
+    return True
+
+
+_ANALYST = re.compile(r"\bis (shifting|emerging|becoming|evolving|moving)\b|\bis the (dominant|leading|emerging)\b", re.I)
+_PUNCH = re.compile(r"\d|\$|%|\bcannot\b|\bwill not\b|\bnot\b.*\bbut\b|\binstead of\b|\bnever\b|\bbroken\b|\bwrong\b|\bstop\b", re.I)
+
+
+def _rank(s: str) -> int:
+    """Higher = more scroll-stopping. Punch (numbers/contrast/provocation) wins; analyst-toned loses."""
+    r = 0
+    if _PUNCH.search(s):
+        r += 3
+    if _ANALYST.search(s):
+        r -= 2
+    return r
+
+
 def aha_line(chapter: dict, n: int = 200) -> str:
-    """The chapter's scroll-stopper (GB [454]): pull-quote > number/contrast bold callout > stat sentence >
-    first sentence. What a human would actually quote — not the opener."""
+    """The chapter's scroll-stopper (GB [454]/[456]): pull-quote > number/contrast bold > stat > first
+    sentence — filtered to social-safe lines, ranked for punch."""
     body = chapter.get("body", []) or []
     text = " ".join(body)
+    cands = []
     for ln in body:
         m = re.search(r'>\s*\*?"([^"]{18,190})"', ln)
         if m:
-            return m.group(1).strip()
-    bolds = [b.strip(" .") for b in re.findall(r"\*\*([^*]{16,180})\*\*", text)]
-    for b in bolds:
-        if re.search(r"\d|\binstead of\b|\bnot\b.*\bbut\b|\bcannot\b", b, re.I):
-            return _clean_plain(b, n)
-    if bolds:
-        return _clean_plain(bolds[0], n)
+            cands.append(m.group(1).strip())
+    cands += [_clean_plain(b.strip(" ."), n) for b in re.findall(r"\*\*([^*]{16,180})\*\*", text)]
     for s in re.split(r"(?<=[.!?])\s+", re.sub(r"[*_`>#]", "", text)):
-        if re.search(r"\b\d+\s?%|\$\d|\b\d+\s*(hours?|weeks?|days?|minutes|seconds)\b", s) and 20 < len(s) < n:
-            return s.strip()
-    return _clean_plain(chapter.get("first_para", ""), n)
+        if re.search(r"\b\d+\s?%|\$\d|\b\d+\s*(hours?|weeks?|days?|minutes|seconds)\b", s):
+            cands.append(s.strip())
+    safe = [c for c in cands if social_safe(c)]
+    if safe:
+        return max(safe, key=_rank)
+    fp = _clean_plain(chapter.get("first_para", ""), n)
+    return fp
 
 
 def viral_pool(md_text: str) -> list[str]:
@@ -141,10 +180,13 @@ def viral_pool(md_text: str) -> list[str]:
         out.append(re.sub(r"\s*\(Source.*$|\*", "", m.group(1)).strip())
     seen, res = set(), []
     for x in out:
+        x = re.sub(r"\s*\(see[^)]*\)", "", x).strip()   # strip any trailing book cross-ref
+        if not social_safe(x):
+            continue
         k = re.sub(r"\W", "", x[:48]).lower()
         if k and k not in seen:
             seen.add(k); res.append(x)
-    return res
+    return sorted(res, key=_rank, reverse=True)   # punchiest first
 
 
 def _clean_plain(s: str, n: int) -> str:
