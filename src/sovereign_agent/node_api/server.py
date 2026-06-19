@@ -77,6 +77,22 @@ def create_app() -> Flask:
     app.register_blueprint(scout_routes.bp)
     app.register_blueprint(placeholder_routes.bp)
 
+    # --- Serve the Atrium cockpit SAME-ORIGIN (KM 2026-06-19) ---------------
+    # The cockpit's api.js fetches this node's /api/v1/… . Serving the static UI FROM the node makes the
+    # cockpit same-origin with the API, so the CORS allowlist is irrelevant to it (a same-origin read is
+    # never blocked). Fixes the "NetworkError loading /awaiting_km" when the UI was opened from another
+    # origin (e.g. file://, Origin: null) outside the allowlist. Open http://127.0.0.1:8421/atrium/ .
+    # Dir overridable via env for portability; defaults to the in-repo cockpit.
+    from flask import send_from_directory  # noqa: PLC0415
+    _ATRIUM_DIR = os.environ.get(
+        "BREATHLINE_ATRIUM_UI_DIR",
+        "/home/kmangum/work-repos/mangumcfo/breathline-ui/atrium")
+
+    @app.route("/atrium/")
+    @app.route("/atrium/<path:fname>")
+    def _atrium_ui(fname="index.html"):  # noqa: ANN202
+        return send_from_directory(_ATRIUM_DIR, fname)
+
     # --- CORS — explicit node-local allowlist (audit 2026-06-13 HIGH) ---
     # The old `Access-Control-Allow-Origin: *` let any page the operator visited read this
     # local-first node's responses. We now echo ONLY an Origin present in the node-local allowlist
