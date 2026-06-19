@@ -1,0 +1,71 @@
+{
+  "type": "linkedin_carousel",
+  "book_id": "12_agentic_enterprise",
+  "content": [
+    {
+      "kicker": "Sovereign Library",
+      "title": "The Agentic Enterprise",
+      "body": "Strategy, Governance, Sovereignty, and the Complete Executive Roadmap for Building an AI-First Organization"
+    },
+    {
+      "kicker": "Chapter 1",
+      "title": "The Synthesis — What We Built Across the Entire Series",
+      "body": "Eleven books. Over 170 agent prompts."
+    },
+    {
+      "kicker": "Chapter 2",
+      "title": "The Enterprise Agent Ecosystem Map — How Every Agent Connects",
+      "body": "The individual agents from Books 1-11 are powerful alone. Connected, they create an organizational nervous system — sensing, analyzing, deciding, and acting acr"
+    },
+    {
+      "kicker": "Chapter 3",
+      "title": "Building Your 2027 Agentic AI Vision and Strategy",
+      "body": "A vision without a strategy is a wish. A strategy without a vision is a spreadsheet."
+    },
+    {
+      "kicker": "Chapter 4",
+      "title": "Investment Framework — How Much to Spend and Where to Start",
+      "body": "People are 60-65% of the cost; model tokens are only 5-10%. The most common question from boards and executive committees: \"How much should we invest in AI agen"
+    },
+    {
+      "kicker": "Chapter 5",
+      "title": "Organizational Readiness Assessment — The 20-Question Diagnostic",
+      "body": "Before investing in the agentic enterprise, you need an honest assessment of where your organization stands today."
+    },
+    {
+      "kicker": "Chapter 6",
+      "title": "The 12-Month Enterprise Implementation Timeline",
+      "body": "The readiness assessment tells you where you are. The investment framework tells you how much to spend."
+    },
+    {
+      "kicker": "Chapter 7",
+      "title": "Governance, Ethics, and Constitutional Frameworks at Scale — Including the K1–K4 Constitutional Invariants",
+      "body": "Governance is your competitive moat, not a compliance cost. Governance at the enterprise level is not a compliance checkbox."
+    },
+    {
+      "kicker": "Chapter 8",
+      "title": "Sovereign AI vs. Vendor Dependency — The Breathline Federation Model",
+      "body": "<uWho controls your AI infrastructure?</u If the answer is \"our cloud provider,\" you have vendor dependency, not sovereignty."
+    },
+    {
+      "kicker": "Read it",
+      "title": "The full playbook is on Amazon / KDP.",
+      "body": "Built for lasting, generational prosperity — sovereignty over dependency."
+    }
+  ],
+  "meta": {
+    "slides": 10,
+    "dims": "1080x1350",
+    "palette": [
+      "navy #1B2A4A",
+      "gold #C5A55A"
+    ],
+    "png_rendered": 10,
+    "svg_dir": "artifacts/distribution/12_agentic_enterprise/linkedin_carousel"
+  },
+  "provenance": {
+    "source_section": "title + 8 chapters + CTA",
+    "sealed_commit": "e97f224266438afb3f239557cb16477145f0e4e3",
+    "source_manuscript": "kdp/agentic_playbooks/12_agentic_enterprise/v1.0/manuscript_v1.5.md"
+  }
+}

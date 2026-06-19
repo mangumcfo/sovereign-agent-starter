@@ -1,0 +1,25 @@
+{
+  "type": "x_thread",
+  "book_id": "12_agentic_enterprise",
+  "content": [
+    "The Agentic Enterprise — Strategy, Governance, Sovereignty, and the Complete Executive Roadmap for Building an AI-First Organization The through-line, in one thread 🧵",
+    "1/ The Synthesis — What We Built Across the Entire Series Eleven books. Over 170 agent prompts.",
+    "2/ The Enterprise Agent Ecosystem Map — How Every Agent Connects The individual agents from Books 1-11 are powerful alone. Connected, they create an organizational nervous system — sensing, analyzing, deciding, and acting across every function simultaneously.",
+    "3/ Building Your 2027 Agentic AI Vision and Strategy A vision without a strategy is a wish. A strategy without a vision is a spreadsheet.",
+    "4/ Investment Framework — How Much to Spend and Where to Start People are 60-65% of the cost; model tokens are only 5-10%. The most common question from boards and executive committees: \"How much should we invest in AI agents?\" The honest answer: it depends on where you are,…",
+    "5/ Organizational Readiness Assessment — The 20-Question Diagnostic Before investing in the agentic enterprise, you need an honest assessment of where your organization stands today.",
+    "6/ The 12-Month Enterprise Implementation Timeline The readiness assessment tells you where you are. The investment framework tells you how much to spend.",
+    "7/ Governance, Ethics, and Constitutional Frameworks at Scale — Including the K1–K4 Constitutional Invariants Governance is your competitive moat, not a compliance cost. Governance at the enterprise level is not a compliance checkbox.",
+    "From the Mangum sovereign-finance library — built for lasting, generational prosperity, not dependency. Full playbook on Amazon/KDP."
+  ],
+  "meta": {
+    "posts": 9,
+    "char_limit": 280,
+    "max_len": 276
+  },
+  "provenance": {
+    "source_section": "title + 7 chapter openers + CTA",
+    "sealed_commit": "e97f224266438afb3f239557cb16477145f0e4e3",
+    "source_manuscript": "kdp/agentic_playbooks/12_agentic_enterprise/v1.0/manuscript_v1.5.md"
+  }
+}

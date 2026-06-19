@@ -1,0 +1,17 @@
+{
+  "book_id": "01_strategic_finance",
+  "sealed_commit": "4cd4f3afb2ce796f674862e9739b0e53426b2bdd",
+  "source_manuscript": "kdp/01_strategic_finance/v1.2/manuscript_v1.2.md",
+  "generated_at": "2026-06-19T16:48:29Z",
+  "assets": {
+    "x_thread": {
+      "source_section": "title + 4 chapter openers + CTA"
+    },
+    "linkedin_carousel": {
+      "source_section": "title + 4 chapters + CTA"
+    },
+    "substack_excerpt": {
+      "source_section": "Chapter 1 (self-contained section)"
+    }
+  }
+}

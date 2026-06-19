@@ -1,0 +1,45 @@
+{
+  "book_id": "12_agentic_enterprise",
+  "distribution_ready": false,
+  "checks": [
+    {
+      "check": "asset_completeness",
+      "pass": true,
+      "detail": "3/3 v1 assets: x_thread, linkedin_carousel, substack_excerpt",
+      "gap": null
+    },
+    {
+      "check": "voice_brand",
+      "pass": true,
+      "detail": "voice=ok \u00b7 sovereignty=ok \u00b7 brand=ok",
+      "gap": null
+    },
+    {
+      "check": "format_specs",
+      "pass": true,
+      "detail": "x_thread=9 \u00b7 carousel=10@1080x1350 \u00b7 excerpt=1184w",
+      "gap": null
+    },
+    {
+      "check": "derive_provenance",
+      "pass": true,
+      "detail": "sealed_commit=e97f224266 \u00b7 3 assets traced",
+      "gap": null
+    },
+    {
+      "check": "gb_sample_read",
+      "pass": false,
+      "detail": "GB sample read: not recorded",
+      "gap": "awaiting GB rendered sample-read (PASS) \u2014 the no-slop gate"
+    }
+  ],
+  "gaps": [
+    "awaiting GB rendered sample-read (PASS) \u2014 the no-slop gate"
+  ],
+  "meta": {
+    "contract": "Distribution Rail v1.0",
+    "standard": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/book_standards/distribution_standard.yaml",
+    "standard_version": "1.0",
+    "evaluated_at": "2026-06-19T16:47:28Z"
+  }
+}
