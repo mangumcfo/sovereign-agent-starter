@@ -332,6 +332,15 @@ def handshakes():
                     "handshakes": items})
 
 
+def _owner_agent(card: dict) -> str:
+    """Which AGENT must act on KM's rejection note (NOT the human card owner). Derived from the card's
+    ref/intent — book + distribution work is Tiger's; GB plans/reviews. Default Tiger (the implementer)."""
+    blob = ((card.get("ref") or "") + " " + (card.get("intent") or "") + " " + (card.get("title") or "")).lower()
+    if blob.startswith("relay") or "gb_" in blob or "re-read" in blob or "board re-stamp" in blob:
+        return "gb"
+    return os.environ.get("BREATHLINE_FEEDBACK_AGENT", "tiger")
+
+
 @bp.post("/feedback/<obligation_id>/disposition")
 @require_principal
 @require_owner
@@ -361,13 +370,32 @@ def feedback_disposition(obligation_id: str):
             # principal so the bell's chain write names the Accept-clicker (audit 2026-06-13 HIGH).
             _ring_the_bell(obligation_id, current_principal())
             return jsonify({"action": "accept", "obligation": entry, "executor": "spawned"})
+        # resolve the card BEFORE closing so we can route KM's note to the owning agent (capture-reliability)
+        card = _open_obligation(led, obligation_id) or {}
         entry = led.close(
             obligation_id,
             evidence=f"REJECTED by {current_principal()}: {note or 'no reason given'}",
             evidence_tier="E1", require_e1=False, closed_by=current_principal(),
             rejected=True,  # a refusal is a valid human disposition — no prior approve() needed (even if material)
         )
-        return jsonify({"action": "reject", "obligation": entry})
+        # CAPTURE FIX (GB [454]/[456] Item 1): a reject WITH a note must mint TRACKED follow-on work owned by
+        # the card's owner-AGENT (ref=feedback:<id>, verbatim note), gated on that agent — NOT back to KM. So
+        # the note can never die in the close-evidence string again (the recurring "my feedback got lost" bug).
+        followup = None
+        if note:
+            agent = _owner_agent(card)
+            label = (card.get("title") or card.get("ref") or obligation_id)
+            followup = led.open(
+                title=f"📨 KM feedback — address: {label}"[:118],
+                owner=agent, classification="C2", material=False,
+                next_gate=f"{agent} action", ref=f"feedback:{obligation_id}",
+                intent=(f'KM REJECTED "{label}" with feedback (verbatim): "{note}". '
+                        f"Address it, then close. Linked card: {obligation_id}."),
+                lgp={"objective": "KM feedback reliably captured as tracked agent work (capture-reliability)"},
+            )
+        return jsonify({"action": "reject", "obligation": entry,
+                        "feedback_obligation": (followup or {}).get("id"),
+                        "routed_to": (followup or {}).get("owner") if followup else None})
     except KeyError:
         return jsonify(route_error(
             error="obligation_not_found",

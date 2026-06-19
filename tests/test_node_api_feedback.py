@@ -105,6 +105,25 @@ def test_reject_closes_and_double_reject_is_409(owner_client):
     assert r2.status_code == 409 and r2.get_json()["error"] == "already_closed"
 
 
+def test_reject_with_note_routes_feedback_to_owning_agent(owner_client):
+    """GB [454]/[456] Item 1 — a reject carrying a NOTE must mint TRACKED follow-on work owned by the
+    card's owner-agent (not bounce back to KM, not die in the close-evidence string)."""
+    oid = _mint(owner_client).get_json()["obligation"]["id"]
+    j = owner_client.post(f"/api/v1/feedback/{oid}/disposition",
+                          json={"action": "reject", "note": "make the carousel pop — aha per slide"}).get_json()
+    assert j["action"] == "reject"
+    # the note minted a follow-on obligation, routed to the agent (tiger by default)
+    assert j["feedback_obligation"], "reject-with-note must mint a tracked follow-on obligation"
+    assert j["routed_to"] == "tiger"
+    # it is gated on the AGENT, so it does NOT reappear in KM's awaiting-me queue
+    aw = owner_client.get("/api/v1/awaiting_km").get_json()
+    assert all(i["id"] != j["feedback_obligation"] for i in aw["awaiting"])
+    # a reject WITHOUT a note mints nothing (just a close)
+    oid2 = _mint(owner_client).get_json()["obligation"]["id"]
+    j2 = owner_client.post(f"/api/v1/feedback/{oid2}/disposition", json={"action": "reject"}).get_json()
+    assert j2.get("feedback_obligation") is None
+
+
 def test_disposition_not_found_is_404(owner_client):
     r = owner_client.post("/api/v1/feedback/obl_does_not_exist/disposition", json={"action": "accept"})
     assert r.status_code == 404 and r.get_json()["error"] == "obligation_not_found"
