@@ -530,6 +530,86 @@ def _check_production_standards(bdir: Path | None, book_id: str) -> dict:
             "gap": ("S2-pen layout divergence: " + "; ".join(c["detail"] for c in fails)) if fails else None}
 
 
+BOOK_STANDARD = Path("/home/kmangum/work-repos/mangumcfo/breathline-books-vault/book_standards/book_standard.yaml")
+
+
+def _book_standard() -> dict:
+    import yaml  # noqa: PLC0415
+    try:
+        return yaml.safe_load(BOOK_STANDARD.read_text(encoding="utf-8")) or {}
+    except Exception:
+        return {}
+
+
+def _latest_ms_text(bdir: Path | None) -> tuple[str, str]:
+    if not bdir:
+        return "", ""
+    mss = sorted((p for p in bdir.glob("manuscript_v*.md")
+                  if re.match(r"manuscript_v[0-9.]+\.md$", p.name)), key=_vkey)
+    return (mss[-1].read_text(encoding="utf-8", errors="ignore"), mss[-1].name) if mss else ("", "")
+
+
+def _check_forward_reference(bdir: Path | None, book_id: str) -> dict:
+    """forward_reference (KM 6-call D2, book_standard.yaml#forward_reference): MINIMIZE forwards; anything
+    deliverable this season is BUILT IN, not deferred; every genuine cross-series forward NAMES its closing
+    series + a closure plan. RED if a forward lacks a named closing series, or this-season work is labeled
+    'forward'. Criteria load from the machine source of truth."""
+    name = "forward_reference"
+    crit = _book_standard().get("forward_reference", {})
+    text, msname = _latest_ms_text(bdir)
+    if not text:
+        return {"check": name, "pass": False, "detail": "no manuscript", "gap": "no manuscript to scan"}
+    lines = text.splitlines()
+    fwd_pat = re.compile(r"\[current\s*·\s*forward\]|\bforward edge\b|deferred to v\d|in a (?:later|future) series", re.I)
+    unclosed = []
+    total = 0
+    for i, l in enumerate(lines):
+        if fwd_pat.search(l):
+            total += 1
+            window = " ".join(lines[max(0, i - 2):i + 4])
+            # a genuine forward must name a closing series (Series N / S-N) nearby
+            if not re.search(r"Series\s+\d|\bS\d\b", window):
+                unclosed.append(l.strip()[:56])
+    ok = (not crit) or not unclosed
+    return {"check": name, "pass": ok,
+            "detail": f"{total} forward refs · {len(unclosed)} without a named closing series ({msname})"[:90],
+            "gap": None if ok else f"D2 — forwards lack a named closing series/closure plan: {unclosed[:2]}"}
+
+
+def _check_keyword_discipline(bdir: Path | None, book_id: str) -> dict:
+    """keyword_discipline (KM 6-call D5, book_standard.yaml#keyword_discipline): RECONCILE the volume to its
+    locked-outline keyword targets, anchor chapters on them, FLAG any deviation. RED if target keywords are
+    unreconciled/dropped. Targets = the book's metadata chapter_kw (the locked-outline keywords)."""
+    name = "keyword_discipline"
+    crit = _book_standard().get("keyword_discipline", {})
+    text, msname = _latest_ms_text(bdir)
+    if not text:
+        return {"check": name, "pass": False, "detail": "no manuscript", "gap": "no manuscript to scan"}
+    # resolve keyword targets from the book's metadata (locked-outline keywords)
+    targets: list[str] = []
+    cands = []
+    if bdir:
+        cands = list(bdir.glob("metadata*.y*ml")) + list(bdir.parent.glob("v*/metadata*.y*ml"))
+    for mp in cands:
+        try:
+            import yaml  # noqa: PLC0415
+            m = yaml.safe_load(mp.read_text(encoding="utf-8")) or {}
+            targets = m.get("chapter_kw") or m.get("keywords") or m.get("keyword_targets") or []
+            if targets:
+                break
+        except Exception:
+            continue
+    if not targets:
+        return {"check": name, "pass": False, "detail": "no keyword targets found",
+                "gap": "D5 — locked-outline keyword targets not found (metadata chapter_kw)"}
+    low = text.lower()
+    missing = [k for k in targets if k.lower() not in low]
+    ok = (not crit) or not missing
+    return {"check": name, "pass": ok,
+            "detail": f"{len(targets) - len(missing)}/{len(targets)} target keywords anchored"[:90],
+            "gap": None if ok else f"D5 — keyword drift; targets not anchored: {missing}"}
+
+
 def evaluate(book_id: str, extra: list[str]) -> dict:
     bdir = _book_dir(book_id)
     refs = _book_refs(book_id, extra)
@@ -537,7 +617,8 @@ def evaluate(book_id: str, extra: list[str]) -> dict:
               _check_review_brief(bdir, book_id, extra), _check_artifact_package(bdir, book_id),
               _check_substance(bdir, book_id), _check_canonical_toolchain(bdir, book_id),
               _check_book_structure(bdir, book_id), _check_render_fidelity(bdir, book_id),
-              _check_production_standards(bdir, book_id)]
+              _check_production_standards(bdir, book_id),
+              _check_forward_reference(bdir, book_id), _check_keyword_discipline(bdir, book_id)]
     ready = all(c["pass"] for c in checks)
     return {
         "book_id": book_id, "review_ready": ready,
