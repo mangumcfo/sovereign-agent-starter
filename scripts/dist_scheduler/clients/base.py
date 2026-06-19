@@ -6,9 +6,13 @@ only thing that needs the keys. Error Voice: failures are loud, never silent (CO
 from __future__ import annotations
 
 import json
-import os
+import sys
 import time
 import urllib.request
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from cred_store import load_secrets  # noqa: E402  (named to avoid shadowing stdlib `secrets`)
 
 
 class PostResult(dict):
@@ -25,13 +29,19 @@ class PostResult(dict):
 
 class Client:
     name = "base"
-    env_keys: list[str] = []          # env vars that must be present to go live
+    env_keys: list[str] = []          # cred keys that must be present to go live
+    secrets_file: str | None = None   # ~/.secrets/<file> the keys live in (env vars override)
+
+    def creds(self) -> dict:
+        return load_secrets(self.secrets_file) if self.secrets_file else dict(__import__("os").environ)
 
     def available(self) -> bool:
-        return all(os.environ.get(k) for k in self.env_keys)
+        c = self.creds()
+        return all(c.get(k) for k in self.env_keys)
 
     def missing_creds(self) -> list[str]:
-        return [k for k in self.env_keys if not os.environ.get(k)]
+        c = self.creds()
+        return [k for k in self.env_keys if not c.get(k)]
 
     def build_payload(self, asset: dict) -> dict:
         raise NotImplementedError

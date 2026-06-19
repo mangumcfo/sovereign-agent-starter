@@ -15,6 +15,7 @@ API = "https://api.linkedin.com/rest/posts"
 
 class LinkedInClient(Client):
     name = "linkedin"
+    secrets_file = "linkedin_credentials.env"   # ~/.secrets/linkedin_credentials.env (the new one to provision)
     env_keys = ["LINKEDIN_ACCESS_TOKEN", "LINKEDIN_AUTHOR_URN"]
 
     def build_payload(self, asset: dict) -> dict:
@@ -25,9 +26,9 @@ class LinkedInClient(Client):
                 "svg_dir": meta.get("svg_dir"), "summary": f"carousel '{title}' ({len(slides)} slides)"}
 
     def _post_live(self, payload: dict) -> PostResult:
-        import os
-        token = os.environ["LINKEDIN_ACCESS_TOKEN"]
-        author = os.environ["LINKEDIN_AUTHOR_URN"]
+        creds = self.creds()
+        token = creds["LINKEDIN_ACCESS_TOKEN"]
+        author = creds["LINKEDIN_AUTHOR_URN"]
         headers = {"Authorization": f"Bearer {token}", "LinkedIn-Version": "202401",
                    "X-Restli-Protocol-Version": "2.0.0"}
         # NOTE: slide PNGs must first be registered+uploaded (images endpoint) → asset URNs, then referenced
