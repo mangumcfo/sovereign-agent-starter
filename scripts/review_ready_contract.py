@@ -311,8 +311,11 @@ def _check_artifact_package(bdir: Path | None, book_id: str) -> dict:
         return {"check": name, "pass": False, "detail": "book dir not found", "gap": "no book dir"}
     final = bdir / "final"
     pdfs = [p for p in (final.glob("*.pdf") if final.exists() else []) if "wrap" not in p.name.lower()]
-    figs = (list((bdir / "images").glob("fig*.png")) if (bdir / "images").exists() else
-            (list((bdir / "figures").glob("*.png")) if (bdir / "figures").exists() else []))  # canonical images/ first
+    # canonical S2+ figures live in figures/approved/ (SVG two-tier renders); fall back to figures/ then images/ (S1)
+    figs = (list((bdir / "figures" / "approved").glob("figure_*_book.png"))
+            or list((bdir / "figures" / "approved").glob("*.png"))
+            or list((bdir / "figures").glob("*.png"))
+            or list((bdir / "images").glob("fig*.png")))
     covers = (list(final.glob("cover*wrap*")) + list(final.glob("cover*.png")) + list(final.glob("cover*.jpg"))) if final.exists() else []
     seeit_root = Path(os.environ.get("BREATHLINE_SEEIT_ROOT", os.path.expanduser("~/six-sov-www/seeit")))
     seeit_ok = False
