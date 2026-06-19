@@ -86,10 +86,13 @@ def _check_gate6_renderability(bdir: Path) -> dict:
     if not mss:
         return {"pass": False, "status": "no-manuscript", "detail": "no manuscript to render-check"}
     text = mss[-1].read_text(encoding="utf-8", errors="ignore")
-    # GB reconcile 2026-06-18: count the R8-safe "▣ RECEIPT" marker the manuscripts actually use.
-    # Render Standard R8 HARD-bans emoji glyphs, so "📦 Receipt Box" can never appear — counting it
-    # made Gate 6 unsatisfiable (standards contradiction; GB owns both standards). ▣ is print-safe.
-    boxes = text.count("▣ RECEIPT")
+    # Receipt-box marker (Tiger fix 2026-06-19, ref THREAD [440]/[442]): count the letters-only
+    # "**RECEIPT —" header the manuscripts ACTUALLY use. The ▣ (U+25A3) marker GB's 2026-06-18 reconcile
+    # counted was REMOVED in V3 v1.8 — ▣ forced a stray DejaVu font fallback (KM's render-fidelity "multiple
+    # fonts" bug) and is now HARD-BANNED by the render_fidelity gate (book_standard.yaml#render_fidelity
+    # .banned_source_glyphs). Counting ▣ left Gate 6 UNSATISFIABLE against render_fidelity — the two gates
+    # contradicted. The R8-safe "**RECEIPT —" header is letters-only by construction => no fallback possible.
+    boxes = len(re.findall(r"\*\*RECEIPT\b", text))
     sections = len(re.findall(r"^#{1,2} (?:Chapter \d+|Appendix )", text, re.M))  # match ## chapter headers too
     if boxes == 0:
         return {"pass": False, "status": "no-receipt-boxes",
