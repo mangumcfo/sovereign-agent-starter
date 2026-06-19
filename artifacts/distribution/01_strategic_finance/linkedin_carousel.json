@@ -3,48 +3,59 @@
   "book_id": "01_strategic_finance",
   "content": [
     {
-      "kicker": "Sovereign Library",
+      "kicker": "The Executive Series",
       "title": "Strategic Finance For Growth",
-      "body": "The Intersection of Strategy and Finance in the Pursuit of Growth"
+      "cover_art": "cover_KDP.png"
     },
     {
       "kicker": "Chapter 1",
       "title": "Stage 1 — Start-Up",
-      "body": "You have been working on this idea for months. Maybe years."
+      "body": "When to Move to Stage 2:"
     },
     {
       "kicker": "Chapter 2",
       "title": "Stage 2 — Growth",
-      "body": "Your phone has not stopped ringing. Orders are coming in faster than you can fill them."
+      "body": "McKinsey 7S Model:"
+    },
+    {
+      "kicker": "How it works",
+      "title": "Stage 2 — Growth",
+      "figure": "fig_0_1_lifecycle.png"
     },
     {
       "kicker": "Chapter 3",
       "title": "Stage 3 — Maturity",
-      "body": "The champagne years are over. Your company has grown from a scrappy startup into a genuine market player, but the phone is not ringing as often as it used to."
+      "body": "When to Move to Stage 4:"
     },
     {
       "kicker": "Chapter 4",
       "title": "Stage 4 — Decline and Renewal",
-      "body": "The board meeting ended thirty minutes ago, but you are still sitting in your chair staring at the P&L."
+      "body": "Aggressive fight responses"
     },
     {
       "kicker": "Read it",
-      "title": "The full playbook is on Amazon / KDP.",
-      "body": "Built for lasting, generational prosperity — sovereignty over dependency."
+      "title": "Bring this playbook into your operation.",
+      "body": "Search \"AI Agents for CFOs — Mangum\" on Amazon"
     }
   ],
   "meta": {
-    "slides": 6,
+    "slides": 7,
     "dims": "1080x1350",
     "palette": [
-      "navy #1B2A4A",
-      "gold #C5A55A"
+      "navy gradient",
+      "gold #C9A95E"
     ],
-    "png_rendered": 6,
+    "series": "The Executive Series",
+    "book": "Strategic Finance For Growth",
+    "publisher": "Breathline Books",
+    "cover_art": true,
+    "figures_used": 1,
+    "cta": "Search \"AI Agents for CFOs — Mangum\" on Amazon",
+    "png_rendered": 7,
     "svg_dir": "artifacts/distribution/01_strategic_finance/linkedin_carousel"
   },
   "provenance": {
-    "source_section": "title + 4 chapters + CTA",
+    "source_section": "cover art + 4 chapters + 1 book figures + CTA",
     "sealed_commit": "4cd4f3afb2ce796f674862e9739b0e53426b2bdd",
     "source_manuscript": "kdp/01_strategic_finance/v1.2/manuscript_v1.2.md"
   }

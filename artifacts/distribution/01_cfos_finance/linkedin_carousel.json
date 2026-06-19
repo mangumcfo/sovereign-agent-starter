@@ -3,68 +3,74 @@
   "book_id": "01_cfos_finance",
   "content": [
     {
-      "kicker": "Sovereign Library",
+      "kicker": "Agentic AI Playbooks for Executives",
       "title": "AI Agents for CFOs",
-      "body": "The CFO Playbook for FP&A Automation, Rolling Forecasts, Cash Flow, and Real-Time Financial Intelligence"
+      "cover_art": "cover_KDP.png"
     },
     {
       "kicker": "Chapter 1",
       "title": "Why Traditional FP&A Is Broken in 2026",
-      "body": "Your FP&A team just spent three weeks building a quarterly forecast. It was wrong the day they finished it."
+      "body": "Your team spends 80% on data plumbing and 20% on decisions. Agents flip that ratio."
     },
     {
       "kicker": "Chapter 2",
       "title": "FP&A Agent Architecture",
-      "body": "Before building anything, you need to understand the architecture. A finance agent is not a single tool — it is a system of interconnected layers, each with a s"
+      "body": "Get the foundation wrong and nothing above it works — no matter how sophisticated the analysis."
+    },
+    {
+      "kicker": "How it works",
+      "title": "FP&A Agent Architecture",
+      "figure": "fig_10_1_governance_matrix.png"
     },
     {
       "kicker": "Chapter 3",
       "title": "Building Rolling Forecast Agents",
-      "body": "The rolling forecast is the single highest-value finance agent you can build. Here is why: a traditional forecast is a snapshot."
+      "body": "The rolling forecast is the single highest-value finance agent you can build."
     },
     {
       "kicker": "Chapter 4",
       "title": "P&L Automation Agents",
-      "body": "The profit and loss statement is the most fundamental financial report in any organization."
+      "body": "Month-end close that took three days now takes four hours. The analysis stays. The drudgery disappears."
     },
     {
       "kicker": "Chapter 5",
       "title": "Cash Flow Prediction Agents",
-      "body": "Cash is the oxygen of a business. You can survive a bad quarter on the P&L."
+      "body": "You can survive a bad quarter on the P&L. You cannot survive running out of cash."
+    },
+    {
+      "kicker": "How it works",
+      "title": "Cash Flow Prediction Agents",
+      "figure": "fig_12_1_deployment_timeline.png"
     },
     {
       "kicker": "Chapter 6",
       "title": "Real-Time Budget Variance Detection",
-      "body": "Traditional variance analysis happens at month-end. By then, the overspend has already occurred, the opportunity has already been missed, and the explanation is"
-    },
-    {
-      "kicker": "Chapter 7",
-      "title": "Scenario Modeling Agents",
-      "body": "One of the most valuable applications of AI agents in finance is not producing the answer — it is producing one hundred answers simultaneously."
-    },
-    {
-      "kicker": "Chapter 8",
-      "title": "Board-Ready Reporting Agents",
-      "body": "The \"Board Deck Bot\" will make your CFO life meaningfully better. It transforms raw financial data into executive-ready narratives, charts, and presentations —"
+      "body": "Real-time variance detection is $250K-$1M in annual cash driven straight to the bottom line."
     },
     {
       "kicker": "Read it",
-      "title": "The full playbook is on Amazon / KDP.",
-      "body": "Built for lasting, generational prosperity — sovereignty over dependency."
+      "title": "Bring this playbook into your operation.",
+      "body": "Search \"AI Agents for CFOs — Mangum\" on Amazon"
     }
   ],
   "meta": {
     "slides": 10,
     "dims": "1080x1350",
     "palette": [
-      "navy #1B2A4A",
-      "gold #C5A55A"
+      "navy gradient",
+      "gold #C9A95E"
     ],
+    "series": "Agentic AI Playbooks for Executives",
+    "book": "AI Agents for CFOs",
+    "publisher": "Breathline Books",
+    "cover_art": true,
+    "figures_used": 2,
+    "cta": "Search \"AI Agents for CFOs — Mangum\" on Amazon",
     "png_rendered": 10,
     "svg_dir": "artifacts/distribution/01_cfos_finance/linkedin_carousel"
   },
   "provenance": {
-    "source_section": "title + 8 chapters + CTA",
+    "source_section": "cover art + 14 chapters + 2 book figures + CTA",
     "sealed_commit": "1f894e530a0dedf215cd041f0b03bb1956e912cc",
     "source_manuscript": "kdp/agentic_playbooks/01_cfos_finance/v1.0/manuscript_v1.0.md"
   }

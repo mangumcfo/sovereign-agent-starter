@@ -2,7 +2,7 @@
 
 *The Intersection of Strategy and Finance in the Pursuit of Growth*
 
-This week's excerpt from the sovereign library — the working sections KM actually uses:
+**If your team still builds forecasts the slow way, this is for you.** Here is the shift, in plain terms — read the bolded lines and you have the whole argument:
 
 ---
 
@@ -32,16 +32,6 @@ One of the first tasks of the startup CEO is to create a written business plan. 
 
 **Company Description:** Discuss what makes your company different, the competitive landscape, your leadership and expertise in the market, and what will make you a success.
 
-**Market Analysis:** Highlight the nature of the market you plan to operate in, including the competitive landscape. Include commentary on who your competitors are, how many exist, and what specific threats these competitors present. Also include a similar description of your target customers, how big the market is, and how you are going to reach your customers. Some commonly used strategic frameworks you might consider to help you think through this issue include SWOT, Porter's Five Forces, and Blue Ocean. It is far easier to sell into a market with willing customers than to create your own market.
-
-**Legal and Organizational Structure:** Define what entity type you are going to operate under and what your internal organizational structure is going to look like (your org chart).
-
-**Service or Product Line:** In addition to a description of your product, you will need to clearly define your value proposition to customers. Include the cost to the customer and the benefits they will receive. Also consider how this compares to the competition. If intellectual property is involved, share whether you have obtained a patent or registered trademark.
-
-**Sales and Marketing Plan:** This is the integration of your market analysis and service or product line. Describe how you will attract and retain customers, where and how you will interact with customers, and your selling proposition.
-
-**Funding Request:** Assuming you are presenting your plan to investors, they will need to know the amount of funding you need, how you will be spending it, and what type of return they can count on. Persuasion is key, as start-up capital is extremely high risk and they will need to be reassured that the funds will be used appropriately and returned to them in some form at a profit in the future. Depending on the type and amount of funding requested, you may have an early need for CFO services to manage investor relations. Later I will cover the various types and sources of funding you might consider (see Financial Leadership of the Start-Up and Sources of Start-Up Business Funding in this chapter).
-
 ---
 
-Read the full book on Amazon / KDP. From the Mangum sovereign library — built for lasting, generational prosperity, sovereignty over dependency.
+This is **Strategic Finance For Growth**, part of *The Executive Series*. Get the full playbook on Amazon — search **"Strategic Finance For Growth Mangum."** New playbook every week.

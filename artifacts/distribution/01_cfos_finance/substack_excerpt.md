@@ -2,7 +2,7 @@
 
 *The CFO Playbook for FP&A Automation, Rolling Forecasts, Cash Flow, and Real-Time Financial Intelligence*
 
-This week's excerpt from the sovereign library — the working sections KM actually uses:
+**If your team still builds forecasts the slow way, this is for you.** Here is the shift, in plain terms — read the bolded lines and you have the whole argument:
 
 ---
 
@@ -68,24 +68,6 @@ Several themes run through every chapter and deserve early mention because they 
 
 **Redeployment, not reduction.** Smart executives use agent-freed capacity to tackle higher-value problems, not to cut headcount. The ROI calculator in Appendix B is built on this principle.
 
-If you are a CFO, VP of Finance, FP&A Director, Controller, or anyone responsible for financial planning, reporting, or analysis in an organization, this is for you. If you are a CEO who wants to understand what your finance team should be building, this is also for you.
-
-**You do not need to be a programmer.** You do need to be willing to engage with new tools and to rethink processes that have been unchanged for decades.
-
-Let us begin.
-
-Before you read another word, try this. Open Claude (claude.ai) or ChatGPT and paste the following prompt with your last month's actual revenue and expense totals:
-
-Replace the brackets with your real numbers. Read the output. If it is eighty percent as good as what your analyst produces — and **it took ninety seconds instead of four hours** — you have just experienced the value proposition of this entire playbook.
-
-**Pro tip:** Want even better output with minimal effort? Use voice-to-text to add one sentence of business context after the numbers: "We launched a new product in week 3 and our largest customer delayed payment." Even that much context sharpens the root cause analysis dramatically. And here is what may surprise you: even with insufficient data — even if you only provide revenue and budget with no context at all — the AI will attempt to identify likely variance drivers and can help you construct a Root Cause Corrective Measure (RCCM) framework. The output will not be perfect, but it will be a starting point that would have taken your team hours to draft from scratch.
-
-Now imagine that running automatically, every day, with access to all your financial data. That is what we are building.
-
-The architectures in this playbook apply across industries, but the specific agent configurations vary:
-
-**SaaS companies** have the cleanest data for agent-based modeling because revenue drivers are inherently structured: new customer acquisition, expansion revenue (upsell/cross-sell), contraction (downgrades), and churn. An MRR/ARR forecasting agent can model each cohort independently, predict churn probability at the account level, and project expansion revenue based on usage patterns. The key agent use cases: monthly recurring revenue forecasting, customer lifetime value prediction, cohort retention analysis, and net revenue retention modeling. SaaS companies also benefit from the tightest feedback loops — **you know within 30 days whether the forecast was right.**
-
 ---
 
-Read the full book on Amazon / KDP. From the Mangum sovereign library — built for lasting, generational prosperity, sovereignty over dependency.
+This is **AI Agents for CFOs**, part of *Agentic AI Playbooks for Executives*. Get the full playbook on Amazon — search **"AI Agents for CFOs Mangum."** New playbook every week.

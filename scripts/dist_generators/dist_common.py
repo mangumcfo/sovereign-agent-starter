@@ -110,6 +110,51 @@ def word_count(text: str) -> int:
     return len(re.findall(r"\b\w+\b", text))
 
 
+def aha_line(chapter: dict, n: int = 200) -> str:
+    """The chapter's scroll-stopper (GB [454]): pull-quote > number/contrast bold callout > stat sentence >
+    first sentence. What a human would actually quote — not the opener."""
+    body = chapter.get("body", []) or []
+    text = " ".join(body)
+    for ln in body:
+        m = re.search(r'>\s*\*?"([^"]{18,190})"', ln)
+        if m:
+            return m.group(1).strip()
+    bolds = [b.strip(" .") for b in re.findall(r"\*\*([^*]{16,180})\*\*", text)]
+    for b in bolds:
+        if re.search(r"\d|\binstead of\b|\bnot\b.*\bbut\b|\bcannot\b", b, re.I):
+            return _clean_plain(b, n)
+    if bolds:
+        return _clean_plain(bolds[0], n)
+    for s in re.split(r"(?<=[.!?])\s+", re.sub(r"[*_`>#]", "", text)):
+        if re.search(r"\b\d+\s?%|\$\d|\b\d+\s*(hours?|weeks?|days?|minutes|seconds)\b", s) and 20 < len(s) < n:
+            return s.strip()
+    return _clean_plain(chapter.get("first_para", ""), n)
+
+
+def viral_pool(md_text: str) -> list[str]:
+    """Standalone punchy lines for the X thread — pull-quotes + Industry-Signal stats — DISTINCT from the
+    carousel's per-chapter aha (GB [454] A1: per-channel-distinct). Dedup, source-stripped."""
+    out = []
+    for m in re.finditer(r'>\s*\*?"([^"]{18,210})"', md_text):
+        out.append(m.group(1).strip())
+    for m in re.finditer(r"Industry Signal:\**\s*([^\n]{30,240})", md_text):
+        out.append(re.sub(r"\s*\(Source.*$|\*", "", m.group(1)).strip())
+    seen, res = set(), []
+    for x in out:
+        k = re.sub(r"\W", "", x[:48]).lower()
+        if k and k not in seen:
+            seen.add(k); res.append(x)
+    return res
+
+
+def _clean_plain(s: str, n: int) -> str:
+    s = re.sub(r"\s+", " ", re.sub(r"[*_`>#]", "", s)).strip()
+    if len(s) <= n:
+        return s
+    cut = s[:n]; m = list(re.finditer(r"[.!?]\s", cut))
+    return cut[: m[-1].end()].strip() if m else cut.rsplit(" ", 1)[0] + "…"
+
+
 def dist_dir(book_id: str) -> Path:
     d = DIST_ROOT / book_id
     d.mkdir(parents=True, exist_ok=True)

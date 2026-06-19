@@ -11,7 +11,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import dist_common as C
 
-LO, HI = 800, 1500
+LO, HI = 600, 1100   # GB [454]: shorter + scannable, Reader's-Digest discipline (was 800-1500)
+SERIES = {"agentic_playbooks": "Agentic AI Playbooks for Executives", "kdp_root": "The Executive Series"}
 
 
 def _clean_para(p: str) -> str:
@@ -79,10 +80,13 @@ def generate(book_id: str) -> dict:
     if C.word_count(excerpt) > HI:
         excerpt = _trim_words(excerpt, HI - 30)
     words = C.word_count(excerpt)
+    series = SERIES["agentic_playbooks"] if "agentic_playbooks" in str(C.book_dir(book_id) or "") else SERIES["kdp_root"]
+    # reader-in-center (GB [454]): never the author; speak to the executive reading this.
     intro = (f"# {title}\n\n*{sub}*\n\n"
-             "This week's excerpt from the sovereign library — the working sections KM actually uses:\n\n---\n\n")
-    outro = ("\n\n---\n\nRead the full book on Amazon / KDP. From the Mangum sovereign library — "
-             "built for lasting, generational prosperity, sovereignty over dependency.")
+             "**If your team still builds forecasts the slow way, this is for you.** Here is the shift, in plain "
+             "terms — read the bolded lines and you have the whole argument:\n\n---\n\n")
+    outro = (f"\n\n---\n\nThis is **{title}**, part of *{series}*. Get the full playbook on Amazon — "
+             f"search **\"{title} Mangum.\"** New playbook every week.")
     newsletter = intro + excerpt + outro
     dd = C.dist_dir(book_id)
     (dd / "substack_excerpt.md").write_text(newsletter, encoding="utf-8")

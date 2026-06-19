@@ -2,23 +2,25 @@
   "type": "x_thread",
   "book_id": "01_cfos_finance",
   "content": [
-    "AI Agents for CFOs — The CFO Playbook for FP&A Automation, Rolling Forecasts, Cash Flow, and Real-Time Financial Intelligence The through-line, in one thread 🧵",
-    "1/ Why Traditional FP&A Is Broken in 2026 Your FP&A team just spent three weeks building a quarterly forecast. It was wrong the day they finished it.",
-    "2/ FP&A Agent Architecture Before building anything, you need to understand the architecture. A finance agent is not a single tool — it is a system of interconnected layers, each with a specific function, working together to ingest data, analyze it, and deliver actio",
-    "3/ Building Rolling Forecast Agents The rolling forecast is the single highest-value finance agent you can build. Here is why: a traditional forecast is a snapshot.",
-    "4/ P&L Automation Agents The profit and loss statement is the most fundamental financial report in any organization.",
-    "5/ Cash Flow Prediction Agents Cash is the oxygen of a business. You can survive a bad quarter on the P&L.",
-    "6/ Real-Time Budget Variance Detection Traditional variance analysis happens at month-end. By then, the overspend has already occurred, the opportunity has already been missed, and the explanation is a post-mortem rather than a prevention.",
-    "7/ Scenario Modeling Agents One of the most valuable applications of AI agents in finance is not producing the answer — it is producing one hundred answers simultaneously.",
-    "From the Mangum sovereign-finance library — built for lasting, generational prosperity, not dependency. Full playbook on Amazon/KDP."
+    "Your team spends 80% on data plumbing and 20% on decisions. Agents flip that ratio. 🧵 on AI Agents for CFOs —",
+    "Here's the problem 👇 Marketing expense was $180K above budget. This was due to increased spending on digital campaigns.",
+    "The shift: You can survive a bad quarter on the P&L. You cannot survive running out of cash.",
+    "The number that matters: Real-time variance detection is $250K-$1M in annual cash driven straight to the bottom line.",
+    "What actually changes: Sixty days and $810 per month. That is the real cost of your first finance agent.",
+    "Why it compounds: A 2026 FP&A Trends survey found that while AI is now \"standard practice\" in leading finance teams, cultural resistance remains the primary blocker — not technology. One practitioner noted: \"Acceptance can still be a challenge because of nat",
+    "The part executives miss: Manufacturing AI adoption reached 77% in 2024 (up from 70% in 2023), while professional services leads all sectors in generative AI adoption at 71%. More than four in five CFOs say AI adoption in FP&A is important. The question is no longer",
+    "This is AI Agents for CFOs, Book 1 of \"Agentic AI Playbooks for Executives.\" Get the full playbook on Amazon — search \"AI Agents for CFOs Mangum.\""
   ],
   "meta": {
-    "posts": 9,
+    "posts": 8,
     "char_limit": 280,
-    "max_len": 267
+    "max_len": 266,
+    "starting_image": "cover_KDP.png",
+    "series": "Agentic AI Playbooks for Executives",
+    "cta": "Amazon — search the title + Mangum"
   },
   "provenance": {
-    "source_section": "title + 7 chapter openers + CTA",
+    "source_section": "hook + 6 aha beats + Amazon CTA (book stats/quotes)",
     "sealed_commit": "1f894e530a0dedf215cd041f0b03bb1956e912cc",
     "source_manuscript": "kdp/agentic_playbooks/01_cfos_finance/v1.0/manuscript_v1.0.md"
   }

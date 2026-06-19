@@ -2,7 +2,7 @@
 
 *Strategy, Governance, Sovereignty, and the Complete Executive Roadmap for Building an AI-First Organization*
 
-This week's excerpt from the sovereign library — the working sections KM actually uses:
+**If your team still builds forecasts the slow way, this is for you.** Here is the shift, in plain terms — read the bolded lines and you have the whole argument:
 
 ---
 
@@ -46,4 +46,4 @@ The meeting that used to take two weeks of email chains, data assembly, and cros
 
 ---
 
-Read the full book on Amazon / KDP. From the Mangum sovereign library — built for lasting, generational prosperity, sovereignty over dependency.
+This is **The Agentic Enterprise**, part of *Agentic AI Playbooks for Executives*. Get the full playbook on Amazon — search **"The Agentic Enterprise Mangum."** New playbook every week.

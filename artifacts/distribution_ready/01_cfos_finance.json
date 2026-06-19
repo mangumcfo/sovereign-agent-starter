@@ -17,13 +17,19 @@
     {
       "check": "format_specs",
       "pass": true,
-      "detail": "x_thread=9 \u00b7 carousel=10@1080x1350 \u00b7 excerpt=1461w",
+      "detail": "x_thread=8 \u00b7 carousel=10@1080x1350 \u00b7 excerpt=1067w",
       "gap": null
     },
     {
       "check": "no_orphan_markup",
       "pass": true,
       "detail": "clean \u2014 balanced emphasis, no raw markup",
+      "gap": null
+    },
+    {
+      "check": "distribution_quality_board",
+      "pass": true,
+      "detail": "mechanical checks pass \u00b7 virality/aha \u2192 gb_sample_read",
       "gap": null
     },
     {
@@ -35,17 +41,17 @@
     {
       "check": "gb_sample_read",
       "pass": false,
-      "detail": "GB sample read: fail",
-      "gap": "awaiting GB rendered sample-read (PASS) \u2014 the no-slop gate"
+      "detail": "GB read STALE \u2014 assets regenerated 2026-06-19T20:20 > read 2026-06-19T17:14",
+      "gap": "assets regenerated since GB's read \u2014 awaiting a FRESH gb_sample_read"
     }
   ],
   "gaps": [
-    "awaiting GB rendered sample-read (PASS) \u2014 the no-slop gate"
+    "assets regenerated since GB's read \u2014 awaiting a FRESH gb_sample_read"
   ],
   "meta": {
     "contract": "Distribution Rail v1.0",
     "standard": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/book_standards/distribution_standard.yaml",
     "standard_version": "1.0",
-    "evaluated_at": "2026-06-19T17:05:37Z"
+    "evaluated_at": "2026-06-19T20:20:33Z"
   }
 }

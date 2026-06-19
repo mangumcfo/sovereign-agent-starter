@@ -2,20 +2,22 @@
   "type": "x_thread",
   "book_id": "01_strategic_finance",
   "content": [
-    "Strategic Finance For Growth — The Intersection of Strategy and Finance in the Pursuit of Growth The through-line, in one thread 🧵",
-    "1/ Stage 1 — Start-Up You have been working on this idea for months. Maybe years.",
-    "2/ Stage 2 — Growth Your phone has not stopped ringing. Orders are coming in faster than you can fill them.",
-    "3/ Stage 3 — Maturity The champagne years are over. Your company has grown from a scrappy startup into a genuine market player, but the phone is not ringing as often as it used to.",
-    "4/ Stage 4 — Decline and Renewal The board meeting ended thirty minutes ago, but you are still sitting in your chair staring at the P&L.",
-    "From the Mangum sovereign-finance library — built for lasting, generational prosperity, not dependency. Full playbook on Amazon/KDP."
+    "When to Move to Stage 2: 🧵 on Strategic Finance For Growth —",
+    "Here's the problem 👇 McKinsey 7S Model:",
+    "The shift: When to Move to Stage 4:",
+    "The number that matters: goes hand in hand with facility consolidation (see Insourcing and Outsourcing in Chapter 3 for the strategic decision framework)",
+    "This is Strategic Finance For Growth, Book 1 of \"The Executive Series.\" Get the full playbook on Amazon — search \"Strategic Finance For Growth Mangum.\""
   ],
   "meta": {
-    "posts": 6,
+    "posts": 5,
     "char_limit": 280,
-    "max_len": 180
+    "max_len": 153,
+    "starting_image": "cover_KDP.png",
+    "series": "The Executive Series",
+    "cta": "Amazon — search the title + Mangum"
   },
   "provenance": {
-    "source_section": "title + 4 chapter openers + CTA",
+    "source_section": "hook + 3 aha beats + Amazon CTA (book stats/quotes)",
     "sealed_commit": "4cd4f3afb2ce796f674862e9739b0e53426b2bdd",
     "source_manuscript": "kdp/01_strategic_finance/v1.2/manuscript_v1.2.md"
   }

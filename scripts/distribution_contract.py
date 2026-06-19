@@ -243,23 +243,31 @@ def _check_gb_sample_read(book_id: str, std: dict) -> dict:
     """A GB rendered-read verdict PASS recorded on a representative asset sample (the no-slop catch — the asset
     analog of the figure-quality / fidelity gate). RED until GB records it. Scans the dist sample-read records."""
     name = "gb_sample_read"
-    sources = sorted(REPO.glob("artifacts/**/*dist*sample*read*.ndjson")) + \
-        sorted(REPO.glob("artifacts/distribution/**/gb_sample_read.ndjson"))
+    dd = _dist_dir(book_id)
+    rec = dd / "gb_sample_read.ndjson"
+    asset_ts = (_read_json(dd / "dist_provenance.json") or {}).get("generated_at", "")
     latest = None
-    for src in sources:
-        for line in src.read_text(encoding="utf-8", errors="ignore").splitlines():
-            low = line.lower()
-            if book_id.lower() not in low and book_id.replace("_", " ").lower() not in low:
+    if rec.exists():
+        for line in rec.read_text(encoding="utf-8", errors="ignore").splitlines():
+            try:
+                r = json.loads(line)
+            except Exception:
                 continue
-            if "sample_read" in low or "gb_sample_read" in low or "no_slop" in low:
-                if "pass" in low and "fail" not in low:
-                    latest = "pass"
-                elif "fail" in low:
-                    latest = "fail"
-    ok = latest == "pass"
-    return {"check": name, "pass": ok,
-            "detail": f"GB sample read: {latest or 'not recorded'}",
-            "gap": None if ok else "awaiting GB rendered sample-read (PASS) — the no-slop gate"}
+            if r.get("book_id") == book_id:
+                latest = r
+    if not latest:
+        return {"check": name, "pass": False, "detail": "GB sample read: not recorded",
+                "gap": "awaiting GB rendered sample-read (PASS) — the no-slop / virality board"}
+    result = str(latest.get("result") or latest.get("disposition") or "").lower()
+    read_ts = latest.get("ts", "")
+    # STALE-AWARE: a pass dated BEFORE the latest asset regeneration does not certify the new artifacts.
+    if result.startswith("pass") and read_ts and asset_ts and read_ts < asset_ts:
+        return {"check": name, "pass": False,
+                "detail": f"GB read STALE — assets regenerated {asset_ts[:16]} > read {read_ts[:16]}"[:90],
+                "gap": "assets regenerated since GB's read — awaiting a FRESH gb_sample_read"}
+    ok = result.startswith("pass")
+    return {"check": name, "pass": ok, "detail": f"GB sample read: {result or 'unknown'}",
+            "gap": None if ok else "awaiting GB sample-read PASS (virality/human-relevance board)"}
 
 
 def _check_no_orphan_markup(book_id: str, std: dict) -> dict:
@@ -299,12 +307,74 @@ def _check_no_orphan_markup(book_id: str, std: dict) -> dict:
             "gap": None if ok else f"orphaned/raw markup reaches the reader: {'; '.join(issues[:3])}"}
 
 
+def _jaccard(a: str, b: str) -> float:
+    sa, sb = set(re.findall(r"\w+", a.lower())), set(re.findall(r"\w+", b.lower()))
+    return len(sa & sb) / len(sa | sb) if (sa and sb) else 0.0
+
+
+def _check_distribution_quality_board(book_id: str, std: dict) -> dict:
+    """distribution_quality_board (KM [454] / GB-encoded): the AUTOMATABLE half of the missing distribution
+    review board — per-channel-distinct, CTA links, series-canonical brand, carousel visuals, X starting image,
+    reader-in-center, substack digest length + bold-only-read. The VIRALITY / aha / human-relevance JUDGMENT
+    is NOT mechanizable and stays with gb_sample_read (the human board). Criteria load from the yaml."""
+    name = "distribution_quality_board"
+    crit = std.get("distribution_quality_board", {})
+    if not crit:
+        return {"check": name, "pass": True, "detail": "no board criteria in yaml", "gap": None}
+    dd = _dist_dir(book_id)
+    xt = _read_json(dd / "x_thread.json") or {}
+    car = _read_json(dd / "linkedin_carousel.json") or {}
+    sub = _read_json(dd / "substack_excerpt.json") or {}
+    issues = []
+    if crit.get("per_channel_distinct"):
+        xtxt = " ".join(xt.get("content", []) or [])
+        ctxt = " ".join(s.get("body", "") for s in (car.get("content", []) or []) if isinstance(s, dict))
+        if xtxt and ctxt and _jaccard(xtxt, ctxt) > 0.55:
+            issues.append("x ≈ carousel text (not per-channel distinct)")
+    if crit.get("cta_links") == "required":
+        for a, nm in ((xt, "x"), (car, "carousel"), (sub, "substack")):
+            blob = json.dumps(a, ensure_ascii=False).lower()
+            if not any(k in blob for k in ("amazon", "kdp", "mangumcfo")):
+                issues.append(f"{nm}: no CTA link")
+    if crit.get("brand_source") == "series_canonical":
+        allb = json.dumps([xt, car, sub], ensure_ascii=False).lower()
+        if "sovereign library" in allb:
+            issues.append("brand: 'sovereign library' (use series canonical)")
+    if crit.get("visual_stimulation") == "carousel":
+        m = car.get("meta", {})
+        if not (m.get("figures_used") or m.get("cover_art")):
+            issues.append("carousel: no visual (figures/cover art)")
+    if crit.get("starting_image") == "x_thread" and not xt.get("meta", {}).get("starting_image"):
+        issues.append("x_thread: no starting image")
+    if crit.get("reader_in_center"):
+        sb = json.dumps(sub, ensure_ascii=False).lower()
+        for p in ("km actually uses", "sections km", "the author", "i actually use"):
+            if p in sb:
+                issues.append(f"substack: author-centric ('{p}')")
+                break
+    dl = (crit.get("digest_length") or {}).get("substack_words")
+    if dl:
+        rng = _parse_range(dl); w = sub.get("meta", {}).get("words", 0)
+        if rng and not (rng[0] <= w <= rng[1]):
+            issues.append(f"substack {w}w ∉ {rng}")
+    if crit.get("bold_only_read"):
+        body = (sub.get("content") or {}).get("newsletter", "") if isinstance(sub.get("content"), dict) else ""
+        if body.count("**") < 6:
+            issues.append("substack: too few bold cues for bold-only-read")
+    ok = not issues
+    return {"check": name, "pass": ok,
+            "detail": ("mechanical checks pass · virality/aha → gb_sample_read" if ok
+                       else f"{len(issues)} board issue(s): {issues[0]}")[:90],
+            "gap": None if ok else f"distribution board: {'; '.join(issues[:3])}"}
+
+
 # ============================ AGGREGATE + MINT + MAIN ============================
 
 def evaluate(book_id: str) -> dict:
     std = load_standard()
     checks = [_check_asset_completeness(book_id, std), _check_voice_brand(book_id, std),
               _check_format_specs(book_id, std), _check_no_orphan_markup(book_id, std),
+              _check_distribution_quality_board(book_id, std),
               _check_derive_provenance(book_id, std), _check_gb_sample_read(book_id, std)]
     ready = all(c["pass"] for c in checks)
     return {
