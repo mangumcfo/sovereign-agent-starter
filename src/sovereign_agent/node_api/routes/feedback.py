@@ -341,6 +341,37 @@ def _owner_agent(card: dict) -> str:
     return os.environ.get("BREATHLINE_FEEDBACK_AGENT", "tiger")
 
 
+def _route_note(led, card: dict, obligation_id: str, note: str, tag_as_standard: bool):
+    """Forward Feedback Loop — Capture step 1 (GB_Forward_Feedback_Loop_Spec). Route a disposition NOTE so it is
+    never lost: a comment KM TAGS AS A STANDARD mints a `feedback_standard:<id>` obligation owned GB (classify →
+    encode into the YAML the gates load → inherit by construction); a plain note mints a `feedback:<id>` follow-on
+    owned the card's owner-AGENT (local fix). Either way it lands as tracked, agent-gated work — not KM again."""
+    if not note:
+        return None
+    label = (card.get("title") or card.get("ref") or obligation_id)
+    if tag_as_standard:
+        return led.open(
+            title=f"📐 KM standard (encode): {label}"[:118],
+            owner="gb", classification="C1", material=False,
+            next_gate="gb action", ref=f"feedback_standard:{obligation_id}",
+            intent=(f'KM TAGGED this feedback AS A STANDARD (verbatim): "{note}". Classify (tighten an existing '
+                    f"gate vs a new criterion — bloat-guard, KM-visible), then ENCODE into book_standard.yaml / "
+                    f"distribution_standard.yaml (the machine source the gates LOAD from); version-bump + KM-ratified "
+                    f"note; close with the commit ref as the receipt. Every volume after inherits it by construction "
+                    f"(Phase-0 re-seed). Source card: {obligation_id} ({label})."),
+            lgp={"objective": "KM judgment propagates forward as a rail standard — quality same-or-tighter (FFL)"},
+        )
+    agent = _owner_agent(card)
+    return led.open(
+        title=f"📨 KM feedback — address: {label}"[:118],
+        owner=agent, classification="C2", material=False,
+        next_gate=f"{agent} action", ref=f"feedback:{obligation_id}",
+        intent=(f'KM dispositioned "{label}" with feedback (verbatim): "{note}". Address it, then close. '
+                f"Linked card: {obligation_id}."),
+        lgp={"objective": "KM feedback reliably captured as tracked agent work (capture-reliability)"},
+    )
+
+
 @bp.post("/feedback/<obligation_id>/disposition")
 @require_principal
 @require_owner
@@ -364,38 +395,30 @@ def feedback_disposition(obligation_id: str):
             next_step="POST .../disposition with JSON {\"action\": \"accept|reject\", \"note\": \"...\"}.")), 400
     # Mirror obligations.py error voice (audit fix): not-found → 404, already-closed → 409, denied → 403.
     try:
+        # resolve the card BEFORE acting so a NOTE routes (FFL Capture step 1) regardless of accept/reject
+        card = _open_obligation(led, obligation_id) or {}
+        tag_std = bool(body.get("tag_as_standard"))
         if action == "accept":
             entry = led.approve(obligation_id, approved_by=current_principal())
-            # Accept IS the ignition — spawn the registered executor, carrying the authenticated
-            # principal so the bell's chain write names the Accept-clicker (audit 2026-06-13 HIGH).
+            # Accept IS the ignition — spawn the registered executor, carrying the authenticated principal.
             _ring_the_bell(obligation_id, current_principal())
-            return jsonify({"action": "accept", "obligation": entry, "executor": "spawned"})
-        # resolve the card BEFORE closing so we can route KM's note to the owning agent (capture-reliability)
-        card = _open_obligation(led, obligation_id) or {}
+            fu = _route_note(led, card, obligation_id, note, tag_std)   # accept-with-comment is captured too
+            return jsonify({"action": "accept", "obligation": entry, "executor": "spawned",
+                            "feedback_obligation": (fu or {}).get("id"),
+                            "routed_to": (fu or {}).get("owner") if fu else None,
+                            "tagged_standard": bool(fu and tag_std)})
         entry = led.close(
             obligation_id,
             evidence=f"REJECTED by {current_principal()}: {note or 'no reason given'}",
             evidence_tier="E1", require_e1=False, closed_by=current_principal(),
             rejected=True,  # a refusal is a valid human disposition — no prior approve() needed (even if material)
         )
-        # CAPTURE FIX (GB [454]/[456] Item 1): a reject WITH a note must mint TRACKED follow-on work owned by
-        # the card's owner-AGENT (ref=feedback:<id>, verbatim note), gated on that agent — NOT back to KM. So
-        # the note can never die in the close-evidence string again (the recurring "my feedback got lost" bug).
-        followup = None
-        if note:
-            agent = _owner_agent(card)
-            label = (card.get("title") or card.get("ref") or obligation_id)
-            followup = led.open(
-                title=f"📨 KM feedback — address: {label}"[:118],
-                owner=agent, classification="C2", material=False,
-                next_gate=f"{agent} action", ref=f"feedback:{obligation_id}",
-                intent=(f'KM REJECTED "{label}" with feedback (verbatim): "{note}". '
-                        f"Address it, then close. Linked card: {obligation_id}."),
-                lgp={"objective": "KM feedback reliably captured as tracked agent work (capture-reliability)"},
-            )
+        # Capture (Item 1 + FFL): a note routes to tracked agent/GB work — never lost in the close-evidence string.
+        fu = _route_note(led, card, obligation_id, note, tag_std)
         return jsonify({"action": "reject", "obligation": entry,
-                        "feedback_obligation": (followup or {}).get("id"),
-                        "routed_to": (followup or {}).get("owner") if followup else None})
+                        "feedback_obligation": (fu or {}).get("id"),
+                        "routed_to": (fu or {}).get("owner") if fu else None,
+                        "tagged_standard": bool(fu and tag_std)})
     except KeyError:
         return jsonify(route_error(
             error="obligation_not_found",

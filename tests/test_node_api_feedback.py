@@ -124,6 +124,22 @@ def test_reject_with_note_routes_feedback_to_owning_agent(owner_client):
     assert j2.get("feedback_obligation") is None
 
 
+def test_tag_as_standard_routes_to_gb_encoding_lane(owner_client):
+    """FFL Capture step 1 — a note KM TAGS AS A STANDARD mints a feedback_standard obligation owned GB (encode
+    into the YAML the gates load); accept-with-comment (untagged) routes a local fix to the owning agent."""
+    oid = _mint(owner_client).get_json()["obligation"]["id"]
+    j = owner_client.post(f"/api/v1/feedback/{oid}/disposition",
+                          json={"action": "reject", "note": "every chapter must cite a real build event",
+                                "tag_as_standard": True}).get_json()
+    assert j["feedback_obligation"] and j["routed_to"] == "gb" and j["tagged_standard"] is True
+    # accept-with-comment (untagged) is captured too — routed to the agent (tiger), NOT tagged
+    oid2 = _mint(owner_client).get_json()["obligation"]["id"]
+    j2 = owner_client.post(f"/api/v1/feedback/{oid2}/disposition",
+                           json={"action": "accept", "note": "tighten the substack to 900w"}).get_json()
+    assert j2["action"] == "accept" and j2["feedback_obligation"] and j2["routed_to"] == "tiger"
+    assert j2["tagged_standard"] is False
+
+
 def test_disposition_not_found_is_404(owner_client):
     r = owner_client.post("/api/v1/feedback/obl_does_not_exist/disposition", json={"action": "accept"})
     assert r.status_code == 404 and r.get_json()["error"] == "obligation_not_found"
