@@ -22,6 +22,8 @@ from pathlib import Path
 
 from flask import Blueprint, jsonify, request
 
+import re
+
 from ... import config
 from .._filecache import memoize_on
 from ..auth import require_principal
@@ -235,10 +237,43 @@ def _read_roadmap(path: Path):
     return _load(path.read_text(encoding="utf-8"))
 
 
+def _vkey_name(name: str) -> tuple:
+    """Numeric version sort so v1.11 > v1.9 (string sort gets this backwards)."""
+    return tuple(int(n) for n in re.findall(r"\d+", name)) or (0,)
+
+
+def _latest_manuscript_version(book_id: str) -> tuple[str | None, str | None]:
+    """AUTO-resolve a volume's CURRENT version from disk — the newest manuscript_v*.md, numerically sorted —
+    so the pipeline always reflects the latest with nothing to hand-update (KM: the link should be automatic).
+    Roots cover S0 (KDP top level), S1 (agentic_playbooks), and each Series-N folder."""
+    kdp = config.get_books_kdp_root()
+    if not kdp or not book_id:
+        return None, None
+    for r in [kdp, kdp / "agentic_playbooks", *sorted(kdp.glob("series_*"))]:
+        vers = sorted((d for d in (r / book_id).glob("v*") if d.is_dir()),
+                      key=lambda d: _vkey_name(d.name), reverse=True)
+        for vd in vers:
+            mss = sorted((p for p in vd.glob("manuscript_v*.md") if "changelog" not in p.name.lower()),
+                         key=lambda p: _vkey_name(p.name))
+            if mss:
+                p = mss[-1]
+                return p.stem.split("_")[-1], str(p).split("/breathline-books-vault/")[-1]
+    return None, None
+
+
 def _title_card(t: dict, chapter_index: dict | None = None, publishing_index: dict | None = None,
                 channel_index: dict | None = None, stage_labels: dict | None = None,
                 review_index: dict | None = None) -> dict:
     card = {k: t.get(k) for k in _TITLE_FIELDS if t.get(k) is not None}
+    # CURRENT-VERSION auto-link (KM 2026-06-19): resolve the latest manuscript_v*.md per volume so the pipeline
+    # shows the live version with nothing to recall/hand-update — mirrors the publishing/channel auto-overlays.
+    bid = t.get("book_id")
+    if bid and not card.get("current_version"):
+        ver, mpath = _latest_manuscript_version(bid)
+        if ver:
+            card["current_version"] = ver
+            card["manuscript_latest"] = mpath
+            card["version_source"] = "manuscript-latest (auto)"
     # Path B (lens-sourced chapters): a title's own chapters always win (rich G-outlines / outline_locked).
     # If it carries none, merge the extracted TOC from the index by book_id — so chapters trace to the
     # manuscript by construction, the roadmap YAML stays lean, and there is nothing to drift out of sync.
@@ -395,8 +430,9 @@ def book_docs():
                 rel = str(p).split("/breathline-books-vault/")[-1]  # vault-relative → servable by /doc
                 lab = next((l for k, l in labelmap if k in p.name.lower()), p.name)
                 docs.append({"label": lab, "file": p.name, "path": rel})
-        # newest manuscript only (so KM can read the updated book from the card; older versions stay out)
-        mss = sorted(p for p in bdir.glob("manuscript_v*.md") if "changelog" not in p.name.lower())
+        # newest manuscript only (numeric sort so v1.11 > v1.9; older versions stay out)
+        mss = sorted((p for p in bdir.glob("manuscript_v*.md") if "changelog" not in p.name.lower()),
+                     key=lambda p: _vkey_name(p.name))
         if mss:
             p = mss[-1]
             docs.append({"label": f"📖 Manuscript ({p.stem.split('_')[-1]})", "file": p.name,
