@@ -612,6 +612,77 @@ def _check_keyword_discipline(bdir: Path | None, book_id: str) -> dict:
             "gap": None if ok else f"D5 — keyword drift; targets not anchored: {missing}"}
 
 
+def _check_cover_standard(bdir: Path | None, book_id: str) -> dict:
+    """cover_standard (KM 2026-06-20, book_standard.yaml#cover_standard): the cover must match the S1/S2 pen —
+    a real HERO illustration, the BREATHLINE BOOKS imprint, the series/volume tag, the author, navy/gold palette,
+    and the full KDP wrap set. CRITICAL: this inspects the RENDERED output (verify_output_not_just_provenance) —
+    pixel complexity for the hero, OCR for the text — so a flat cover with the right toolchain.json still FAILS
+    (closes the canonical_toolchain provenance-vs-output gap)."""
+    name = "cover_standard"
+    crit = (_book_standard().get("cover_standard") or {}).get("must_have", {})
+    if not bdir or not crit:
+        return {"check": name, "pass": False, "detail": "no book dir / no cover_standard spec",
+                "gap": "no cover_standard criteria"}
+    fin = bdir / "final"
+    cover = fin / "cover_KDP.png"
+    if not cover.exists():
+        return {"check": name, "pass": False, "detail": "no cover_KDP.png", "gap": "build the cover"}
+    fails = []
+    from PIL import Image, ImageOps  # noqa: PLC0415
+    im = Image.open(cover).convert("RGB")
+    # 1) HERO present — flat text covers have ~6k unique colours; a rich hero has 100k+ (calibrated vs S2 V1).
+    if crit.get("hero_image"):
+        upper = im.crop((0, 0, im.width, int(im.height * 0.55)))
+        cols = upper.getcolors(maxcolors=400000)
+        uniq = len(cols) if cols else 400000
+        if uniq < 25000:
+            fails.append(f"no hero image (flat: {uniq} colours < 25000)")
+    # 2) OCR the render (white-on-dark → OCR the inverted grayscale too) for the required text
+    need_text = {}
+    if crit.get("imprint_line"):
+        need_text["imprint"] = str(crit["imprint_line"]).lower()
+    if crit.get("author"):
+        need_text["author"] = str(crit["author"]).lower()
+    if crit.get("series_volume_tag"):
+        need_text["volume tag"] = f"volume {book_id_vol(book_id)}"
+    if need_text:
+        try:
+            import pytesseract  # noqa: PLC0415
+            small = im.resize((1200, int(im.height * 1200 / im.width)))
+            g = small.convert("L")
+            txt = (pytesseract.image_to_string(g) + " " + pytesseract.image_to_string(ImageOps.invert(g))).lower()
+            txt = re.sub(r"\s+", " ", txt)
+            for label, needle in need_text.items():
+                if needle not in txt and not all(w in txt for w in needle.split()):
+                    fails.append(f"{label} '{needle}' not found in render (OCR)")
+        except Exception as e:  # noqa: BLE001
+            fails.append(f"OCR unavailable: {e}"[:60])
+    # 3) palette — navy + gold both present (brand)
+    if crit.get("palette"):
+        px = list(im.resize((120, 180)).getdata())
+        navy = sum(1 for r, g, b in px if b > r and b < 130 and r < 90)
+        gold = sum(1 for r, g, b in px if r > 150 and 120 < g < 200 and b < 130)
+        if navy < len(px) * 0.15:
+            fails.append("navy not dominant")
+        if gold < 3:
+            fails.append("no gold accent")
+    # 4) full wrap set
+    for w in (crit.get("wrap_set") or []):
+        if not any((fin / f"{w}{ext}").exists() for ext in (".png", ".pdf", ".jpg")):
+            fails.append(f"missing wrap: {w}")
+    ok = not fails
+    return {"check": name, "pass": ok,
+            "detail": ("hero+imprint+tag+author+palette+wraps verified in the render" if ok
+                       else f"{len(fails)} cover issue(s): {fails[0]}")[:90],
+            "gap": None if ok else f"cover diverges from S2 pen: {'; '.join(fails[:3])}"}
+
+
+def book_id_vol(book_id: str) -> str:
+    """Best-effort volume number from a book_id (vol_03_… → 3; else the leading digits)."""
+    m = re.search(r"vol[_-]?0*(\d+)", book_id, re.I) or re.match(r"0*(\d+)", book_id)
+    return m.group(1) if m else "1"
+
+
 def evaluate(book_id: str, extra: list[str]) -> dict:
     bdir = _book_dir(book_id)
     refs = _book_refs(book_id, extra)
@@ -620,7 +691,8 @@ def evaluate(book_id: str, extra: list[str]) -> dict:
               _check_substance(bdir, book_id), _check_canonical_toolchain(bdir, book_id),
               _check_book_structure(bdir, book_id), _check_render_fidelity(bdir, book_id),
               _check_production_standards(bdir, book_id),
-              _check_forward_reference(bdir, book_id), _check_keyword_discipline(bdir, book_id)]
+              _check_forward_reference(bdir, book_id), _check_keyword_discipline(bdir, book_id),
+              _check_cover_standard(bdir, book_id)]
     ready = all(c["pass"] for c in checks)
     return {
         "book_id": book_id, "review_ready": ready,
