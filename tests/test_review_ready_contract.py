@@ -64,11 +64,39 @@ def ready_book(tmp_path, monkeypatch):
     return bdir
 
 
-def test_all_gates_green_is_review_ready(ready_book):
+# The 13 gate functions evaluate() ANDs together (the order it calls them).
+_GATE_FNS = [
+    "_check_boards", "_check_obligations", "_check_fidelity", "_check_review_brief",
+    "_check_artifact_package", "_check_substance", "_check_canonical_toolchain",
+    "_check_book_structure", "_check_render_fidelity", "_check_production_standards",
+    "_check_forward_reference", "_check_keyword_discipline", "_check_cover_standard",
+]
+
+
+def _stub_all_green(monkeypatch):
+    for n in _GATE_FNS:
+        monkeypatch.setattr(rrc, n, lambda *a, _n=n, **k: {
+            "check": _n[len("_check_"):], "pass": True, "detail": "stub-pass", "gap": None})
+
+
+def test_all_gates_green_is_review_ready(ready_book, monkeypatch):
+    """The AGGREGATOR contract: review_ready is True iff EVERY gate passes, and the check set is complete.
+    Per-gate LOGIC has its own focused tests below; here we stub each gate to pass to verify the AND-wiring
+    (a tiny fixture cannot satisfy the binary-artifact gates — PDF/cover/OCR — so stubbing is the honest unit).
+    If a gate is ADDED to evaluate() without being added to _GATE_FNS, this fails loudly = cover the new gate."""
+    _stub_all_green(monkeypatch)
     res = rrc.evaluate("vol_01", [])
     assert res["review_ready"] is True, res["gaps"]
-    assert {c["check"] for c in res["checks"]} == {
-        "boards_executed", "obligations_closed", "fidelity_passed", "review_brief_sealed"}
+    assert {c["check"] for c in res["checks"]} == {n[len("_check_"):] for n in _GATE_FNS}
+
+
+def test_any_single_gate_red_flips_not_ready(ready_book, monkeypatch):
+    """The aggregator must require ALL green: flipping any ONE gate to fail → not review_ready."""
+    _stub_all_green(monkeypatch)
+    monkeypatch.setattr(rrc, "_check_cover_standard", lambda *a, **k: {
+        "check": "cover_standard", "pass": False, "detail": "flat cover", "gap": "rebuild cover"})
+    res = rrc.evaluate("vol_01", [])
+    assert res["review_ready"] is False and "rebuild cover" in res["gaps"]
 
 
 def test_missing_board_flips_to_not_ready(ready_book):
@@ -135,7 +163,8 @@ def test_gate6_renderability_red_paths(ready_book):
     ms.write_text("# Chapter 1\n\nbody, no receipt box\n", encoding="utf-8")          # zero boxes
     g6 = rrc._check_gate6_renderability(ready_book)
     assert g6["status"] == "no-receipt-boxes" and not g6["pass"]
-    ms.write_text("# Chapter 1\n\n\U0001F4E6 Receipt Box\n\n# Chapter 2\n\nno box here\n", encoding="utf-8")
+    # 1 receipt box (R8-safe letters-only marker — cbe4f23) for 2 chapter sections → partial
+    ms.write_text("# Chapter 1\n\n> **RECEIPT — Ch 1 · ok\n\n# Chapter 2\n\nno box here\n", encoding="utf-8")
     g6 = rrc._check_gate6_renderability(ready_book)
     assert g6["status"].startswith("partial") and not g6["pass"]
 
