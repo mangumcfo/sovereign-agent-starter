@@ -58,3 +58,8 @@ sealed_book_ids:
     series: Metalayer Companion — One Arc, Two Altitudes (Private)
     title: The Sealing Hand
     stage: sealed
+  vol_03_helix_book_writes_backend:
+    series: Programmable Sovereign ERP (Series 3) — The Business Operating System
+      Governed by Living Constitutional Code
+    title: 'Helix: When the Book Literally Writes the Backend'
+    stage: sealed

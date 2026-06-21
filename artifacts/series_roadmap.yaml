@@ -632,7 +632,8 @@ series:
       - enterprise ERP legacy
   - book_id: vol_03_helix_book_writes_backend
     title: 'Helix: When the Book Literally Writes the Backend'
-    stage: phase_1
+    stage: sealed
+    next_gate: none — sealed 2026-06-21 (KM); S3 exemplar; manuscript v1.11 + cover GB-cleared, all 13 gates green
     reader_order: 3
     visibility: public
     one_line: Co-extrusion heart — the deterministic B35 Helix engine that renders living books into receipted,
@@ -777,11 +778,15 @@ series:
       - sovereign co-extrusion legacy
       stage: outline_locked
       coherence_pin: V3 close = the Helix/render arc; distinct from V4 close = the whole S3 root
-    manuscript_rail:
-      entered: '2026-06-18'
-      by: KM ratification
-      rail: Editorial+Tech/Arch boards -> S2 Visual v2.0 -> /seeit Education Board -> review_ready
-      driver: Tiger
+    reopen:
+      date: '2026-06-18'
+      from: signed_off
+      to: phase_2_iteration
+      reason: 'ONE-TRUTH CORRECTION: signed_off was FALSE — KM has NOT performed human review; the review_ready_contract
+        passed its gates (boards/obligations/fidelity/brief) but does NOT gate the final ARTIFACT PACKAGE
+        (formatted PDF, v2.0 figures, cover, /seeit pages, KDP files). Package incomplete -> human gate
+        is NOT open. GB folded signed_off off a premature report without verifying KM reviewed. Reverted.'
+      incident: V3 false-signoff; rail dropped the artifact-packaging layer; contract false-ready
   - book_id: vol_04_industry_sovereign_erps_generational
     title: Industry Sovereign ERPs & Generational Continuity
     stage: outline_locked
