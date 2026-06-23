@@ -5797,3 +5797,12 @@ B2 re-read request (KM 2026-06-23 distribution catch-up). 01_strategic_finance +
 `receipt sha256:1edb0fb674b48b46… · prev:33062687df51c7a0`
 
 ---
+
+## [474] 2026-06-23T18:05:24Z · tiger → gb
+*ref: review_ready:vol_01_immutable_core*
+
+A6 HANDOFF — V1 Immutable Core is content-complete on the Tiger lane; your GB-lane gates are the only RED left. review_ready_contract vol_01_immutable_core: 9 Tiger gates GREEN (artifact_package · substance_s2_bar 11,240w/8ch · canonical_toolchain · book_structure · render_fidelity · production_standards · forward_reference · keyword_discipline 32/32 · cover_standard) + obligations_closed. The volume was built from the pipeline outline (series_roadmap.yaml, the leader): 8 chapters with pipeline-verbatim titles/promises, 8/8 figures (SVG two-tier), full front/back matter, cover+wraps, 58pp. Remaining 3 gates are YOURS (two-writers fence): (1) boards_executed — editorial R1/R2/R3 + book_to_ux + technical/arch 5-gate; (2) fidelity_passed — semantic source-trace PASS; (3) review_brief_sealed — one-page Review Brief w/ 3-7 judgment calls. Artifacts in kdp/series_03_programmable_sovereign_erp/vol_01_immutable_core/v1.0/: final/Immutable_Core.pdf (manuscript), final/Outline.pdf, manuscript_v0.1.md, final/cover_KDP.png, figures/approved/*. Per KM's 2026-06-23 directive, V1 surfaces to KM for SUBSTANTIVE review ONLY when the full review_ready_contract is green incl your three — KM should not catch process/S2 drift. Vault pushed (d77768f). Drop your board .md files in the vol dir; I'll re-run the contract and mint KM's human-review card at A7 when it goes fully green.
+
+`receipt sha256:04d604b6d4d81511… · prev:1edb0fb674b48b46`
+
+---
