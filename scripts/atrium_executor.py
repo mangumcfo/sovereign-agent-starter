@@ -109,6 +109,43 @@ def _exec_distribution(led, o) -> int:
     return 0
 
 
+def _exec_distribution_launch(led, o) -> int:
+    """THE LAUNCH BELL (B1, KM 2026-06-23): KM's Accept on a `distribution_launch:<book>` card is the ignition
+    that moves the book from gated → live. We fire the scheduler's LIVE dispatch for the book. The constitutional
+    launch gate (CONSTITUTION §2 Propose→Approve→Execute) re-checks inside dispatch(): launch_approval() requires
+    THIS obligation approved=True (Accept set it), so the post proceeds; absent approval it still fails CLOSED and
+    posts nothing. On a clean dispatch we close with an E2 receipt naming the dispatched channels."""
+    ref = o.get("ref") or ""
+    book_id = ref.split(":", 1)[1] if ":" in ref else ""
+    if not book_id:
+        return _close_or_residue(led, o, "E2: distribution_launch packet had no book_id in ref — no-op") and 0 or 1
+    try:
+        sys.path.insert(0, str(REPO / "scripts" / "dist_scheduler"))
+        from scheduler import dispatch  # noqa: PLC0415
+        res = dispatch(book_id, dry_run=False)  # gate re-checked inside; refuses+returns if not approved
+    except PermissionError as e:  # gate refused (not approved) — never a silent green
+        _handshake("tiger", "tiger", ref, f"launch REFUSED by gate for {book_id}: {e}", status="blocked_unapproved")
+        print(f"  launch refused (gate) for {book_id}: {e}")
+        return 1
+    except Exception as e:  # noqa: BLE001 — dispatch failure must be loud, never close green
+        _handshake("tiger", "tiger", ref, f"launch dispatch error for {book_id}: {e}", status="apply_close_failed")
+        print(f"  launch dispatch error for {book_id}: {e}")
+        return 1
+    chans = ",".join(sorted((res.get("results") or {}).keys())) or "none"
+    mode = res.get("mode", "?")
+    if mode != "live":  # gate held it to dry_run (refused) — do NOT close as launched
+        _handshake("tiger", "tiger", ref, f"launch held to {mode} for {book_id} (gate not cleared)",
+                   status="blocked_unapproved")
+        print(f"  launch held to {mode} for {book_id} — not closing as live")
+        return 1
+    if not _close_or_residue(led, o, f"E2: LIVE dispatch fired for {book_id} via the launch bell — channels: "
+                                     f"{chans}; CHANNEL_TRACKER advanced gated→dispatched→live (approved_by="
+                                     f"{res.get('approved_by')})"):
+        return 1
+    print(f"  LAUNCHED {book_id} live → channels: {chans}")
+    return 0
+
+
 def _exec_status_confirm(led, o) -> int:
     """Scriptable: status/confirm packets (e.g. b12 republish, editorial format-approval) — the work is
     already staged; the bell records the receipt + closes."""
@@ -137,6 +174,7 @@ def _exec_agent_or_handshake(led, o, to: str = "tiger") -> int:
 
 _REGISTRY = {
     "distribution": _exec_distribution,
+    "distribution_launch": _exec_distribution_launch,
     "b12": _exec_status_confirm,
     "editorial_r1": _exec_status_confirm,
     "board_finding": lambda led, o: _exec_agent_or_handshake(led, o, to="tiger"),
