@@ -292,6 +292,43 @@ def doc():
         next_step="Cards may hand .md/.yaml docs under artifacts/, scripts/, or the books vault kdp/.")), 404
 
 
+@bp.get("/pdf")
+@require_principal
+def pdf():
+    """pdf — serve a whitelisted built PDF (manuscript / outline / cover) as application/pdf so a card can open
+    the operator's PREFERRED review format in-cockpit (KM 2026-06-23: 'my human review is pdf'). Same safety as
+    /doc: resolves ONLY under the allowed roots, .pdf only, resolve() collapses '..' and the result must still
+    start with an allowed root. Tolerates a leading 'breathline-books-vault/' prefix like /doc."""
+    from pathlib import Path as _P  # noqa: PLC0415
+    from flask import send_file  # noqa: PLC0415
+    rel = (request.args.get("path") or "").strip()
+    if not rel:
+        return jsonify(route_error(error="missing_path", what="Pass ?path=<pdf path>.",
+                                   why="No 'path' query parameter.", next_step="Add ?path=<built pdf path>.")), 400
+    if rel.startswith("breathline-books-vault/"):
+        rel = rel[len("breathline-books-vault/"):]
+    roots = [r.resolve() for r in _doc_roots()]
+    raw = _P(rel)
+    cands = [raw] if raw.is_absolute() else [r / rel for r in roots]
+    for r in _doc_roots():
+        cands.append(r.parent / rel)
+    for c in cands:
+        try:
+            rp = c.resolve()
+        except (OSError, ValueError):
+            continue
+        if rp.suffix.lower() != ".pdf":
+            continue
+        if not any(str(rp) == str(root) or str(rp).startswith(str(root) + "/") for root in roots):
+            continue   # traversal-safe
+        if rp.is_file():
+            return send_file(str(rp), mimetype="application/pdf", as_attachment=False, download_name=rp.name)
+    return jsonify(route_error(
+        error="not_found", what=f"No readable PDF for '{rel}'.",
+        why="The path did not resolve to a .pdf under any allowed doc root.",
+        next_step="Pass the vault-relative path to a built PDF (e.g. kdp/.../final/Immutable_Core.pdf).")), 404
+
+
 def _ring_the_bell(obligation_id: str, principal: str = "system:bell") -> None:
     """THE BELL — on KM's Accept, spawn the executor for this packet (detached; clone of /produce's spawn).
     Turns approval into automatic execution + receipt back in the cockpit, so 'processing' means working,
