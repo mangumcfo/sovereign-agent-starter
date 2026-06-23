@@ -2,22 +2,23 @@
   "type": "x_thread",
   "book_id": "01_strategic_finance",
   "content": [
-    "Compensate them with equity (typically 0.25-1.0% vesting over two years) and respect their time with structured quarterly meetings that come with a clear agenda and specific questions. 🧵 on Strategic Finance For Growth —",
-    "Here's the problem 👇 Loans up to $5 million can be available depending on the use of the funds and collateral.",
-    "The shift: The purchase price consists of a high percent of debt financing (approximately 90%) along with equity (approximately 10%).",
-    "The number that matters: The direct costs attributable to the production of goods sold by a company, including materials, labor, and manufacturing overhead",
+    "Most founders run their company like it's one business. It's actually four — and the finance that wins Stage 1 will sink you by Stage 3. 🧵 on Strategic Finance For Growth —",
+    "Stage 1 — Start-Up. Cash is oxygen and you ARE the finance team. One metric rules: months until you run out.",
+    "Stage 2 — Growth. The phone won't stop ringing — that's the danger. Growth burns cash faster than profit refills it. More companies die of success here than of failure.",
+    "Stage 3 — Maturity. The champagne years end. The job flips from chasing growth to defending the moat — and that needs a different CFO than the one who got you here.",
+    "Stage 4 — Decline & Renewal. A flat P&L on the screen. This is where finance decides: reinvent, or quietly wind down. Founders rarely see it coming. The numbers always do.",
     "This is Strategic Finance For Growth, Book 1 of \"The Executive Series.\" Get the full playbook on Amazon — search \"Strategic Finance For Growth Mangum.\""
   ],
   "meta": {
-    "posts": 5,
+    "posts": 6,
     "char_limit": 280,
-    "max_len": 220,
+    "max_len": 172,
     "starting_image": "cover_KDP.png",
     "series": "The Executive Series",
     "cta": "Amazon — search the title + Mangum"
   },
   "provenance": {
-    "source_section": "hook + 3 aha beats + Amazon CTA (book stats/quotes)",
+    "source_section": "hook + 4 aha beats + Amazon CTA (book stats/quotes)",
     "sealed_commit": "4cd4f3afb2ce796f674862e9739b0e53426b2bdd",
     "source_manuscript": "kdp/01_strategic_finance/v1.2/manuscript_v1.2.md"
   }

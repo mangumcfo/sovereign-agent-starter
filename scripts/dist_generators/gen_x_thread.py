@@ -17,6 +17,28 @@ import dist_common as C
 
 MAX = 280
 SERIES = {"agentic_playbooks": "Agentic AI Playbooks for Executives", "kdp_root": "The Executive Series"}
+
+# Crafted lead-hooks (the generation-aid step, GB [462]/[456]) — for books where pure extraction is too dry
+# to stop a scroll. Each hook is DERIVED FROM the book's own thesis (its core tension), human-phrased, not
+# verbatim — the supporting beats below it stay extracted-from-sealed. Keyed by book_id; absent → auto hook.
+CRAFTED_HOOKS = {
+    "01_strategic_finance": ("Most founders run their company like it's one business.\n\nIt's actually four — "
+                             "and the finance that wins Stage 1 will sink you by Stage 3."),
+    "12_agentic_enterprise": ("By 2030, \"AI-powered\" won't be an edge.\n\nIt'll be the cost of staying open. "
+                              "Here's the executive roadmap most firms will wish they'd started in 2026."),
+}
+
+# Crafted BEATS (generation-aid) for books too dense/reference-style for extraction to carry a coherent thread.
+# Each beat is a tight paraphrase of the book's OWN structure (not invented) — GB judges virality; KM approves.
+# strategic_finance: the book IS the Stage 1→4 growth journey; walk it (the chapter spine, not stray sentences).
+CRAFTED_BEATS = {
+    "01_strategic_finance": [
+        "Stage 1 — Start-Up. Cash is oxygen and you ARE the finance team. One metric rules: months until you run out.",
+        "Stage 2 — Growth. The phone won't stop ringing — that's the danger. Growth burns cash faster than profit refills it. More companies die of success here than of failure.",
+        "Stage 3 — Maturity. The champagne years end. The job flips from chasing growth to defending the moat — and that needs a different CFO than the one who got you here.",
+        "Stage 4 — Decline & Renewal. A flat P&L on the screen. This is where finance decides: reinvent, or quietly wind down. Founders rarely see it coming. The numbers always do.",
+    ],
+}
 CONNECTORS = ["Here's the problem 👇", "The shift:", "The number that matters:", "What actually changes:",
               "Why it compounds:", "The part executives miss:", "What this unlocks:"]
 
@@ -52,13 +74,24 @@ def generate(book_id: str) -> dict:
     ordered = viral + rest
 
     posts = []
-    # 1 — HOOK (carries the image): the single strongest line
-    hook = ordered[0] if ordered else (book["subtitle"] or title)
-    posts.append(_clip(f"{hook}\n\n🧵 on {title} —"))
-    # 2..n — one aha per post, thread connectors (punctuation separators; no header bleed)
-    for i, a in enumerate(ordered[1:7], 0):
-        conn = CONNECTORS[i % len(CONNECTORS)]
-        posts.append(_clip(f"{conn}\n\n{a}"))
+    # 1 — HOOK (carries the image): a crafted lead-hook if the book needs one, else the strongest extracted line
+    crafted = CRAFTED_HOOKS.get(book_id)
+    if crafted:
+        posts.append(_clip(f"{crafted}\n\n🧵 on {title} —", n=MAX + 60))   # hook may run slightly long (it's the stopper)
+        beats = ordered[:6]   # crafted hook didn't consume an extracted line → keep all beats
+    else:
+        hook = ordered[0] if ordered else (book["subtitle"] or title)
+        posts.append(_clip(f"{hook}\n\n🧵 on {title} —"))
+        beats = ordered[1:7]
+    # 2..n — beats. Crafted beats (already self-contained) for reference-dense books; else extracted aha + connectors.
+    crafted_beats = CRAFTED_BEATS.get(book_id)
+    if crafted_beats:
+        for b in crafted_beats:
+            posts.append(_clip(b, n=MAX + 40))
+    else:
+        for i, a in enumerate(beats, 0):
+            conn = CONNECTORS[i % len(CONNECTORS)]
+            posts.append(_clip(f"{conn}\n\n{a}"))
     # CTA — clickable Amazon + the series
     posts.append(_clip(f"This is {title}, Book 1 of \"{series}.\"\n\n"
                        f"Get the full playbook on Amazon — search \"{title} Mangum.\""))

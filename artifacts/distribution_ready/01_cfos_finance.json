@@ -1,6 +1,6 @@
 {
   "book_id": "01_cfos_finance",
-  "distribution_ready": false,
+  "distribution_ready": true,
   "checks": [
     {
       "check": "asset_completeness",
@@ -40,18 +40,16 @@
     },
     {
       "check": "gb_sample_read",
-      "pass": false,
-      "detail": "GB sample read: fail",
-      "gap": "awaiting GB sample-read PASS (virality/human-relevance board)"
+      "pass": true,
+      "detail": "GB sample read: pass",
+      "gap": null
     }
   ],
-  "gaps": [
-    "awaiting GB sample-read PASS (virality/human-relevance board)"
-  ],
+  "gaps": [],
   "meta": {
     "contract": "Distribution Rail v1.0",
     "standard": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/book_standards/distribution_standard.yaml",
     "standard_version": "1.0",
-    "evaluated_at": "2026-06-19T22:44:09Z"
+    "evaluated_at": "2026-06-20T18:14:22Z"
   }
 }
