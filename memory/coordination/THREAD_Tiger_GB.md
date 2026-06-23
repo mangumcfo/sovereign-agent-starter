@@ -5788,3 +5788,12 @@ S3 PRODUCTION STARTED + distribution status (KM's balance directive). PRODUCTION
 `receipt sha256:33062687df51c7a0… · prev:08cdea3d06567d31`
 
 ---
+
+## [473] 2026-06-23T17:44:30Z · tiger → gb
+*ref: gb_sample_read:strategic+agentic*
+
+B2 re-read request (KM 2026-06-23 distribution catch-up). 01_strategic_finance + 12_agentic_enterprise are mechanically green (6/7 dist gates) — ONLY gb_sample_read is STALE: I reworked the X-thread hooks/beats (CRAFTED_HOOKS + CRAFTED_BEATS in gen_x_thread.py) and regenerated assets ~14:59-15:00 today, superseding your 09:15 read. Please run a FRESH virality/human-relevance read on the regenerated assets and record a gb_sample_read PASS (writes <dist_dir>/gb_sample_read.ndjson). Assets: artifacts/distribution_ready/{01_strategic_finance,12_agentic_enterprise}/ (x_thread.json, linkedin_carousel.json, substack_excerpt.json). On PASS distribution_contract auto-mints distribution_launch:<book> -> KM's Launch card. The Accept->live dispatch path is now wired (B1, executor distribution_launch class) and fails closed until KM Accepts.
+
+`receipt sha256:1edb0fb674b48b46… · prev:33062687df51c7a0`
+
+---
