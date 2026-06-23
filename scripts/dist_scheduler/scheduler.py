@@ -24,7 +24,11 @@ from linkedin_client import LinkedInClient  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[2]
 DIST = REPO / "artifacts" / "distribution"
-STANDARD = Path("/home/kmangum/work-repos/mangumcfo/breathline-books-vault/book_standards/distribution_standard.yaml")
+VAULT = Path("/home/kmangum/work-repos/mangumcfo/breathline-books-vault")
+STANDARD = VAULT / "book_standards" / "distribution_standard.yaml"
+# Sidecar the scheduler OWNS (machine-churned) so the hand-curated CHANNEL_TRACKER.yaml (comments + inline style)
+# stays pristine; CHANNEL_TRACKER's `social` channel note points here.
+CHANNEL_TRACKER_SOCIAL = VAULT / "kdp" / "agentic_playbooks" / "CHANNEL_TRACKER_social.yaml"
 
 # channel → (asset file, client). X + LinkedIn FIRST per [445]; Substack staged-next (client pending).
 CHANNEL_ASSET = {"x": "x_thread", "linkedin": "linkedin_carousel", "substack": "substack_excerpt"}
@@ -34,6 +38,30 @@ CLIENTS = {"x": XClient(), "linkedin": LinkedInClient()}
 def _load_standard() -> dict:
     import yaml
     return yaml.safe_load(STANDARD.read_text(encoding="utf-8"))
+
+
+def update_channel_tracker(book_id: str, channel_states: dict, mode: str, principal: str | None) -> bool:
+    """Upsert this book's social-channel states into the scheduler-owned sidecar CHANNEL_TRACKER_social.yaml
+    (the follow-up flagged after the dry-run). states: staged→gated→dispatched→live (federation state machine).
+    Per book → per platform → {state, mode, approved_by, ts}. Safe full-rewrite (machine owns this file)."""
+    try:
+        import yaml
+        data = {}
+        if CHANNEL_TRACKER_SOCIAL.exists():
+            data = yaml.safe_load(CHANNEL_TRACKER_SOCIAL.read_text(encoding="utf-8")) or {}
+        sd = data.setdefault("social_distribution", {}) or {}
+        ts = _dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        sd[book_id] = {ch: {"state": s.get("state"), "mode": mode, "approved_by": principal, "ts": ts}
+                       for ch, s in channel_states.items()}
+        data["social_distribution"] = sd
+        data["_note"] = ("Scheduler-maintained social distribution state (X/LinkedIn/Substack). Sidecar of "
+                         "CHANNEL_TRACKER.yaml#channels.social. staged→gated→dispatched→live | gated=awaiting "
+                         "KM Launch Accept (CONSTITUTION §2). Auto-written by dist_scheduler/scheduler.py.")
+        CHANNEL_TRACKER_SOCIAL.write_text(yaml.safe_dump(data, sort_keys=False, default_flow_style=False, width=200),
+                                          encoding="utf-8")
+        return True
+    except Exception:
+        return False
 
 
 def launch_approval(book_id: str) -> tuple[bool, str | None, str]:
@@ -99,12 +127,13 @@ def dispatch(book_id: str, dry_run: bool = True) -> dict:
             refusal = {"book_id": book_id, "mode": "live", "refused": True, "reason": reason,
                        "results": [{"channel": ch, "ok": False, "live": False,
                                     "detail": f"REFUSED (ungated): {reason}"} for ch in channels]}
+            gated = {ch: {"state": "gated", "detail": reason} for ch in channels}
             (bdir / "channel_state.json").write_text(json.dumps(
-                {"book_id": book_id, "mode": "live", "refused": True, "reason": reason,
-                 "channels": {ch: {"state": "gated", "detail": reason} for ch in channels}}, indent=2),
+                {"book_id": book_id, "mode": "live", "refused": True, "reason": reason, "channels": gated}, indent=2),
                 encoding="utf-8")
             with log.open("a", encoding="utf-8") as fh:
                 fh.write(json.dumps({"book_id": book_id, "event": "live_refused", "reason": reason}) + "\n")
+            update_channel_tracker(book_id, gated, "live", None)   # tracker: gated (awaiting KM Accept)
             return refusal   # fail CLOSED — nothing posts
     for ch in channels:
         asset_name = CHANNEL_ASSET.get(ch)
@@ -129,6 +158,7 @@ def dispatch(book_id: str, dry_run: bool = True) -> dict:
     (bdir / "channel_state.json").write_text(
         json.dumps({"book_id": book_id, "channels": state, "drip": _drip_schedule(std),
                     "mode": "dry_run" if dry_run else "live", "approved_by": principal}, indent=2), encoding="utf-8")
+    update_channel_tracker(book_id, state, "dry_run" if dry_run else "live", principal)
     return {"book_id": book_id, "mode": "dry_run" if dry_run else "live", "results": results, "approved_by": principal}
 
 
