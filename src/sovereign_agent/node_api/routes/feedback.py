@@ -243,6 +243,10 @@ def doc():
             what="Pass ?path=<doc path> (the path the card references).",
             why="The request had no 'path' query parameter to resolve a document for.",
             next_step="Add ?path=<doc path> (the card's path field).")), 400
+    # Tolerate a leading vault-name prefix (cards sometimes hand 'breathline-books-vault/kdp/…' instead of the
+    # vault-relative 'kdp/…'). Normalize so either format resolves (still traversal-safe — checked below).
+    if rel.startswith("breathline-books-vault/"):
+        rel = rel[len("breathline-books-vault/"):]
     roots = [r.resolve() for r in _doc_roots()]
     raw = _P(rel)
     cands = [raw] if raw.is_absolute() else [r / rel for r in roots]
