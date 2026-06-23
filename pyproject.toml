@@ -61,6 +61,14 @@ dev = [
     "build>=1.0",
     "twine>=4.0",
 ]
+# book/distribution dev tooling (audit 2026-06-19 HIGH #3): Pillow is imported by the cover_standard gate
+# (scripts/review_ready_contract.py) + the carousel generator (scripts/dist_generators/gen_linkedin_carousel.py).
+# Dev tooling, NOT core runtime — so an extra, not a core dep; a clean `pip install .` stays Pillow-free, while
+# `pip install .[tooling]` enables the cover/figure gates instead of a silent ModuleNotFoundError. Analysis-only
+# style → deliberately NOT pinned in constraints.txt (keeps the constraints lock to the core pins).
+tooling = [
+    "Pillow>=10.0",
+]
 # Static-analysis / maturity tooling (audit 2026-06-16 #8/M1 + M3). Analysis-only — NOT runtime/test surface,
 # so deliberately NOT pinned in constraints.txt (keeps the constraints lock to the 4 core pins).
 analysis = [

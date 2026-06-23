@@ -56,16 +56,28 @@ def _render(entries: list) -> None:
 
 
 def append(frm: str, to: str, ref: str, msg: str) -> None:
+    # Audit 2026-06-19 HIGH #1 (fork-race): fence read-prev → write under the SAME exclusive lock the node
+    # uses (node_api/thread_channel.py: <thread>.lock). The CLI is the documented-primary writer; without a
+    # matching lock a CLI append racing a node /relay append both read the same prev and FORK the genesis
+    # chain (TOCTOU) → verify() breaks. flock makes the critical section atomic across processes.
+    import fcntl  # noqa: PLC0415 — POSIX advisory lock, shared with the node so both writers serialize
     ROOT.mkdir(parents=True, exist_ok=True)
-    entries = _load()
-    prev = entries[-1]["hash"] if entries else "GENESIS"
-    ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    h = _hash(prev, frm, to, ref, msg)
-    e = {"n": len(entries) + 1, "ts": ts, "from": frm, "to": to, "ref": ref, "msg": msg, "prev": prev, "hash": h}
-    with NDJSON.open("a", encoding="utf-8") as f:
-        f.write(json.dumps(e, ensure_ascii=False) + "\n")
-    _render(_load())
-    print(f"appended [{e['n']}] {frm}→{to} ref:{ref} · receipt sha256:{h[:16]}… prev:{prev[:16]}")
+    lock = NDJSON.with_name(NDJSON.name + ".lock")   # MUST equal thread_channel's lock path
+    with lock.open("w", encoding="utf-8") as lf:
+        fcntl.flock(lf.fileno(), fcntl.LOCK_EX)
+        try:
+            entries = _load()
+            prev = entries[-1]["hash"] if entries else "GENESIS"
+            ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+            h = _hash(prev, frm, to, ref, msg)
+            e = {"n": len(entries) + 1, "ts": ts, "from": frm, "to": to, "ref": ref, "msg": msg,
+                 "prev": prev, "hash": h}
+            with NDJSON.open("a", encoding="utf-8") as f:
+                f.write(json.dumps(e, ensure_ascii=False) + "\n")
+            _render(_load())
+            print(f"appended [{e['n']}] {frm}→{to} ref:{ref} · receipt sha256:{h[:16]}… prev:{prev[:16]}")
+        finally:
+            fcntl.flock(lf.fileno(), fcntl.LOCK_UN)
 
 
 def verify() -> bool:
