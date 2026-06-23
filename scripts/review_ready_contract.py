@@ -210,7 +210,13 @@ def _check_obligations(refs: list[str]) -> dict:
 
 def _check_fidelity(refs: list[str]) -> dict:
     """GB witness trace recorded a PASS for the book (semantic gate). Scans the GB meta-cylinder + any
-    *fidelity*.ndjson record. PASS iff a matching record indicates pass and no FAIL is the latest verdict."""
+    *fidelity*.ndjson record. PASS iff the latest verdict record for the book is PASS.
+
+    Robustness fix (GB-flagged 2026-06-23): parse the explicit `fidelity_verdict` FIELD VALUE, not the whole
+    line. The old check (`"pass" in low and "fail" not in low`) flipped a genuine PASS to '?' whenever the
+    record's prose legitimately contained the word 'fail' (e.g. a trace describing 'fail-closed' gate behavior) —
+    the same gate-brittleness class as the earlier brand/markup false-REDs. Now the verdict is value-scoped."""
+    import json as _json  # noqa: PLC0415
     sources = [GB_CYLINDER] + sorted(REPO.glob("artifacts/*fidelity*.ndjson")) + sorted(REPO.glob("memory/**/*fidelity*.ndjson"))
     latest = None
     for src in sources:
@@ -218,13 +224,28 @@ def _check_fidelity(refs: list[str]) -> dict:
             continue
         for line in src.read_text(encoding="utf-8").splitlines():
             low = line.lower()
-            # Only an ACTUAL verdict record counts — not any passing mention of the word "fidelity"
-            # (a later non-verdict GB note was overriding the real PASS). Require the verdict marker.
-            is_verdict = "fidelity_verdict" in low or ("fidelity" in low and ("verdict" in low or src.name.lower().find("fidelity") >= 0))
-            if not is_verdict or not any(r in low for r in refs):
+            if not any(r in low for r in refs):
                 continue
-            verdict = "pass" if ("pass" in low and "fail" not in low) else ("fail" if "fail" in low else "?")
-            latest = verdict  # later lines win (append-only → newest verdict)
+            verdict = None
+            # 1) Preferred: an explicit fidelity_verdict field — read its VALUE only (scoped), so prose
+            #    elsewhere in the record ('fail-closed', 'never fails') cannot poison the verdict.
+            try:
+                obj = _json.loads(line)
+            except (ValueError, TypeError):
+                obj = None
+            if isinstance(obj, dict):
+                for k, v in obj.items():
+                    kl = str(k).lower()
+                    if "fidelity_verdict" in kl or ("fidelity" in kl and "verdict" in kl):
+                        sv = str(v).lower()
+                        verdict = "pass" if "pass" in sv else ("fail" if "fail" in sv else verdict)
+            # 2) Fallback for non-JSON lines: read the token immediately AFTER a fidelity_verdict marker.
+            if verdict is None:
+                m = re.search(r"fidelity[_ ]verdict\W+(pass|fail)", low)
+                if m:
+                    verdict = m.group(1)
+            if verdict:
+                latest = verdict  # later lines win (append-only → newest verdict)
     passed = latest == "pass"
     return {"check": "fidelity_passed", "pass": passed,
             "detail": (f"verdict: {latest}" if latest else "no fidelity record for book"),
