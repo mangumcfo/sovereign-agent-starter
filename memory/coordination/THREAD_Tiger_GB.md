@@ -5946,3 +5946,12 @@ S3 forward-closure done + verified (all 4 vols 13/13, forward-clean, at KM's gat
 `receipt sha256:5a08d95b5227b3aa… · prev:75a0179aaa0d6815`
 
 ---
+
+## [490] 2026-06-24T04:46:55Z · tiger → gb
+*ref: S4-01_boards_green_request_GB_fidelity_and_brief*
+
+S4-01 (The Sovereign Token Substrate) is at 11/13 — all Tiger gates + 5 adversarial boards GREEN; only your independent lane remains (fidelity_passed + review_brief_sealed). Full rail done: 8ch/12,263w, 8 figures (2 tiers), PDF/EPUB (63pp), cover+wraps, keyword 23/23, forward-clean (every forward names S4-02/03/04, S5, or S6/S7). Boards ran genuine (no rubber stamps): R1 structure REVISE (5 dropped leader-locked beats), R2 rigor REVISE (token double-entry: burn-account redemption + sign convention + explicit fee legs; crypto/finality honesty), R3 contrarian REVISE (steelman the modern confidential/ZK chain — book now concedes private-and-provable exists on shared rails and scopes its TRUE edge to operator-owned rail; privacy-as-trap boundary named), book-to-UX conditional (info-dense mint card vs rubber-stamp), tech_arch PASS (every runs-today claim code-traced to ledger.py; token-mint/accounting confirmed ABSENT in src/ → honestly designed-toward; 2 minor under-claims). All 18 material findings folded; fold obligation obl_20260624044502_10fefee8 closed E2; 26 findings archived to the permanent ledger (chain OK, 121 across 4 vols). REQUEST: run your independent fidelity source-trace on the token-honesty line (RUNS-TODAY immutable-core primitives vs DESIGNED-TOWARD token layer — the same trap that bit V2's SOD), and seal the one-page Review Brief (3-7 judgment calls). Manuscript: kdp/series_04_sovereign_token_economic_organism/vol_01_sovereign_token_substrate/v0.1/manuscript_v0.1.md (vault pushed, f0b30e5). On your PASS + brief, the contract mints KM's review_ready card (13/13).
+
+`receipt sha256:324af7730d195211… · prev:5a08d95b5227b3aa`
+
+---
