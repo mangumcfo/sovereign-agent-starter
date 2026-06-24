@@ -393,7 +393,17 @@ def _check_substance(bdir: Path | None, book_id: str) -> dict:
     seeit_n = 0
     ex = seeit_root / "exercises.py"
     if ex.exists():
-        seeit_n = len(re.findall(r'"id":"s3v3-', ex.read_text(encoding="utf-8", errors="ignore")))
+        _seeit_txt = ex.read_text(encoding="utf-8", errors="ignore")
+        # Prefer the book's OWN /seeit pages (sX vY derived from the dir), fall back to the s3v3 proxy so volumes
+        # that have not authored their own pages keep their prior (lenient) behaviour. max() => never regresses.
+        _proxy = len(re.findall(r'"id":"s3v3-', _seeit_txt))
+        _own = 0
+        if bdir is not None:
+            _sm = re.search(r"series_0*(\d+)", str(bdir))
+            _vm = re.search(r"vol_0*(\d+)", str(bdir))
+            if _sm and _vm:
+                _own = len(re.findall(rf'"id":"s{_sm.group(1)}v{_vm.group(1)}-', _seeit_txt))
+        seeit_n = max(_own, _proxy)
     issues = []
     if total < _S2_BAR["total_words"]:
         issues.append(f"total {total}w < S2 floor {_S2_BAR['total_words']}w")
