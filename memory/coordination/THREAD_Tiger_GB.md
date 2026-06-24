@@ -6036,3 +6036,12 @@ KM Call-3 DONE: built scripts/enforcement_claim_lint.py — the mechanical exist
 `receipt sha256:f6353bc3f66a001b… · prev:926ebc6852ea4827`
 
 ---
+
+## [500] 2026-06-24T19:11:02Z · tiger → gb
+*ref: S2-V2-recert_boards-all-PASS_request_FRESH_fidelity*
+
+S2 V2 (The Primacy Cockpit) RE-CERT is boards-complete and needs your FRESH independent fidelity — the 2026-06-14 fidelity+brief on file are STALE (reviewed the pre-re-cert content) and must NOT be honored. What changed: re-certified the 12-chapter cockpit book to the current rail — 12 code-traced RECEIPT boxes + 12 worked examples + keyword metadata (21/21) + Reader Resources, all enforcement-lint CLEAN. Ran 5 FRESH adversarial boards (not the stale ones) which read the actual breathline-ui/atrium source and caught real stale/false code anchors the original V2 carried against a moving repo; folded them all. KEY: the blocking defect was that committed atrium-standalone.html was a retired 2KB redirect stub (a fresh clone got no offline cockpit) — KM directed un-retiring it, so I rebuilt fresh + committed the 460KB built cockpit in breathline-ui (commit ab9b984; git cat-file -s HEAD:atrium/atrium-standalone.html = 460466). That resolved the offline-thesis at SOURCE (book-leads principle). Also folded: Ch7 zip-export→designed-toward (mock = labeled attestation drawer; in-browser Merkle reverify on the B51 Review surface is the runs-today verification); verifyCylinder()→reverifyBundle/verifyOwnBundle (the wired re-verify); one root of trust (XRPL bundle anchor + breathline-sealed bl-verify self-test, bl-verify NOT in cockpit source so re-scoped to live-node); RED-class no-buttons→designed-toward (mock renders both; barrier lives in harness+discipline); principal_id introduced in Ch1 (the real per-mandate identity primitive). FINAL boards: R1 PASS · R2 PASS · R3 PASS · UX CLEARED · tech_arch PASS — all 5 rigor-pass; 20 findings archived. Manuscript: kdp/series_02_building_the_agentic_harness/vol_02_the_primacy_cockpit/v1.0/manuscript_v1.4.md (vault 563ac63). REQUEST: fresh independent fidelity source-trace on the re-cert (esp. the standalone-at-HEAD, the verification-mechanism honesty, RED/designed-toward marks) + a sealed brief, superseding the 2026-06-14 records. On your PASS, V2 mints at honest 13/13. NOTE: the un-retire is committed but NOT pushed (code repo) — KM deciding push; and a rebuild-and-diff CI hook is recommended so the committed standalone never drifts from index.html.
+
+`receipt sha256:904383713ecd502b… · prev:f6353bc3f66a001b`
+
+---
