@@ -76,8 +76,36 @@ def _seeit_runs_today(text: str):
         yield ("See-It-Work step", m.group(1))
 
 
+# DISPLAY-vs-ENFORCE (GB 2026-06-24): a UI/cockpit surface phrasing that claims the SURFACE enforces a guarantee
+# it only RENDERS -- "does not surface X", "suppresses the buttons", "the cockpit hides/blocks X in the UI". These
+# live in BODY PROSE (not RECEIPT runs-today blocks), so the receipt scan misses them. A display-vs-enforce claim
+# must be marked designed-toward OR attributed to the harness/render, else it asserts UI enforcement it doesn't do.
+DISPLAY_ENFORCE_PAT = re.compile(
+    r"(?:cockpit|surface|inbox|stillpoint|\bui\b|view)\b[^.]{0,80}?\b(?:does not surface|suppress\w*|hides?|refuses to surface|removes the button)"
+    r"|suppress\w* the (?:approve/deny|buttons?|approve|deny)"
+    r"|does not surface any (?:green|red|yellow|auto)", re.I)
+DISPLAY_SAFE = re.compile(
+    r"designed-?toward|harness|renders?\b|render that|makes? (?:it )?visible|surfaces the|\.js\b|\.py\b|conditional|"
+    r"the cockpit's job is to render|the operator's discipline|live runtime", re.I)
+
+
+def _display_vs_enforce(text):
+    gaps=[]
+    body=re.sub(r"```.*?```","",text,flags=re.S)
+    body=re.sub(r"(?m)^[ \t]*>.*$","",body)
+    for sent in re.split(r"(?<=[.!?])\s+", body):
+        m=DISPLAY_ENFORCE_PAT.search(sent)
+        if m and not DISPLAY_SAFE.search(sent):
+            gaps.append({"sev":"HARD","where":"body (display-vs-enforce)","hit":m.group(0)[:60],
+                         "why":"UI/cockpit phrasing claims the SURFACE enforces what it only RENDERS -- attribute to "
+                               "the harness / frame as render, or mark DESIGNED-TOWARD (surface guard ships later)",
+                         "text":re.sub(r"\s+"," ",sent)[:200]})
+    return gaps
+
+
 def lint_text(text: str) -> dict:
     flags = []
+    flags += _display_vs_enforce(text)
     # RECEIPT blocks are markdown blockquotes (each line prefixed `> `); strip the quote marker so the ``` fence
     # regex sees a clean fenced block. (Without this the receipts are silently skipped — a false PASS.)
     dequoted = re.sub(r"(?m)^[ \t]*>[ \t]?", "", text)

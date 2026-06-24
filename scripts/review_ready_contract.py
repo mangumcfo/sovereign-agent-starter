@@ -217,18 +217,22 @@ def _check_fidelity(refs: list[str]) -> dict:
     record's prose legitimately contained the word 'fail' (e.g. a trace describing 'fail-closed' gate behavior) —
     the same gate-brittleness class as the earlier brand/markup false-REDs. Now the verdict is value-scoped."""
     import json as _json  # noqa: PLC0415
-    sources = [GB_CYLINDER] + sorted(REPO.glob("artifacts/*fidelity*.ndjson")) + sorted(REPO.glob("memory/**/*fidelity*.ndjson"))
-    latest = None
+    # One-truth ordering fix (GB-flagged 2026-06-24): select the latest verdict by the record's DATE — the
+    # filename date (YYYY-MM-DD) → an in-file ts field → file mtime — NOT by filename sort order. The old code
+    # iterated `sorted(glob())` and let the last file win, so a stale 'vol_..._2026-06-14' (PASS) out-sorted a
+    # fresh 'GB_vol_..._2026-06-24' (HOLD) alphabetically and propped a false-green. Now a fresh verdict wins.
+    sources = [GB_CYLINDER] + list(REPO.glob("artifacts/*fidelity*.ndjson")) + list(REPO.glob("memory/**/*fidelity*.ndjson"))
+    candidates = []  # (date_key, mtime, verdict)
     for src in sources:
         if not src.is_file():
             continue
+        verdict = None
+        ts_in_file = ""
         for line in src.read_text(encoding="utf-8").splitlines():
             low = line.lower()
             if not any(r in low for r in refs):
                 continue
-            verdict = None
-            # 1) Preferred: an explicit fidelity_verdict field — read its VALUE only (scoped), so prose
-            #    elsewhere in the record ('fail-closed', 'never fails') cannot poison the verdict.
+            # explicit fidelity_verdict field — read its VALUE only (scoped); recognize pass/fail/HOLD/superseded
             try:
                 obj = _json.loads(line)
             except (ValueError, TypeError):
@@ -238,14 +242,24 @@ def _check_fidelity(refs: list[str]) -> dict:
                     kl = str(k).lower()
                     if "fidelity_verdict" in kl or ("fidelity" in kl and "verdict" in kl):
                         sv = str(v).lower()
-                        verdict = "pass" if "pass" in sv else ("fail" if "fail" in sv else verdict)
-            # 2) Fallback for non-JSON lines: read the token immediately AFTER a fidelity_verdict marker.
+                        verdict = ("pass" if "pass" in sv else "fail" if "fail" in sv
+                                   else "hold" if "hold" in sv else "superseded" if "supersed" in sv else verdict)
+                    if kl in ("ts", "date", "timestamp", "sealed_at", "when") and v:
+                        ts_in_file = str(v)
             if verdict is None:
-                m = re.search(r"fidelity[_ ]verdict\W+(pass|fail)", low)
+                m = re.search(r"fidelity[_ ]verdict\W+(pass|fail|hold|superseded)", low)
                 if m:
                     verdict = m.group(1)
-            if verdict:
-                latest = verdict  # later lines win (append-only → newest verdict)
+        if not verdict:
+            continue
+        fnm = re.search(r"(\d{4}-\d{2}-\d{2})", src.name)
+        date_key = (fnm.group(1) if fnm else (ts_in_file[:10] if ts_in_file else ""))
+        candidates.append((date_key, src.stat().st_mtime, verdict))
+    if not candidates:
+        latest = None
+    else:
+        candidates.sort(key=lambda c: (c[0], c[1]))  # by date, then mtime — fresh out-truths stale
+        latest = candidates[-1][2]
     passed = latest == "pass"
     return {"check": "fidelity_passed", "pass": passed,
             "detail": (f"verdict: {latest}" if latest else "no fidelity record for book"),
