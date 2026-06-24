@@ -528,6 +528,32 @@ def _check_render_fidelity(bdir: Path | None, book_id: str) -> dict:
             "gap": ("render divergence vs S2 pen: " + "; ".join(c["detail"] for c in fails)) if fails else None}
 
 
+def _check_enforcement_claims(bdir: Path | None, book_id: str) -> dict:
+    """enforcement_claims (KM Call-3, 2026-06-24): the mechanical exists_is_not_wired backstop. Every RECEIPT
+    RUNS-TODAY claim that asserts ENFORCEMENT must cite a live code trace or be marked DESIGNED-TOWARD; known-unwired
+    phrasings HARD-fail. Closes the recurring class (S3-V2 SOD + S4-V2 'YAML enforced at the write') so a board
+    forgetting to trace can no longer let an overclaim ship. Advisory flags pass-with-note; HARD flags block."""
+    name = "enforcement_claims"
+    if not bdir:
+        return {"check": name, "pass": False, "detail": "book dir not found", "gap": "no book dir"}
+    mss = sorted((p for p in bdir.glob("manuscript_v*.md")
+                 if re.match(r"manuscript_v[0-9.]+\.md$", p.name)), key=_vkey)
+    if not mss:
+        return {"check": name, "pass": True, "detail": "no manuscript to scan", "gap": None}
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import enforcement_claim_lint
+        r = enforcement_claim_lint.lint_text(mss[-1].read_text(encoding="utf-8"))
+    except Exception as e:  # surface, never silently pass
+        return {"check": name, "pass": False, "detail": f"lint error: {e}"[:90], "gap": f"enforcement lint failed: {e}"}
+    hard, adv = len(r["hard"]), len(r["flags"]) - len(r["hard"])
+    detail = f"{r['n_units']} runs-today claims scanned · {hard} HARD · {adv} advisory"
+    gap = None
+    if r["hard"]:
+        gap = "exists != wired overclaim(s): " + "; ".join(f"{f['where']}:{f['hit']}" for f in r["hard"])
+    return {"check": name, "pass": r["pass"], "detail": detail, "gap": gap}
+
+
 def _check_production_standards(bdir: Path | None, book_id: str) -> dict:
     """production_standards (KM-ratified 2026-06-18): the manuscript matches the S2 'pen' as enforceable layout
     rules — no editing artifacts, S2-style flat clickable TOC, chapter-end order (receipt closes the chapter),
@@ -711,7 +737,7 @@ def evaluate(book_id: str, extra: list[str]) -> dict:
               _check_review_brief(bdir, book_id, extra), _check_artifact_package(bdir, book_id),
               _check_substance(bdir, book_id), _check_canonical_toolchain(bdir, book_id),
               _check_book_structure(bdir, book_id), _check_render_fidelity(bdir, book_id),
-              _check_production_standards(bdir, book_id),
+              _check_production_standards(bdir, book_id), _check_enforcement_claims(bdir, book_id),
               _check_forward_reference(bdir, book_id), _check_keyword_discipline(bdir, book_id),
               _check_cover_standard(bdir, book_id)]
     ready = all(c["pass"] for c in checks)
