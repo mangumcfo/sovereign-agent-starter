@@ -122,22 +122,28 @@ def _exec_distribution_launch(led, o) -> int:
     try:
         sys.path.insert(0, str(REPO / "scripts" / "dist_scheduler"))
         from scheduler import dispatch  # noqa: PLC0415
-        res = dispatch(book_id, dry_run=False)  # gate re-checked inside; refuses+returns if not approved
-    except PermissionError as e:  # gate refused (not approved) — never a silent green
-        _handshake("tiger", "tiger", ref, f"launch REFUSED by gate for {book_id}: {e}", status="blocked_unapproved")
-        print(f"  launch refused (gate) for {book_id}: {e}")
-        return 1
+        res = dispatch(book_id, dry_run=False)  # gate re-checked inside; returns {refused:True} if not approved
     except Exception as e:  # noqa: BLE001 — dispatch failure must be loud, never close green
         _handshake("tiger", "tiger", ref, f"launch dispatch error for {book_id}: {e}", status="apply_close_failed")
         print(f"  launch dispatch error for {book_id}: {e}")
         return 1
-    chans = ",".join(sorted((res.get("results") or {}).keys())) or "none"
+    # CONSTITUTIONAL GATE refusal is SIGNALLED in the return dict ({refused:True}), not raised — check it FIRST,
+    # before mode (a refusal carries mode="live" too). Audit HIGH [491] 2026-06-24: the old PermissionError branch
+    # was dead (dispatch never raises it) and the chans line below called .keys() on `results`, which is a LIST.
+    if res.get("refused"):  # gate not cleared (launch obligation absent/unapproved) — never a silent green
+        reason = res.get("reason", "gate refused")
+        _handshake("tiger", "tiger", ref, f"launch REFUSED by gate for {book_id}: {reason}",
+                   status="blocked_unapproved")
+        print(f"  launch refused (gate) for {book_id}: {reason}")
+        return 1
     mode = res.get("mode", "?")
-    if mode != "live":  # gate held it to dry_run (refused) — do NOT close as launched
+    if mode != "live":  # gate held it to dry_run — do NOT close as launched
         _handshake("tiger", "tiger", ref, f"launch held to {mode} for {book_id} (gate not cleared)",
                    status="blocked_unapproved")
         print(f"  launch held to {mode} for {book_id} — not closing as live")
         return 1
+    # dispatch() returns results as a LIST of {channel, ok, live, ...} dicts — name the dispatched channels.
+    chans = ",".join(sorted(r.get("channel", "?") for r in (res.get("results") or []))) or "none"
     if not _close_or_residue(led, o, f"E2: LIVE dispatch fired for {book_id} via the launch bell — channels: "
                                      f"{chans}; CHANNEL_TRACKER advanced gated→dispatched→live (approved_by="
                                      f"{res.get('approved_by')})"):

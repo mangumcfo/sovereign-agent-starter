@@ -95,6 +95,54 @@ def test_close_failure_is_not_a_false_success(led, tmp_path, monkeypatch):
     assert any(h.get("status") == "apply_close_failed" for h in hs)   # residue is visible, not swallowed
 
 
+def _fake_scheduler(monkeypatch, ret):
+    """Inject a fake `scheduler` module so _exec_distribution_launch's call-time `from scheduler import dispatch`
+    picks up a stub returning `ret` — lets us drive the bell against the REAL list-shaped dispatch return."""
+    import types
+    mod = types.ModuleType("scheduler")
+    mod.dispatch = lambda book_id, dry_run=True: ret
+    monkeypatch.setitem(sys.modules, "scheduler", mod)
+
+
+def test_distribution_launch_closes_on_list_shaped_dispatch(led, monkeypatch):
+    """Audit HIGH [491] 2026-06-24: dispatch() returns `results` as a LIST of {channel,...} dicts, not a dict.
+    The old handler called .keys() on it OUTSIDE the try → posted LIVE then threw, obligation never closed
+    (a false failure on an approved launch). The bell must name the channels from the list and close E2."""
+    _fake_scheduler(monkeypatch, {
+        "book_id": "01_strategic_finance", "mode": "live", "approved_by": "KM-1176",
+        "results": [
+            {"channel": "x", "ok": True, "live": True, "detail": "posted"},
+            {"channel": "linkedin", "ok": True, "live": True, "detail": "posted"},
+        ],
+    })
+    ob = led.open("launch pkt", ref="distribution_launch:01_strategic_finance", classification="C2")
+    assert E.execute(ob["id"]) == 0                               # no crash on the list (was the bug)
+    after = _fresh(led)
+    assert after._is_closed(ob["id"]) is True                    # approved launch closes (no false failure)
+    credit = next(e for e in after.iter_entries() if e.get("type") == "credit" and e.get("closes") == ob["id"])
+    assert credit["receipt"]["evidence_tier"] == "E2"
+    assert "linkedin,x" in credit["receipt"]["evidence"]         # channels named from the LIST, sorted
+
+
+def test_distribution_launch_refused_stays_open(led, tmp_path, monkeypatch):
+    """The constitutional gate signals refusal in the RETURN ({refused:True}), not by raising — and a refusal
+    still carries mode='live'. The bell must detect refused FIRST, leave the obligation OPEN, and record a
+    blocked_unapproved residue — never a silent green that implies a post happened."""
+    import json
+    _fake_scheduler(monkeypatch, {
+        "book_id": "01_strategic_finance", "mode": "live", "refused": True,
+        "reason": "launch obligation NOT approved", "results": [
+            {"channel": "x", "ok": False, "live": False, "detail": "REFUSED (ungated)"},
+        ],
+    })
+    ob = led.open("launch pkt", ref="distribution_launch:01_strategic_finance", classification="C2")
+    assert E.execute(ob["id"]) == 1                              # refused → non-zero, not a false success
+    after = _fresh(led)
+    assert after._is_closed(ob["id"]) is False                  # stays OPEN — nothing posted, nothing closed
+    hs = json.loads((tmp_path / "handshakes.json").read_text())
+    assert any(h.get("status") == "blocked_unapproved" for h in hs)
+
+
 def test_execute_refuses_unapproved_material(led, tmp_path):
     """Engine 95+ #4b-ii fail-fast: a MATERIAL obligation that hasn't cleared the breath-gate is refused at
     execute() top (returns 1, stays OPEN, blocked_unapproved residue) — defense-in-depth ahead of the
