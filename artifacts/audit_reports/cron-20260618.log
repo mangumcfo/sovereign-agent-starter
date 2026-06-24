@@ -1,0 +1,19 @@
+Night-watch delta audit complete.
+
+## Summary — 2026-06-18
+
+**Baseline:** `audit-delta-2026-06-17.md` @ `9510a6c`. **HEAD:** `0ba1396`. Two commits + working-tree changes since baseline; code/config surface was tight (4 files + 2 deletions), so this stayed token-light: **one Opus read-only finder, verification only on new findings.**
+
+**Result — clean:**
+- **NEW: 0 CRIT, 0 HIGH, 0 MED, 2 LOW** | **REGRESSIONS: 0** | **FIXED: 1**
+- 2 LOW are both in the new `roadmap_sealed_guard.py`: (1) title-string fallback merge key can collide/orphan on rename; (2) `main()` exit-1 drop path isn't exercised end-to-end. Both have concrete fixes in the report — neither is escalation-worthy.
+- **FIXED:** baseline LOW#2 — `SCOUT_CRONTAB.txt` `;`→`&&` (tree-build failure no longer feeds scout a stale tree; bonus: first command now tees to the dated log instead of `/dev/null`).
+- **Verified solid:** the `[390]` `feedback.py` reply-to-card linkage preserves `principal_id` flow, doesn't bypass the gate model, and re-routes batch→technical without silent drop or auto-approve of KM input. Deleted scout packets leave no dangling refs.
+- **Tests:** 18 feedback/guard tests pass.
+
+**Actions taken:**
+- ✅ Report saved → `artifacts/audit_reports/audit-delta-2026-06-18.md`
+- ✅ Run logged to GB meta-cylinder (entry `0cb9a0f3`, `audit_run`, ref `audit-delta-2026-06-18`; total 1272)
+- ⏭️ **No Tiger THREAD** — 0 new CRIT/HIGH, 0 regressions, so no escalation per the runbook.
+
+One housekeeping note: while probing the CLI I accidentally ran `gb_meta_cylinder.py log --help`, which appended a stray `--help` entry (now the prev_hash `41142cc7`). The chain is append-only/hash-linked so I left it rather than rewrite history — flagging it for transparency.

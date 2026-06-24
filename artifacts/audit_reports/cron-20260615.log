@@ -1,0 +1,19 @@
+Night watch delta audit complete. Summary:
+
+## Result: NO CODE DELTA — 0 new / 0 regressions / 0 fixed
+
+**Baseline:** `audit-report-2026-06-14.md` (sealed 2026-06-13 21:58, HEAD `03cb12a`, 0 CRIT / 4 HIGH, 82/100).
+**Window:** `03cb12a` → `f08106b` — 10 commits + working tree, 26 changed files.
+
+**Key finding:** every changed file is content/data — 17 in `artifacts/` (book JSON, `series_pipeline.yaml`, workflow maps, logs, the baseline report itself) and 9 in `memory/` (obligation NDJSON, handshakes, proposals, threads). **Zero** changes to `src/`, `scripts/`, `tests/`, or build/deps. Since all 7 audit dimensions are code dimensions, there was no finder surface.
+
+**Cost decision:** I did **not** spawn the Opus 7-dimension finder — running it against book JSON / memory NDJSON would yield nothing and violate the "keep total cost minimal" mandate. This is the no-relevant-changes branch. Instead I did the one check that *can* regress through data inline: a token-light constitutional spot-check of the obligation/handshake deltas.
+
+**Constitutional spot-check (PASS):** new obligation rows are well-formed and hash-chained — correct Propose state (`draft:true`/`approved:false`/`approved_by:null`) and Execute state (`closed_by`/`evidence_tier:E2`/`hash`). No `close_failed`, no silent-failure markers, no null-principal. Baseline **HIGH #4 (atrium_executor false-close) is NOT firing in the live ledger.**
+
+**Carry-forward:** the 4 baseline HIGH are all *code* fixes and no code was touched, so they remain OPEN/unchanged (tracked by the existing Engine 82→95 obligation).
+
+**Outputs:**
+- `artifacts/audit_reports/audit-delta-2026-06-15.md`
+- Logged to GB meta-cylinder (`hash:48416916715658b7`)
+- **No THREAD to Tiger** (no new CRITICAL/HIGH)

@@ -25,3 +25,7 @@
 Retroactive Renderability audit of manuscript v1.3 — the perfect proving ground: its substrate just went live (bl-verify), so every prose claim now has a real render-target to check against. Findings → obligations → version-bumped fixes (v1.4) → GB rigor audit → re-stamp.
 
 ∞Δ∞ SEAL: complete — non-deterministic love writes the outline; disciplined prose makes it renderable; deterministic extrusion makes it last. The elk run tandem.
+
+---
+## R8 canonical marker reconciliation (GB, 2026-06-18)
+The Receipt box marker is **`▣ RECEIPT`** (▣ = U+25A3 WHITE SQUARE CONTAINING BLACK SMALL SQUARE — a print-safe geometric glyph, **not an emoji**). The earlier **📦** emoji is **R8-banned** (no emoji glyphs in manuscript elements) and must never appear. `review_ready_contract.py#_check_gate6_renderability` was counting "📦 Receipt Box" — a marker R8 forbids — making Gate 6 structurally unsatisfiable (S2 V1 hit this too). Reconciled: the gate6 check now counts `▣ RECEIPT`. One marker, R8-safe, standard ↔ check ↔ manuscript agree. ∞Δ∞

@@ -1,0 +1,108 @@
+{
+  "book_id": "vol_04_federation_and_partner_device_gateway",
+  "review_ready": false,
+  "checks": [
+    {
+      "check": "boards_executed",
+      "pass": false,
+      "detail": "editorial_round1=rigor-pass \u00b7 editorial_round2=rigor-pass \u00b7 editorial_round3=rigor-pass \u00b7 book_to_ux=present \u00b7 technical=rigor-pass \u00b7 renderability_gate6=no-receipt-boxes",
+      "statuses": {
+        "editorial_round1": "rigor-pass",
+        "editorial_round2": "rigor-pass",
+        "editorial_round3": "rigor-pass",
+        "book_to_ux": "present",
+        "technical": "rigor-pass",
+        "renderability_gate6": "no-receipt-boxes"
+      },
+      "gap": "renderability_gate6: Gate 6 RED \u2014 manuscript has no Receipt boxes (Helix anchor missing)"
+    },
+    {
+      "check": "obligations_closed",
+      "pass": true,
+      "detail": "0 open for book (0 blocking, 0 deferred)",
+      "gap": "",
+      "blocking_ids": []
+    },
+    {
+      "check": "fidelity_passed",
+      "pass": true,
+      "detail": "verdict: pass",
+      "gap": ""
+    },
+    {
+      "check": "review_brief_sealed",
+      "pass": true,
+      "detail": "vol_04_federation_and_partner_device_gateway_REVIEW_BRIEF_2026-06-16.md: 4 judgment calls",
+      "gap": ""
+    },
+    {
+      "check": "artifact_package",
+      "pass": true,
+      "detail": "pdf=Y \u00b7 figures=12 \u00b7 cover=Y \u00b7 seeit=Y",
+      "gap": null
+    },
+    {
+      "check": "substance_s2_bar",
+      "pass": false,
+      "detail": "total=10589w \u00b7 chapters=12@avg882w \u00b7 appx=0 \u00b7 seeit=10/12ch",
+      "gap": "below S2 bar: /seeit 10 < 12 (\u2248 one per chapter)"
+    },
+    {
+      "check": "canonical_toolchain",
+      "pass": false,
+      "detail": "no toolchain.json",
+      "gap": "no build provenance \u2014 record toolchain.json (canonical producers per artifact)"
+    },
+    {
+      "check": "book_structure",
+      "pass": false,
+      "detail": "chapters=12 \u00b7 worked=2 \u00b7 signal=11 \u00b7 steps=12 \u00b7 front+back present",
+      "gap": "missing S1/S2 sections: back:Reader Resources"
+    },
+    {
+      "check": "render_fidelity",
+      "pass": false,
+      "detail": "Federated_Sovereignty.pdf: stray font families: ['DejaVu-Serif-Bold'] \u00b7 no raw-markup leak",
+      "gap": "render divergence vs S2 pen: stray font families: ['DejaVu-Serif-Bold']"
+    },
+    {
+      "check": "production_standards",
+      "pass": false,
+      "detail": "banned_artifacts=ok \u00b7 toc_format=ok \u00b7 chapter_end_order=RED \u00b7 callout_clumping=ok \u00b7 figure",
+      "gap": "S2-pen layout divergence: Ch1:no-receipt; Ch2:no-receipt; Ch3:no-receipt; Ch4:no-receipt; Ch5:no-receipt; Ch6:no-r; 4 figure markers clumped (<=2 lines apart)"
+    },
+    {
+      "check": "forward_reference",
+      "pass": true,
+      "detail": "0 forward refs \u00b7 0 sections without a named closing series (manuscript_v1.4.md)",
+      "gap": null
+    },
+    {
+      "check": "keyword_discipline",
+      "pass": false,
+      "detail": "no keyword targets found",
+      "gap": "D5 \u2014 locked-outline keyword targets not found (metadata chapter_kw)"
+    },
+    {
+      "check": "cover_standard",
+      "pass": true,
+      "detail": "hero+imprint+tag+author+palette+wraps verified in the render",
+      "gap": null
+    }
+  ],
+  "gaps": [
+    "renderability_gate6: Gate 6 RED \u2014 manuscript has no Receipt boxes (Helix anchor missing)",
+    "below S2 bar: /seeit 10 < 12 (\u2248 one per chapter)",
+    "no build provenance \u2014 record toolchain.json (canonical producers per artifact)",
+    "missing S1/S2 sections: back:Reader Resources",
+    "render divergence vs S2 pen: stray font families: ['DejaVu-Serif-Bold']",
+    "S2-pen layout divergence: Ch1:no-receipt; Ch2:no-receipt; Ch3:no-receipt; Ch4:no-receipt; Ch5:no-receipt; Ch6:no-r; 4 figure markers clumped (<=2 lines apart)",
+    "D5 \u2014 locked-outline keyword targets not found (metadata chapter_kw)"
+  ],
+  "meta": {
+    "contract": "Review-Ready Rail R1 v1.0",
+    "spec": "artifacts/GB_ReviewReady_Rail_Spec_2026-06-10.md",
+    "book_dir": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/series_02_building_the_agentic_harness/vol_04_federation_and_partner_device_gateway/v1.0",
+    "evaluated_at": "2026-06-24T15:48:51Z"
+  }
+}

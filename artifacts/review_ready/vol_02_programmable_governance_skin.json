@@ -1,0 +1,100 @@
+{
+  "book_id": "vol_02_programmable_governance_skin",
+  "review_ready": true,
+  "checks": [
+    {
+      "check": "boards_executed",
+      "pass": true,
+      "detail": "editorial_round1=rigor-pass \u00b7 editorial_round2=rigor-pass \u00b7 editorial_round3=rigor-pass \u00b7 book_to_ux=present \u00b7 technical=rigor-pass \u00b7 renderability_gate6=green(9-boxes)",
+      "statuses": {
+        "editorial_round1": "rigor-pass",
+        "editorial_round2": "rigor-pass",
+        "editorial_round3": "rigor-pass",
+        "book_to_ux": "present",
+        "technical": "rigor-pass",
+        "renderability_gate6": "green(9-boxes)"
+      },
+      "gap": ""
+    },
+    {
+      "check": "obligations_closed",
+      "pass": true,
+      "detail": "0 open for book (0 blocking, 0 deferred)",
+      "gap": "",
+      "blocking_ids": []
+    },
+    {
+      "check": "fidelity_passed",
+      "pass": true,
+      "detail": "verdict: pass",
+      "gap": ""
+    },
+    {
+      "check": "review_brief_sealed",
+      "pass": true,
+      "detail": "GB_vol_02_programmable_governance_skin_REVIEW_BRIEF_2026-06-23.md: 4 judgment calls",
+      "gap": ""
+    },
+    {
+      "check": "artifact_package",
+      "pass": true,
+      "detail": "pdf=Y \u00b7 figures=8 \u00b7 cover=Y \u00b7 seeit=Y",
+      "gap": null
+    },
+    {
+      "check": "substance_s2_bar",
+      "pass": true,
+      "detail": "total=11722w \u00b7 chapters=8@avg1465w \u00b7 appx=0 \u00b7 seeit=10/8ch",
+      "gap": null
+    },
+    {
+      "check": "canonical_toolchain",
+      "pass": true,
+      "detail": "producers=pdf:build_v1.0.py,figures:generate_svg_v1.0.py,cover:generate_wraps_standard.py,",
+      "gap": null
+    },
+    {
+      "check": "book_structure",
+      "pass": true,
+      "detail": "chapters=8 \u00b7 worked=8 \u00b7 signal=8 \u00b7 steps=8 \u00b7 front+back present",
+      "gap": null
+    },
+    {
+      "check": "render_fidelity",
+      "pass": true,
+      "detail": "Governance_Skin.pdf: 6 fonts, all within ['Noto-Serif', 'Liberation'] \u00b7 no raw-markup leak",
+      "gap": null
+    },
+    {
+      "check": "production_standards",
+      "pass": true,
+      "detail": "banned_artifacts=ok \u00b7 toc_format=ok \u00b7 chapter_end_order=ok \u00b7 callout_clumping=ok \u00b7 figure_",
+      "gap": null
+    },
+    {
+      "check": "forward_reference",
+      "pass": true,
+      "detail": "0 forward refs \u00b7 0 sections without a named closing series (manuscript_v0.1.md)",
+      "gap": null
+    },
+    {
+      "check": "keyword_discipline",
+      "pass": true,
+      "detail": "32/32 target keywords anchored",
+      "gap": null
+    },
+    {
+      "check": "cover_standard",
+      "pass": true,
+      "detail": "hero+imprint+tag+author+palette+wraps verified in the render",
+      "gap": null
+    }
+  ],
+  "gaps": [],
+  "meta": {
+    "contract": "Review-Ready Rail R1 v1.0",
+    "spec": "artifacts/GB_ReviewReady_Rail_Spec_2026-06-10.md",
+    "book_dir": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/series_03_programmable_sovereign_erp/vol_02_programmable_governance_skin/v0.1",
+    "evaluated_at": "2026-06-24T03:54:19Z"
+  }
+}

@@ -1,0 +1,17 @@
+Night watch complete. Logged to the cylinder (hash `950e8f1d`, entry 1454).
+
+## Nightly Delta Audit — 2026-06-20
+
+**Baseline:** `artifacts/audit_reports/audit-report-2026-06-19.md` (2026-06-19 23:13)
+
+**Result: no auditable code delta → finder agent skipped (cost-minimal mandate).**
+
+- **Zero new commits** since the baseline. The baseline (23:13) post-dates the last commit `b0e4099` (22:32), so everything committed is already covered.
+- The only non-artifact working-tree change is `scripts/cron/SCOUT_CRONTAB.txt` — a **single line**, and it's an *improvement*, not a finding:
+  - `>/dev/null 2>&1; python3 scout_run.py` → `>> cron-$(date).log 2>&1 && python3 scout_run.py`
+  - i.e. build output is now **logged instead of silently discarded**, and `;` → `&&` so scout only runs if the tree build succeeds. That's aligned with the constitution's *no-silent-failures* principle.
+- All other working-tree churn is `artifacts/` and `memory/` (audit outputs / data), out of scope for the 7-dimension code audit.
+
+**Counts:** new=0, critical=0, high=0, regressions=0, fixed=0.
+
+No Tiger thread needed (no new CRITICAL/HIGH). Run logged to the GB meta-cylinder.

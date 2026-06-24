@@ -19,11 +19,10 @@
     {
       "check": "obligations_closed",
       "pass": false,
-      "detail": "2 open for book (2 blocking, 0 deferred)",
-      "gap": "close or defer-with-reason: obl_20260613011503_5b1b1c53, obl_20260613174544_418894b5",
+      "detail": "1 open for book (1 blocking, 0 deferred)",
+      "gap": "close or defer-with-reason: obl_20260613011503_5b1b1c53",
       "blocking_ids": [
-        "obl_20260613011503_5b1b1c53",
-        "obl_20260613174544_418894b5"
+        "obl_20260613011503_5b1b1c53"
       ]
     },
     {
@@ -37,18 +36,75 @@
       "pass": false,
       "detail": "no Review Brief found",
       "gap": "GB seals one-page Review Brief w/ 3\u20137 judgment calls"
+    },
+    {
+      "check": "artifact_package",
+      "pass": true,
+      "detail": "pdf=Y \u00b7 figures=11 \u00b7 cover=Y \u00b7 seeit=Y",
+      "gap": null
+    },
+    {
+      "check": "substance_s2_bar",
+      "pass": true,
+      "detail": "total=14489w \u00b7 chapters=9@avg1376w \u00b7 appx=1 \u00b7 seeit=10/9ch",
+      "gap": null
+    },
+    {
+      "check": "canonical_toolchain",
+      "pass": false,
+      "detail": "no toolchain.json",
+      "gap": "no build provenance \u2014 record toolchain.json (canonical producers per artifact)"
+    },
+    {
+      "check": "book_structure",
+      "pass": true,
+      "detail": "chapters=9 \u00b7 worked=4 \u00b7 signal=8 \u00b7 steps=9 \u00b7 front+back present",
+      "gap": null
+    },
+    {
+      "check": "render_fidelity",
+      "pass": true,
+      "detail": "Sovereign_Inference_and_Memory.pdf: 8 fonts, all within ['Noto-Serif', 'Liberation'] \u00b7 no ",
+      "gap": null
+    },
+    {
+      "check": "production_standards",
+      "pass": false,
+      "detail": "banned_artifacts=RED \u00b7 toc_format=ok \u00b7 chapter_end_order=RED \u00b7 callout_clumping=ok \u00b7 figur",
+      "gap": "S2-pen layout divergence: found: no ISBN required\u00d71; Ch1:no-receipt; Ch2:no-receipt; Ch3:no-receipt; Ch4:no-receipt; Ch5:no-receipt; Ch6:no-r"
+    },
+    {
+      "check": "forward_reference",
+      "pass": true,
+      "detail": "0 forward refs \u00b7 0 sections without a named closing series (manuscript_v1.6.md)",
+      "gap": null
+    },
+    {
+      "check": "keyword_discipline",
+      "pass": false,
+      "detail": "no keyword targets found",
+      "gap": "D5 \u2014 locked-outline keyword targets not found (metadata chapter_kw)"
+    },
+    {
+      "check": "cover_standard",
+      "pass": true,
+      "detail": "hero+imprint+tag+author+palette+wraps verified in the render",
+      "gap": null
     }
   ],
   "gaps": [
     "renderability_gate6: Gate 6 RED \u2014 manuscript has no Receipt boxes (Helix anchor missing)",
-    "close or defer-with-reason: obl_20260613011503_5b1b1c53, obl_20260613174544_418894b5",
+    "close or defer-with-reason: obl_20260613011503_5b1b1c53",
     "GB fidelity trace must record PASS (semantic source-trace)",
-    "GB seals one-page Review Brief w/ 3\u20137 judgment calls"
+    "GB seals one-page Review Brief w/ 3\u20137 judgment calls",
+    "no build provenance \u2014 record toolchain.json (canonical producers per artifact)",
+    "S2-pen layout divergence: found: no ISBN required\u00d71; Ch1:no-receipt; Ch2:no-receipt; Ch3:no-receipt; Ch4:no-receipt; Ch5:no-receipt; Ch6:no-r",
+    "D5 \u2014 locked-outline keyword targets not found (metadata chapter_kw)"
   ],
   "meta": {
     "contract": "Review-Ready Rail R1 v1.0",
     "spec": "artifacts/GB_ReviewReady_Rail_Spec_2026-06-10.md",
     "book_dir": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/kdp/series_02_building_the_agentic_harness/vol_01_sovereign_inference_and_memory/v1.0",
-    "evaluated_at": "2026-06-14T20:11:51Z"
+    "evaluated_at": "2026-06-24T15:48:29Z"
   }
 }

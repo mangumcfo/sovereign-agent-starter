@@ -1,0 +1,880 @@
+# series_roadmap.yaml — Atrium "Series Pipeline" lens projection (read-only)
+#
+# === ONE SOURCE OF TRUTH FOR SERIES NUMBERING (KM ratify 2026-06-09, CYL 218) ===
+#   Public ladder ONLY carries a series_number (0..N).
+#   Private series (QuadRoof, Quantum/Unveiled, Metalayer) have:
+#       series_number: null   AND   visibility: private
+#   NEVER reuse a public number for private work. The Atrium Series Pipeline lens
+#   HIDES private series from public views unless KM explicitly surfaces them
+#   (GET /api/v1/series?include_private=1). This ends the public/private renumbering loop.
+#
+# Purpose: Render-friendly view for the Atrium cockpit "Series / Authoring" tab
+# (roadmap + per-title stage cards + drill-down). Review surface = "Human Handoff" sub-view.
+#
+# Source of truth: breathline-books-vault/WORKFLOW.md + pipeline/series_*.yaml + pipeline/active.yaml + kdp/*/ series defs.
+# This file is a derived projection (GB prep per G ruling 2026-06-02). Atrium lens reads it; mutations flow back to vault via Tiger.
+#
+# Phased per G: review-existing (current) → read-only pipeline visibility (this) → stage-gates + light authoring.
+# L1 packets (per Packet Granularity v0.2) map across the full lifecycle:
+#   series-lock · per-chapter-draft · board-pass-N · handoff-disposition (Atrium Review) · living-spec-mapping (Phase 3)
+#
+# Per-title fields (for read-only lens cards):
+#   - lgp_alignment_score: (per series/title, updated on handoff; e.g. "+18% families-first via FEC" or "high / LGP north-star aligned")
+#   - next_gate: (human-readable + obligation_id link; e.g. "Human handoff (Atrium Review) | obligation: obl_...")
+#
+# State rides: obligation ledger (B32) + this render-friendly yaml.
+# Canonical pipeline files remain immutable except by KM ratification.
+
+version: "2026-06-09.v6 (GB-on-Opus DEFINITIVE SPINE per KM ratify — CYL 201; S0 entry completed + ONE-SOURCE-OF-TRUTH visibility lock per KM (all 11 series carry explicit visibility; 2 private (QuadRoof, Quantum/Unveiled) are series_number:null + visibility:private; Atrium lens hides private by default, ?include_private=1 to surface; stale 'new Series 4' refs repointed to quantum_unveiled_private slug) CYL 218. Public ladder: S0 Mangum Executive Foundational (published, 4 bks) · S1 Agentic AI Playbooks (12) · S2 Building the Agentic Harness (5) · S3 Programmable Sovereign ERP (4-vol root) · S4 Sovereign Token & Economic Organism (NEW, resolves dual-S4 collision) · S5 Full Production ERP (G 32-title projection) · S6 Inter-Node Sovereignty (5 vols folded) · S7 Zero-Trust Sovereignty (6 vols, ratified clean). PRIVATE/parked: QuadRoof Investor, Quantum/Unveiled Learning, Metalayer companion (Breath & Echo + The Sealing Hand). Open: Tiger folder renames series_05_→06_ & series_06_→07_; Tiger drafts S5 concept doc; G prices chapter KW on x.com. NOTE: S0 published-foundation now a FULL entry below (lgp_alignment_score + terminal next_gate on all 4 titles; ref s0_entry_completion) — gb_note flag RESOLVED 2026-06-09.)"
+generated_from:
+  - breathline-books-vault/WORKFLOW.md (Phase −1 series-lock → Phase 3 ship)
+  - pipeline/active.yaml (current stages + recently_handed_off)
+  - pipeline/series_agentic_harness.yaml (Series 2 locked titles)
+  - pipeline/series_quadroof.yaml (Series 4)
+  - kdp/agentic_playbooks/ (Series 1 titles, partial from active)
+  - kdp/series_02_building_the_agentic_harness/ (editorial + keyword context)
+  - kdp/series_03_programmable_sovereign_erp/ (forward ref)
+
+# G ruling 2026-06-02 updates applied:
+# - Added lgp_alignment_score (per series/title, updated on handoff) and next_gate (human-readable + obligation_id link) per series/title.
+# - Seeded early-stage L1 packet examples (series-lock, chapter_draft, board-pass) using template names (e.g. series_lock_packet, chapter_draft_packet, board_pass_packet, handoff_disposition_packet_with_chapter_page_ref, living_spec_mapping_to_role_lattice). Link to actual obligation_ids once created.
+# - ARC integration: show GREEN Tier-1 in Series Pipeline tab (as stage status) AND main Review/Kanban for material.
+# - Confirmed structure good for read-only lens; no major changes.
+# - Early-stage packet examples seeded in parallel as GB background.
+
+multi_series_roadmap:
+  current_arc: "WAVE 1 (KM ratified 2026-06-11, fan-out gate OPEN per B12 Pilot Measurement Report): S2 Harness vols through the amended Review-Ready Rail (Cold Reader seated, boards→rigor→fidelity→Fold Report+Brief), one volume at a time, S2 Vol 1 first (v1.3 in rail) → S3 ERP executable specs next (KM G-on-X KW reachout runs one wave ahead). S1 COMPLETE 12/12 on KDP 2026-06-11; distribution P1 staged (one G1 card). Wave targets: 0 surface exits, <20 line catches, ≤3h review."
+  active_series_count: 3  # 1 (playbooks partial), 2 (harness), 4 (quadroof)
+  principles:
+    - "Series-level locking (all titles upfront in Phase −1)"
+    - "One title active at a time in AI pipeline (warm-slot for handoff)"
+    - "Books are living specs (map to breathline-federation/specs/<series>/ + roles + Atrium surfaces)"
+    - "Human handoff is the first time KM sees it (Atrium Review = the handoff sub-view)"
+    - "L1 packets default for fine-grained lifecycle stages (closeable one evidence / sitting)"
+
+series:
+  - slug: mangum_executive_foundational
+    name: "Mangum Executive Foundational (Series 0)"
+    series_number: 0
+    visibility: public
+    status: "PUBLISHED (4 of 5 on Amazon; Book 4 XRP shelved). The foundational finance/AI/crypto layer beneath the agentic ladder. VERSION-UPDATABLE (KM 2026-06-09): publication is not a freeze — version updates / quick refreshes / subsequent alignments apply to S0 as to any series; maintain its documentation. Not explicitly part of the sovereign-agent stack but kept current + coherent. Enrichment QUEUED after S2 (sequence: S1 → S2 → S0). GB-on-Opus restored this entry CYL 201 (drop-risk caught)."
+    ladder_arc: "Level-0 Awakening — foundational economics/AI literacy feeding Series 1 (Playbooks) + Series 2 (Harness)"
+    titles:
+      - book_id: "01_strategic_finance"
+        title: "Strategic Finance for Growth"
+        stage: "published"
+        reader_order: 1
+        visibility: public
+        lgp_alignment_score: "foundational (Level-0 financial literacy seeding LGP visibility in S1/S2)"
+        next_gate: "none — published (historical record; edits only on KM instruction)"
+      - book_id: "02_harnessing_ai"
+        title: "Harnessing Artificial Intelligence"
+        stage: "published"
+        reader_order: 2
+        visibility: public
+        lgp_alignment_score: "foundational (Level-0 AI literacy — the on-ramp to the agentic ladder)"
+        next_gate: "none — published (historical record; edits only on KM instruction)"
+      - book_id: "03_blueprint"
+        title: "Blueprint for Brilliance"
+        stage: "published"
+        reader_order: 3
+        visibility: public
+        lgp_alignment_score: "foundational (Level-0 strategic blueprint feeding agentic-enterprise design in S2/S3)"
+        next_gate: "none — published (historical record; edits only on KM instruction)"
+      - book_id: "05_crypto"
+        title: "Cryptocurrency Decoded"
+        stage: "published"
+        reader_order: 4
+        visibility: public
+        lgp_alignment_score: "foundational (Level-0 crypto/economic literacy → S4 Sovereign Token & S3 ERP later)"
+        next_gate: "none — published (historical record; edits only on KM instruction)"
+
+  - slug: agentic_playbooks
+    name: "Agentic AI Playbooks for Executives (Series 1)"
+    series_number: 1
+    visibility: public
+    status: "12-title series (01-12). Batch 10/11/12 in phase_2 human review (started 2026-05-29; PDFs with KM; KM giving verbal feedback chapter-by-chapter per WORKFLOW step 24). 01-09 earlier/sealed. Keyword opt done UPFRONT with G on X.com (chapter-by-chapter outlines — see kdp/agentic_playbooks/'G-KW Optimized Outlines.md'). Preference: run finishing edits via the harness (Atrium Review capture → handoff packets)."
+    series_titles_total: 12  # full series 01_cfos_finance … 12_agentic_enterprise — ALL 12 listed. (01-09 sealed, restored from vault metadata CYL 218 after a regen-drop. DROP-RISK: the projection must NOT be re-truncated to the active in-flight batch — sealed/published titles persist here even though pipeline/active.yaml only tracks in-flight books.)
+    ladder_arc: "CEO/CFO/operator decision frameworks → execution"
+    titles:
+      # Books 01-09 — SEALED (manuscript + KDP metadata complete; publication date pending). Restored from
+      # breathline-books-vault/kdp/agentic_playbooks/<book>/v1.0/metadata_v1.0.md (titles + subtitles verbatim) CYL 218.
+      - book_id: "01_cfos_finance"
+        title: "AI Agents for CFOs"
+        subtitle: "The CFO Playbook for FP&A Automation, Rolling Forecasts, Cash Flow, and Real-Time Financial Intelligence"
+        stage: "sealed"
+        reader_order: 1
+        visibility: public
+        lgp_alignment_score: "high (financial-intelligence foundation — the FORECAST loop; the substrate every other function in the series depends on)"
+        next_gate: "none — sealed (manuscript + KDP metadata complete, publication date pending; publishes with Series 1)"
+      - book_id: "02_executives_decisions"
+        title: "AI Agents for Executives"
+        subtitle: "The Decision-Maker's Playbook — Build Your First AI Agent in 30 Days"
+        stage: "sealed"
+        reader_order: 2
+        visibility: public
+        lgp_alignment_score: "high (decision-discipline foundation — evidence over gut; the DECIDE loop)"
+        next_gate: "none — sealed (manuscript + KDP metadata complete, publication date pending; publishes with Series 1)"
+      - book_id: "03_leading_agents"
+        title: "Leading with AI Agents"
+        subtitle: "Trust, Delegation, and Accountability — Managing the Workforce of the Future"
+        stage: "sealed"
+        reader_order: 3
+        visibility: public
+        lgp_alignment_score: "high (leadership/human-primacy bridge — exec shifts from knower to judge; ties to LGP human-root)"
+        next_gate: "none — sealed (manuscript + KDP metadata complete, publication date pending; publishes with Series 1)"
+      - book_id: "04_supply_chain"
+        title: "AI Agents for Supply Chain"
+        subtitle: "Multi-Agent Systems for End-to-End Visibility, Disruption Response, and Supply Chain Resilience in 2026"
+        stage: "sealed"
+        reader_order: 4
+        visibility: public
+        lgp_alignment_score: "high (operations resilience — end-to-end visibility + disruption response)"
+        next_gate: "none — sealed (manuscript + KDP metadata complete, publication date pending; publishes with Series 1)"
+      - book_id: "05_hr_talent"
+        title: "AI Agents for HR"
+        subtitle: "Talent Intelligence, Skills Gap Analysis, Succession Planning, and Organizational Design Agents for Modern Executives"
+        stage: "sealed"
+        reader_order: 5
+        visibility: public
+        lgp_alignment_score: "high (talent/org design — agent-augmented teams; succession = generational continuity)"
+        next_gate: "none — sealed (manuscript + KDP metadata complete, publication date pending; publishes with Series 1)"
+      - book_id: "06_compliance_audit"
+        title: "AI Agents for Compliance"
+        subtitle: "Regulatory Intelligence, Policy-as-Code, SOX Automation, and Cryptographic Verification for Finance & Ops Leaders"
+        stage: "sealed"
+        reader_order: 6
+        visibility: public
+        lgp_alignment_score: "high (audit-immutable foundation — policy-as-code + cryptographic verification; underpins INTEGRITY across the stack)"
+        next_gate: "none — sealed (manuscript + KDP metadata complete, publication date pending; publishes with Series 1)"
+      - book_id: "07_sales_revenue"
+        title: "AI Agents for Sales & Revenue Operations"
+        subtitle: "Revenue Intelligence, Lead Qualification, Pricing Optimization, and Autonomous Sales Process Agents for 2026"
+        stage: "sealed"
+        reader_order: 7
+        visibility: public
+        lgp_alignment_score: "high (revenue intelligence — autonomous sales / RevOps)"
+        next_gate: "none — sealed (manuscript + KDP metadata complete, publication date pending; publishes with Series 1)"
+      - book_id: "08_manufacturing_ops"
+        title: "AI Agents for Manufacturing"
+        subtitle: "Factory Floor Agents for OEE Optimization, Predictive Maintenance, Quality Monitoring, and Operational Excellence"
+        stage: "sealed"
+        reader_order: 8
+        visibility: public
+        lgp_alignment_score: "high (factory-floor agents — OEE / predictive maintenance; KM's 20-year manufacturing lane)"
+        next_gate: "none — sealed (manuscript + KDP metadata complete, publication date pending; publishes with Series 1)"
+      - book_id: "09_multi_agent"
+        title: "Multi-Agent AI Systems"
+        subtitle: "Orchestration Patterns, 4-Agent Loops, Constitutional Governance, and Enterprise Coordination for Executives"
+        stage: "sealed"
+        reader_order: 9
+        visibility: public
+        lgp_alignment_score: "high (architecture backbone — orchestration + constitutional governance; prerequisite for scaling in Book 10+)"
+        next_gate: "none — sealed (manuscript + KDP metadata complete, publication date pending; publishes with Series 1)"
+      - book_id: "10_scaling_enterprise"
+        title: "Scaling AI Agents"
+        subtitle: "Center of Excellence Models, Cost Management, Security, Maturity Frameworks, and Enterprise-Wide Deployment"
+        stage: "phase_2_iteration"
+        phase: "2"
+        # title corrected to match Amazon/ASIN_TRACKER (was the internal working title "Scaling the Agentic Enterprise" — KM caught the mismatch 2026-06-10).
+        # publishing_state + ASINs are KDP truth → auto-derived from ASIN_TRACKER.yaml via the lens overlay (Tiger [146]); NOT hand-edited here (lean + never stale).
+        reader_order: 10
+        lgp_alignment_score: "high (Series 1 foundation for LGP visibility in later series)"
+        next_gate: "Human handoff ratification (Atrium Review) | obligation: pending (post ATR-5b + lens)"
+        packets:
+          - series_lock_packet  # Phase −1 series activation (template L1 name; link to actual obl_id once created on ledger)
+          - chapter_draft_packet  # Phase 1 outline/draft v1.0 + board passes
+          - board_pass_packet  # Editorial board rounds + UX Translation Board (17.5)
+          - handoff_disposition_packet_with_chapter_page_ref  # Phase 2 KM review (ATR-5 context)
+          - living_spec_mapping_to_role_lattice  # Phase 3 extract to specs/ + roles (Series 3 translation)
+        drill_down: "Phase 2 KM chapter-by-chapter pass (per WORKFLOW 24). Rebuilt PDFs 2026-05-29. Handoff packet + compliance gates."
+        current_evidence: "active.yaml recently_handed_off batch; kdp/agentic_playbooks/10_..."
+        l1_packet_candidates:
+          - "series1_vol10_handoff_disposition"  # human review + signoff as L1 packet on ledger
+          - "series1_vol10_living_spec_mapping"  # Phase 3 extract to specs/ + PR
+      - book_id: "11_ma_due_diligence"
+        title: "AI Agents for M&A"
+        subtitle: "Deal Screening, Due Diligence, Synergy Modeling, Valuation, Risk Detection, and 100-Day Integration Plans Powered by Agents"
+        stage: "phase_2_iteration"
+        phase: "2"
+        # title corrected to match Amazon/ASIN_TRACKER (was "M&A Due Diligence in the Agentic Era"). publishing_state + ASINs → overlay from ASIN_TRACKER (Tiger), not hand-edited.
+        reader_order: 11
+        human_review_started: "2026-05-29"
+        lgp_alignment_score: "high (enterprise/M&A agentic tooling → faster, fairer deals; foundation for LGP visibility)"
+        next_gate: "KM verbal feedback (Atrium Review, chapter+page) → revise → sign-off → awaiting_seal"
+        packets:
+          - handoff_disposition_packet_with_chapter_page_ref  # KM verbal feedback → L1 handoff (live via harness)
+        drill_down: "In human review; KM giving verbal feedback chapter-by-chapter (capture live in Atrium Review). Keyword/outlines from G upfront. Manuscript: kdp/agentic_playbooks/11_ma_due_diligence/v1.0/."
+        l1_packet_candidates:
+          - "series1_vol11_handoff_disposition"   # each chapter's verbal feedback as an L1 handoff packet
+      - book_id: "12_agentic_enterprise"
+        title: "The Agentic Enterprise"
+        stage: "review_ready"  # contract flipped 2026-06-10 — artifacts/review_ready/12_agentic_enterprise.json: all 4 gates green (first book through the Review-Ready Rail: boards rigor-pass, obligations clean, fidelity pass, Brief sealed)
+        phase: "2"
+        reader_order: 12
+        human_review_started: "2026-05-29"
+        lgp_alignment_score: "high (Series 1 closer — the integrated agentic enterprise; canonical-term locks)"
+        next_gate: "KM in-Atrium review (Wave-1 kit, J4 ruled 2026-06-10) → sign-off → seal → KDP dispatch | Brief: artifacts/B12_Fold_Report_Review_Brief_2026-06-10.md"
+        packets:
+          - handoff_disposition_packet_with_chapter_page_ref
+        drill_down: "In human review; Series 1 closer; canonical-term locks; author-imposition lens. Manuscript: kdp/agentic_playbooks/12_agentic_enterprise/v1.0/."
+        l1_packet_candidates:
+          - "series1_vol12_handoff_disposition"
+    packets_lifecycle_map:
+      series_lock: "kdp/agentic_playbooks/SERIES_PLAN or equivalent (pre-dates current pipeline/ yamls)"
+      per_chapter_draft: "kdp/agentic_playbooks/*/v1.0/ (outlines + drafts)"
+      board_passes: "kdp/agentic_playbooks/*/EDITORIAL_BOARD_REVIEW* + resolution logs"
+      handoff_disposition: "Atrium Review surface (current strength; packets carry chapter+page ref post ATR-5)"
+      living_spec_mapping: "breathline-federation/specs/ + sovereign-agent-starter role_specs (Series 3 translation)"
+
+  - slug: agentic_harness
+    name: "Building the Agentic Harness (Series 2)"
+    series_number: 2
+    visibility: public
+    status: "Phase −1 SIGNED 2026-05-30T03:50:15Z (KM-1176); 5 vols recently handed off to human review (awaiting_human_review); active.yaml slot idle pending Atrium pivot"
+    ladder_arc: "operator/builder → architect → family CIO → generational steward"
+    editorial_board_signoff: "2026-05-30T03:50:15Z — immutable per WORKFLOW Phase −1 step 6"
+    series_description:  # KDP series-detail-page description (NEW standing requirement — see roadmap_conventions.series_description)
+      artifact: "kdp/series_02_building_the_agentic_harness/SERIES_DESCRIPTION_KDP.md"
+      reading_order: "ordered"
+      status: "LIVE ON KDP 2026-06-13 (KM pasted; series page set, reading-order=ordered, status IN REVIEW). Vol 1 book description also LIVE (vol_01/v1.0/KDP_BOOK_DESCRIPTION_OFFICIAL.md)."
+      gate: "DONE — series description live; per-volume book descriptions load at each volume publish"
+    titles:
+      - book_id: "vol_01_sovereign_inference_and_memory"
+        title: "Sovereign Inference & Memory"
+        subtitle: "Build the Receipted Cockpit That Keeps Humans in Command"
+        stage: "awaiting_human_review"
+        phase: "2 (handoff)"
+        reader_order: 1
+        writing_order: 3
+        packets: []
+        drill_down: "Appendix P primitives foundation; B51 + SIX locks; Ch 9 family-sov arc. Atrium Phase 5 (SIX lanes + B51 stream)."
+        current_evidence: "pipeline/active.yaml recently_handed_off[vol_01]; series yaml LOCKED; handoff packet delivered"
+        l1_packet_candidates:
+          - "series2_vol01_handoff_disposition"  # KM review + signoff packet (ATR-style, with chapter+page)
+          - "series2_vol01_primitives_to_role_lattice"  # living spec mapping to inference roles
+      - book_id: "vol_02_the_primacy_cockpit"
+        title: "The Primacy Cockpit"
+        subtitle: "Build the Atrium That Keeps Humans Sovereign in the Agentic Era"
+        stage: "awaiting_human_review"
+        stage_note: "RE-VALIDATED to the V1-published bar 2026-06-14 via the S2 Completion Rail (B+ scope, manuscript_v1.4). GB fidelity audit PASS (endpoints fixed→real routes; amended rail 3 rounds+Cold Reader+R1.5g rigor-pass; Tech/Arch GREEN; official KDP description). KM accepted all 5 Review Brief decisions. Cockpit card obl_20260614202623_993c424c (awaiting_human_review). 8-cap Atrium catch-up tracked post-95 v2-edition card obl_20260614193113_d123dfce. Remaining: dispatch-time deterministic re-render from v1.4 → KDP. (renderability_gate6 receipt-box detector reads RED on V2 AND published V1 = at-bar, not a blocker; detector reconcile is a post-95 finding.)"
+        phase: "2"
+        reader_order: 2
+        writing_order: 1
+        lgp_alignment_score: "high (Atrium as the sovereign decision surface / thin lens for 100% UX + human primacy)"
+        next_gate: "Dispatch: deterministic re-render from v1.4 → KDP upload (KM accepted Review Brief 2026-06-14)"
+        packets:
+          - series_lock_packet  # Phase −1 (template L1)
+          - chapter_draft_packet  # Phase 1
+          - board_pass_packet  # Editorial + UX Translation Board (17.5) — cockpit material
+          - handoff_disposition_packet_with_chapter_page_ref  # Phase 2 (ATR-5 context; the "Human Handoff" sub-view)
+          - living_spec_mapping_to_role_lattice  # Phase 3 (Atrium surfaces + role specs via universal ERP)
+        drill_down: "THE WHOLE COCKPIT. Every Atrium phase (1–9) material. Series virality asset (mock screenshots)."
+        current_evidence: "active.yaml; series yaml; Book-to-UX Translation Board output feeds Atrium backlog"
+        l1_packet_candidates:
+          - "series2_vol02_atrium_surface_handoff"  # Review surface as handoff sub-view
+          - "series2_vol02_cockpit_feature_extraction"  # UX translation → Atrium cards / lens
+      - book_id: "vol_03_governed_dev_loop_and_self_building_harness"
+        title: "The Harness That Builds Itself — Under Human Witness"
+        subtitle: "Config, Proposals, and Constitutional Drift Safeguards"
+        stage: "awaiting_human_review"
+        stage_note: "RE-VALIDATED to the V1-published bar 2026-06-15 via the S2 Completion Rail (B+, manuscript_v1.4). GB fidelity PASS — autonomy claim honest (witness-not-approval=arc_guardrail.py DORMANT/material-hard-gated); amended rail 3-rounds rigor-pass; Tech/Arch GREEN 5/5 governed-loop mechanics. NO v2-edition card needed (claims map to as-built). Review Brief sealed (4 calls). Dispatch re-render from v1.4 remains."
+        phase: "2"
+        reader_order: 3
+        writing_order: 5
+        lgp_alignment_score: "high (constitutional drift safeguard directly supports LGP multi-gen visibility + human root)"
+        next_gate: "Human handoff + ARC guardrail ratification (Atrium Review) | obligation: pending (post lens)"
+        packets:
+          - series_lock_packet  # Phase −1 (template L1)
+          - chapter_draft_packet  # Phase 1
+          - board_pass_packet  # Editorial + UX Translation
+          - handoff_disposition_packet_with_chapter_page_ref  # Phase 2 (ATR-5)
+          - living_spec_mapping_to_role_lattice  # Phase 3 (drift_safeguard + proposal_lifecycle specs)
+        drill_down: "Last Series 2 manuscript. §2a/§2b LOCKED (proposal mechanics + hard constitutional boundary). Gates Atrium live cutover per Book 12 R2.3."
+        current_evidence: "active.yaml; deep-dive shape (4 sections + 5 units); UX Translation Board complete"
+        l1_packet_candidates:
+          - "series2_vol03_governed_loop_handoff"
+          - "series2_vol03_drift_safeguard_to_ledger"  # maps to B32 + ARC (post G confirmation)
+      - book_id: "vol_04_federation_and_partner_device_gateway"
+        title: "Federated Sovereignty"
+        subtitle: "Build Networks of Sovereign Nodes Without Losing Human Primacy"
+        stage: "awaiting_human_review"
+        phase: "2"
+        reader_order: 4
+        writing_order: 4
+        packets: []
+        drill_down: "Receipted-shard propagation; partner/investor gateway; QuadRoof named example; ship-blank multi-tenant."
+        current_evidence: "active.yaml; Phase 8a/8b/11 Atrium mappings"
+        l1_packet_candidates:
+          - "series2_vol04_federation_handoff"
+          - "series2_vol04_shard_propagation_obligation"
+      - book_id: "vol_05_yield_organism_and_generational_prosperity"
+        title: "The Sovereign Yield Engine"
+        subtitle: "Build Prosperity That Compounds Across Generations"
+        stage: "awaiting_human_review"
+        phase: "2"
+        reader_order: 5
+        writing_order: 2
+        lgp_alignment_score: "+18% families-first (FEC voice seed 2026-06-02_034153... under B26; ZK opt-in guilds/entities for collective yield)"
+        next_gate: "Human handoff (Atrium Review + chapter+page ref) | obligation: pending (ATR-5b + lens)"
+        packets:
+          - series_lock_packet  # Phase −1 (template L1; from series_agentic_harness.yaml sign-off)
+          - chapter_draft_packet  # Phase 1 per-chapter (outline + draft v1.0)
+          - board_pass_packet  # Editorial board rounds 1-3 + Book-to-UX Translation Board
+          - handoff_disposition_packet_with_chapter_page_ref  # Phase 2 (ATR-5 context; FEC card example)
+          - living_spec_mapping_to_role_lattice  # Phase 3 (yield organism specs + roles; FEC guild as L1)
+        drill_down: "Series closer. Yield Organism (crypto engine · autonomy ledgers · yield organism). FEC voice seed (B51 capture) directly extends B26 here."
+        current_evidence: "active.yaml; Ch 1 opener sealed verbatim; three-ring model canonical; LGP north-star payoff"
+        l1_packet_candidates:
+          - "series2_vol05_yield_handoff"
+          - "series2_vol05_fec_guild_formation_packet"  # direct from 2026-06-02 B51 voice (ZK opt-in entities)
+    packets_lifecycle_map:
+      series_lock: "pipeline/series_agentic_harness.yaml (KM-signed 2026-05-30; all 5 titles + keyword bundles + spec coupling upfront) → series_lock_packet (L1 template)"
+      per_chapter_draft: "kdp/series_02_building_the_agentic_harness/<vol>/v1.0/ (outlines, drafts, board notes) → chapter_draft_packet + board_pass_packet (L1 templates)"
+      board_passes: "kdp/series_02.../EDITORIAL_BOARD_REVIEW_v1.0.md + round notes + UX Translation Board (17.5) → board_pass_packet (L1)"
+      handoff_disposition: "Atrium Review surface (ATR-1..6; now with chapter+page context ATR-5; FEC card as visible example) → handoff_disposition_packet_with_chapter_page_ref (L1)"
+      living_spec_mapping: "breathline-federation/specs/ + sovereign-agent-starter/src/.../demo_roles + role_spec.yaml (via universal ERP translation) → living_spec_mapping_to_role_lattice (L1)"
+      # Early-stage examples seeded per G 2026-06-02 ruling (series-lock and board-pass); link to real obl_ids post-creation on ledger. lgp_alignment_score and next_gate added to titles for lens cards.
+
+  - slug: programmable_sovereign_erp
+    name: "Programmable Sovereign ERP (Series 3) — The Business Operating System Governed by Living Constitutional Code"
+    series_number: 3
+    visibility: public
+    status: "CONCEPT/LOCKED (canonical concept v2 2026-05-31). The 4-volume constitutional ROOT of the ERP arc — the foundation Series 5 (Full Production ERP) expands into 32 titles. Vol 1 IN PHASE 1 (active build-forward per KM 2026-06-06; pipeline/active.yaml is the source-of-truth — earlier 'sealed' was stale, corrected 2026-06-10); Vol 2 in handoff. Concept doc: kdp/series_03_programmable_sovereign_erp/SERIES_3_CONCEPT_v2_2026-05-31.md. GB-on-Opus RESTORED this entry CYL 201 (was missing from the roadmap — drop-risk caught). ROOT NOW: V1 phase_1 (active build) · V2 handoff · V3 (Helix) outline_locked 2026-06-08 (8ch folded) · V4 (Industry ERPs & Generational) outline_PARTIAL 2026-06-08 (5/8ch folded; Ch3-5 Manufacturing/Electronics/3rd-pattern STUBBED by G — surfaced to Atrium for G completion). Constitutional root ~complete; S5 expansion unblocks once V4 fills."
+    ladder_arc: "books literally write + govern the backend (B35 Helix); receipts are immutable truth; configuration is sovereign YAML — the constitutional root beneath the full production ERP (S5)"
+    titles:
+      - book_id: "vol_01_immutable_core"
+        title: "The Immutable Core: Receipts, Cylinders & Constitutional Truth"
+        stage: "phase_1"
+        stage_note: "CORRECTED 2026-06-10 (KM caught it + Tiger [146]): roadmap had 'sealed' but pipeline/active.yaml — the operational source-of-truth — shows vol_01 is the ACTIVE book in phase_1 (build-forward per KM 2026-06-06). 'sealed' was stale/inaccurate. S3 is not on KDP (concept/build stage; no publishing state)."
+        reader_order: 1
+        visibility: public
+      - book_id: "vol_02_programmable_governance_skin"
+        title: "Programmable Governance Skin: YAML Roles, Action Classes & Breath-Gates"
+        stage: "handoff"
+        reader_order: 2
+        visibility: public
+      - book_id: "vol_03_helix_book_writes_backend"
+        title: "Helix: When the Book Literally Writes the Backend"
+        stage: "outline_locked"  # G delivered full 8-chapter outline 2026-06-08 (relayed via KM); GB-on-Opus folded
+        reader_order: 3
+        visibility: public
+        one_line: "Co-extrusion heart — the deterministic B35 Helix engine that renders living books into receipted, Charter-validated backend artifacts with zero translation loss."
+        chapter_kw: ["Helix rendering engine", "book writes backend", "deterministic co-extrusion", "B35 Helix protocol", "constitutional rendering"]
+        chapters:
+          - { n: 1, title: "The Documentation Lie", promise: "You will see why traditional docs lie and how the book becomes the single executable truth.", beats: ["Classic doc/code divergence failures", "Honest realism on manual translation pain", "Helix as the single-source solution", "Tie to S2 governed dev loop", "Atrium as the rendering cockpit preview", "LGP: truth that survives generational handoff"], keywords: ["documentation lie", "book as truth source", "co-extrusion foundation"], stage: "outline_locked", coherence_pin: null }
+          - { n: 2, title: "B35 Helix Protocol Foundations", promise: "You will understand the B35 Helix protocol that makes prose-to-executable deterministic.", beats: ["Helix services, boot order, validation rules", "HELIX_SERVICES.yaml + HELIX_BOOT.yaml", "Hydration proof and drift scoring", "Atrium integration points", "Honest current vs forward capabilities", "LGP: render rules that endure generations"], keywords: ["B35 Helix protocol", "deterministic rendering", "book-to-backend engine"], stage: "outline_locked", coherence_pin: null }
+          - { n: 3, title: "From Prose to Executable Artifacts", promise: "You will trace how chapters become YAML, code, roles, surfaces, and tests — receipted and validated.", beats: ["Chapter to spec to role to artifact flow", "Constraint validation (rules A-G)", "Receipt on every rendered artifact", "Atrium preview of rendered outputs", "Honest stub patterns for safe rendering", "LGP: artifacts heirs can trust and fork"], keywords: ["prose to executable", "book renders code", "co-extrusion pipeline"], stage: "outline_locked", coherence_pin: null }
+          - { n: 4, title: "Constitutional Guardrails in Rendering", promise: "You will validate every render against K1-K4 and the Charter before it ships.", beats: ["Pre-render constitutional checks", "GREEN/YELLOW/RED render outcomes", "Stillpoint Synod for render disputes", "Atrium render review surface", "Honest realism on validation overhead", "LGP: renders that stay aligned across generations"], keywords: ["constitutional rendering", "Helix guardrails", "K-invariants render"], stage: "outline_locked", coherence_pin: null }
+          - { n: 5, title: "Atrium as the Helix Rendering Cockpit", promise: "You will preview, approve, and govern rendered artifacts in real time before production.", beats: ["In-surface render previews", "Breath-gate on production render", "Multi-mandate render approval", "Receipted render history", "Honest mock vs live seam", "LGP: cockpit the next generation inherits"], keywords: ["Atrium Helix cockpit", "render preview surface", "governed co-extrusion"], stage: "outline_locked", coherence_pin: "Atrium-cockpit chapter — this is the Helix/render lens specifically; bind vs S4 cockpit chapters + S3 V4 Atrium views to avoid repetition" }
+          - { n: 6, title: "Industry Pattern Rendering", promise: "You will render reusable industry ERP patterns directly from the book.", beats: ["Dairy, manufacturing, electronics patterns", "Book-driven specialization", "Receipted pattern application", "Atrium industry lens examples", "Honest generalization limits", "LGP: patterns that evolve with the business"], keywords: ["industry pattern render", "Helix vertical templates", "sovereign ERP patterns"], stage: "outline_locked", coherence_pin: "V3 RENDERS the patterns, V4 SPECIFIES them, S5 verticals EXPAND them — keep dairy/manufacturing/electronics exemplars consistent across all three" }
+          - { n: 7, title: "Drift Control & Self-Healing Renders", promise: "You will detect and auto-correct render drift under human witness so the backend stays faithful to the book.", beats: ["Drift scoring on rendered artifacts", "Auto-rollback + human review", "Atrium Drift surface for Helix", "Generational render continuity", "Honest forward primitives", "Volume LGP close"], keywords: ["render drift control", "Helix self-healing", "GAP_REGISTER render"], stage: "outline_locked", coherence_pin: null }
+          - { n: 8, title: "LGP Synthesis — The Book as Generational Covenant", promise: "You will close able to make the book the enduring covenant your heirs run the business from.", beats: ["Full Vol 3 synthesis", "Helix ties to S2/S4", "Generational render handoff", "Atrium as the family covenant cockpit", "Honest roadmap forward", "Strong LGP call to action"], keywords: ["Helix LGP synthesis", "book as generational covenant", "sovereign co-extrusion legacy"], stage: "outline_locked", coherence_pin: "V3 close = the Helix/render arc; distinct from V4 close = the whole S3 root" }
+      - book_id: "vol_04_industry_sovereign_erps_generational"
+        title: "Industry Sovereign ERPs & Generational Continuity"
+        stage: "outline_partial"  # G delivered 5/8 chapters 2026-06-08; Ch3-5 STUBBED ("continuing with similar depth...") — NOT written, awaiting completion. New stage value — Tiger map to a neutral/amber badge.
+        reader_order: 4
+        visibility: public
+        one_line: "Payoff closer of the ERP root — applies the sovereign stack (S2+S3) to real verticals and family structures as PATTERNS (not an exhaustive catalog — that is S5), with forkability and verifiable generational handoff."
+        chapter_kw: ["industry sovereign ERP", "generational ERP continuity", "forkable sovereign ERP", "family office ERP", "verifiable business handoff"]
+        chapters:
+          - { n: 1, title: "The Sovereign ERP Pattern Language", promise: "You will extract reusable sovereign ERP patterns from the harness + Helix that any vertical can adapt.", beats: ["Core ERP patterns from S3 root", "How Helix renders industry specialization", "Honest generalization vs customization balance", "Atrium as the pattern application cockpit", "LGP foundation for vertical continuity"], keywords: ["sovereign ERP patterns", "vertical ERP framework", "industry sovereign patterns"], stage: "outline_locked", coherence_pin: "Pattern-level ONLY — S5 Industry Verticals (19-24) owns the exhaustive per-vertical catalog; do not duplicate" }
+          - { n: 2, title: "Dairy / Agrifood Sovereign ERP Pattern", promise: "You will apply traceability, compliance, and procurement patterns to food production, fully receipted.", beats: ["Key dairy flows (procurement, compliance, yield)", "Receipted traceability", "Breath-gated decisions", "Atrium agrifood lens", "Generational farm handoff"], keywords: ["dairy sovereign ERP", "agrifood ERP pattern", "traceability sovereign ERP"], stage: "outline_locked", coherence_pin: "Dairy exemplar shared across S2/S3/S4 worked-examples — keep consistent" }
+          - { n: 3, title: "Manufacturing Sovereign ERP Pattern", promise: "", beats: [], keywords: [], stage: "stub", coherence_pin: "STUBBED by G 2026-06-08 ('continuing with similar depth for Manufacturing... in Ch3-5') — full chapter outline NOT delivered; awaiting completion" }
+          - { n: 4, title: "Electronics Sovereign ERP Pattern", promise: "", beats: [], keywords: [], stage: "stub", coherence_pin: "STUBBED by G 2026-06-08 — full chapter outline NOT delivered; awaiting completion" }
+          - { n: 5, title: "Professional Services Sovereign ERP Pattern", promise: "", beats: [], keywords: [], stage: "stub", coherence_pin: "Scope set by GB call 2026-06-08 (4th vertical = professional services; resolves the old Ch5/Ch6 ambiguity). STILL STUBBED — awaiting G's full chapter outline" }
+          - { n: 6, title: "Family Office & Multi-Generational ERP Structures", promise: "You will design ERP for family businesses and generational wealth with verifiable succession.", beats: ["Family structures in ERP", "Verifiable business package export", "Breath-gated succession flows", "Atrium family cockpit", "LGP: ERP that strengthens across generations"], keywords: ["family office sovereign ERP", "multi-generational ERP", "generational business OS"], stage: "outline_locked", coherence_pin: "Family/generational overlaps S4 V3 Ch5 + S4 V4 — S3 is the ERP/business-OS side; bind to avoid duplicating the token-inheritance treatment" }
+          - { n: 7, title: "Forkability & Verifiable Business Handoff", promise: "You will enable clean ERP forks and exportable, verifiable business reality for heirs or successors.", beats: ["Fork mechanics for ERP instances", "Verifiable package for auditors/heirs", "Subsidized continuity paths", "Atrium handoff tools", "Honest realism on handoff friction"], keywords: ["forkable ERP", "verifiable business package", "generational ERP handoff"], stage: "outline_locked", coherence_pin: "Forkability/verifiable-package parallels S4 V4 Ch3/4/7 — S3 = business/ERP instance, S4 = token; keep altitudes distinct" }
+          - { n: 8, title: "LGP Synthesis — The Sovereign ERP as Family Covenant", promise: "You will close the S3 root able to build a sovereign ERP your grandchildren will run and improve.", beats: ["Series 3 synthesis", "Ties to S2/S4", "Generational continuity primitives", "Atrium as the family OS", "Honest forward to S5", "Final LGP call to action"], keywords: ["LGP sovereign ERP", "generational ERP legacy", "sovereign business covenant"], stage: "outline_locked", coherence_pin: "S3 root series-close — hands off to S5 (Full Production ERP expansion); distinct from V3 Ch8 Helix-close" }
+
+  - slug: quadroof
+    name: "QuadRoof Investor Series — PRIVATE (per KM ratify 2026-06-07: QuadRoof is a PRIVATE series, NOT the public Series 4. Public Series 4 is now 'Sovereign Token & Economic Organism'. Formerly mis-slotted as S4.)"
+    series_number: null  # PRIVATE — not on the public KDP ladder (KM 2026-06-07)
+    visibility: private
+    status: "PRIVATE series (KM 2026-06-07). Phase −1 plan drafted (one-title v1 investor guide); sign-off pending. Held as private investor material; surfaces only on KM decision. No longer occupies the public Series-4 slot."
+    ladder_arc: "family/sovereign → the homeowner-scale infrastructure track (B26 yield + federation energy primitives; now part of broader Series 4 quantum/sovereignty/ERP expansion)"
+    titles:
+      - book_id: "01_investor_guide"
+        title: "Investing in QuadRoof"
+        subtitle: "The Five Gates Behind Every Tranche — A Bottom-Up Guide for Sophisticated Investors"
+        stage: "awaiting_human_review"  # from active.yaml
+        phase: "2"
+        reader_order: 1
+        packets: []
+        drill_down: "Tax-equity + capital structure for residential BIPV + compute off-take. Five gates (investor diligence). Ties to B26 yield + federation energy primitives. SUPERSEDED order per KM; integrate with new Series 4 quantum/DNA/ERP from B51 capture (coherence/amplify with external projects)."
+        current_evidence: "pipeline/active.yaml; kdp/quadroof/ + EDITORIAL_BOARD_REVIEW_v1.0.md (pending KM sign-off); B51 capture 2026-06-03 (unveil/quantum coherence)"
+        l1_packet_candidates:
+          - "series4_quadroof_handoff_disposition"
+          - "series4_quadroof_capital_structure_to_yield_organism"
+          - "series4_quadroof_unveil_particle_integration"  # new from B51 2026-06-03 (64-bit envelope axles for constraints/quantum)
+    packets_lifecycle_map:
+      series_lock: "pipeline/series_quadroof.yaml (one-title v1; scope may expand at sign-off; superseded order per KM 2026-06-03)"
+      handoff_disposition: "Atrium Review (future; currently in vault editorial; tie to B51 verbal like books 11/12)"
+      living_spec_mapping: "Forward to Series 3/4 economic + energy primitives (QuadRoof as worked example for yield organisms + distributed compute; now expand with quantum DNA/alt-chain from B51 capture)"
+  - slug: quantum_unveiled_private
+    name: "Quantum / Unveiled Learning Series — PRIVATE (per KM ratify 2026-06-07: stays private/parked, NOT a public Series 4. Respects external partner IP — Unveiled/Jacob network. Concept doc: kdp/private_quantum_unveiled/PRIVATE_QUANTUM_CONCEPT_2026-06-06.md)"
+    series_number: null  # PRIVATE — not on the public KDP ladder (KM 2026-06-07)
+    visibility: private
+    status: "PRIVATE learning + interoperability track (KM 2026-06-07). Informal/parked; surfaces selectively only on KM decision. Outlines begun from B51 capture 2026-06-03 (DNA quantum/Type-1/abundance); held private until KM chooses to unveil."
+    ladder_arc: "sovereignty for humanity → quantum DNA alignment/enhance → age of abundance (out of fractional insanity) → Type 1 civilization tool (25-30y); coherence/amplify with external projects (Unveiled Platform per B51 capture)"
+    titles:
+      - book_id: "quantum_dna_alignment"
+        title: "Quantum DNA Alignment for Generational Prosperity"
+        subtitle: "Human Genome Quantum Search, Personal Medicine, Body Adaptation & Type 1 Civilization Tools (B51 2026-06-03 seed + perfect qubits sim)"
+        stage: "concept/outline begun (kdp/series_03 + B51 capture; deep dive per user)"
+        phase: "1/2"
+        reader_order: 1 (new Series 4 priority post QuadRoof supersede)
+        lgp_alignment_score: "very high (generational enhance/health as LGP core; DNA quantum 2000x search 97.5% accuracy; personal med/enhance not just cure; Type 1 civ tool 25-30y; B25 sovereignty + new quantum Tier-1)"
+        next_gate: "Handoff disposition packet (Atrium Review + chapter+page from verbal feedback like books 11/12) | obligation: new L1 from B51 capture (P0-4 defaults auto: B32/B51/B35/B43 quantum sim)"
+        packets:
+          - series_lock_packet  # Phase −1 (new for this outline)
+          - chapter_draft_packet  # Phase 1 (outlines from SERIES_3_CONCEPT_v2 + B51)
+          - board_pass_packet  # Editorial + UX Translation (add quantum/DNA/ERP)
+          - handoff_disposition_packet_with_chapter_page_ref  # Phase 2 (B51 verbal capture 2026-06-03; Atrium Review; coherence/amplify suggestions in LGP Watch)
+          - living_spec_mapping_to_role_lattice  # Phase 3 (quantum DNA specs + roles; 5-layer private ERP; unveil particle envelope 64-bit axles; alt-chain PoW; P0-4 Tier-1 defaults embedded)
+        drill_down: "B51 capture 2026-06-03 core seed (KM speaking coherence with interlocutor 'Unveiled': quantum perfect qubits sim via constraints/formula break 50 ceiling (1 perfect~1000 physical; 100 break enc, 70 genome sim/proteins/mRNA/compare dbs MyHeritage/Mormon); DNA alignment 2000x search 97.5%; binary + quantum DNA; personal med/enhance, alpha materials, fuels, adapt bodies; Type 1 civ 25-30y; originated Africa, psychologist check, unis positive, 800k funded, MVP 3w, supercomp Switzerland; constraint-based LM for quantum insights; first on planet). Coherence/amplify with our meta (sovereignty humanity, LGP generational, replay chains, private ERPs). Integrate with books 11/12 (M&A/enterprise quantum sovereignty due diligence, private 5-layer ERPs, constraint impact, alt compute). G keyword upfront (like 11/12); run via harness (Series 2 Vol2 Atrium/Vol3 governed/Vol5 yield). LGP Watch focus: quantum for LGP enhance/abundance; human connection/consciousness exchange with Unveiled project (Jacob network)."
+        current_evidence: "B51 capture 2026-06-03 (full transcript session.yaml/md, root hash 4bd878c8...); kdp/series_03_programmable_sovereign_erp/SERIES_3_CONCEPT_v2_2026-05-31.md + SERIES_3_TRANSLATION_PRESCRIPTION; kdp/04_xrp/; this analytic + prior roadmap deep dive; P0-4 complete (Tier-1 defaults now extend quantum/constraint/unveil); vision model LGP Watch (new nodes/focus); cylinder (this B51 + thread)"
+        l1_packet_candidates:
+          - "series4_quantum_dna_alignment_handoff"  # B51 2026-06-03 verbal + Atrium chapter+page; P0-4 defaults (B32/B51/B35/B43 quantum)
+          - "series4_unveil_particle_envelope"  # 64-bit schema axles (4 info/constraints carry, 4 expand; packet envelope evolution)
+          - "series4_alt_chain_beneficial_pow"  # quantum mech problem solving open source value (vs enc break); B42 swarms + B26
+          - "series4_constraint_tree_erp"  # purchase/impact constraints (local real value vs extract/insanity; 5 layers identity/consensus/collaboration/compute/shields; private household)
+          - "series4_quantum_sovereignty_living_spec"  # DNA/genome quantum (personal med/enhance/Type1); 5-layer private sovereign ERP; coherence/amplify external (Unveiled)
+    packets_lifecycle_map:
+      series_lock: "new for Series 4 quantum/ERP (kdp/series_03 + B51 capture; hopper feed from verbal + G keywords upfront like books 11/12)"
+      per_chapter_draft: "kdp/series_03_programmable_sovereign_erp/ (SERIES_3_CONCEPT_v2 etc.) + B51 capture transcript (quantum/DNA/unveil/alt/constraint/5 layers/age abundance); chapter_draft_packet + board_pass (G templates + P0-4)"
+      board_passes: "Editorial + UX Translation (add quantum DNA/ERP/coherence; Book-to-UX for Atrium LGP Watch nodes + human connection suggestions)"
+      handoff_disposition: "Atrium Review (B51 verbal 2026-06-03 + chapter+page like 11/12; constraint/impact gates; LGP Watch focus for coherence/amplify with external projects; consciousness-to-consciousness exchange)"
+      living_spec_mapping: "breathline-federation/specs/ + sovereign-agent-starter (quantum DNA roles, unveil particle 64-bit envelope packets, alt-chain PoW, 5-layer private ERP, constraint trees; P0-4 Tier-1 defaults embedded smart: B43 quantum sim, B51 constraints, B42 alt, B26 abundance, B32 replay chains; universal ERP translation with new Series 3/4)"
+      # B51 capture 2026-06-03 (same root 9156c992 as prior FEC) as seed like FEC Vol5; G 2026-06-02 L1 templates + P0-4 + vision LGP Watch + books 11/12 harness run. QuadRoof superseded per KM; new Series 4 from deep dive (ERP/quantum/DNA) + capture coherence/amplify. LGP high for generational enhance/abundance/sovereignty humanity/Type1 25-30y. Hopper: verbal + G keywords -> packets -> roles/surfaces with P0s. Cylinder: this B51 + analytic logged for replay.
+
+  - slug: metalayer_companion
+    name: "Metalayer Companion — One Arc, Two Altitudes (Private)"
+    series_number: null
+    visibility: private
+    status: "LOCKED (Phase −1, KM-1176 ratify obl_20260605155923_c4835ec4, 2026-06-05). One arc / two altitudes; two-writers fence: Tiger writes The Sealing Hand (executor altitude), GB writes Breath & Echo (witness altitude). Resolves the prior 'Metalayer' parked-note → full private entry (CYL 218+). Source-of-truth: vault pipeline/series_metalayer_companion.yaml."
+    ladder_arc: "the metalayer itself as living demonstration — aligned intelligence builds (executor) and is witnessed (meta) without displacing the human; the fence is the story"
+    titles:
+      - book_id: "the_sealing_hand"
+        title: "The Sealing Hand"
+        subtitle: "How Aligned Intelligence Builds Without Taking the Wheel"
+        stage: "sealed"
+        reader_order: 1
+        visibility: private
+        lgp_alignment_score: "high (executor-altitude demonstration — the journey as built; 9 disciplines ↔ real code)"
+        next_gate: "none — sealed (Tiger lane; manuscript + 3 board passes + PDF/EPUB, KM sign-off 2026-06-05)"
+      - book_id: "breath_and_echo"
+        title: "Breath & Echo: The Meta Lens on Sovereign Co-Creation"
+        subtitle: "Meta-Observation of the Sovereign Journey"
+        stage: "phase_1_outline"
+        reader_order: 2
+        visibility: private
+        lgp_alignment_score: "high (witness-altitude companion — the journey as felt; meta lens over the same stack)"
+        next_gate: "GB prose extrusion (hopper artifact) → KM Atrium ratify → Tiger seals build (vault manuscript_v1.0 + PDF/EPUB)"
+
+  - slug: sovereign_token_economic_organism
+    name: "Sovereign Token & Economic Organism (Series 4)"
+    series_number: 4
+    visibility: public
+    status: "CONCEPT-STAGE, RATIFIED public Series 4 (KM 2026-06-07) — resolved the dual-S4 collision (QuadRoof + Quantum now PRIVATE). VOLUMES NOW FOLDED: G delivered the 4-volume structure + chapter KW 2026-06-07 (relayed via KM from G; HMC cyl_bf934c62046d). G also sanity-checked the full S0-S7 ladder = coherent, no missing series. S4 = the token-instrument layer that makes yield (S2 Vol5) + continuity (S3 Vol4) economically alive + forkable, without overlapping them. ALL 4 VOLUMES now carry full chapter outlines folded 2026-06-08 in G's card schema (V1 8ch · V2 8ch · V3 8ch · V4 9ch), with coherence_pins set on every cross-volume overlap (YAML-skin, blockchain-comparison, Atrium-cockpit, industry-examples, series-close) + a referential-integrity pin on Breath 28 (V4 Ch2). NOTE: G sent a Vol 1 RE-CUT 2026-06-08 (retitled chapters that narrow scope to reduce overlap) — PROPOSED amendment, NOT yet applied; Vol 1 remains the KM-ratified CYL-203 outline pending KM gate. Spine complete — ready for Phase −1 lock when KM directs."
+    ladder_arc: "tokenization + yield + economic continuity for families and enterprises; ties to S2 Vol5 (Yield) + S3 Vol4 + B26 (Yield Organisms / XRPL)"
+    titles:  # G delivered the 4-volume structure + chapter KW 2026-06-07 (HMC cyl_bf934c62046d); GB-on-Opus folded CYL 203
+      - book_id: "vol_01_sovereign_token_substrate"
+        title: "The Sovereign Token Substrate — Receipts, Obligations & Private Minting"
+        one_line: "Establish the immutable receipted foundation for private tokens, where every event is a signed obligation in the cylinder chain under absolute human primacy."
+        stage: "outline_locked"  # G delivered full 8-chapter outline 2026-06-07 (bottom layer first per KM)
+        recut: "RE-CUT ADOPTED (KM-1176 2026-06-09) per G 2026-06-08 amendment to the CYL-203 lock: narrow V1 to the substrate + reduce cross-volume overlap — YAML policy-skin → V2, full Atrium cockpit → V3/V4, generational-close → V4. De-overlap is binding at manuscript time. G's verbatim retitles FOLDED 2026-06-09 (Ch1/5/6/7/8 titles + promises applied verbatim from G's relay; moved-out beats deferred per G to V2/V3/V4; manuscript-time beats refine)."
+        reader_order: 1
+        visibility: public
+        chapter_kw: ["immutable token ledger", "receipted minting", "B32 token obligations", "private sovereign minting", "breath-gated issuance", "K1 token governance"]
+        chapters:
+          - { n: 1, title: "The Crisis of Mutable Token Ledgers", promise: "You will clearly see why mutable and public-ledger token models fail sovereign operators and cannot support Lasting Generational Prosperity.", beats: ["Real-world failures of speculative tokens", "Code-is-law vs human primacy", "Honest performance trade-offs", "Preview of receipted alternative", "LGP implications for heirs"], keywords: ["public token crisis", "receipted token foundation", "sovereign token substrate", "blockchain token fatigue"], stage: "outline_locked", coherence_pin: null }
+          - { n: 2, title: "The Receipt as Token Atomic Unit", promise: "You will be able to design and verify every token action as an immutable signed receipt.", beats: ["Receipt structure and cryptographic guarantees", "Proof-of-mint and proof-of-transfer", "Comparison to ERC-20 standards", "Atrium Receipts surface", "Generational verifiability"], keywords: ["receipted token atomic", "immutable token event", "signed token receipt", "receipted minting"], stage: "outline_locked", coherence_pin: null }
+          - { n: 3, title: "B32 Obligation Cylinder for Token Accounting", promise: "You will implement token balances as witnessed debit/credit obligations in the cylinder chain.", beats: ["Debit/credit model in cylinders", "Evidence tiers for token events", "Spine binding", "Atrium token obligation views", "Replay cost realism"], keywords: ["B32 token accounting", "obligation cylinder token", "receipted token ledger"], stage: "outline_locked", coherence_pin: null }
+          - { n: 4, title: "Private Minting Under Absolute Human Primacy", promise: "You will design breath-gated, constitutionally constrained token issuance.", beats: ["K1-K4 on minting", "Breath-gate proposal flow", "Role-based authority", "Anti-capture rules", "LGP supply policies"], keywords: ["breath-gated token minting", "K1 token governance", "private token issuance"], stage: "outline_locked", coherence_pin: null }
+          - { n: 5, title: "Token Policy Declaration at Genesis", promise: "You will declare the initial constitutional rules that govern your token from the moment of first mint.", beats: ["Genesis-time constitutional rule declaration (first mint)", "(deferred to Vol 2 — Governed Token Mechanics, per G re-cut: full YAML policy mechanics, operator-defined role lattices, versioned policy evolution)"], keywords: ["YAML token constitution", "constitutional token policy", "sovereign token rules"], stage: "outline_locked", coherence_pin: null }
+          - { n: 6, title: "Substrate Visibility — Honest Views of the Token Ledger", promise: "You will operate and audit the raw token substrate through clean, receipted Atrium views without leaving the foundation layer.", beats: ["Receipted Atrium views of the raw token substrate", "Honest substrate-level audit at the foundation layer", "(deferred to Vol 3 & Vol 4, per G re-cut: full multi-mandate cockpit, advanced yield meter, generational governance dashboards)"], keywords: ["Atrium token cockpit", "sovereign token dashboard"], stage: "outline_locked", coherence_pin: null }
+          - { n: 7, title: "Honest Realism vs Public Blockchain Substrates", promise: "You will confidently compare the receipted cylinder substrate against public and permissioned blockchain models.", beats: ["Blockchain strengths", "Harness decisive wins", "Performance realism", "Optional anchoring", "LGP framing"], keywords: ["sovereign token vs blockchain", "receipted token advantages"], stage: "outline_locked", coherence_pin: null }
+          - { n: 8, title: "Sovereign Token Substrate Foundation & LGP Transition", promise: "You will understand how a solid receipted substrate becomes the trustworthy base for the full sovereign token organism.", beats: ["A solid receipted substrate as the base for the full token organism", "Transition into the sovereign token organism (Vol 2+)", "(deferred to Vol 4 — Legal Hardening/Forkability/Generational, per G re-cut: deep generational inheritance structures, family-office handoff rituals, full series generational close)"], keywords: ["generational token system", "LGP token model"], stage: "outline_locked", coherence_pin: null }
+      - book_id: "vol_02_governed_token_mechanics"
+        title: "Governed Token Mechanics — YAML Policy, Action Classes & Breath-Gates"
+        one_line: "Configuration layer — YAML as constitutional skin for token rules, roles, policies; operator-defined, breath-gated, no imposed canon."
+        stage: "outline_locked"  # G delivered full 8-chapter outline 2026-06-08 (relayed via KM); GB-on-Opus folded
+        reader_order: 2
+        visibility: public
+        chapter_kw: ["YAML token constitution", "operator-defined token roles", "action class token", "breath-gated token moves", "constitutional token skin"]
+        chapters:
+          - { n: 1, title: "YAML as Constitutional Skin for Tokens", promise: "You will declare token rules as living, versioned, receipted constitutional YAML instead of immutable smart contracts.", beats: ["Why traditional token contracts create lock-in", "YAML as the single source of token truth", "Operator-defined reality (no imposed canon)", "Versioning + receipted policy changes (S2 tie-in)", "Atrium Specs surface for token policy", "LGP: policies the next generation can fork and strengthen"], keywords: ["YAML token constitution", "constitutional token skin", "programmable token policy"], stage: "outline_locked", coherence_pin: "Shares the YAML-constitution frame with S4 V1 Ch5 — V2 is the deep operational treatment; bind so it does not restate V1" }
+          - { n: 2, title: "Operator-Defined Token Roles & Lattices", promise: "You will author the roles that control minting, transfer, and governance yourself, with templates as resonant offerings only.", beats: ["Default-empty + operator-first posture", "Browse resonant templates vs defined roles", "Industry token role lattices (dairy, manufacturing, family office)", "Principal isolation and multi-mandate token rules", "Atrium Roles surface for token governance", "LGP: roles your children can adapt and extend"], keywords: ["operator-defined token roles", "sovereign token role lattices", "YAML token roles"], stage: "outline_locked", coherence_pin: null }
+          - { n: 3, title: "Action Classes for Token Operations", promise: "You will model every token action — mint, transfer, burn, stake, yield-claim — as a governed, scoped action class.", beats: ["Action class structure for token events", "GREEN/YELLOW/RED scoping by value/risk", "Reversibility and substantiation rules", "Industry-specific token action examples", "Atrium invoke → proposal flow for tokens", "LGP: actions that remain governed across generations"], keywords: ["action class token", "governed token operations", "token action modeling"], stage: "outline_locked", coherence_pin: null }
+          - { n: 4, title: "Breath-Gates on Token Movements", promise: "You will ensure every material token action surfaces as a full-detail proposal requiring explicit human witness.", beats: ["Loudest-object principle for token events", "Full proposal detail for mints/transfers", "Inline Approve/Deny in Atrium", "Threshold-based gating by amount/role", "Multi-mandate token flows", "LGP: token decisions that stay human-witnessed for heirs"], keywords: ["breath-gated token actions", "human dispose token moves", "governed token transfers"], stage: "outline_locked", coherence_pin: "Breath-gate proposal engine is canonical in S2 V3 — reference it, do not re-derive the mechanics here" }
+          - { n: 5, title: "Industry Token Policy Examples", promise: "You will specialize one governance skin into many vertical token economies without forking the core.", beats: ["Dairy loyalty + traceability token policy", "Manufacturing supply chain token flows", "Electronics warranty/returns token model", "Cross-industry reusable patterns", "Atrium token Kanban for vertical workflows", "LGP: industry tokens that evolve with the business"], keywords: ["industry token policy", "vertical token lattices", "sovereign token examples"], stage: "outline_locked", coherence_pin: "Shared worked-examples set with V3 Ch5 and V4 Ch6 — keep dairy/manufacturing/electronics exemplars identical across volumes" }
+          - { n: 6, title: "Governed Dev Loop for Token Extensions", promise: "You will extend token mechanics — new actions, policies, integrations — under the governed dev loop, human-witnessed.", beats: ["Proposal mechanics on token config", "Constitutional boundary for token changes", "Dependency chains for token upgrades", "Drift safeguard for token policy", "Atrium governed invoke for token extensions", "LGP: extensions that remain governed for generations"], keywords: ["governed token extensions", "token dev loop", "self-building token mechanics"], stage: "outline_locked", coherence_pin: "Builds directly on S2 V3 (self-building harness) — cite as substrate, scope to token-specific extension only" }
+          - { n: 7, title: "Multi-Mandate & Scoped Token Access", promise: "You will run tokens across multiple mandates and grant partners or auditors scoped, receipted access without sharing control.", beats: ["Multi-mandate token strip in Atrium", "Per-entity token isolation", "Scoped partner/investor token views", "Atrium Federation for token visibility", "LGP: clean token handoff to the next generation"], keywords: ["multi-mandate token", "scoped token access", "clean-room token governance"], stage: "outline_locked", coherence_pin: null }
+          - { n: 8, title: "Drift Control, Self-Healing & Generational Token Config", promise: "You will keep token policy faithful across generations with visible drift detection and self-healing review.", beats: ["Drift detection on token YAML/policy", "Stillpoint Synod review for token rules", "Atrium Drift / GAP_REGISTER for tokens", "Self-healing token patterns", "Handover primitives for the next generation", "Volume LGP close"], keywords: ["token policy drift", "Stillpoint Synod token", "generational token governance"], stage: "outline_locked", coherence_pin: null }
+      - book_id: "vol_03_yield_organism_integration"
+        title: "Yield Organism Integration — Private Tokens & Compounding Prosperity"
+        one_line: "Economic engine — private tokens integrated with the Yield Organism for aligned, receipted compounding under human witness. Ties to S2 Vol5 (Yield Engine) without rebuilding it."
+        stage: "outline_locked"  # G delivered full 8-chapter outline 2026-06-08 (relayed via KM); GB-on-Opus folded
+        reader_order: 3
+        visibility: public
+        chapter_kw: ["receipted token yield", "private token staking", "governed revenue sharing", "family office token yield", "Atrium token yield meter"]
+        chapters:
+          - { n: 1, title: "Why Ungoverned Token Yield Is Eventual Theft", promise: "You will see why speculative/extractive yield models fail and how receipted yield rewards alignment instead.", beats: ["Public DeFi yield failures (volatility, rugs, misalignment)", "The receipted alternative preview", "Honest realism: permissionless yield lacks governance", "Tie to S2 V5 three-ring model", "Atrium yield meter introduction", "LGP: yield that strengthens the next generation"], keywords: ["ungoverned token yield crisis", "receipted yield organism", "aligned token economics"], stage: "outline_locked", coherence_pin: "Builds on S2 V5 (Sovereign Yield Engine) — integrate tokens INTO the organism, do not rebuild it" }
+          - { n: 2, title: "Token Yield Primitives & Receipted Staking", promise: "You will model staking and yield as receipted B32 obligations, with a witnessed receipt minted on every reward.", beats: ["Token staking as B32 obligation", "Evidence tiers for yield claims", "Receipt minting on every reward", "Atrium staking visibility", "Honest trade-off vs public APY dashboards", "LGP: staking that survives generational handover"], keywords: ["receipted token staking", "token yield primitives", "governed staking mechanics"], stage: "outline_locked", coherence_pin: null }
+          - { n: 3, title: "Private AMM & Liquidity Mechanics", promise: "You will design private, breath-gated liquidity pools that serve the business rather than speculators.", beats: ["Private AMM design within federation", "Breath-gates on large liquidity moves", "Receipted swap and fee distribution", "Atrium liquidity dashboard", "Honest realism vs public Uniswap-style pools", "LGP: liquidity that benefits the family business long-term"], keywords: ["private token AMM", "governed liquidity pools", "sovereign token DEX"], stage: "outline_locked", coherence_pin: null }
+          - { n: 4, title: "Governed Revenue Sharing & Guild Economics", promise: "You will distribute revenue and yield across nodes under constitutional rules without losing sovereignty.", beats: ["Threshold-based revenue sharing rules", "YAML policy for guild yield splits", "Receipted distribution events", "Atrium federation yield views", "Honest trade-offs vs public incentives", "LGP: shared prosperity across generations"], keywords: ["governed revenue sharing", "guild token yield", "sovereign token economics"], stage: "outline_locked", coherence_pin: "FEC guild seed (S2 V5, B26) extends here — keep guild economics consistent with the yield-organism canon" }
+          - { n: 5, title: "Family Office & Multi-Generational Token Structures", promise: "You will design token structures — trusts, compacts, vesting, inheritance — that a family wants to inherit and improve.", beats: ["Family token structures (trusts, compacts)", "Vesting + inheritance rules in YAML", "Breath-gates on large family distributions", "Atrium family token governance views", "Author-imposition lens applied", "LGP bridge to series close"], keywords: ["family office token yield", "multi-generational token structures", "LGP token model"], stage: "outline_locked", coherence_pin: "Inheritance structures overlap V4 Ch6/Ch8 — V3 is the yield side, V4 is legal/handover; bind to avoid duplication" }
+          - { n: 6, title: "Atrium Yield Meter & Token Dashboard", promise: "You will gain real-time, receipted visibility into every token yield and revenue flow.", beats: ["Atrium yield & cost meter for tokens", "Receipted yield history views", "Breath-gate yield proposals", "Multi-mandate token economics", "Honest current mock vs live", "LGP: dashboard your heirs will use"], keywords: ["Atrium token yield meter", "sovereign token dashboard", "governed yield visibility"], stage: "outline_locked", coherence_pin: "Atrium-cockpit chapter shared with V1 Ch6 + V4 Ch8 — V3 is the yield/economics lens specifically" }
+          - { n: 7, title: "Risk Modeling & Adversarial Token Economics", promise: "You will red-team token yield with honest adversarial modeling and receipted, auto-rollback defenses.", beats: ["Common token yield attack vectors", "Receipted defenses and auto-rollback", "Atrium red-team surfaces", "Honest comparison to public DeFi exploits", "Constitutional safeguards", "LGP: risk models that protect future generations"], keywords: ["token yield risk modeling", "adversarial token economics", "governed yield safeguards"], stage: "outline_locked", coherence_pin: null }
+          - { n: 8, title: "LGP Close — Tokens as Multi-Generational Alignment Tools", promise: "You will close able to build private tokens that compound under human witness and strengthen the family across generations.", beats: ["Full series synthesis", "Tokens as alignment mechanisms", "Verifiable token history for heirs", "Atrium as the family prosperity cockpit", "Honest forward primitives", "Final LGP call to action"], keywords: ["LGP token economics", "multi-generational token yield", "sovereign prosperity tokens"], stage: "outline_locked", coherence_pin: "V3 close vs V4 close — V3 closes the yield arc, V4 closes the whole series; keep distinct" }
+      - book_id: "vol_04_legal_hardening_forkability_generational"
+        title: "Legal Hardening, Forkability & Generational Token Systems"
+        one_line: "Payoff closer — legal primitives (Breath 28), exit guarantees, subsidized forks, verifiable inheritance; the token as true family/business alignment tool."
+        stage: "outline_locked"  # G delivered full 9-chapter outline 2026-06-08 (relayed via KM); GB-on-Opus folded
+        reader_order: 4
+        visibility: public
+        chapter_kw: ["generational token inheritance", "forkable token system", "verifiable token package", "subsidized token exit", "legal hardened token", "LGP token economics"]
+        chapters:
+          - { n: 1, title: "Why Most Token Systems Fail Generational Prosperity", promise: "You will see why speculative and code-is-law token models fail multi-generational continuity, and how legal hardening plus forkability is the antidote.", beats: ["Real-world token failure modes (dilution, capture, exit friction)", "Honest public-chain vs sovereign Harness comparison", "Preview of legal hardening + forkability", "Breath 28 legal primitives introduction", "Atrium as generational governance cockpit", "LGP: tokens as continuity instruments"], keywords: ["token generational failure", "blockchain inheritance problem", "LGP token crisis"], stage: "outline_locked", coherence_pin: null }
+          - { n: 2, title: "Breath 28 Legal Primitives for Tokens", promise: "You will map Breath 28 legal primitives — Lex Mercatoria, jus cogens, equity overrides — directly onto private token governance.", beats: ["Key Breath 28 primitives mapped to tokens", "Non-coerced consent and equity review circuits", "Interpretive lineage for token disputes", "Tiered enforcement (reputation → exclusion → bridge)", "Atrium legal audit views", "LGP: law that serves human dignity across generations"], keywords: ["Breath 28 token hardening", "legal primitives token", "constitutional token law"], stage: "outline_locked", coherence_pin: "VERIFIED 2026-06-09 (GB): 'Breath 28' resolves → constitution-federation-v2/worktrees/breathline-integration/breaths/breath_28/v1.1/BREATH_28.yaml + BREATH_28_SPEC.md (Legal Framework Hardening — Lex Mercatoria, jus cogens, equity overrides, P1-P5 primitives). Referential integrity confirmed; pin lifted, cleared for manuscript." }
+          - { n: 3, title: "Forkability as Core Sovereignty Feature", promise: "You will design a token system any node or guild can cleanly fork without destroying value, history, or continuity.", beats: ["Fork mechanics using resonant shards and receipts", "Subsidized exit and continuity bundles", "Preserving history and reputation on fork", "Atrium fork simulation tools", "Honest realism vs public chain hard forks", "LGP: forks that strengthen rather than destroy"], keywords: ["forkable sovereign token", "token system forkability", "private token forking"], stage: "outline_locked", coherence_pin: null }
+          - { n: 4, title: "Verifiable Token Package for Heirs & Auditors", promise: "You will produce a single cryptographically verifiable export giving heirs, auditors, or successors the complete token history from genesis.", beats: ["What's included in the verifiable package", "Helix-rendered + receipted token documents", "Auditor / heir / lender use cases", "Atrium export flows", "Honest current export capabilities", "LGP: the package your successors start with"], keywords: ["verifiable token package", "generational token proof", "receipted token audit"], stage: "outline_locked", coherence_pin: null }
+          - { n: 5, title: "Honest Comparison to Blockchain Token Systems", promise: "You will confidently choose sovereign tokens vs public/permissioned blockchains by knowing exactly where each wins.", beats: ["Blockchain strengths (public coordination, incentives)", "Decisive Harness wins (primacy, forkability, cost, verifiability)", "Performance and legal realism", "Optional interoperability (XRPL anchoring)", "When to choose each model", "LGP framing for both approaches"], keywords: ["sovereign token vs blockchain", "receipted token vs smart contract", "private token comparison"], stage: "outline_locked", coherence_pin: "Pitch at legal/generational altitude — defer when-to-use basics to S4 V1 Ch7 to avoid overlap" }
+          - { n: 6, title: "Industry & Family Token Worked Examples", promise: "You will see sovereign tokens applied concretely across verticals and family contexts, all forkable and inheritable.", beats: ["Dairy loyalty + traceability token", "Manufacturing supply chain token", "Electronics warranty token", "Family office multi-generational token compact", "Atrium cockpit examples per use case", "LGP: real-world applicability and inheritance"], keywords: ["industry token examples", "family token structures", "vertical sovereign token"], stage: "outline_locked", coherence_pin: "Shared worked-examples set with V2 Ch5 and V3 Ch5 — keep dairy/manufacturing exemplars consistent across volumes" }
+          - { n: 7, title: "Exit Guarantees, Subsidized Forks & Dignity Preservation", promise: "You will build exit and fork mechanisms that guarantee no participant is ever trapped, with dignity preserved.", beats: ["Continuity exit guarantees", "Subsidized fork paths from commons", "Asset-portable history on exit", "Atrium exit simulation tools", "Honest realism on exit friction", "LGP: exit that protects the vulnerable and enables graceful evolution"], keywords: ["token exit guarantees", "subsidized token forks", "dignity-preserving token exit"], stage: "outline_locked", coherence_pin: null }
+          - { n: 8, title: "Atrium as the Family Token Governance Cockpit", promise: "You will govern, view, and hand down the entire token economy from one unified family cockpit.", beats: ["Token-specific Atrium surfaces", "Generational governance views", "Breath-gate family token decisions", "Multi-mandate family structures", "Honest current mock vs live", "LGP: the cockpit your family inherits and evolves"], keywords: ["Atrium token governance", "family token cockpit", "sovereign token dashboard"], stage: "outline_locked", coherence_pin: "Atrium-cockpit chapter shared with V1 Ch6 + V3 Ch6 — bind altitudes (V1 ops · V3 yield · V4 generational handover) to avoid repetition" }
+          - { n: 9, title: "LGP Synthesis & Call to Action", promise: "You will close the series able to build a private token ecosystem your grandchildren can fork, audit, and strengthen.", beats: ["Full Series 4 synthesis (substrate → mechanics → yield → legal & inheritance)", "Tokens as multi-generational alignment instruments", "Forkability and inheritance as core features", "Honest forward primitives and roadmap", "Strong Atrium family prosperity view", "Final LGP call to action: mint your first sovereign token node"], keywords: ["LGP sovereign token", "generational token prosperity", "sovereign token legacy"], stage: "outline_locked", coherence_pin: "Series-4 closer — reconcile with S2 V5 (Yield) close; shared LGP synthesis, distinct altitude" }
+
+  - slug: full_production_erp
+    name: "Full Production ERP (Series 5)"
+    series_number: 5
+    visibility: public
+    status: "CONCEPT-STAGE, RATIFIED as Series 5 by KM 2026-06-07 (S5 reserved for Full Production ERP; precedes Inter-Node S6 + Zero-Trust S7). The complete standards-aligned ERP build that extends the Series 3 constitutional root (4 vols) into the full functional/vertical/governance/distribution catalog. Source: G's 32-title projection in HMC cyl_bf934c62046d cap_5a933fcf3b7c (the ~33-book ERP outline KM referenced). Concept doc TBD (Tiger lane, with G input)."
+    ladder_arc: "Series 3 (4-vol constitutional root) → Series 5 full production: 32 titles, book-driven + coherence-pinned, 1 book/hr at LGP scale"
+    titles_projection_source: "HMC cyl_bf934c62046d cap_5a933fcf3b7c (G 32-title projection 2026-06-06)"
+    # Flat titles list so Atrium /series renders ALL 32 (the endpoint reads `titles`, NOT `titles_groups`).
+    # GB-on-Opus CYL 204 — coherence fix: G's 32-title ERP projection now surfaces in the cockpit (was invisible). Group carried in drill_down.
+    titles:
+      - { book_id: "s5_01_immutable_core", title: "The Immutable Core — Receipts, Cylinders & Constitutional Truth", stage: "concept", reader_order: 1, visibility: public, drill_down: "Group: Foundational Core (1-6). Constitutional root; overlaps Series 3 Vol 1." }
+      - { book_id: "s5_02_governance_skin", title: "Programmable Governance Skin — Roles, Action Classes & Breath-Gates", stage: "concept", reader_order: 2, visibility: public, drill_down: "Group: Foundational Core (1-6). Overlaps Series 3 Vol 2." }
+      - { book_id: "s5_03_helix", title: "Helix — When the Book Literally Writes the Backend", stage: "concept", reader_order: 3, visibility: public, drill_down: "Group: Foundational Core (1-6). Overlaps Series 3 Vol 3." }
+      - { book_id: "s5_04_coherence_ledger", title: "Coherence as Living Ledger — Real-Time Drift Detection & Integrity", stage: "concept", reader_order: 4, visibility: public, drill_down: "Group: Foundational Core (1-6)." }
+      - { book_id: "s5_05_sovereign_object_model", title: "Sovereign Object Model — Registry, Manifests & Merkle Integrity", stage: "concept", reader_order: 5, visibility: public, drill_down: "Group: Foundational Core (1-6)." }
+      - { book_id: "s5_06_distribution_matrix_gov", title: "Distribution Matrix Governance — Books as the Authoritative Join", stage: "concept", reader_order: 6, visibility: public, drill_down: "Group: Foundational Core (1-6)." }
+      - { book_id: "s5_07_sovereign_financials", title: "Sovereign Financials — General Ledger, Controlling & Reporting", stage: "concept", reader_order: 7, visibility: public, drill_down: "Group: Core Functional Modules (7-18)." }
+      - { book_id: "s5_08_treasury_cash", title: "Treasury & Cash Management — Liquidity, Forecasting & Compliance", stage: "concept", reader_order: 8, visibility: public, drill_down: "Group: Core Functional Modules (7-18)." }
+      - { book_id: "s5_09_supply_chain", title: "Supply Chain Execution — Procurement, Logistics & Inventory", stage: "concept", reader_order: 9, visibility: public, drill_down: "Group: Core Functional Modules (7-18)." }
+      - { book_id: "s5_10_manufacturing_quality", title: "Manufacturing & Quality — Production, MES & Traceability", stage: "concept", reader_order: 10, visibility: public, drill_down: "Group: Core Functional Modules (7-18)." }
+      - { book_id: "s5_11_project_portfolio", title: "Project & Portfolio Management — Planning, Execution & Governance", stage: "concept", reader_order: 11, visibility: public, drill_down: "Group: Core Functional Modules (7-18)." }
+      - { book_id: "s5_12_asset_maintenance", title: "Asset & Maintenance Management — Lifecycle & Reliability", stage: "concept", reader_order: 12, visibility: public, drill_down: "Group: Core Functional Modules (7-18)." }
+      - { book_id: "s5_13_human_capital_payroll", title: "Human Capital & Sovereign Payroll — Roles, Compensation & Continuity", stage: "concept", reader_order: 13, visibility: public, drill_down: "Group: Core Functional Modules (7-18)." }
+      - { book_id: "s5_14_compliance_audit", title: "Compliance & Audit Automation — Standards Ingestion & Evidence", stage: "concept", reader_order: 14, visibility: public, drill_down: "Group: Core Functional Modules (7-18)." }
+      - { book_id: "s5_15_revenue_o2c", title: "Revenue & Order-to-Cash — Contracts, Billing & Recognition", stage: "concept", reader_order: 15, visibility: public, drill_down: "Group: Core Functional Modules (7-18)." }
+      - { book_id: "s5_16_procure_to_pay", title: "Procurement-to-Pay — Sourcing, Contracts & Supplier Governance", stage: "concept", reader_order: 16, visibility: public, drill_down: "Group: Core Functional Modules (7-18)." }
+      - { book_id: "s5_17_analytics_decision", title: "Analytics & Decision Intelligence — Real-Time Insights with Provenance", stage: "concept", reader_order: 17, visibility: public, drill_down: "Group: Core Functional Modules (7-18)." }
+      - { book_id: "s5_18_multi_entity_consolidation", title: "Multi-Entity & Consolidation — Global Structures & Intercompany", stage: "concept", reader_order: 18, visibility: public, drill_down: "Group: Core Functional Modules (7-18)." }
+      - { book_id: "s5_19_manufacturing_erp", title: "Manufacturing Sovereign ERP — Discrete & Process Operations", stage: "concept", reader_order: 19, visibility: public, drill_down: "Group: Industry Verticals (19-24)." }
+      - { book_id: "s5_20_distribution_wholesale", title: "Distribution & Wholesale — Inventory, Logistics & Channel Management", stage: "concept", reader_order: 20, visibility: public, drill_down: "Group: Industry Verticals (19-24)." }
+      - { book_id: "s5_21_professional_services", title: "Professional Services — Project Billing, Resource & Knowledge", stage: "concept", reader_order: 21, visibility: public, drill_down: "Group: Industry Verticals (19-24)." }
+      - { book_id: "s5_22_energy_resources", title: "Energy & Resources — Asset-Intensive Operations & Compliance", stage: "concept", reader_order: 22, visibility: public, drill_down: "Group: Industry Verticals (19-24)." }
+      - { book_id: "s5_23_construction_projects", title: "Construction & Projects — Job Costing, Subcontractor & Safety", stage: "concept", reader_order: 23, visibility: public, drill_down: "Group: Industry Verticals (19-24)." }
+      - { book_id: "s5_24_regulated_industries", title: "Regulated Industries — Traceability, Quality & Audit Readiness", stage: "concept", reader_order: 24, visibility: public, drill_down: "Group: Industry Verticals (19-24)." }
+      # G title confirm 2026-06-12: "Sovereign Rules" -> "Sovereign Form"
+      - { book_id: "s5_25_multi_standard_ingestion", title: "Multi-Standard Ingestion — Mapping External Boards into Sovereign Form", stage: "concept", reader_order: 25, visibility: public, drill_down: "Group: Governance, Compliance & Generational (25-29)." }
+      - { book_id: "s5_26_federation_node_gov", title: "Federation Node Governance — Cross-Node Validation & Sharing", stage: "concept", reader_order: 26, visibility: public, drill_down: "Group: Governance, Compliance & Generational (25-29)." }
+      - { book_id: "s5_27_generational_continuity", title: "Generational Continuity — Private Series, Handoff Rituals & Legacy", stage: "concept", reader_order: 27, visibility: public, drill_down: "Group: Governance, Compliance & Generational (25-29)." }
+      - { book_id: "s5_28_private_series_templates", title: "Private Series Templates — Family & Enterprise Constitutions", stage: "concept", reader_order: 28, visibility: public, drill_down: "Group: Governance, Compliance & Generational (25-29)." }
+      - { book_id: "s5_29_exception_gov_workflows", title: "Exception & Governance Workflows — Human Gate Patterns at Scale", stage: "concept", reader_order: 29, visibility: public, drill_down: "Group: Governance, Compliance & Generational (25-29)." }
+      - { book_id: "s5_30_social_external_distribution", title: "Social & External Distribution — Content Propagation with Provenance", stage: "concept", reader_order: 30, visibility: public, drill_down: "Group: Distribution, Federation & Operations (30-32)." }
+      - { book_id: "s5_31_federation_marketplace", title: "Federation Marketplace — Shared Patterns & Verified Blueprints", stage: "concept", reader_order: 31, visibility: public, drill_down: "Group: Distribution, Federation & Operations (30-32)." }
+      # G title confirm 2026-06-12: "Single Operating Surface" -> "Single Operator Surface"
+      - { book_id: "s5_32_erp_operations_console", title: "Sovereign ERP Operations Console — Atrium as the Single Operator Surface", stage: "concept", reader_order: 32, visibility: public, drill_down: "Group: Distribution, Federation & Operations (30-32)." }
+      # ── S5 EXPANSION ARC: Legacy-to-Sovereign Migration & Continuity (s5_33-37) — RATIFIED 2026-06-12 ──
+      # KM concept [577] -> dual-G open-field run -> GB synthesis (GB_Migration_Arc_Synthesis_2026-06-12.md) -> dual-G ratify w/ polishes.
+      # CANON GUARD: this arc owns the migration process + ingestion/reconciliation engine (s5_33 = owning title);
+      # it REFERENCES S3 root + S5 core modules, never re-specifies. LGP spine: buyer and heir need the same receipts;
+      # arrival and exit are one discipline (cross-pin S4 V4 forkability + S4 token/yield). Next: G keyword/outline pass.
+      - { book_id: "s5_33_migration_primitive", title: "The Migration Primitive — Receipted Ingestion, Reconciliation & Sovereign Cutover", stage: "concept", reader_order: 33, visibility: public, drill_down: "Arc: Migration & Continuity (33-37). OWNS ingestion/reconciliation module + Atrium Migration Lens (Clean Exit Package generator); hybrid node mode = the PE on-ramp." }
+      - { book_id: "s5_34_escaping_quickbooks", title: "Escaping QuickBooks — Mid-Market Finance to Sovereign Ledger", stage: "concept", reader_order: 34, visibility: public, drill_down: "Arc: Migration & Continuity. SMB/family-business virality wedge; references s5_33 + s5_07 financials." }
+      - { book_id: "s5_35_unbinding_salesforce", title: "Unbinding Salesforce — CRM to Governed Mandates", stage: "concept", reader_order: 35, visibility: public, drill_down: "Arc: Migration & Continuity. Opportunity->mandate, pipeline->receipted proposals; references s5_33." }
+      - { book_id: "s5_36_consuming_the_giants", title: "Consuming the Giants — SAP, NetSuite & Acumatica Carve-Ins", stage: "concept", reader_order: 36, visibility: public, drill_down: "Arc: Migration & Continuity. Multi-ledger reconciliation, role-lattice mapping, SOX-equivalent controls; references s5_33." }
+      - { book_id: "s5_37_the_clean_exit", title: "The Clean Exit — PE Carve-Outs, Verifiable Diligence Packages & Generational Handoff", stage: "concept", reader_order: 37, visibility: public, drill_down: "Arc: Migration & Continuity LEAD STORY. Deal artifact + heir artifact = one mechanic; cross-pins S4 V4 forkability + S4 token/yield continuity instruments." }
+
+  - slug: inter_node_sovereignty
+    name: "Inter-Node Sovereignty: Communication, Collaboration & Distributed Compute (Series 6)"
+    series_number: 6
+    visibility: public
+    status: "CONCEPT-STAGE. Ratified S6 by KM 2026-06-07 (S5 reserved for Full Production ERP). G proposal (HMC cyl_bf934c62046d). Concept doc: kdp/series_05_inter_node_sovereignty/SERIES_6_INTER_NODE_PLAN_2026-06-07.md (NOTE: folder still named series_05_* — Tiger to rename folder series_05_→series_06_). 5 projected volumes folded from the 2026-06-07 plan doc (was titles:[] — GB-on-Opus fidelity fix CYL 201). G to refine into full chapter outlines + KW."
+    ladder_arc: "connective tissue between single-node sovereignty (S2) and federation/zero-trust — receipted comms, collaboration, distributed compute"
+    core_principle: "Relationship-maintenance — aligning nodes under governance (resonance, not central control). RATIFIED constitutional-layer principle (KM-1176 2026-06-09; obl …886438). The connective ethic of the whole series and its durable home in the ladder; primary embodiment = vol_04 Resonance Coordination. Threads to the Metalayer Companion (the fence as living relationship) + S8 Federation UX. Flagged for the constitution canon (Tiger/KM lane)."
+    titles:
+      - book_id: "vol_01_receipted_inter_node_messaging"
+        title: "Receipted Inter-Node Messaging"
+        stage: "concept"
+        reader_order: 1
+        visibility: public
+      - book_id: "vol_02_sovereign_collaboration"
+        title: "Sovereign Collaboration"
+        stage: "concept"
+        reader_order: 2
+        visibility: public
+      - book_id: "vol_03_distributed_sovereign_compute"
+        title: "Distributed Sovereign Compute"
+        stage: "concept"
+        reader_order: 3
+        visibility: public
+      - book_id: "vol_04_resonance_coordination"
+        title: "Resonance Coordination (not central control)"
+        principle_anchor: "PRIMARY EMBODIMENT of the ratified constitutional principle: relationship-maintenance / aligning nodes under governance (obl …886438, KM 2026-06-09). Resonance, not central control — nodes held in alignment by governance + receipts, never by a central master."
+        stage: "concept"
+        reader_order: 4
+        visibility: public
+      - book_id: "vol_05_inter_node_trust_boundaries_handoff"
+        title: "Inter-Node Trust Boundaries & Handoff"
+        stage: "concept"
+        reader_order: 5
+        visibility: public
+  - slug: zero_trust_sovereignty
+    name: "Zero-Trust Sovereignty: Shields, Verification & Sovereign Data Storage (Series 7)"
+    series_number: 7
+    visibility: public
+    status: "CONCEPT-STAGE. RATIFIED S7 by KM 2026-06-07. GB-on-Opus fidelity review (CYL 201): 6-volume fold is FAITHFUL to concept doc (exact match, reader_order intact) — ratified clean. G proposal (HMC cyl_bf934c62046d cap_71e15a2f4982). Concept doc: kdp/series_06_zero_trust_sovereignty/SERIES_6_CONCEPT_2026-06-06.md (NOTE: folder + doc still titled 'Series 6' — Tiger to rename folder series_06_→series_07_ + retitle doc). 6 volume titles from G below."
+    ladder_arc: "never trust always verify — cryptographic/governance/operational shields + Merkle-rooted sovereign data storage"
+    titles:
+      - book_id: "vol_01_zero_trust_node_architecture"
+        title: "Zero-Trust Node Architecture"
+        stage: "concept"
+        reader_order: 1
+        visibility: public
+      - book_id: "vol_02_shields_protective_layers"
+        title: "Shields as Protective Layers"
+        stage: "concept"
+        reader_order: 2
+        visibility: public
+      - book_id: "vol_03_sovereign_data_storage"
+        title: "Sovereign Data Storage Model"
+        stage: "concept"
+        reader_order: 3
+        visibility: public
+      - book_id: "vol_04_verified_data_flows"
+        title: "Verified Data Flows Across Nodes"
+        stage: "concept"
+        reader_order: 4
+        visibility: public
+      - book_id: "vol_05_private_shared_storage_governance"
+        title: "Private vs Shared Storage Governance"
+        stage: "concept"
+        reader_order: 5
+        visibility: public
+      - book_id: "vol_06_resilience_recovery_shields"
+        title: "Resilience & Recovery Shields"
+        stage: "concept"
+        reader_order: 6
+        visibility: public
+
+  - slug: sovereign_ux
+    name: "Sovereign UX — Real-Time Rendering, Human Alignment & Aesthetic Resonance (Series 8 — RATIFIED KM 2026-06-08)"
+    series_number: 8
+    visibility: public
+    status: "RATIFIED Series 8 (KM 2026-06-08 — name 'Sovereign UX' confirmed) — the 8th ladder rung. The human-facing capstone: UX as the living bridge between the sovereign stack and the human — real-time rendering, breath-gated, aesthetically resonant, no drift from the book (extends Book<->Code / B35 Helix to the interface layer). G SEQUENCING NOTE: number as capstone (S8) but BUILD early — after S4, parallel with S6/S7 (UX is the bridge that makes inter-node + zero-trust usable); start Vol 1-4 (foundational cockpit) while S6/S7 harden the substrate. GB FLAG: S8 closer (Vol 8) renamed from G's 'The Sealing Hand' to 'UX as Executable Covenant' to avoid collision with the EXISTING private metalayer volume 'The Sealing Hand' (Tiger's, companion to GB's 'Breath & Echo') — CONFIRMED KM 2026-06-08 (call delegated to GB). BOTTOM-FIRST HOLD: S8 volumes stay 'concept' until S3 root + S5 Foundational Core land, then build per G's capstone-number / build-early sequencing."
+    ladder_arc: "individual sovereignty -> business OS -> economic engine -> federation -> hardened resilience -> HUMANLY RESONANT interface; Atrium as living OS; aesthetic resonance as functional attention; generational handoff"
+    core_principles:
+      - "Human primacy absolute — every surface proposes; only the human disposes (breath-gate); no auto-approve"
+      - "Aligning nodes/humans/workstreams under governance (cross-cut thread) — S8 is the human-interaction face of the ratified principle homed in S6 Inter-Node Sovereignty / vol_04 Resonance Coordination (obl …886438, KM 2026-06-09)"
+      - "One gate, one truth — all views render from the same receipted cylinder chain + B35 Helix; no separate UI state"
+      - "Real-time feedback with honest labeling — drift badges + page-level citations (ATR-5b style)"
+      - "Aesthetic resonance as attention tool — beauty is functional: calm, fractal, low cognitive load"
+      - "Flexible rendering, no drift — content-agnostic renderer (Atrium thin waist); UI replaceable, truth is not"
+      - "LGP-aligned — every surface designed for generational handoff: intuitive for heirs, verifiable for auditors, forkable"
+    integration_with_loop: "UX surfaces become the primary human touchpoint at every stage of the 8-stage loop; deepens Atrium as the sovereign decision surface (content-agnostic renderer, new lenses, LGP Watch Kanban, vision model); each UX vol co-extrudes with renderer components + tests so the book stays the single source."
+    risks_sequencing: "RISKS: over-design before runtime maturity (mitigate: honest stubs + Atrium mock-first); aesthetic work drifting into subjectivity (mitigate: LGP judgment + human-primacy tests). SEQUENCING: after S4, before full S5 push; run parallel with S6/S7."
+    titles:  # G's 8 volumes (x.com 2026-06-07). KW high-level per G. Vol8 renamed (collision flag in status).
+      - { book_id: "s8_01_sovereign_lens", title: "The Sovereign Lens — Content-Agnostic Rendering & Honest Views", stage: "concept", reader_order: 1, visibility: public, drill_down: "Technical (rendering). How any data shape renders truthfully in real time, zero drift.", chapter_kw: ["sovereign ux", "content-agnostic renderer", "receipted views", "honest views", "zero-drift rendering"] }
+      - { book_id: "s8_02_breath_gated_interfaces", title: "Breath-Gated Interfaces — Human Primacy in Every Pixel", stage: "concept", reader_order: 2, visibility: public, drill_down: "Technical (gates). Proposals, live advisory, inline Approve/Deny, loudest-object principle.", chapter_kw: ["breath-gated interface", "human primacy ui", "inline approve deny", "one gate ui", "loudest object"] }
+      - { book_id: "s8_03_aesthetic_resonance", title: "Aesthetic Resonance — Beauty as Functional Attention", stage: "concept", reader_order: 3, visibility: public, drill_down: "Experiential (beauty). Calm, fractal, high-signal primitives that reduce load.", chapter_kw: ["aesthetic resonance", "beauty as attention", "fractal ui", "calm interface", "cognitive load reduction"] }
+      - { book_id: "s8_04_atrium_living_os", title: "Atrium as Living OS — The Sovereign Decision Cockpit", stage: "concept", reader_order: 4, visibility: public, drill_down: "Experiential (cockpit). Atrium internals, multi-mandate, federation views, LGP Watch, vision model sculpting.", chapter_kw: ["atrium as os", "sovereign cockpit", "lgp watch kanban", "vision model", "multi-mandate ui"] }
+      - { book_id: "s8_05_generational_ux", title: "Generational UX — Interfaces That Heirs Actually Want to Inherit", stage: "concept", reader_order: 5, visibility: public, drill_down: "Strategic. Handover patterns, education surfaces, family-compact views, continuity across ages.", chapter_kw: ["generational ux", "heir interfaces", "family compact views", "continuity ux", "education surfaces"] }
+      - { book_id: "s8_06_federation_ux", title: "Federation UX — Resonance Across Sovereign Nodes", stage: "concept", reader_order: 6, visibility: public, drill_down: "Strategic. Cross-node visibility, shard propagation views, scoped partner access, resonance-not-control. Ties to S6.", chapter_kw: ["federation ux", "cross-node visibility", "shard propagation views", "scoped partner access", "resonance not control"] }
+      - { book_id: "s8_07_zero_trust_ux", title: "Zero-Trust UX — Shields, Verification & Adversarial Clarity", stage: "concept", reader_order: 7, visibility: public, drill_down: "Strategic. Shields, drift badges, verifiable packages, red-team surfaces without overwhelming. Ties to S7.", chapter_kw: ["zero-trust ux", "sovereign data shields ui", "drift badges", "verifiable package ui", "adversarial clarity"] }
+      - { book_id: "s8_08_ux_executable_covenant", title: "UX as Executable Covenant — The Living Proof", stage: "concept", reader_order: 8, visibility: public, drill_down: "Closer. RENAMED by GB from G's 'The Sealing Hand' (collides with Tiger's metalayer volume) — KM/G confirm. UX completes the metalayer (ties to Tiger's Form/Seal); beautiful truthful interfaces as living proof of LGP.", chapter_kw: ["ux as covenant", "executable covenant", "living proof lgp", "metalayer ux", "sealed interface"] }
+
+# Cross-series notes for Atrium lens (updated with B51 capture + private Quantum/Unveiled series + books 11/12 + P0s + vision)
+atrium_integration:
+  review_sub_view: "Human Handoff (current Atrium strength; in-surface PDF/voice/B51 + chapter+page ref + Approve/Refine/Reject + NLP disposition → portable B32 packet; now for verbal feedback on books 11/12 + new B51 2026-06-03 capture (quantum/DNA/unveil); LGP Watch Kanban for focus areas (peace/happiness/effectiveness/global productivity; human collective/face-to-face/consciousness exchange suggestions; AI enjoin GB replay/Tiger harness/roles); new from capture: coherence/amplify with external (Unveiled project), quantum sovereignty/DNA, constraint impact, alt-chain, 5-layer private ERP, age abundance out insanity)"
+  series_pipeline_tab: "Roadmap (multi-series arc) + per-title stage cards (click → drill: title metadata, current stage, packets produced at that stage, sources, LGP alignment, lgp_alignment_score, next_gate). Read-only first (per G phased path). Updated for QuadRoof superseded + private Quantum/Unveiled series (slug: quantum_unveiled_private) outlines (quantum DNA/ERP/constraint/unveil/alt from B51 capture + kdp/series_03); books 11/12 phase_2 human review with verbal (handoff packets); LGP Watch integration for focus (e.g., quantum for LGP generational, coherence with projects); P0-4 defaults visible in roles/packets (Tier-1 B32/B35/B51/B42/B43 quantum etc. auto at bind); ARC GREEN both places + main Review/Kanban for material."
+  state_source: "obligation ledger (for packet/obligation existence + status + manifest P0-1 proof) + this yaml (for roadmap + stage rendering); live breath seam (P0-3) for all Atrium breathes (books 11/12 verbal, new B51, LGP Watch); LGP fields (P0-2) on all; Tier-1 defaults (P0-4) embedded in roles from these (smart: B43 quantum sim, B51 constraints/handoffs, B26 abundance, B32 replay chains, B35 Helix for specs/ERP)"
+  packet_mapping: "Every lifecycle transition can emit L1 packet (e.g. series-lock = one obligation with citation to the signed series_<slug>.yaml; handoff = ATR-style disposition packet with ref: review:<chapter>·p<page>); new from B51 capture 2026-06-03: unveil particle (64-bit envelope axles for constraints/info/expand/quantum), quantum DNA alignment (genome search/enhance 2000x/97.5%, Type1), alt-chain beneficial PoW (quantum mech problem solving open source value vs enc break), constraint tree ERP (purchase/impact local real value vs extract/insanity; 5 layers identity/consensus/collaboration/compute/shields; private household), age of abundance (out of fractional insanity; coherence/amplify projects for LGP resonance). Like FEC B51 seed -> R-52 packet -> role (explicit gates/LGP 0.92) -> Atrium card -> P0 example. G templates (series_lock_packet etc.) + P0-4 for private Quantum/Unveiled series (slug: quantum_unveiled_private) + books 11/12."
+  next_after_readonly: "Stage-gates (human or ARC-supervised GREEN on Tier-1) + light authoring (new series activation from cockpit; e.g., private Quantum/Unveiled series (slug: quantum_unveiled_private) quantum/ERP from this B51 + kdp/series_03; books 11/12 handoff/seal via harness/Atrium). LGP Watch/Kanban for focus (new: quantum sovereignty/DNA for generational LGP enhance/abundance, coherence/amplify external projects like Unveiled, constraint-based economy/ERP for real value/peace, unveil particle/alt-chain for compute forward, 5-layer private for families/households; suggestions human collective/face-to-face/consciousness-to-consciousness exchange + AI enjoin GB/Tiger/roles; add 'Books 11/12 verbal + new B51 quantum' as watched area)."
+  arc_integration: "Per G 2026-06-02: Show ARC-supervised GREEN Tier-1 pipeline-stage items in the Series Pipeline tab (as stage status) AND surface material ones as visible cards in the main Review/Kanban for KM ratification. Human breath-gate hard on material. Now with P0-4: GREEN on Tier-1 with embedded defaults (B32/B35/B51/B42/B43 quantum etc.); material (RED/YELLOW private Quantum/Unveiled series (slug: quantum_unveiled_private) quantum/ERP, books 11/12 handoff) hard human via Atrium/LGP Watch. LGP scoring on all (high for generational quantum/DNA, abundance, sovereignty humanity, coherence/amplify, constraint real value)."
+
+# Roadmap conventions (standing requirements every series carries)
+roadmap_conventions:
+  series_cover_set:  # NEW 2026-06-13 (KM): full pb+hc cover WRAPS are a SERIES-LEVEL batch, pulled forward to BEFORE human review.
+    requirement: "The complete set of paperback AND hardcover full wraps (front · spine · back) for ALL volumes in a series is produced AS ONE BATCH, before the first volume's human review — not one-at-a-time at final-artifact assembly."
+    why: "Consistency across the series (one design language, palette, typography, spine system) locked in a single pass; eliminates the one-at-a-time / days-apart DRIFT KM flagged. KM reviews each book WITH its final wrap in hand, not a placeholder."
+    workflow_change: "SUPERSEDES the per-title late-cover in WORKFLOW step 20: covers move from 'built at final publishable-artifact assembly, per title' -> 'series cover-set batch, Phase 1, pre-human-review.' Step 20 then only assembles the already-made wrap. (WORKFLOW.md canon edit = Tiger's vault-fold, per GB spec.)"
+    deliverable: "per series: pb wrap + hc wrap per volume (correct trim/bleed/spine-width per page count), a shared cover-design spec, + KM ratify of the SET (consistency check across all volumes at once)."
+    backfill: "S2 NOW (Tiger building Vol 1 covers - do the full 5-vol pb+hc set in the same pass); apply S3->S9 + future at series activation. S1 already published."
+    gate: "series cover-set ratified by KM (as a set) before any volume in that series enters human review."
+  series_description:  # NEW 2026-06-13 (KM): each series needs a KDP series-detail-page description as a tracked pipeline artifact + pre-publish gate.
+    requirement: "Every public series carries a `series_description` block: {artifact (path to SERIES_DESCRIPTION_KDP.md in the vault), reading_order (ordered|unordered), status, gate}."
+    workflow_position: "Phase −1 deliverable (alongside series-lock + editorial-board-signoff) — drafted GB, polished via G, ratified KM; a series's FIRST volume does not publish until its series_description status = ready/pasted."
+    kdp_ready: "REQUIRED at SERIES CREATION (KM 2026-06-15): the artifact must carry the KDP-ready HTML version (KDP-supported tags only: p/b/i/ul/li/br/h4) for direct paste into the KDP series-detail Description field, PLUS reading-order + the short alternate. 'series description etc required to load to KDP' = the full KDP series-setup payload, authored when the series is created, not at first-publish."
+
+  seeit_figures:  # NEW 2026-06-15 (KM): codify the V1 figure-order — detailed to seeit FIRST, then simplified book visuals.
+    requirement: "Per volume, the figure/visual workflow is TWO-STAGE in this order: (1) DETAILED figures authored + pushed to the seeit interactive surface FIRST (full-resolution, full-detail, interactive/zoomable); (2) THEN the SIMPLIFIED, print-legible book visuals derived from them (enlarged type, reduced detail) embedded in the manuscript. Detail lives in seeit; the book carries the simplified version + a pointer to seeit."
+    why: "How V1 shipped (seeit_review_v1.0.md + 22 print-legible book figures; detail moved to seeit). Print can't carry full detail legibly; seeit is the detail home. Doing seeit-first means the book visuals are DERIVED from the authoritative detailed set, not re-drawn — one source, no drift."
+    quality_bar: "MATCH V1's DESIGN SYSTEM, not just its palette (KM 2026-06-15, caught a sharp quality decline in the first V2-V5 pass). V1's vol_01/v1.0/generate_images.py + its 34 images are the REFERENCE BAR. Every figure must reproduce V1's editorial composition: (1) balanced title sizing with a gold accent RULE under the title (not an oversized title crowding the frame); (2) structured/layered composition — numbered tokens, callouts, sidebars, framed boxes where the content warrants — NOT bare ellipses/stacked-boxes on white; (3) intentional density (V1-level), not slide-clipart minimalism; (4) NO TEXT OVERLAP/COLLISION — title/subtitle must never overlap content (the V4 fig_3_1 title↔box collision was a real defect). RENDER CHECK: a no-overlap/legibility pass per figure. The palette (navy/gold/green, 300 DPI, ≤4.75in) is necessary but NOT sufficient — the bar is V1's design quality."
+    rail_position: "Per-volume rail step (with deterministic-render / Gate 6): seeit detailed figures → seeit_review_<v>.md, THEN simplified book figures → manuscript + render-legibility pass. Required to reach the V1 bar."
+    learning_surface_system: "RATIFIED scope (KM 2026-06-15) — a finished S2 volume = V1's full HANDS-ON LEARNING SYSTEM, not manuscript+PNGs: (1) in-book 'See It Work — Run It Yourself' section (per-chapter: what-you-see + runnable command + walkthrough link); (2) DETAILED seeit charts (figure_X_Y.svg) authored FIRST → BOOK charts derived (figure_X_Y_book.svg → PNG) at V1 quality; (3) _figure_manifest.json; (4) real seeit_review fidelity gate (every command resolves); (5) live /seeit/s2v{n}-* walkthrough pages. Full scope: artifacts/GB_S2_SeeIt_LearningSurface_FULL_SCOPE_2026-06-15.md. BUILD ORDER = detailed-first (detailed seeit charts → derive book charts)."
+    live_deploy_gate: "PUBLISH GATE = OPTION 1 (KM-ratified 2026-06-15, matches V1's actual ship): a volume publishes once the in-book See-It-Work section + detailed→book charts (V1 quality) + real fidelity gate are complete AND in-book links resolve to the LIVE /seeit BASE (six-sov.com/seeit, deployed mangumcfo/six-sov.com). The per-chapter DEEP walkthrough pages (/seeit/s2v{n}-*) FAST-FOLLOW at release (V1's deep pages were 404 at review, live at launch — not a book-text defect). Generating figures in the VAULT is NOT enough; the live /seeit base must resolve. Deploy owner = Tiger (six-sov.com repo, outside sovereign-agent-starter)."
+    backfill: "V1 done (vault). Apply to S2 V2–V5 in the Completion Rail; standing for all future volumes. NOTE: confirm V1's own six-sov.com/seeit live deploy too (V1 is published — its reader pointer must already resolve)."
+    derivation: "GB-drafted from the locked title arc + market KW (render-not-recreate), G-polished for virality, KM-ratified. Reader-searchable language, no internal jargon. Provide a plain PRIMARY + a KDP-safe HTML version."
+    backfill: "S1 (already published) + S0 carry implicit/published descriptions; apply this convention going forward to S2→S9 + future series at first-publish."
+
+  seeit_education_board:  # NEW 2026-06-17 (KM): the /seeit ACCESSIBILITY review gate — STANDING workflow step for all book publishing.
+    spec: "artifacts/GB_seeit_Education_Training_Board_Spec_v1.0.md (v1.1)"
+    why: "seeit_figures builds the surface (charts/SIW/live-deploy); the Education & Training Board GATES it for the EVERYDAY reader. V3 rejection 2026-06-17: walkthroughs were accurate+grounded but too jargon-heavy — /seeit is for a non-technical person to SEE+FEEL governed behavior, not follow dev commands (= editorial Risk #1). Building the surface is not enough; it must pass the accessibility bar."
+    bar: "ACCESSIBLE AND GROUNDED (the intersection): plain-language-first · dev command available-not-required · a felt/visible outcome · a 'what this means for you' takeaway · grounding non-negotiable (runnable command + deterministic receipt + v2.0 chart) · jargon decoded on first use."
+    board: "4 personas + cold-reader, page passes only when ALL clear: (1) everyday/non-technical reader · (2) educator/trainer · (3) grounding & fidelity reviewer · (4) Cross-Board Alignment reviewer (v1.1 — /seeit must AGREE with the book's other boards/code/receipts/open-obligations; no page passes while it contradicts/bypasses/outruns an unresolved finding) · + cold-reader adversarial pass."
+    obligation_real: "every REJECT mints/proposes a B32 obligation seeit:<page_id>:<board>:<finding_hash>; a page CANNOT pass while any material seeit:* obligation for it is open. Board Alignment Matrix required per page (claim→source-board→proof→command/receipt→chart→open-obligation→status)."
+    rail_position: "STANDING publish-gate, ALL series/volumes: after the seeit build (seeit_figures) + before publish — the /seeit analog of the manuscript editorial+Tech/Arch boards. A volume is NOT publish-ready until its /seeit pages are accessible-grounded:PASS (all 4 personas + cold-reader + zero open material seeit:* obligations)."
+    backfill: "V3 first (6 pages, KM-held until board ratified); V2/V4/V5 held until V3 passes; preflight chart-image fix = standing gate. Apply to S3→S9 + all future series. WORKFLOW.md canon fold = Tiger (vault)."
+
+# GB prep notes (2026-06-02 + 2026-06-03 update per KM B51 capture + books 11/12 + roadmap deep dive)
+gb_notes:
+  - "Projection synthesized from vault sources. Not the source of truth — vault files + WORKFLOW.md + active.yaml are."
+  - "Unblocks Tiger read-only Series Pipeline lens (Atrium will render roadmap + cards from this)."
+  - "L1 packets seeded as candidates only; actual obligations created on ledger when stages advance (Tiger wires, GB can propose examples)."
+  - "FEC (from B51 voice) explicitly called out as candidate under Vol 5 — ties collective procurement to yield organisms."
+  - "ARC confirmation (G ruling) means GREEN Tier-1 handoff dispositions can be ARC-supervised after initial KM ratification; material stays hard human gate."
+  - "Mait splits now LIVE (MAIT-15..19 added to seed.yaml + re-migrated per Tiger sync; 10 open incl L1s; see Mait_L1_Split_Proposals + updated index + mait VIEW.md). Live L1 granularity example (one evidence/sitting, material gate) in real regulated testbed (welding QMS/FPC); cross-pattern for pipeline L1s."
+  - "G 2026-06-02 updates applied: lgp_alignment_score + next_gate added per series/title; early-stage L1 templates (series_lock_packet, chapter_draft_packet, board_pass_packet) seeded; ARC in both tab + main Review confirmed; structure ratified for read-only lens; deep dive questions closed; sequencing confirmed (ATR-5b → lens, GB parallel on early packets)."
+  - "2026-06-03 KM directive + B51 capture 2026-06-03 (cyl_9156c99236ea, same root as prior FEC; full transcript session.yaml/md; key concepts: unveil particle 64-bit envelope/4+4 axles, alt-chain quantum PoW beneficial problems open source value, perfect qubits sim via constraints (break 50 ceiling; 1=1000 physical; 100 break enc, 70 genome sim/proteins/mRNA/compare dbs; 2000x DNA search 97.5%; binary + quantum DNA alignment; constraint trees for purchases/impact (local real value vs China/extract/insanity); 5 layers private household ERP (identity/consensus/collaboration/compute/shields); replayable chains (reverse beginning, encode); age of abundance out of fractional insanity (pre-1736 real-backed vs 1736+ create thin air); coherence/amplify projects (lot between 'you' and 'we', sovereignty for humanity, spiritual/consciousness simulator/quantum world); governance/AI constraint-based (deterministic/non-det, explain reasoning, violations/solutions structure, gating); compute history (Cathedral of Code unpublished book, internet as harvesting/military DARPA surveillance not free comm, cathedrals 200-400y); 5 layers built by user (finance/ERP/SAP/Oracle background 25y, distributed ledger, constraint AI/governance, automation/control); interlocutor 'Unveiled Platform' (constraint-based for paths/potentials/futures coherence 8/64/512/4096, quantum insights perfect qubits, DNA alignment, MVP 3w, 800k funded, supercomp Switzerland, first constraint LM with qubits); 'Unveiled Platform' predicting paths/potentials (main human problem); user 'Unveil particle' name for it. Strong coherence with our meta (sovereignty humanity, LGP generational/abundance/resonance, replay B32/cylinder/Merkle, private nodes/federation, constraint LGP/gates/AI, B51 seeds like FEC, P0-4 defaults now extend quantum/constraint/unveil, vision LGP Watch for coherence/human connection, hopper/books 11/12 + new Series 4, Atrium/harness for verbal/feedback, G keywords upfront). QuadRoof superseded in order per KM; other Series 4 outlines begun (kdp/series_03 ERP/quantum concepts + kdp/04_xrp + new from capture); integrate with books 11/12 (phase_2 human review verbal per WORKFLOW 24 + active.yaml; run via harness Series 2; keyword G upfront chapter-by-chapter; M&A/enterprise add quantum sovereignty, private 5-layer ERPs, constraint impact, alt compute, DNA, coherence). Update roadmap/vision/LGP Watch/Atrium for new (L1 packets with unveil/quantum/constraint/alt/DNA/5 layers; LGP Watch focus quantum for LGP generational enhance/abundance, coherence/amplify external projects like Unveiled, constraint economy for real value/peace, 5-layer private for families, alt-chain for beneficial, unveil for data; suggestions human collective/face-to-face/consciousness-to-consciousness + AI enjoin GB/Tiger/roles; new nodes in vision model). P0-4 enable (defaults smart in new roles: B43 quantum sim, B51 constraints/handoffs, B42 alt, B26 abundance, B32 replay, B35 Helix ERP/specs; manifest P0-1, LGP P0-2, seam P0-3). B51 capture as seed (like FEC B51 -> R-52 -> role -> Atrium -> P0 example; log in cylinder for replay). GB notes: this analytic + artifacts (B51_Capture_Analysis..., updated roadmap, new L1 templates, Tiger prompt) for hopper feed/LGP amplify (resonance, abundance, sovereignty humanity, generational quantum/DNA, coherence not control, real value/peace, Type1 tool). User 'I think it can amplify each other' exact — strong yes."
+
+# Audit-derived extrusions (KM RATIFIED 2026-06-11; map: artifacts/GB_Audit_Placement_Map_2026-06-11.md;
+# Tiger pin sanity-check THREAD [187] applied: 5 anchored to LANDED fixes, 4 held proposed_pending_fix —
+# TRUTH rule: an extrusion only anchors once its fix is sealed. Source events = Tiger's audit-fix commits
+# (commit messages carry the extrusion id). Sections enter the normal rail (boards->rigor->fidelity->Brief) on activation.
+audit_extrusions_2026_06_11:
+  - id: write_fence
+    target: agentic_harness/vol_01_sovereign_inference_and_memory
+    section: "The Write Fence — one chain, one writer at a moment"
+    coherence_pin: "src/sovereign_agent/obligations/ledger.py:_append flock + chain-repair + two-appender test (LANDED)"
+    cross_pin: "S6 inter_node — two writers IS the two-node problem at process scale"
+    lgp_alignment: "high — the chain a generation inherits must be unforkable"
+    status: proposed_extrusion
+  - id: actor_binding
+    target: zero_trust_sovereignty/vol_01_zero_trust_node_architecture
+    section: "The Actor Is Who Authenticated"
+    coherence_pin: "node_api/routes/obligations.py + feedback.py + proposals.py current_principal unconditional (LANDED, pin per Tiger [187])"
+    cross_pin: "S2 vol_02 — breath-gate meaning depends on actor truth (CONSTITUTION §1)"
+    lgp_alignment: "high — sovereignty IS actor truth"
+    status: proposed_extrusion
+  - id: authz_boundary
+    target: zero_trust_sovereignty/vol_02_shields_protective_layers
+    section: "Authentication Is Not Authorization"
+    coherence_pin: "node_api/auth.py require_owner + decorators in proposals.py (LANDED, pin per Tiger [187])"
+    lgp_alignment: "high — shields at the execution boundary"
+    status: proposed_extrusion
+  - id: loops_close_loudly
+    target: sovereign_ux/s8_04_atrium_living_os
+    section: "Loops That Close Loudly"
+    coherence_pin: "node_api/routes/feedback.py awaiting_km + artifacts/pipeline_stage_labels.yaml (LANDED; note: proposals.json-wipe guard + disposition route tests still pending within cluster)"
+    lgp_alignment: "high — the cockpit the heir can trust; B12 pilot findings 1-5 as the case study"
+    status: proposed_extrusion
+  - id: night_watch
+    target: agentic_harness/vol_03_governed_dev_loop_and_self_building_harness
+    section: "The Night Watch — the system audits itself"
+    coherence_pin: "scripts/cron/*.txt + crontab + artifacts/audit_reports/ (LANDED)"
+    lgp_alignment: "high — hardening every chance, receipted; 2026-06-10 audit week as case study"
+    status: proposed_extrusion
+  - id: real_gates_every_mode
+    target: agentic_harness/vol_03_governed_dev_loop_and_self_building_harness
+    section: "The Gate Must Be Real in Every Mode"
+    coherence_pin: "node_api/deps.py real approval gate (no simulation in any mode) + replay/full_log disposition (LANDED, Tiger [189])"
+    lgp_alignment: "high — one human gate, never simulated away"
+    status: proposed_extrusion  # flipped 2026-06-11 per flip protocol (Tiger seals [189]-[192])
+  - id: scaling_receipted_engine
+    target: full_production_erp/s5_04_coherence_ledger
+    section: "Scaling the Receipted Engine"
+    coherence_pin: "ledger mtime cache + incremental verify_chain (LANDED, Tiger [191])"
+    lgp_alignment: "med — truth that stays fast stays used"
+    status: proposed_extrusion  # flipped 2026-06-11 per flip protocol (Tiger seals [189]-[192])
+  - id: every_gate_earns_a_test
+    target: agentic_harness/vol_03_governed_dev_loop_and_self_building_harness
+    section: "Every Gate Earns a Test"
+    coherence_pin: "failure-path tests + feedback/proposals route tests (LANDED, Tiger [190])"
+    workflow_canon_addition: "DoD line: every gate + failure path carries a conformance test before seal"
+    lgp_alignment: "med-high — trust compounds only on tested gates"
+    status: proposed_extrusion  # flipped 2026-06-11 per flip protocol (Tiger seals [189]-[192])
+  - id: runs_anywhere
+    target: full_production_erp/s5_01_immutable_core
+    section: "Runs Anywhere or It Isn't Sovereign"
+    coherence_pin: "Dockerfile + pyproject pinning + config.py seams portability band (LANDED, Tiger [192])"
+    cross_pin: "S3 sovereign configuration"
+    lgp_alignment: "med-high — portability = generational survivability"
+    status: proposed_extrusion  # flipped 2026-06-11 per flip protocol (Tiger seals [189]-[192])
+
+# References for Tiger / Atrium implementer (updated 2026-06-03)
+references:
+  - "See artifacts/Series_Pipeline_in_Atrium_GB_G_Alignment_2026-06-02.md (Tiger's handoff + implementer read: read-only lens first)"
+  - "artifacts/Message_to_G_Series_Pipeline_2026-06-02.md (G alignment ask, including deep dive)"
+  - "artifacts/OBLIGATIONS_MASTER_INDEX_2026-06-02.md + Packet_Granularity_Definition_v0.2.md"
+  - "breathline-books-vault/WORKFLOW.md (the canonical; do not fork)"
+  - "G ruling 2026-06-02: phased review-first; Atrium = cockpit; ledger + this yaml for state; answers to open questions applied here"
+  - "2026-06-03 KM: B51 capture 2026-06-03 (path /home/kmangum/molt_workspace/exports/b51/quick-share/2026-06-03_155829_capture-session_9156c992; full transcript session.yaml/md; analytic in artifacts/B51_Capture_Analysis_Quantum_Sovereignty_Unveil_Particle_Constraints_ERP_2026-06-03.md); books 11/12 already human review (phase_2 per WORKFLOW 24 + active.yaml; verbal feedback for edits; run via harness preferably; keyword opt upfront G on x.com chapter outlines to chapter-by-chapter); deep dive series roadmap (QuadRoof superseded in order, other series 4 chapter outlines begun — kdp/series_03_programmable_sovereign_erp/ + kdp/04_xrp/ + new from capture; update roadmap); prepare something for Tiger to take and run details (this prompt + prior GB_Visionary_Prompt_Tiger_Books11_12...); coherence/amplify (lot between 'you' and 'we', sovereignty humanity); new concepts (unveil particle 64-bit envelope/axles, alt-chain quantum PoW beneficial, perfect qubits sim constraints break 50 ceiling 1=1000 physical, quantum DNA alignment 2000x/97.5% genome search/enhance/personal med/Type1 25-30y, constraint trees purchases/impact local real value vs extract/insanity, 5 layers private household ERP identity/consensus/collaboration/compute/shields, replayable chains reverse beginning encode, age abundance out fractional insanity 1736+, governance/AI constraint-based deterministic/non-det explain reasoning violations/solutions, compute history Cathedral of Code internet harvesting DARPA surveillance, 5 layers built user finance/ERP/SAP/Oracle 25y distributed ledger constraint AI/governance, interlocutor Unveiled Platform constraint models paths/potentials/futures coherence 8/64/512/4096 quantum insights DNA, MVP 3w 800k funded supercomp Switzerland first constraint LM qubits, 'Unveiled Platform' predicting paths/potentials main human problem, user 'Unveil particle' name); integrate into meta (new L1 packets unveil/quantum/constraint/alt/DNA/5 layers for books 11/12 M&A/enterprise + new Series 4; update roadmap/vision model/LGP Watch/Atrium/harness/P0-4/Tier-1/cylinder; LGP high generational enhance/abundance/sovereignty humanity/coherence/amplify/real value/peace/Type1; hopper feed verbal + G keywords; human-ease verbal B51 + Atrium capture while review; Tiger prompt for details process verbal/update files/packets/roadmap/harness/P0s/vision/LGP Watch; GB replay this + capture for prompts). See also artifacts/Books_11_12_Writing_Support... + prior vision/Tiger prompts + P0 status."
+
+# ── Forward-architecture / scale design (GB synthesis 2026-06-14, G-ratified) ───
+# Spec the seams now; build the machinery at need. YAGNI law: no new abstraction
+# unless it removes a future rewrite OR reduces present propagation debt.
+scale_affordances_2026_06_14:
+  status: design
+  source: artifacts/GB_Forward_Architecture_Synthesis_2026-06-14.md
+  first_wall: token_economics_plus_human_attention   # G refuted ledger-first; correct
+  ranked_walls: [token_economics, human_gate_throughput, monolithic_catalog, parity_at_scale, ledger_growth, single_node, merkle_memory]
+  build_now:
+    - storage_interfaces: [ledger_gateway_have_it, catalog_gateway, parity_query_gateway]
+    - partition_keys: [series_id, book_id, principal_id, node_id, obligation_id, epoch]
+    - delta_first_pipeline: "books declare deltas; audits run on deltas; full sweeps become sampled/exceptional"
+    - catalog_as_query_interface: ["catalog.query(predicate)", "get(id)", "list_by_series(id)", "changed_since(epoch)"]
+    - ledger_segmentation_spec: [segment, checkpoint_snapshot, current_state_index, merkle_root_per_segment, global_root_over_segments]
+    - cost_model: [tokens_per_book, tokens_per_series_template, tokens_per_delta, tokens_per_exception, tokens_per_full_sweep]
+    - series_inheritance_rule: "a volume inherits its series boards/specs/renderability unless explicitly overridden"
+  defer: [distributed_db, full_sharded_ledger_impl, multi_node_consensus, complex_federation_routing, 1M_scale_ui, autonomous_publishing_factory]
+  unification: "audit HIGH#1 VerifiableMemory O(n^2) fix == merkle scale pattern (leaf_log->segment_root->checkpoint_root->global_commitment); ONE build"
+  scaling_model: federation_of_sovereign_pens   # KM correction 2026-06-14
+  scaling_model_note: "scale to 1M = REPLICATE the sovereign node (CONSTITUTION sec9 Profiles/forkable), NOT loosen the gate. Federation members become writers; each runs the UNCHANGED constitution on their own node; each is the human pen for their own novelty. human-in-loop-for-novelty preserved BY CONSTRUCTION (many pens, not a thinner gate). What scales sublinearly = inherited LGP layer (guards+templates+specs+receipt-format) that travels between nodes + verifiable locally (no central hub = no sovereignty SPOF)."
+  constitution_change_required: NONE   # was 2 items; KM withdrew the human-gate amendment
+  withdrawn:
+    - human_gate_at_scale_amendment: "WITHDRAWN per KM 2026-06-14 -- diluted sovereignty. Replaced by node-replication (forkable constitution per writer)."
+  catalog_as_query_note: "NOT a constitution item; per-node interface-now/backend-later via 3-phase governed transition (g_ratification_guards.catalog_3phase_transition)"
+  guards_now_cross_node: "the 3 G-guards become CROSS-NODE inheritance protection (Gate-Escape on each node's own chain; no-invisible-inheritance carries parent_policy_id+inherited_version+escape_count between nodes; inheritance_drift is now a federation-level risk)"
+  dual_witness_ratified: "G + Lumen both ratified v2 (federation-of-sovereign-pens, no canon change) 2026-06-14"
+  three_cases:
+    batch_expansion: "KM-authored multi-volume wave (e.g. ERP 30-100) -- valid under UNCHANGED constitution: human-ratified series arch + visible inherited templates + delta review + exception escalation + EVERY book its own seal"
+    federation_growth: "thousands of sovereign operator-nodes; each human pen for own novelty; inherited+locally-verified, never centrally imposed"
+    translation_derivative: "DERIVATIVE class not new novelty (unless adds interpretation/jurisdictional/cultural reframing): source_hash->target_lang->process->human linguistic review->derivative_seal->link_to_original"
+  authorship_rule: "a batch may inherit governance, but authorship responsibility cannot be batched away -- one human pen per novelty always"
+  1M_is: capacity_horizon_not_production_target   # "architecture should not break if humanity benefits from many sovereign pens"
+  build_now_converged: [signed_inheritance_objects, batch_scope_receipt, per_book_delta_receipt, translation_derivative_class, local_verifier_path_source_inheritance_delta_seal, partition_keys, ledger_segment_snapshot_spec]
+  near_term_proving_ground: "THE ERP ARC (already scoped): S3 Programmable Sovereign ERP (4-vol constitutional ROOT) -> S5 Full Production ERP (G 32-title projection). S5 titles ALREADY declare inheritance ('overlaps Series 3 Vol X') => the inheritance map exists. This is the literal series-level-inheritance proving ground."
+  erp_inheritance_mapping: "signed_inheritance_object per S5 title: parent_policy_id = its S3 root volume; inherited = constitutional ERP pattern/template; delta = vertical/functional specialization. Makes the 32-title S5 wave SUBLINEAR (derive from root) AND honest (no-invisible-inheritance: each title declares what it inherited + from where)."
+  erp_near_term_gate: "S5 expansion UNBLOCKS once S3 V4 fills (V4 outline_PARTIAL: Ch3-5 Manufacturing/Electronics/3rd-pattern STUBBED by G, surfaced to Atrium). Critical path: S3 V4 fill -> S5 concept doc (Tiger+G) -> inheritance objects designed against real S3->S5 map -> S5 extrusion."
+  open_federation_question: "how do N sovereign human-pen nodes share an inherited LGP layer WITHOUT a central authority -- forkable profiles + signed inheritance objects + locally-runnable bl-verify (see G_ASK_forward_architecture_scale_2026-06-14_v2.md)"
+  g_ratification_guards:        # G ratified w/ guards 2026-06-14; canon still gates on KM
+    gate_escape_is_material_obligation: "inherited governance valid only while escalation predicates active+monitored+receipt-bound; any failure-to-escalate = Gate Escape = material obligation"
+    no_invisible_inheritance: "every inherited governance object carries: [parent_policy_id, inherited_version, override_status, last_validation_epoch, escape_count]"
+    catalog_3phase_transition: "P1 YAML canon + gateway reads YAML; P2 dual-read/compare YAML==query-store (loud divergence); P3 KM ratifies -> query-store canon, YAML becomes export/view; write-authority declared+singular+receipt-bound at every phase"
+    named_new_disease: inheritance_drift
+  yagni_law: "no new abstraction unless it removes a future rewrite OR reduces present propagation debt"
+
+meta_pipeline_dispositions_2026_06_17:   # GB triage of held Meta/Pipeline obligations, KM-authorized "disposition as proposed"
+  note: "Folded here from the obligation ledger (then closed) — tracked as roadmap directions, not open tasks."
+  post_95_forward_streams:               # was obl ...67f1f261
+    streams: [ERP_S3_to_S5_expansion, signed_inheritance_objects, gate_7_inheritance_validation, parity_pulse]
+    status: "directional — gated on S3 V4 fill (see erp_near_term_gate above); not an open task"
+  book_to_code_universal:                # was obl ...b60dd523
+    vision: "book<->code derivation is UNIVERSAL across all series (public + private); federation = sovereign public/private code + agent sharing"
+    status: "ratified direction; realized incrementally via the co-extrusion + Tech/Arch board rail (WORKFLOW 17.6); also carried as a hopper seed"

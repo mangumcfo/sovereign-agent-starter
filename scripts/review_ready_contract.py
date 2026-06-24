@@ -278,15 +278,22 @@ def _check_review_brief(bdir: Path | None, book_id: str, extra: list[str] | None
         cands += [p for p in art.glob("*[Rr]eview_[Bb]rief*") if tok.lower() in p.name.lower()]
         cands += [p for p in art.glob(f"*{tok}*") if "review" in p.name.lower() and "brief" in p.name.lower()]
         cands += [p for p in art.glob(f"*{tok}*[Ff]old*[Rr]eview*")]
-    cands = list(dict.fromkeys(cands))  # dedupe, keep order
+    cands = list(dict.fromkeys(cands))  # dedupe
     if not cands:
         return {"check": "review_brief_sealed", "pass": False, "detail": "no Review Brief found",
                 "gap": "GB seals one-page Review Brief w/ 3–7 judgment calls"}
-    text = cands[0].read_text(encoding="utf-8", errors="replace")
+    # One-truth ordering (GB 2026-06-24, same class as _check_fidelity): pick the LATEST brief by date
+    # (filename YYYY-MM-DD → mtime), not first-match, so a stale brief never out-surfaces the fresh recert one.
+    def _bkey(pp):
+        m = re.search(r"(\d{4}-\d{2}-\d{2})", pp.name)
+        return (m.group(1) if m else "", pp.stat().st_mtime)
+    cands.sort(key=_bkey)
+    latest = cands[-1]
+    text = latest.read_text(encoding="utf-8", errors="replace")
     calls = len(re.findall(r"(?im)^\s*(?:\d+[.)]|[-*])\s+.*\b(decision|judg(e)?ment|call|approve|choose|whether|should we)\b", text)) \
         or len(re.findall(r"(?i)judg(e)?ment call", text))
     ok = 3 <= calls <= 7
-    return {"check": "review_brief_sealed", "pass": ok, "detail": f"{cands[0].name}: {calls} judgment calls",
+    return {"check": "review_brief_sealed", "pass": ok, "detail": f"{latest.name}: {calls} judgment calls",
             "gap": ("" if ok else f"Review Brief needs 3–7 judgment calls (found {calls})")}
 
 

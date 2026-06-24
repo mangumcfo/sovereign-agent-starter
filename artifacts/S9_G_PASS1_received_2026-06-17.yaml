@@ -1,0 +1,66 @@
+# S9 Material Sovereignty — G (x.com) PASS 1 received 2026-06-17. STAGING (not yet folded).
+# STATUS: all 6 volume-metadata blocks COMPLETE; Vol 1 chapters COMPLETE (8); Vols 2-6 chapters PENDING pass 2.
+# Fold the complete set into series_roadmap.yaml s9_material_sovereignty.volumes once pass-2 chapters arrive.
+
+volumes:
+  - series: 9
+    vol: 1
+    title: "The Material Primitive — Receipted Local Provisioning"
+    subtitle: "From Digital Governance to Verifiable Physical Output"
+    description: "<p><strong>Turn sovereign software into sovereign provision.</strong></p><p>This foundational volume shows how to extend the harness into the physical world: receipted local production of energy, water, food, and shelter. Every material flow becomes verifiable. Every critical action stays under human primacy. Built for families and communities who want resilience without central dependency.</p><p>You will learn the core patterns that make physical systems forkable, auditable, and inheritable — the bridge from digital sovereignty to real-world independence.</p>"
+    bisac_categories: ["BUSINESS & ECONOMICS / Infrastructure", "TECHNOLOGY / Social Aspects", "SELF-HELP / Personal Growth / Success"]
+    keywords_7: ["local provisioning systems", "sovereign physical infrastructure", "receipted production", "resilient community models", "generative local economy", "verifiable material flows", "forkable physical systems"]
+    chapters:
+      - {n: 1, title: "The Provision Gap", promise: "You will clearly see why digital sovereignty alone is insufficient for generational thriving under resource stress.", beats: ["Current displacement and concentration trends", "Limits of information-only systems", "The material substrate missing", "Sovereign primitive opportunity", "LGP provision risk"], keywords: ["provision gap", "material sovereignty", "resilience beyond software", "generational physical needs"]}
+      - {n: 2, title: "Receipted Flows — Extending the Harness to Matter", promise: "You will design every physical flow with the same receipted discipline used in the digital layer.", beats: ["Material event as receipt", "Human gate on production", "Immutable audit trail", "Atrium material lens preview", "LGP verifiable provision"], keywords: ["receipted physical flows", "governed material events", "verifiable production records", "sovereign supply chain"]}
+      - {n: 3, title: "Local Primitive Patterns", promise: "You will apply foundational patterns for small-scale, forkable provisioning.", beats: ["Energy, water, food, shelter primitives", "Modular and repairable design", "Local material preference", "Atrium provisioning dashboard", "LGP adaptability"], keywords: ["local production patterns", "forkable infrastructure", "resilient community systems", "sovereign provisioning models"]}
+      - {n: 4, title: "Human Primacy in Physical Systems", promise: "You will enforce human oversight on all material actions at scale.", beats: ["Breath-gated physical decisions", "Proposal vs execution separation", "Safety and risk governance", "Atrium physical gate surface", "LGP human-centered design"], keywords: ["human gate physical systems", "regulated production control", "permissioned material actions", "compliant local operations"]}
+      - {n: 5, title: "Verification & Audit in the Physical Layer", promise: "You will make physical outputs as verifiable as digital records.", beats: ["Physical receipt generation", "Merkle-anchored evidence", "Third-party audit flows", "Atrium physical audit lens", "LGP trust in matter"], keywords: ["verifiable physical output", "regulated material audit", "governed production proof", "compliant local verification"]}
+      - {n: 6, title: "Migration from Centralized Provision", promise: "You will plan and execute the shift from dependent to sovereign local systems.", beats: ["Hybrid transition strategies", "Phased independence", "Risk mitigation", "Atrium migration surface", "LGP safe provision shift"], keywords: ["provisioning migration", "regulated local transition", "permissioned independence path", "compliant system shift"]}
+      - {n: 7, title: "Material Primitive vs Traditional Approaches", promise: "You will compare sovereign local provisioning against centralized industrial models.", beats: ["Centralized weaknesses", "Sovereign advantages", "Scalability realism", "Adoption patterns", "LGP framing"], keywords: ["sovereign provisioning vs industrial", "regulated local comparison", "permissioned resilience advantages", "verifiable material control"]}
+      - {n: 8, title: "Material Primitive as Generational Foundation", promise: "You will see how receipted local provisioning becomes the bedrock of multi-generational sovereignty.", beats: ["Full volume synthesis", "Integration with digital harness", "Generational handoff", "Atrium material cockpit", "Strong LGP call to action"], keywords: ["generational local provision", "long term material sovereignty", "regulated provisioning legacy", "sovereign body foundation"]}
+
+  - series: 9
+    vol: 2
+    title: "Sovereign Energy — Generation, Storage & Independence"
+    subtitle: "Build Forkable Energy Systems You Can Own and Inherit"
+    description: "<p><strong>Energy independence without vendor or grid dependency.</strong></p><p>This volume shows how to design, govern, and maintain sovereign energy systems using local resources, receipted flows, and human primacy. From solar integration to storage and micro-grids — every critical decision stays under your control and leaves verifiable proof.</p>"
+    bisac_categories: ["TECHNOLOGY / Power Resources", "BUSINESS & ECONOMICS / Infrastructure", "HOUSE & HOME / Sustainable Living"]
+    keywords_7: ["sovereign energy systems", "local power independence", "forkable energy infrastructure", "regulated micro grid", "verifiable energy production", "generational energy ownership", "resilient power sovereignty"]
+    chapters: []   # PENDING G pass 2
+
+  - series: 9
+    vol: 3
+    title: "Regenerative Food & Water Systems — Soil to Table Sovereignty"
+    subtitle: "Closed-Loop Provisioning You Can Verify and Hand Down"
+    description: "<p><strong>Feed your family and community without external dependency.</strong></p><p>Design regenerative food and water systems with receipted flows, governed processes, and forkable patterns — from soil regeneration to harvest and distribution. Built for resilience and generational inheritance.</p>"
+    bisac_categories: ["GARDENING / Organic", "TECHNOLOGY / Agriculture", "SELF-HELP / Personal Growth / Success"]
+    keywords_7: ["regenerative food systems", "sovereign water sovereignty", "local food production", "forkable farming patterns", "verifiable food traceability", "generational food security", "resilient community agriculture"]
+    chapters: []   # PENDING G pass 2
+
+  - series: 9
+    vol: 4
+    title: "Shelter & Local Manufacturing — Durable, Forkable Habitat"
+    subtitle: "Build Homes and Tools That Last Generations"
+    description: "<p><strong>Homes and production systems you can maintain and pass forward.</strong></p><p>Modular shelter, natural building, and small-scale manufacturing patterns governed by the same sovereign discipline — durable, repairable, and locally adaptable.</p>"
+    bisac_categories: ["HOUSE & HOME / Sustainable Living", "TECHNOLOGY / Construction", "BUSINESS & ECONOMICS / Small Business"]
+    keywords_7: ["sovereign shelter systems", "forkable local manufacturing", "durable habitat design", "regenerative building patterns", "generational housing", "verifiable construction", "resilient community infrastructure"]
+    chapters: []   # PENDING G pass 2
+
+  - series: 9
+    vol: 5
+    title: "Resilient Logistics & Supply Networks"
+    subtitle: "Governed Local and Regional Flows"
+    description: "<p><strong>Move goods and resources without central dependency.</strong></p><p>Design receipted, governed logistics and supply networks that prioritize resilience, locality, and forkability — from community warehouses to last-mile coordination.</p>"
+    bisac_categories: ["BUSINESS & ECONOMICS / Logistics", "TRANSPORTATION / General", "TECHNOLOGY / Social Aspects"]
+    keywords_7: ["resilient local logistics", "governed supply networks", "forkable distribution systems", "regulated community supply", "verifiable material flows", "sovereign last mile", "generational logistics"]
+    chapters: []   # PENDING G pass 2
+
+  - series: 9
+    vol: 6
+    title: "The Generational Provision Covenant — Scaling the Federation Body"
+    subtitle: "From Digital Nervous System to Physical Federation"
+    description: "<p><strong>The full integration — turning sovereign systems into lasting provision for families and communities.</strong></p><p>This closing volume synthesizes the material layer with the digital harness, showing how to scale resilient provision across federations while keeping human primacy and forkability at the center.</p>"
+    bisac_categories: ["BUSINESS & ECONOMICS / Infrastructure", "SOCIAL SCIENCE / Future Studies", "SELF-HELP / Personal Growth / Success"]
+    keywords_7: ["generational provision systems", "federation body sovereignty", "resilient material networks", "long term community resilience", "sovereign physical federation", "verifiable provision covenant", "lasting generational thriving"]
+    chapters: []   # PENDING G pass 2

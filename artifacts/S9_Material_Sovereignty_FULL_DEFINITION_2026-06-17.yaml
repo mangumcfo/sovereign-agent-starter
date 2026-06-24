@@ -1,0 +1,801 @@
+series_9_material_sovereignty:
+  defined: 2026-06-17 (G x.com 2 passes, GB validated)
+  volumes:
+  - series: 9
+    vol: 1
+    title: The Material Primitive — Receipted Local Provisioning
+    subtitle: From Digital Governance to Verifiable Physical Output
+    description: '<p><strong>Turn sovereign software into sovereign provision.</strong></p><p>This foundational
+      volume shows how to extend the harness into the physical world: receipted local production of energy,
+      water, food, and shelter. Every material flow becomes verifiable. Every critical action stays under
+      human primacy. Built for families and communities who want resilience without central dependency.</p><p>You
+      will learn the core patterns that make physical systems forkable, auditable, and inheritable — the
+      bridge from digital sovereignty to real-world independence.</p>'
+    bisac_categories:
+    - BUSINESS & ECONOMICS / Infrastructure
+    - TECHNOLOGY / Social Aspects
+    - SELF-HELP / Personal Growth / Success
+    keywords_7:
+    - local provisioning systems
+    - sovereign physical infrastructure
+    - receipted production
+    - resilient community models
+    - generative local economy
+    - verifiable material flows
+    - forkable physical systems
+    chapters:
+    - n: 1
+      title: The Provision Gap
+      promise: You will clearly see why digital sovereignty alone is insufficient for generational thriving
+        under resource stress.
+      beats:
+      - Current displacement and concentration trends
+      - Limits of information-only systems
+      - The material substrate missing
+      - Sovereign primitive opportunity
+      - LGP provision risk
+      keywords:
+      - provision gap
+      - material sovereignty
+      - resilience beyond software
+      - generational physical needs
+    - n: 2
+      title: Receipted Flows — Extending the Harness to Matter
+      promise: You will design every physical flow with the same receipted discipline used in the digital
+        layer.
+      beats:
+      - Material event as receipt
+      - Human gate on production
+      - Immutable audit trail
+      - Atrium material lens preview
+      - LGP verifiable provision
+      keywords:
+      - receipted physical flows
+      - governed material events
+      - verifiable production records
+      - sovereign supply chain
+    - n: 3
+      title: Local Primitive Patterns
+      promise: You will apply foundational patterns for small-scale, forkable provisioning.
+      beats:
+      - Energy, water, food, shelter primitives
+      - Modular and repairable design
+      - Local material preference
+      - Atrium provisioning dashboard
+      - LGP adaptability
+      keywords:
+      - local production patterns
+      - forkable infrastructure
+      - resilient community systems
+      - sovereign provisioning models
+    - n: 4
+      title: Human Primacy in Physical Systems
+      promise: You will enforce human oversight on all material actions at scale.
+      beats:
+      - Breath-gated physical decisions
+      - Proposal vs execution separation
+      - Safety and risk governance
+      - Atrium physical gate surface
+      - LGP human-centered design
+      keywords:
+      - human gate physical systems
+      - regulated production control
+      - permissioned material actions
+      - compliant local operations
+    - n: 5
+      title: Verification & Audit in the Physical Layer
+      promise: You will make physical outputs as verifiable as digital records.
+      beats:
+      - Physical receipt generation
+      - Merkle-anchored evidence
+      - Third-party audit flows
+      - Atrium physical audit lens
+      - LGP trust in matter
+      keywords:
+      - verifiable physical output
+      - regulated material audit
+      - governed production proof
+      - compliant local verification
+    - n: 6
+      title: Migration from Centralized Provision
+      promise: You will plan and execute the shift from dependent to sovereign local systems.
+      beats:
+      - Hybrid transition strategies
+      - Phased independence
+      - Risk mitigation
+      - Atrium migration surface
+      - LGP safe provision shift
+      keywords:
+      - provisioning migration
+      - regulated local transition
+      - permissioned independence path
+      - compliant system shift
+    - n: 7
+      title: Material Primitive vs Traditional Approaches
+      promise: You will compare sovereign local provisioning against centralized industrial models.
+      beats:
+      - Centralized weaknesses
+      - Sovereign advantages
+      - Scalability realism
+      - Adoption patterns
+      - LGP framing
+      keywords:
+      - sovereign provisioning vs industrial
+      - regulated local comparison
+      - permissioned resilience advantages
+      - verifiable material control
+    - n: 8
+      title: Material Primitive as Generational Foundation
+      promise: You will see how receipted local provisioning becomes the bedrock of multi-generational
+        sovereignty.
+      beats:
+      - Full volume synthesis
+      - Integration with digital harness
+      - Generational handoff
+      - Atrium material cockpit
+      - Strong LGP call to action
+      keywords:
+      - generational local provision
+      - long term material sovereignty
+      - regulated provisioning legacy
+      - sovereign body foundation
+  - series: 9
+    vol: 2
+    title: Sovereign Energy — Generation, Storage & Independence
+    subtitle: Build Forkable Energy Systems You Can Own and Inherit
+    description: <p><strong>Energy independence without vendor or grid dependency.</strong></p><p>This
+      volume shows how to design, govern, and maintain sovereign energy systems using local resources,
+      receipted flows, and human primacy. From solar integration to storage and micro-grids — every critical
+      decision stays under your control and leaves verifiable proof.</p>
+    bisac_categories:
+    - TECHNOLOGY / Power Resources
+    - BUSINESS & ECONOMICS / Infrastructure
+    - HOUSE & HOME / Sustainable Living
+    keywords_7:
+    - sovereign energy systems
+    - local power independence
+    - forkable energy infrastructure
+    - regulated micro grid
+    - verifiable energy production
+    - generational energy ownership
+    - resilient power sovereignty
+    chapters:
+    - n: 1
+      title: The Energy Dependence Crisis
+      promise: You will clearly understand why energy dependency undermines sovereignty and how local
+        generation changes that.
+      beats:
+      - Grid and vendor vulnerabilities
+      - Cost and control risks
+      - The sovereign energy opportunity
+      - LGP energy risk under disruption
+      keywords:
+      - energy independence
+      - local power sovereignty
+      - regulated energy generation
+      - resilient power systems
+    - n: 2
+      title: Governed Energy Generation Patterns
+      promise: You will design and govern local energy generation (solar, micro-hydro, etc.) under human
+        primacy.
+      beats:
+      - Generation site selection
+      - Breath-gated installation
+      - Receipted output tracking
+      - Atrium energy views
+      - LGP local production
+      keywords:
+      - governed solar systems
+      - regulated local generation
+      - permissioned energy production
+      - compliant power patterns
+    - n: 3
+      title: Storage & Load Management
+      promise: You will govern energy storage and priority usage with verifiable flows.
+      beats:
+      - Battery and thermal storage rules
+      - Load prioritization
+      - Breath-gated discharge
+      - Atrium storage dashboard
+      - LGP reliability
+      keywords:
+      - energy storage governance
+      - regulated load management
+      - permissioned battery systems
+      - compliant energy buffering
+    - n: 4
+      title: Micro-Grid & Independence Networks
+      promise: You will build small-scale grids that operate independently yet can resonate with others.
+      beats:
+      - Micro-grid design
+      - Isolation and reconnection rules
+      - Receipted power flows
+      - Atrium grid surface
+      - LGP network resilience
+      keywords:
+      - sovereign micro grids
+      - regulated local networks
+      - permissioned energy sharing
+      - compliant independence systems
+    - n: 5
+      title: Maintenance & Forkability Rituals
+      promise: You will maintain and fork energy systems for long-term adaptability.
+      beats:
+      - Maintenance governance
+      - Repair and upgrade patterns
+      - Forkable component design
+      - Atrium maintenance lens
+      - LGP generational repairability
+      keywords:
+      - energy system maintenance
+      - forkable power infrastructure
+      - regulated repair rituals
+      - compliant generational energy
+    - n: 6
+      title: Verification & Audit of Energy Flows
+      promise: You will verify every unit of energy produced and consumed.
+      beats:
+      - Receipted generation events
+      - Audit package creation
+      - Third-party verification
+      - Atrium energy audit
+      - LGP verifiable power
+      keywords:
+      - verifiable energy records
+      - regulated power audit
+      - governed energy proof
+      - compliant production tracking
+    - n: 7
+      title: Sovereign Energy vs Grid Dependency
+      promise: You will compare local sovereign energy against traditional grid and vendor models.
+      beats:
+      - Grid weaknesses
+      - Sovereign advantages
+      - Cost and resilience realism
+      - Transition guidance
+      - LGP framing
+      keywords:
+      - sovereign energy vs grid
+      - regulated power comparison
+      - permissioned independence advantages
+      - verifiable local power
+    - n: 8
+      title: Energy as Generational Independence Layer
+      promise: You will build energy systems that strengthen sovereignty across generations.
+      beats:
+      - Full volume synthesis
+      - Integration with material primitive
+      - Generational handoff
+      - Atrium energy cockpit
+      - Strong LGP close
+      keywords:
+      - generational energy sovereignty
+      - long term power systems
+      - regulated energy legacy
+      - sovereign independence foundation
+  - series: 9
+    vol: 3
+    title: Regenerative Food & Water Systems — Soil to Table Sovereignty
+    subtitle: Closed-Loop Provisioning You Can Verify and Hand Down
+    description: <p><strong>Feed your family and community without external dependency.</strong></p><p>Design
+      regenerative food and water systems with receipted flows, governed processes, and forkable patterns
+      — from soil regeneration to harvest and distribution. Built for resilience and generational inheritance.</p>
+    bisac_categories:
+    - GARDENING / Organic
+    - TECHNOLOGY / Agriculture
+    - SELF-HELP / Personal Growth / Success
+    keywords_7:
+    - regenerative food systems
+    - sovereign water sovereignty
+    - local food production
+    - forkable farming patterns
+    - verifiable food traceability
+    - generational food security
+    - resilient community agriculture
+    chapters:
+    - n: 1
+      title: The Food & Water Dependence Gap
+      promise: You will see why external dependency on food and water undermines long-term sovereignty.
+      beats:
+      - Supply chain fragility
+      - Regulatory and quality risks
+      - The regenerative opportunity
+      - LGP provision risk
+      keywords:
+      - food sovereignty
+      - local water independence
+      - regulated regenerative systems
+      - resilient community provision
+    - n: 2
+      title: Soil Regeneration & Closed-Loop Systems
+      promise: You will design soil-building practices with receipted inputs and outputs.
+      beats:
+      - Regenerative techniques
+      - Compost and nutrient cycles
+      - Receipted soil events
+      - Atrium soil dashboard
+      - LGP soil health
+      keywords:
+      - regenerative soil systems
+      - governed nutrient cycles
+      - permissioned food production
+      - compliant soil management
+    - n: 3
+      title: Water Harvesting, Storage & Purification
+      promise: You will govern local water systems with verifiable quality and flows.
+      beats:
+      - Rainwater and greywater systems
+      - Storage governance
+      - Purification rules
+      - Atrium water lens
+      - LGP water security
+      keywords:
+      - regulated water harvesting
+      - governed storage systems
+      - permissioned water purification
+      - compliant local water
+    - n: 4
+      title: Crop & Livestock Sovereignty
+      promise: You will manage food production with seed and breed sovereignty.
+      beats:
+      - Seed saving governance
+      - Livestock management
+      - Harvest receipting
+      - Atrium production surface
+      - LGP food continuity
+      keywords:
+      - sovereign food production
+      - regulated livestock systems
+      - permissioned crop management
+      - compliant regenerative farming
+    - n: 5
+      title: Distribution & Traceability
+      promise: You will govern food distribution with full traceability from soil to table.
+      beats:
+      - Local distribution rules
+      - Receipted harvest-to-table
+      - Traceability governance
+      - Atrium food flow views
+      - LGP community access
+      keywords:
+      - regulated food distribution
+      - verifiable supply traceability
+      - permissioned local food flows
+      - compliant community provision
+    - n: 6
+      title: Seasonal Resilience & Risk Management
+      promise: You will build resilience against seasonal and climate variability.
+      beats:
+      - Risk assessment
+      - Diversification rules
+      - Emergency protocols
+      - Atrium resilience dashboard
+      - LGP adaptive capacity
+      keywords:
+      - resilient food systems
+      - regulated seasonal planning
+      - permissioned risk governance
+      - compliant climate adaptation
+    - n: 7
+      title: Regenerative Systems vs Industrial Agriculture
+      promise: You will compare regenerative local systems against centralized industrial models.
+      beats:
+      - Industrial weaknesses
+      - Regenerative advantages
+      - Scalability realism
+      - Transition guidance
+      - LGP framing
+      keywords:
+      - regenerative vs industrial food
+      - regulated local comparison
+      - permissioned sovereignty advantages
+      - verifiable food control
+    - n: 8
+      title: Food & Water as Generational Provision
+      promise: You will build systems that feed families across generations with dignity and resilience.
+      beats:
+      - Full volume synthesis
+      - Integration with energy
+      - Generational handoff
+      - Atrium food cockpit
+      - Strong LGP close
+      keywords:
+      - generational food sovereignty
+      - long term water systems
+      - regulated provision legacy
+      - sovereign soil to table
+  - series: 9
+    vol: 4
+    title: Shelter & Local Manufacturing — Durable, Forkable Habitat
+    subtitle: Build Homes and Tools That Last Generations
+    description: <p><strong>Homes and production systems you can maintain and pass forward.</strong></p><p>Modular
+      shelter, natural building, and small-scale manufacturing patterns governed by the same sovereign
+      discipline — durable, repairable, and locally adaptable.</p>
+    bisac_categories:
+    - HOUSE & HOME / Sustainable Living
+    - TECHNOLOGY / Construction
+    - BUSINESS & ECONOMICS / Small Business
+    keywords_7:
+    - sovereign shelter systems
+    - forkable local manufacturing
+    - durable habitat design
+    - regenerative building patterns
+    - generational housing
+    - verifiable construction
+    - resilient community infrastructure
+    chapters:
+    - n: 1
+      title: Shelter & Manufacturing Dependence
+      promise: You will see why external dependency on housing and tools undermines sovereignty.
+      beats:
+      - Vendor-built fragility
+      - Maintenance lock-in
+      - The local fabrication opportunity
+      - LGP habitat risk
+      keywords:
+      - shelter sovereignty
+      - local manufacturing
+      - regulated durable habitat
+      - forkable building systems
+    - n: 2
+      title: Natural & Modular Building Patterns
+      promise: You will design durable, repairable shelter using local materials.
+      beats:
+      - Natural building techniques
+      - Modular design
+      - Receipted construction events
+      - Atrium shelter views
+      - LGP durability
+      keywords:
+      - natural building patterns
+      - governed modular shelter
+      - permissioned local construction
+      - compliant habitat design
+    - n: 3
+      title: Local Fabrication & Tool Libraries
+      promise: You will govern small-scale manufacturing and shared tool resources.
+      beats:
+      - Fabrication governance
+      - Tool library rules
+      - Maintenance rituals
+      - Atrium fab surface
+      - LGP tool continuity
+      keywords:
+      - local manufacturing governance
+      - regulated tool libraries
+      - permissioned fabrication
+      - compliant community production
+    - n: 4
+      title: Maintenance & Repair Systems
+      promise: You will build systems for ongoing maintenance and repair with verifiable records.
+      beats:
+      - Maintenance scheduling
+      - Repair receipting
+      - Parts sovereignty
+      - Atrium maintenance lens
+      - LGP longevity
+      keywords:
+      - governed maintenance systems
+      - regulated repair workflows
+      - permissioned habitat upkeep
+      - compliant building longevity
+    - n: 5
+      title: Energy & Water Integration in Shelter
+      promise: You will integrate energy and water systems into shelter design.
+      beats:
+      - Passive design
+      - Integrated generation
+      - Storage governance
+      - Atrium integrated views
+      - LGP self-sufficient habitat
+      keywords:
+      - integrated shelter systems
+      - regulated energy water design
+      - permissioned habitat autonomy
+      - compliant living infrastructure
+    - n: 6
+      title: Forkable & Generational Shelter
+      promise: You will design shelter that can be forked and adapted by future generations.
+      beats:
+      - Fork mechanics
+      - Adaptation rules
+      - Knowledge transfer
+      - Atrium shelter handoff
+      - LGP generational habitat
+      keywords:
+      - forkable shelter design
+      - generational building patterns
+      - regulated habitat evolution
+      - sovereign housing continuity
+    - n: 7
+      title: Shelter & Manufacturing vs Industrial Systems
+      promise: You will compare local sovereign approaches against centralized industrial models.
+      beats:
+      - Industrial weaknesses
+      - Sovereign advantages
+      - Scalability realism
+      - Transition guidance
+      - LGP framing
+      keywords:
+      - sovereign shelter vs industrial
+      - regulated local manufacturing comparison
+      - permissioned habitat advantages
+      - verifiable building control
+    - n: 8
+      title: Shelter as Generational Home Covenant
+      promise: You will build shelter that becomes a lasting family and community covenant.
+      beats:
+      - Full volume synthesis
+      - Integration with food/energy
+      - Generational handoff
+      - Atrium shelter cockpit
+      - Strong LGP close
+      keywords:
+      - generational shelter systems
+      - long term habitat legacy
+      - regulated home sovereignty
+      - sovereign living continuity
+  - series: 9
+    vol: 5
+    title: Resilient Logistics & Supply Networks
+    subtitle: Governed Local and Regional Flows
+    description: <p><strong>Move goods and resources without central dependency.</strong></p><p>Design
+      receipted, governed logistics and supply networks that prioritize resilience, locality, and forkability
+      — from community warehouses to last-mile coordination.</p>
+    bisac_categories:
+    - BUSINESS & ECONOMICS / Logistics
+    - TRANSPORTATION / General
+    - TECHNOLOGY / Social Aspects
+    keywords_7:
+    - resilient local logistics
+    - governed supply networks
+    - forkable distribution systems
+    - regulated community supply
+    - verifiable material flows
+    - sovereign last mile
+    - generational logistics
+    chapters:
+    - n: 1
+      title: Logistics Dependence Risks
+      promise: You will see how fragile external supply chains undermine sovereignty.
+      beats:
+      - Global supply fragility
+      - Last-mile vulnerabilities
+      - The local network opportunity
+      - LGP logistics risk
+      keywords:
+      - resilient logistics
+      - regulated local supply
+      - permissioned distribution networks
+      - compliant community flows
+    - n: 2
+      title: Governed Local Warehousing
+      promise: You will design and govern community warehousing with receipted flows.
+      beats:
+      - Warehouse governance
+      - Inventory receipting
+      - Access rules
+      - Atrium warehouse views
+      - LGP stock integrity
+      keywords:
+      - governed warehousing
+      - regulated local storage
+      - permissioned inventory control
+      - compliant supply buffering
+    - n: 3
+      title: Last-Mile & Transport Coordination
+      promise: You will govern local transport and last-mile delivery.
+      beats:
+      - Transport governance
+      - Route optimization
+      - Breath-gated movements
+      - Atrium logistics surface
+      - LGP reliable delivery
+      keywords:
+      - regulated last mile
+      - governed transport flows
+      - permissioned logistics
+      - compliant distribution execution
+    - n: 4
+      title: Barter, Exchange & Local Economy Protocols
+      promise: You will enable governed local exchange without external currency dependency.
+      beats:
+      - Barter rule governance
+      - Receipted exchanges
+      - Trust mechanisms
+      - Atrium exchange lens
+      - LGP local economy
+      keywords:
+      - governed barter systems
+      - regulated local exchange
+      - permissioned community trade
+      - compliant alternative economy
+    - n: 5
+      title: Redundancy & Failover Networks
+      promise: You will build redundancy into supply networks for resilience.
+      beats:
+      - Redundancy patterns
+      - Failover governance
+      - Risk assessment
+      - Atrium resilience dashboard
+      - LGP network strength
+      keywords:
+      - resilient supply redundancy
+      - regulated failover systems
+      - permissioned network backup
+      - compliant logistics resilience
+    - n: 6
+      title: Logistics Compliance & Traceability
+      promise: You will maintain compliance and traceability across local supply networks.
+      beats:
+      - Regulatory mapping
+      - Traceability receipts
+      - Audit packages
+      - Atrium logistics audit
+      - LGP compliance readiness
+      keywords:
+      - logistics compliance
+      - regulated supply traceability
+      - governed distribution audit
+      - compliant local flows
+    - n: 7
+      title: Resilient Logistics vs Global Chains
+      promise: You will compare local resilient networks against global industrial supply chains.
+      beats:
+      - Global weaknesses
+      - Local sovereign advantages
+      - Scalability realism
+      - Transition guidance
+      - LGP framing
+      keywords:
+      - local logistics vs global
+      - regulated resilient comparison
+      - permissioned supply advantages
+      - verifiable distribution control
+    - n: 8
+      title: Logistics as Generational Supply Backbone
+      promise: You will build logistics that support multi-generational community resilience.
+      beats:
+      - Full volume synthesis
+      - Integration with production
+      - Generational handoff
+      - Atrium logistics cockpit
+      - Strong LGP close
+      keywords:
+      - generational logistics
+      - long term supply networks
+      - regulated distribution legacy
+      - sovereign community backbone
+  - series: 9
+    vol: 6
+    title: The Generational Provision Covenant — Scaling the Federation Body
+    subtitle: From Digital Nervous System to Physical Federation
+    description: <p><strong>The full integration — turning sovereign systems into lasting provision for
+      families and communities.</strong></p><p>This closing volume synthesizes the material layer with
+      the digital harness, showing how to scale resilient provision across federations while keeping human
+      primacy and forkability at the center.</p>
+    bisac_categories:
+    - BUSINESS & ECONOMICS / Infrastructure
+    - SOCIAL SCIENCE / Future Studies
+    - SELF-HELP / Personal Growth / Success
+    keywords_7:
+    - generational provision systems
+    - federation body sovereignty
+    - resilient material networks
+    - long term community resilience
+    - sovereign physical federation
+    - verifiable provision covenant
+    - lasting generational thriving
+    chapters:
+    - n: 1
+      title: From Digital Nervous System to Physical Body
+      promise: You will see how the full sovereign stack integrates digital governance with material provision.
+      beats:
+      - Digital foundation recap
+      - Material extension
+      - The body-metabolism metaphor
+      - LGP integration need
+      keywords:
+      - digital to material sovereignty
+      - regulated federation body
+      - permissioned provision integration
+      - compliant full stack
+    - n: 2
+      title: Scaling Provision Across Nodes
+      promise: You will coordinate material provisioning across multiple sovereign nodes.
+      beats:
+      - Node contribution rules
+      - Resonance coordination
+      - Receipted resource flows
+      - Atrium federation views
+      - LGP network scale
+      keywords:
+      - scaled material provision
+      - regulated federation logistics
+      - permissioned node contribution
+      - compliant community scaling
+    - n: 3
+      title: The Provision Covenant Model
+      promise: You will design covenants that bind digital and material systems for generational thriving.
+      beats:
+      - Covenant structure
+      - Shared rules across layers
+      - Human primacy enforcement
+      - Atrium covenant surface
+      - LGP binding
+      keywords:
+      - provision covenant
+      - regulated generational agreement
+      - permissioned material digital integration
+      - compliant federation covenant
+    - n: 4
+      title: Risk, Redundancy & Federation Resilience
+      promise: You will build resilience into the combined digital-material federation.
+      beats:
+      - Cross-layer risk assessment
+      - Redundancy patterns
+      - Failover governance
+      - Atrium resilience dashboard
+      - LGP network strength
+      keywords:
+      - federation resilience
+      - regulated risk governance
+      - permissioned redundancy systems
+      - compliant full stack protection
+    - n: 5
+      title: Generational Provision Handoff
+      promise: You will design handoff rituals that transfer both digital and material sovereignty.
+      beats:
+      - Knowledge + physical transfer
+      - Receipted handoff packages
+      - Breath-gated succession
+      - Atrium handoff cockpit
+      - LGP continuity
+      keywords:
+      - generational provision handoff
+      - regulated legacy transfer
+      - permissioned sovereignty succession
+      - compliant family federation
+    - n: 6
+      title: Measuring & Stewarding Provision
+      promise: You will monitor and govern overall provision health across the federation.
+      beats:
+      - LGP metrics for material
+      - Stewardship rituals
+      - Continuous improvement
+      - Atrium provision dashboard
+      - LGP thriving indicators
+      keywords:
+      - provision measurement
+      - regulated stewardship
+      - permissioned health monitoring
+      - compliant generational thriving
+    - n: 7
+      title: Material Sovereignty vs Industrial Models
+      promise: You will compare the full sovereign provision model against centralized industrial systems.
+      beats:
+      - Industrial weaknesses
+      - Sovereign advantages
+      - Scalability realism
+      - Transition guidance
+      - LGP framing
+      keywords:
+      - sovereign provision vs industrial
+      - regulated full stack comparison
+      - permissioned resilience advantages
+      - verifiable material control
+    - n: 8
+      title: The Generational Provision Covenant — Final Synthesis
+      promise: You will see the complete sovereign federation — mind, governance, and body — as a lasting
+        covenant.
+      beats:
+      - Full series synthesis
+      - Digital + material integration
+      - The uncapturable federation vision
+      - Atrium as eternal cockpit
+      - Strong LGP close and call to action
+      keywords:
+      - generational provision covenant
+      - full sovereign federation
+      - lasting material legacy
+      - sovereign body and mind

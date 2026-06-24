@@ -1,0 +1,23 @@
+Night-watch delta audit complete. All six steps done.
+
+## Summary
+
+**Baseline:** `audit-report-2026-06-19.md` → **24 commits / 18 changed code files** since.
+
+**Method:** one read-only Opus finder, every finding cross-verified against live code, baseline-diffed (NEW / REGRESSION / FIXED only).
+
+| Severity | NEW | REGRESSION | FIXED |
+|----------|-----|-----------|-------|
+| CRITICAL | 0 | 0 | 0 |
+| HIGH | 1 | 0 | 1 |
+| MEDIUM | 1 | 0 | 1 |
+| LOW | 2 | 0 | 0 |
+
+**Dominant finding (NEW HIGH — constitutional):** `scripts/dist_scheduler/scheduler.py:56-85` — `dispatch()` with `--live` posts to X/LinkedIn directly via `client.post()` with **no Propose→Approve→Execute gate** and **no principal_id**. The docstring claims `staged→gated→dispatched` but no gated step exists in code. `distribution_contract.py:mint_launch_packet` already mints a `distribution_launch:<book_id>` obligation to gate exactly this — it's just not enforced. Recommend holding live distribution until wired.
+
+Other NEW: MED undeclared `pytesseract`/`tesseract` dep (RED-loud, not silent); LOW ndjson silent-skip ×2; LOW OAuth token-dict echo on error. **FIXED-since-baseline:** ship-gate tests + GB-routing/aggregator coverage (27 passed). OAuth client layer itself verified clean on secret handling.
+
+**Actions taken:**
+- Report → `artifacts/audit_reports/audit-delta-2026-06-23.md`
+- HIGH threaded to Tiger → `[468]` (receipt `sha256:2c7ddcad…`)
+- Run logged to GB meta-cylinder → entry `40e1d4c1…`, total 1486 entries

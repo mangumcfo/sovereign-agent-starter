@@ -1,0 +1,41 @@
+title_id: orphan-code
+status: yellow
+green_items: []
+red_items: []
+yellow_items:
+- item: 47 code modules with no book edge (orphan)
+  source: artifacts/book_code_tree.json
+  location: findings.orphan_code
+  reason: Code with no rendered-chapter edge — tie to a chapter (book_code_map.yaml)
+    or remove as dead.
+  action: 'Human: per module, tie to a chapter or disposition as dead (e.g. the capabilities/
+    stubs).'
+  confidence: 'Deterministic from book_code_tree.json: 47 orphan modules, each resolving.'
+  evidence_ref: artifacts/book_code_tree.json#orphan_code
+  sample:
+  - src/sovereign_agent/_lazy_bp.py
+  - src/sovereign_agent/_portal_launcher.py
+  - src/sovereign_agent/bootstrap.py
+  - src/sovereign_agent/breath_inventory.py
+  - src/sovereign_agent/compliance/policy_loader.py
+  - src/sovereign_agent/config.py
+top_next_tasks:
+- task: 'Disposition orphan module: src/sovereign_agent/_lazy_bp.py'
+  evidence_ref: src/sovereign_agent/_lazy_bp.py
+  effort: S
+- task: 'Disposition orphan module: src/sovereign_agent/_portal_launcher.py'
+  evidence_ref: src/sovereign_agent/_portal_launcher.py
+  effort: S
+- task: 'Disposition orphan module: src/sovereign_agent/bootstrap.py'
+  evidence_ref: src/sovereign_agent/bootstrap.py
+  effort: S
+- task: 'Disposition orphan module: src/sovereign_agent/breath_inventory.py'
+  evidence_ref: src/sovereign_agent/breath_inventory.py
+  effort: S
+- task: 'Disposition orphan module: src/sovereign_agent/compliance/policy_loader.py'
+  evidence_ref: src/sovereign_agent/compliance/policy_loader.py
+  effort: S
+blocked_by: []
+evidence_refs:
+- artifacts/book_code_tree.json#orphan_code
+confidence: Deterministic deriver; 47 orphan modules with no book edge.

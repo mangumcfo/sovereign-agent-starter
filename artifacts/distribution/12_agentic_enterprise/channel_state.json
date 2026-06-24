@@ -1,0 +1,51 @@
+{
+  "book_id": "12_agentic_enterprise",
+  "channels": {
+    "linkedin": {
+      "state": "staged",
+      "ts": "2026-06-23T15:35:01Z",
+      "detail": "DRY-RUN \u2014 would post 10 unit(s): carousel 'The Agentic Enterprise' (10 slides)",
+      "approved_by": null
+    },
+    "x": {
+      "state": "staged",
+      "ts": "2026-06-23T15:35:01Z",
+      "detail": "DRY-RUN \u2014 would post 8 unit(s): By 2030, \"AI-powered\" won't be an edge. It'll be the cost of staying open. Here'",
+      "approved_by": null
+    },
+    "substack": {
+      "state": "staged",
+      "ts": null,
+      "detail": "client pending (Substack next) \u2014 staged",
+      "approved_by": null
+    }
+  },
+  "drip": [
+    {
+      "slot": "day-0 burst",
+      "date": "2026-06-23"
+    },
+    {
+      "slot": "day 3",
+      "date": "2026-06-26"
+    },
+    {
+      "slot": "day 7",
+      "date": "2026-06-30"
+    },
+    {
+      "slot": "day 14",
+      "date": "2026-07-07"
+    },
+    {
+      "slot": "day 21",
+      "date": "2026-07-14"
+    },
+    {
+      "slot": "day 30",
+      "date": "2026-07-23"
+    }
+  ],
+  "mode": "dry_run",
+  "approved_by": null
+}

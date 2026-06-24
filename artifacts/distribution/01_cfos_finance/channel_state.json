@@ -1,47 +1,20 @@
 {
   "book_id": "01_cfos_finance",
+  "mode": "live",
+  "refused": true,
+  "reason": "launch obligation obl_20260619201851_60e54b09 exists but is NOT approved \u2014 awaiting KM's Accept on the Launch card (Propose\u2192Approve\u2192Execute)",
   "channels": {
     "linkedin": {
-      "state": "staged",
-      "ts": "2026-06-23T15:00:29Z",
-      "detail": "DRY-RUN \u2014 would post 10 unit(s): carousel 'AI Agents for CFOs' (10 slides)"
+      "state": "gated",
+      "detail": "launch obligation obl_20260619201851_60e54b09 exists but is NOT approved \u2014 awaiting KM's Accept on the Launch card (Propose\u2192Approve\u2192Execute)"
     },
     "x": {
-      "state": "staged",
-      "ts": "2026-06-23T15:00:29Z",
-      "detail": "DRY-RUN \u2014 would post 8 unit(s): Your team spends 80% on data plumbing and 20% on decisions. Agents flip that rat"
+      "state": "gated",
+      "detail": "launch obligation obl_20260619201851_60e54b09 exists but is NOT approved \u2014 awaiting KM's Accept on the Launch card (Propose\u2192Approve\u2192Execute)"
     },
     "substack": {
-      "state": "staged",
-      "ts": null,
-      "detail": "client pending (Substack next) \u2014 staged"
+      "state": "gated",
+      "detail": "launch obligation obl_20260619201851_60e54b09 exists but is NOT approved \u2014 awaiting KM's Accept on the Launch card (Propose\u2192Approve\u2192Execute)"
     }
-  },
-  "drip": [
-    {
-      "slot": "day-0 burst",
-      "date": "2026-06-23"
-    },
-    {
-      "slot": "day 3",
-      "date": "2026-06-26"
-    },
-    {
-      "slot": "day 7",
-      "date": "2026-06-30"
-    },
-    {
-      "slot": "day 14",
-      "date": "2026-07-07"
-    },
-    {
-      "slot": "day 21",
-      "date": "2026-07-14"
-    },
-    {
-      "slot": "day 30",
-      "date": "2026-07-23"
-    }
-  ],
-  "mode": "dry_run"
+  }
 }

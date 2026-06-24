@@ -23,7 +23,8 @@ For each volume, in order:
 4. **Spec extraction / living-spec mapping** — operational claims → specs (the `living_spec_mapping_to_role_lattice` packets), co-extruded.
 5. **Official KDP book description** — author `KDP_BOOK_DESCRIPTION_OFFICIAL.md` to V1's voice/format; controlled-link + bl-verify promise where claimed.
 6. **Cover-set consistency check** — vs series cover-set convention + V1 cover; regenerate only on inconsistency.
-7. **Deterministic re-render (Gate 6)** — rebuild the PDF clean under the standard.
+6b. **seeit figure-order (NEW, KM 2026-06-15 — `roadmap_conventions.seeit_figures`)** — update **seeit with the DETAILED figures FIRST** (full-detail/interactive → `seeit_review_<v>.md`), **THEN** derive the **SIMPLIFIED, print-legible book visuals** into the manuscript — the V1 pattern. Detail lives in seeit; the book carries the simplified version + pointer. One source, no drift.
+7. **Deterministic re-render (Gate 6)** — rebuild the PDF clean under the standard (book visuals must be the simplified/print-legible set from 6b).
 8. **Fold Report + Brief** — per volume, the rail's exit artifact.
 9. **State → `awaiting_human_review`** at the full V1-published standard (all aspects complete).
 

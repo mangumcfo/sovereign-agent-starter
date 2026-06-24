@@ -13,6 +13,7 @@ stages:
   series_locked:      {label: "Series Locked",                step: 1,  state: done_through}
   phase_0_kickoff:    {label: "Kickoff",                      step: 2,  state: in_progress}
   phase_1_outline:    {label: "Outline + Spec Map",           step: 3,  state: in_progress}
+  outline_locked:     {label: "Outline Locked (drafting-ready)", step: 4,  state: ready}        # catalog lock pass 2026-06-18; outline complete + G-locked, awaiting drafting kickoff
   phase_1:            {label: "AI Drafting (boards running)", step: 5,  state: in_progress}   # spans 4-8
   phase_2_iteration:  {label: "Iteration (post-board)",       step: 8,  state: in_progress}
   artifact_built:     {label: "Artifact Built",               step: 9,  state: done_through}

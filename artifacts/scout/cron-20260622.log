@@ -1,0 +1,11 @@
+wrote book_code_tree.json — 13 series, 785 chapters, 58 modules, 12 edges (12 derived), 47 orphan / 782 unrendered, hash 8312766dd5347d97
+scout_run 2026-06-22 — 7 clean / 0 rejected (dry_run=False; candidates posted to proposals)
+  filter: excluded 69 concept-stage (not written) + 17 written-non-code-coupled (no engine code to drift from) — signal over volume
+  CLEAN  vol_01_sovereign_inference_and_memory
+  CLEAN  vol_02_the_primacy_cockpit
+  CLEAN  vol_03_governed_dev_loop_and_self_building_harness
+  CLEAN  vol_04_federation_and_partner_device_gateway
+  CLEAN  vol_05_yield_organism_and_generational_prosperity
+  CLEAN  orphan-code
+  CLEAN  static-scan-delta
+packets → /home/kmangum/work-repos/sovereign-agent-starter/artifacts/scout/packets/2026-06-22

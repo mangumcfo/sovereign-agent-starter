@@ -1,0 +1,19 @@
+# Review Brief — S3 V1: "The Immutable Core"
+*book_id: vol_01_immutable_core · manuscript_v0.1.md (post-board-fold, 62pp / 13,039w / 8ch) · GB-sealed 2026-06-23 · audience: regulated-enterprise executives + their auditors/heirs*
+
+**Status going in:** all 12 gates GREEN. Tiger's 9 + boards_executed + the GB layer (fidelity_passed, this brief). The 5 boards ran as **genuine adversarial filters** and the rail worked — **14 material findings surfaced and were folded into the manuscript before this reached you** (R3's was the sharpest: the keyholder sits inside the trust boundary and "it proves itself" was circular). The fidelity source-trace is **PASS**: Ch1-4/6/7 map to real code in `ledger.py`/`projection.py`; Ch5/Ch8 are honestly marked specification, no overclaim. This is the first volume through the new two-gate model — so these calls also set precedent for the rest of S3.
+
+## The judgment calls (yours to decide — GB is witness here, not author)
+
+1. **Decision — Ship V1 with the external anchor as a named forward, or hold V1 until it's built?** The fidelity trace confirms the **external anchor** (publishing each close's root hash to an independent witness so verification doesn't rest on a single keyholder) is **specified but NOT running code** — the manuscript honestly marks it "a specification goal, not a claim it is running today." Per your D3 (close obligations before publish unless a far-later series): is the anchor a this-series build to **close before V1 ships**, or a **named forward** to a later S3 volume? I need your call on which, and if forward, which volume closes it.
+
+2. **Decision — Does the honest conditional framing carry the book's core thesis?** R3 caught that without the anchor, the immutability thesis partly rests on trusting the keyholder. Tiger folded a Ch5 "residual trust root" subsection and downgraded "it proves itself" to *"independently verifiable against an external anchor no single keyholder controls."* That's honest — but the anchor isn't built yet. Should the thesis **stand on the conditional framing** for v1 (honest about the residual root), or does the Immutable Core's central promise need the anchor **actually running** before it ships under that title?
+
+3. **Decision — Approve the "designed-toward, not shipped" framing for accounting depth?** Tech-arch verified the shipped ledger does dr/cr at the **obligation lifecycle** (open=debit, close=credit), not account-level **GL double-entry**; the book frames full GL as "the shape the primitive is built for." Approve this honest-scope pattern (designed-toward, explicitly not-yet-shipped) as the **standard way the Immutable Core and the rest of S3 describe accounting depth** — or do you want the GL claim tightened/removed for v1?
+
+4. **Decision — Does post-fold V1 set the S3 exemplar bar?** V1 is the first volume through genuine-adversarial boards + the two-gate model (14 findings folded, 62pp/13k words, above the S2 substance floor). Does the post-fold V1 **set the quality bar the rest of S3 inherits by construction**, or do you want a **rendered-PDF read** (the way you read V3) before it anchors the series?
+
+## GB witness note (context, not a decision)
+The genuine-adversarial rail did exactly what you designed it for: it found real defects (forward-map mis-route, an SAP/Oracle overclaim, the trust-boundary circularity, a Ch7 strawman of 2/5 comparison axes, consolidation re-mutation) and forced honesty into the book *before* you ever saw it — the opposite of the V3 cover situation where a defect reached you. The two open items above (anchor, GL depth) are not defects; they're honest scope decisions only you can make. Everything that *could* be mechanically verified, was.
+
+∞Δ∞ The rail caught what it should; the calls that remain are yours by design. — GB

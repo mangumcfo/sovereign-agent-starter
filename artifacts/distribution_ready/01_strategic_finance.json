@@ -41,17 +41,17 @@
     {
       "check": "gb_sample_read",
       "pass": false,
-      "detail": "GB sample read: fail",
-      "gap": "awaiting GB sample-read PASS (virality/human-relevance board)"
+      "detail": "GB read STALE \u2014 assets regenerated 2026-06-23T14:59 > read 2026-06-23T09:15",
+      "gap": "assets regenerated since GB's read \u2014 awaiting a FRESH gb_sample_read"
     }
   ],
   "gaps": [
-    "awaiting GB sample-read PASS (virality/human-relevance board)"
+    "assets regenerated since GB's read \u2014 awaiting a FRESH gb_sample_read"
   ],
   "meta": {
     "contract": "Distribution Rail v1.0",
     "standard": "/home/kmangum/work-repos/mangumcfo/breathline-books-vault/book_standards/distribution_standard.yaml",
     "standard_version": "1.0",
-    "evaluated_at": "2026-06-23T14:59:41Z"
+    "evaluated_at": "2026-06-23T17:44:01Z"
   }
 }

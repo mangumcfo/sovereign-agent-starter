@@ -1,0 +1,29 @@
+title_id: vol_03_governed_dev_loop_and_self_building_harness
+status: yellow
+green_items: []
+yellow_items:
+- item: 5 chapters have no code edge (unrendered)
+  source: artifacts/book_code_tree.json
+  location: findings.unrendered_chapters
+  reason: 'Book↔Code drift: chapters in this title carry no edge in book_code_map.yaml.'
+  action: 'Human: mark each narrative (n/a) or queue for render — the scout does not
+    decide which.'
+  confidence: 'Derived deterministically from book_code_tree.json: 5 unrendered chapter
+    ids.'
+  evidence_ref: artifacts/book_code_tree.json#unrendered_chapters
+  sample:
+  - vol_03_governed_dev_loop_and_self_building_harness#ch1
+  - vol_03_governed_dev_loop_and_self_building_harness#ch2
+  - vol_03_governed_dev_loop_and_self_building_harness#ch3
+  - vol_03_governed_dev_loop_and_self_building_harness#ch4
+  - vol_03_governed_dev_loop_and_self_building_harness#ch5
+red_items: []
+top_next_tasks:
+- task: Review 5 unrendered chapters for vol_03_governed_dev_loop_and_self_building_harness
+    (mark n/a or queue render)
+  evidence_ref: artifacts/book_code_tree.json#unrendered_chapters
+  effort: S (triage)
+blocked_by: []
+evidence_refs:
+- artifacts/book_code_tree.json#unrendered_chapters
+confidence: Deterministic deriver over book_code_tree.json findings (5 ids for vol_03_governed_dev_loop_and_self_building_harness).

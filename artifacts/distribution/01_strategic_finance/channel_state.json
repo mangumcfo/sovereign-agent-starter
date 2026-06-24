@@ -3,45 +3,49 @@
   "channels": {
     "linkedin": {
       "state": "staged",
-      "ts": "2026-06-19T19:10:19Z",
-      "detail": "DRY-RUN \u2014 would post 6 unit(s): carousel 'Strategic Finance For Growth' (6 slides)"
+      "ts": "2026-06-23T15:35:01Z",
+      "detail": "DRY-RUN \u2014 would post 7 unit(s): carousel 'Strategic Finance For Growth' (7 slides)",
+      "approved_by": null
     },
     "x": {
       "state": "staged",
-      "ts": "2026-06-19T19:10:19Z",
-      "detail": "DRY-RUN \u2014 would post 6 unit(s): Strategic Finance For Growth \u2014 The Intersection of Strategy and Finance in the P"
+      "ts": "2026-06-23T15:35:01Z",
+      "detail": "DRY-RUN \u2014 would post 6 unit(s): Most founders run their company like it's one business. It's actually four \u2014 and",
+      "approved_by": null
     },
     "substack": {
       "state": "staged",
       "ts": null,
-      "detail": "client pending (Substack next) \u2014 staged"
+      "detail": "client pending (Substack next) \u2014 staged",
+      "approved_by": null
     }
   },
   "drip": [
     {
       "slot": "day-0 burst",
-      "date": "2026-06-19"
+      "date": "2026-06-23"
     },
     {
       "slot": "day 3",
-      "date": "2026-06-22"
-    },
-    {
-      "slot": "day 7",
       "date": "2026-06-26"
     },
     {
+      "slot": "day 7",
+      "date": "2026-06-30"
+    },
+    {
       "slot": "day 14",
-      "date": "2026-07-03"
+      "date": "2026-07-07"
     },
     {
       "slot": "day 21",
-      "date": "2026-07-10"
+      "date": "2026-07-14"
     },
     {
       "slot": "day 30",
-      "date": "2026-07-19"
+      "date": "2026-07-23"
     }
   ],
-  "mode": "dry_run"
+  "mode": "dry_run",
+  "approved_by": null
 }

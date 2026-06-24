@@ -1,0 +1,23 @@
+Night watch complete. Summary:
+
+## Nightly Delta Audit — 2026-06-17
+
+**Baseline:** `audit-report-2026-06-16-FINAL.md` @ commit `b561274` (Health 79/100, 0 CRIT, 4 HIGH — all in the constraints/CI/dependency cluster).
+
+**Scope:** 47 code/config files changed `b561274..HEAD (9510a6c)` — biggest targets the `obligations/ledger.py` refactor + new split-out modules and the new scout pipeline. One Opus 4.8 read-only finder (~65k tokens), verification only on new findings.
+
+### Result: clean night
+- **NEW:** 0 CRIT, 0 HIGH, 0 MED, **2 LOW** (ruff §5 bar declared-but-not-CI-enforced; cron uses `;` not `&&` between tree-build and scout)
+- **Regressions:** 0
+- **Fixed-since-baseline:** **all 4 HIGH** — the constraints/CI tar pit is genuinely closed:
+  - constraints pins now match live installed versions (mechanically enforced by `test_constraints_lock.py`)
+  - `[portal]` gap closed by re-scoping flask to core
+  - CI lock test green by construction; pip-audit step added
+- High-risk targets verified clean: ledger refactor preserves `principal_id` on every chain entry + fail-closed guards + no swallowed exceptions; `scout_run.py` confirmed genuinely propose-only with principal propagation.
+
+### Actions taken
+- ✅ Delta report saved → `artifacts/audit_reports/audit-delta-2026-06-17.md`
+- ⏭️ No Tiger thread — no new CRITICAL/HIGH (escalation step correctly skipped)
+- ✅ Run logged to GB meta-cylinder (`hash:34d14101404cf661`)
+
+The 79 cap is removed; a full Opus confirming sweep is the remaining step to lock in the official ~88–90 score.

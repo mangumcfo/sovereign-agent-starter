@@ -1,0 +1,1 @@
+Waiting on the 4-minute backoff before retrying the Opus finder agent — Opus has been returning 529 overload errors on three consecutive attempts. I'll resume automatically when the wait completes.

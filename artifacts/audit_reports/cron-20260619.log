@@ -1,0 +1,43 @@
+Night-watch delta audit complete.
+
+## Summary — 2026-06-19 delta audit
+
+**Baseline:** `audit-delta-2026-06-18.md` @ `0ba1396`. **Now:** HEAD `3046a0d` (14 commits + working tree).
+
+**Scope audited** (code/config only; data ignored): 3 new lints (`book_lint.py`, `outline_lock_lint.py`, `pdf_parity_lint.py`), the major `review_ready_contract.py` gate-engine change (+247), the `hopper.py` recency-cap fix, 2 new test suites, plus benign config (crontab `;`→`&&`, new `outline_locked` stage label).
+
+**Verdict: 0 CRIT / 0 HIGH / 1 MED / 2 LOW new; 0 regressions; 0 fixed. No Tiger escalation needed.**
+
+New findings (all bounded, none constitutional breaches):
+- **MED** — `review_ready_contract.py:357/318`: `/seeit` coverage check is hardcoded to S3V3 instead of scoped to `book_id`, so it will false-RED the next non-Helix volume (conservative — blocks rather than false-readies).
+- **LOW** — `book_lint.py:38-39` / `pdf_parity_lint.py:64-65`: malformed `book_standard.yaml` silently falls back to defaults (add a WARN).
+- **LOW** — test coverage: the "lint crash ⇒ gate RED" integration path is unverified.
+
+**Verified clean:** gate engine can't be silently bypassed (all gates AND-ed into `ready`, RED on missing/empty inputs, `SystemExit(main())` exits loud); hopper fix *removes* a real silent newest-card drop without adding one; no principal-spoof surface (CLI tool, not API route). 12 tests pass.
+
+**Actions taken:**
+- Report saved → `artifacts/audit_reports/audit-delta-2026-06-19.md`
+- No CRITICAL/HIGH → Tiger thread correctly skipped
+- Run logged to GB meta-cylinder (hash `85f39cb82f15cac6`)
+All four post-run steps are complete. Weekly full audit sweep done.
+
+## Weekly Full Audit — 2026-06-19 ✅
+
+**Workflow:** `wf_d734acc3-193` · 40 agents · 0 spend-starvation (full re-run, fresh cache — no resume needed).
+
+**Result:** Health **78/100** (prev full 79). **0 CRITICAL** · 3 HIGH · 14 MEDIUM · 15 LOW · **32 confirmed / 0 refuted** (all adversarially verified).
+
+### New HIGH this week
+1. **Hash-chain FORK RACE** — `scripts/thread.py:append()` takes no lock while `node_api/thread_channel.py` fences. The CLI is the documented-primary writer (this cron uses it), so a CLI append racing a node `/relay` append can permanently fork the GENESIS chain (TOCTOU) → `verify()` BROKEN. ~20 min fix.
+2. **R1 ship-gate tests RED** — today's commit `cbe4f23` changed the RECEIPT detector to a letters-only header but left fixtures emitting the box marker; `tests/test_review_ready_contract.py:53,138` hard-fail → CI broken and the gate deciding KM's review queue is effectively untested. ~15 min fix. *(This is a regression introduced today.)*
+3. **Pillow used-but-undeclared** — `gen_linkedin_carousel.py:19` → clean-install `ModuleNotFoundError` (bounded: generators are dev tooling, core `pip install` unaffected).
+
+### De-escalated since 06-16
+The constraints–CI HIGH cluster (fabricated-green pins + `[portal]` empty-extra + un-green-able CI) no longer surfaces as HIGH.
+
+### Steps completed
+- ✅ Report extracted via python (raw JSON never read into context), date interpolated, saved to `artifacts/audit_reports/audit-report-2026-06-19.md` with a confirmed-count comparison footer vs `audit-report-2026-06-16-FINAL.md`.
+- ✅ Digest THREADed to Tiger as `[461]` (chain verifies: 461 entries · OK).
+- ✅ Logged to GB meta-cylinder (`weekly_full_audit`, E1, hash `55acfa8e…`).
+
+One self-referential note worth flagging: the audit also found `scripts/gb_meta_cylinder.py:51-57` does an unlocked append (Constitutional/INTEGRITY MED) — the same flock gap as the thread.py HIGH. Both trace to the single-writer-fence theme that dominates this week's findings.

@@ -1,0 +1,34 @@
+# pipeline_stage_labels.yaml — canonical stage vocabulary (GB sole-write, sealed 2026-06-10)
+# THE CONTRACT between the roadmap (GB writes stage values) and every renderer (Tiger reads labels/steps).
+# Born from pilot finding #4: GB wrote stage "review_ready"; the card renderer had a private stage→step map
+# that didn't know it → checklist rendered BLANK, silently. Two rules fix the class:
+#   RULE 1: GB only writes stage values that exist in this file; renderers only label from this file.
+#   RULE 2: a stage NOT in this file must render LOUD ("⚠ UNMAPPED STAGE: <slug>"), never blank. (Error Voice §4)
+# Per-step checkmarks: where artifacts/review_ready/<book>.json exists, the CONTRACT JSON is truth for
+# steps 4-12 (overlay it, _publishing_index pattern); this file only places the coarse stage on the spine.
+version: 1.0
+workflow_canon: breathline-books-vault/WORKFLOW.md (13-step card view)
+
+stages:
+  series_locked:      {label: "Series Locked",                step: 1,  state: done_through}
+  phase_0_kickoff:    {label: "Kickoff",                      step: 2,  state: in_progress}
+  phase_1_outline:    {label: "Outline + Spec Map",           step: 3,  state: in_progress}
+  phase_1:            {label: "AI Drafting (boards running)", step: 5,  state: in_progress}   # spans 4-8
+  phase_2_iteration:  {label: "Iteration (post-board)",       step: 8,  state: in_progress}
+  artifact_built:     {label: "Artifact Built",               step: 9,  state: done_through}
+  review_ready:       {label: "Human Review (ready)",         step: 11, state: ready}         # contract green, awaiting KM
+  in_human_review:    {label: "Human Review (in progress)",   step: 11, state: in_progress}
+  signed_off:         {label: "Signed Off",                   step: 12, state: done_through}
+  awaiting_seal:      {label: "Awaiting Seal",                step: 12, state: in_progress}
+  sealed:             {label: "Sealed (pre-publish)",         step: 12, state: done_through}
+  published:          {label: "Published (LIVE)",             step: 13, state: done_through}
+  # parked/non-pipeline
+  planned:            {label: "Planned (not started)",        step: 0,  state: pending}
+  parked:             {label: "Parked",                       step: 0,  state: pending}
+
+display_rules:
+  - "Matrix/cards show `label`, NEVER the raw slug. (Pilot finding #3: KM saw 'review_ready' in ink meant for humans.)"
+  - "state=done_through → steps 1..N check green; ready → N pulses; in_progress → N half-filled; unknown slug → LOUD banner."
+  - "publishing_state (ASIN_TRACKER overlay) supersedes `published` placement when present — KDP truth wins."
+
+# ∞Δ∞ SEAL: complete — one vocabulary, two writers' contract: GB speaks only these words; the glass labels only from here; anything else screams.

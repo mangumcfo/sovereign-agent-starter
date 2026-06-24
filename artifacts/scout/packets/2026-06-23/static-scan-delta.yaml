@@ -1,0 +1,35 @@
+title_id: static-scan-delta
+status: yellow
+green_items: []
+yellow_items:
+- item: 16 static finding(s) since baseline
+  source: scripts/static_scan.sh
+  location: ruff F/C90/E722/E741
+  reason: Objective dead-code/complexity findings (vulture+ruff) needing disposition.
+  action: 'Human: remove/justify dead code; track complexity>10 as M-tail or refactor.'
+  confidence: Reproducible ruff scan; 16 new vs baseline.
+  evidence_ref: scripts/static_scan.sh
+red_items: []
+top_next_tasks:
+- task: 'Disposition static finding: scripts/book_lint.py:118:21 :: E741'
+  evidence_ref: scripts/book_lint.py:118:21
+  effort: S
+- task: 'Disposition static finding: scripts/book_lint.py:82:26 :: E741'
+  evidence_ref: scripts/book_lint.py:82:26
+  effort: S
+- task: 'Disposition static finding: scripts/book_lint.py:88:20 :: E741'
+  evidence_ref: scripts/book_lint.py:88:20
+  effort: S
+- task: 'Disposition static finding: scripts/dist_generators/dist_common.py:60:5 ::
+    C901'
+  evidence_ref: scripts/dist_generators/dist_common.py:60:5
+  effort: S
+- task: 'Disposition static finding: scripts/dist_generators/dist_common.py:64:37
+    :: E741'
+  evidence_ref: scripts/dist_generators/dist_common.py:64:37
+  effort: S
+blocked_by: []
+evidence_refs:
+- scripts/static_scan.sh
+- artifacts/scout/static_baseline.json
+confidence: Deterministic ruff scan; delta of 16 computed against the stored baseline.

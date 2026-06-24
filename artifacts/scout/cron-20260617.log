@@ -1,0 +1,10 @@
+scout_run 2026-06-17 — 7 clean / 0 rejected (dry_run=False; candidates posted to proposals)
+  filter: excluded 64 concept-stage (not written) + 16 written-non-code-coupled (no engine code to drift from) — signal over volume
+  CLEAN  vol_01_sovereign_inference_and_memory
+  CLEAN  vol_02_the_primacy_cockpit
+  CLEAN  vol_03_governed_dev_loop_and_self_building_harness
+  CLEAN  vol_04_federation_and_partner_device_gateway
+  CLEAN  vol_05_yield_organism_and_generational_prosperity
+  CLEAN  orphan-code
+  CLEAN  static-scan-delta
+packets → /home/kmangum/work-repos/sovereign-agent-starter/artifacts/scout/packets/2026-06-17

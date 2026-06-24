@@ -1,0 +1,24 @@
+Night watch complete.
+
+## Nightly Delta Audit — 2026-06-24
+
+**Baseline:** `audit-delta-2026-06-23.md` · **Changes since:** 24 commits (`bab31b4..545a342`), 9 changed `.py` files audited by one read-only Opus finder.
+
+**Findings (2 NEW, 0 regression, 3 fixed):**
+
+| Sev | Status | Item |
+|-----|--------|------|
+| HIGH | NEW | `atrium_executor.py:134` — `(res.get("results") or {}).keys()` on a list-shaped `dispatch` return → `AttributeError` on **every** launch, swallowed by the broad `except` → on an approved launch the scheduler posts **live** but the obligation never closes and a false `apply_close_failed` handshake is recorded. Independently re-verified against live code. |
+| LOW | NEW | `scheduler.py:93` — approver stamped as hardcoded `"KM-1176"` (`open_obligations()` carries no `approved_by`) → wrong principal in dispatch provenance. |
+| HIGH | FIXED | `scheduler.py --live` now enforces an APPROVED `distribution_launch` obligation, fails closed without a ledger, stamps principal, test-backed (closes baseline constitutional HIGH). |
+| HIGH | FIXED | `thread.py` fork-race now under `flock(LOCK_EX)`. |
+| HIGH | FIXED | Pillow declared in `[tooling]` extra. |
+
+Carry-over: `pytesseract` still undeclared (unchanged baseline MEDIUM, not re-counted).
+
+**Actions taken:**
+- Report saved → `artifacts/audit_reports/audit-delta-2026-06-24.md`
+- NEW HIGH threaded to Tiger → `[491]` (file:line + fix, receipt `sha256:f432b927…`)
+- Run logged to GB meta-cylinder (`hash:d90587f2…`, manifest now at 1539)
+
+Cost kept minimal: one finder agent, verification only on the new HIGH.

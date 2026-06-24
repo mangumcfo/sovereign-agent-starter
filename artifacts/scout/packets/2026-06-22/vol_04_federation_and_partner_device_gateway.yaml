@@ -1,0 +1,29 @@
+title_id: vol_04_federation_and_partner_device_gateway
+status: yellow
+green_items: []
+yellow_items:
+- item: 12 chapters have no code edge (unrendered)
+  source: artifacts/book_code_tree.json
+  location: findings.unrendered_chapters
+  reason: 'Book↔Code drift: chapters in this title carry no edge in book_code_map.yaml.'
+  action: 'Human: mark each narrative (n/a) or queue for render — the scout does not
+    decide which.'
+  confidence: 'Derived deterministically from book_code_tree.json: 12 unrendered chapter
+    ids.'
+  evidence_ref: artifacts/book_code_tree.json#unrendered_chapters
+  sample:
+  - vol_04_federation_and_partner_device_gateway#ch1
+  - vol_04_federation_and_partner_device_gateway#ch10
+  - vol_04_federation_and_partner_device_gateway#ch11
+  - vol_04_federation_and_partner_device_gateway#ch12
+  - vol_04_federation_and_partner_device_gateway#ch2
+red_items: []
+top_next_tasks:
+- task: Review 12 unrendered chapters for vol_04_federation_and_partner_device_gateway
+    (mark n/a or queue render)
+  evidence_ref: artifacts/book_code_tree.json#unrendered_chapters
+  effort: S (triage)
+blocked_by: []
+evidence_refs:
+- artifacts/book_code_tree.json#unrendered_chapters
+confidence: Deterministic deriver over book_code_tree.json findings (12 ids for vol_04_federation_and_partner_device_gateway).

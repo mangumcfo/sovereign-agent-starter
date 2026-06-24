@@ -1,4 +1,4 @@
-title_id: 01_cfos_finance
+title_id: vol_04_federation_and_partner_device_gateway
 status: yellow
 green_items: []
 yellow_items:
@@ -12,17 +12,18 @@ yellow_items:
     ids.'
   evidence_ref: artifacts/book_code_tree.json#unrendered_chapters
   sample:
-  - 01_cfos_finance#ch1
-  - 01_cfos_finance#ch10
-  - 01_cfos_finance#ch11
-  - 01_cfos_finance#ch12
-  - 01_cfos_finance#ch2
+  - vol_04_federation_and_partner_device_gateway#ch1
+  - vol_04_federation_and_partner_device_gateway#ch10
+  - vol_04_federation_and_partner_device_gateway#ch11
+  - vol_04_federation_and_partner_device_gateway#ch12
+  - vol_04_federation_and_partner_device_gateway#ch2
 red_items: []
 top_next_tasks:
-- task: Review 12 unrendered chapters for 01_cfos_finance (mark n/a or queue render)
+- task: Review 12 unrendered chapters for vol_04_federation_and_partner_device_gateway
+    (mark n/a or queue render)
   evidence_ref: artifacts/book_code_tree.json#unrendered_chapters
   effort: S (triage)
 blocked_by: []
 evidence_refs:
 - artifacts/book_code_tree.json#unrendered_chapters
-confidence: Deterministic deriver over book_code_tree.json findings (12 ids for 01_cfos_finance).
+confidence: Deterministic deriver over book_code_tree.json findings (12 ids for vol_04_federation_and_partner_device_gateway).

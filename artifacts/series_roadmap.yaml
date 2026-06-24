@@ -632,8 +632,8 @@ series:
       - enterprise ERP legacy
   - book_id: vol_03_helix_book_writes_backend
     title: 'Helix: When the Book Literally Writes the Backend'
-    stage: sealed
-    next_gate: none — sealed 2026-06-21 (KM); S3 exemplar; manuscript v1.11 + cover GB-cleared, all 13 gates green
+    stage: sealed_review_ready_NOT_human_reviewed
+    next_gate: 'KM HUMAN REVIEW (Atrium read of the rendered PDF + reader-value feedback/adjustments) before KDP — NOT yet performed (KM clarified 2026-06-23). review_ready:vol_03_helix obligation is OPEN. "Sealed 2026-06-21 (KM)" = rail-passed at review_ready + KM seal-order to LIFT THE S3 FREEZE, NOT a human-review completion and NOT KDP. S3 exemplar; manuscript v1.11 + cover GB-cleared, all 13 gates green. One-truth: sealed != human-reviewed != published.'
     reader_order: 3
     visibility: public
     one_line: Co-extrusion heart — the deterministic B35 Helix engine that renders living books into receipted,
@@ -1062,7 +1062,14 @@ series:
     series-close) + a referential-integrity pin on Breath 28 (V4 Ch2). NOTE: G sent a Vol 1 RE-CUT 2026-06-08
     (retitled chapters that narrow scope to reduce overlap) — PROPOSED amendment, NOT yet applied; Vol
     1 remains the KM-ratified CYL-203 outline pending KM gate. Spine complete — ready for Phase −1 lock
-    when KM directs.'
+    when KM directs. PHASE −1 SCOPE-LOCK RATIFIED (Gate A, KM 2026-06-24): the 4-volume S4 production scope
+    is locked for drafting per the staging proposal (artifacts/S4_S5_Phase_Minus1_Staging_2026-06-23.md) —
+    S4 is the value/forkability bridge closing the S3 value + forkability + generational-inheritance forwards
+    (esp. S4-04). Co-ratified: the S5 FIRST WAVE (8 of 37: S5-01/02/03/04/05/07/09/10) opens for drafting as
+    the composition/governance-engine/vertical-product closer for the remaining S3 forwards. Drafting proceeds
+    S4-01 first, then S5 first wave (S5-04 self-healing + S5-02 engine-depth lead). Every volume surfaces to KM
+    only at 13/13. Ratified on KM''s "ratify first as highlighted" directive + GB''s scope highlight; full
+    staging artifact available for per-title amendment if KM wishes.'
   ladder_arc: tokenization + yield + economic continuity for families and enterprises; ties to S2 Vol5
     (Yield) + S3 Vol4 + B26 (Yield Organisms / XRPL)
   titles:
