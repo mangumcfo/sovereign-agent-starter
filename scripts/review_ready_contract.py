@@ -480,7 +480,11 @@ def _check_canonical_toolchain(bdir: Path | None, book_id: str) -> dict:
 # book_structure gate (KM 2026-06-18, the V3 'same pen' regression): a volume must follow the established
 # S1/S2 manuscript convention — front matter + per-chapter scaffolding + back matter — not a per-book shape.
 # Required sections measured from the S2 V1 template.
-_STRUCT_FRONT = ["About This Series", "Table of Contents", "Preflight", "Executive Brief"]
+# "Executive Brief" slot (KM 2026-06-25): the visible heading is the volume's KEY MESSAGE — a real bold/brief
+# headline — not the manipulative "Bold Executive Brief" LABEL. The slot is satisfied by EITHER the legacy
+# "Executive Brief" heading (un-migrated volumes) OR the standard hidden marker `<!-- exec-brief -->` placed
+# directly above the key-message heading (invisible in the rendered PDF). Tuple = "any alias present".
+_STRUCT_FRONT = ["About This Series", "Table of Contents", "Preflight", ("Executive Brief", "<!-- exec-brief -->")]
 _STRUCT_BACK = ["See It Work", "Reader Resources", "About the Author", "Also by Kenneth Mangum", "Connect"]
 
 
@@ -507,7 +511,9 @@ def _check_book_structure(bdir: Path | None, book_id: str) -> dict:
     t = mss[-1].read_text(encoding="utf-8", errors="ignore")
     n_chap = len(re.findall(r"(?m)^# Chapter \d+", t)) or len(re.findall(r"(?m)^#{1,2} Chapter \d+", t))
     miss = []
-    miss += [f"front:{s}" for s in _STRUCT_FRONT if s not in t]
+    def _front_ok(slot):
+        return any(a in t for a in (slot if isinstance(slot, tuple) else (slot,)))
+    miss += [f"front:{(slot[0] if isinstance(slot, tuple) else slot)}" for slot in _STRUCT_FRONT if not _front_ok(slot)]
     if "Copyright" not in t or "ISBN" not in t:
         miss.append("front:copyright/ISBN page")
     n_signal = t.count("## Industry Signal")

@@ -141,6 +141,7 @@ MANUSCRIPT FILE (read the WHOLE file to ground exact text): {manuscript}
 RULES:
 - If the transcript requests concrete manuscript change(s): read the file and produce grounded diffs. Every `before` MUST be exact text copied verbatim from the file.
 - FORMATTING IS A CONCRETE EDIT — never decline it. "bold this", "highlight this piece", "make a callout", "italicize", "make this a bullet" are real, groundable edits. Find the EXACT target text — use the `Seed (human selection): "…"` text in the transcript if present, otherwise the phrase KM names — and produce a diff that formats it: bold = wrap in `**…**`, italic = `*…*`, callout/highlight = make it a `> ` blockquote line or bold lead, bullet = prefix `- `. `before` = the exact current text, `after` = the formatted version. Only return empty groups if the target text genuinely can't be located in the file.
+- PROBLEM-FLAGS ARE EDITS (KM 2026-06-25 — the #1 classifier miss): a note that IDENTIFIES A PROBLEM with the text and implies a correction is a concrete EDIT request, NOT an action-less observation. Produce a grounded diff. This includes: "this is outdated / inaccurate / not a real claim / overclaimed" (→ correct or soften it), "too detailed / too complex" (→ simplify it), "rename this / sounds manipulative / placeholder" (→ rename it), "missing a link / broken / doesn't work / 404 / fails" (→ fix it), "soften / simplify / reword / remove / cut / adjust / replace this", "superseded → use the latest". Find the exact target (use the `Seed (human selection)` text) and produce the diff. RESERVE "observation" ONLY for notes with GENUINELY no implied change (pure praise, a question seeking information, a process/meta comment). When UNSURE whether a note implies an edit, route "tooling" (hand to Tiger) — NEVER "observation" (which auto-closes the card).
 - COMPLETENESS — fix the whole ISSUE, not just the one spot named. If KM signals the issue RECURS ("throughout", "everywhere", "all the…", "same issue", "similar", "keep an eye out"), SWEEP THE ENTIRE MANUSCRIPT and find EVERY instance of that same issue. Group by PATTERN: one group per distinct issue, with a `hunks` array holding EVERY instance (each {{before, after}}). Do NOT make a separate group per instance, and do NOT stop at the first match. Fix the named issue completely in this book. Only the issue(s) KM actually raised — never invent unrelated edits.
 - CROSS-BOOK: if KM says the issue also applies to other books (e.g. "books 10-12", "same in 10 and 12"), set top-level "cross_book": ["Book 10","Book 12"]. Do NOT edit other books here; they are processed separately.
 - REFLECTION MODE (per group) — classify how each concept reflects into the work:
@@ -149,7 +150,7 @@ RULES:
 - If it is NOT a literal manuscript edit, still CLASSIFY it (never a bare "no change") — return empty groups PLUS top-level fields:
   * a PRINCIPLE / K-invariant / "must always" governing behavior → "reflection_mode":"embodied_principle", "principle":"<the behavior/invariant in one line>", "route":"principle". This is a REAL captured outcome routed to GB fidelity + drift watch — NOT a dead end.
   * a TOOLING / feasibility / build / "hand this to Tiger" ask → "route":"tooling".
-  * a pure question / observation with no action → "route":"observation".
+  * a pure question / observation with GENUINELY no implied change (praise, an info-seeking question, a process/meta comment) → "route":"observation". A note that flags a PROBLEM with the text is an EDIT, not an observation (see PROBLEM-FLAGS rule) — do not route it here.
   Always write a 1-line `note`. Do NOT fabricate a diff.
 - Output EXACTLY this JSON (a group uses EITHER `hunks` for one-or-more instances OR a single `before`/`after`):
 {{"session_ref":"<book + page>","book":"<book>","note":"<summary; say how many instances per pattern>","cross_book":[],"groups":[{{"id":"g1","title":"<pattern> — N places","kind":"prose|code","scope":"GREEN","reflection_mode":"direct_mechanics|embodied_principle","principle":"<only if embodied_principle: the behavior/invariant>","rationale":"...","file":"<exact path>","hunks":[{{"before":["exact text"],"after":["changed text"]}}]}}]}}
@@ -188,6 +189,24 @@ def _generate(transcript: str, book: str) -> dict | None:
             continue
     _log("  no valid JSON in generation output")
     return None
+
+
+# KM 2026-06-25 — over-close safety net (belt-and-suspenders to the prompt fix; doesn't depend on the LLM
+# classifying perfectly): a note carrying any of these edit signals is treated as a POSSIBLE edit and is NEVER
+# auto-closed — it stays an open Tiger deliverable for a human to disposition. KM's review style flags a problem
+# and implies the fix ("this is outdated", "soften this", "too detailed", "rename this", "missing a link"); those
+# are edits, not action-less observations.
+_EDIT_SIGNALS = re.compile(
+    r"\b(outdated|inaccurate|incorrect|wrong|not (a )?real claim|overclaim\w*|oversell|mislead\w*|"
+    r"soften|simplif\w*|simpler|too (detailed|complex|much|long)|rename|reword|rephrase|adjust|revise|"
+    r"remove|delete|\bcut\b|drop|replace|\bfix\b|change|update|correct|clarif\w*|missing|broken|"
+    r"doesn'?t (work|open|resolve|load)|fails?\b|\b404\b|should ?n'?t|should not|supersed\w*|stale|"
+    r"placeholder|manipulat\w*|let'?s (match|use|not)|add (a |an )?(link|toc|footnote)|"
+    r"not found|cannot|can'?t (find|open|run|clone)|fatal:|repository.{0,15}not)\b", re.I)
+
+
+def _looks_like_edit(text: str) -> bool:
+    return bool(_EDIT_SIGNALS.search(text or ""))
 
 
 def _existing_proposal_obligations() -> set:
@@ -285,6 +304,12 @@ def process_one(oid: str) -> None:
         # ◈ Principle captured (→ GB fidelity); a tooling ask offers Send-to-Tiger.
         r = result or {}
         route = r.get("route")   # EXPLICIT classification only; None ⇒ timeout/too-broad ⇒ keep OPEN for a manual pass
+        # OVER-CLOSE GUARD (KM 2026-06-25): if the classifier routed "observation" but the note reads like an edit
+        # (a problem-flag implying a correction), re-route to "tooling" so it lands as an OPEN Tiger deliverable
+        # instead of being auto-closed and silently dropped. Default toward keeping a possible edit open.
+        if route == "observation" and _looks_like_edit(intent):
+            _log(f"  ⚠ {oid} routed 'observation' but reads as an edit request — re-routing to 'tooling' (will NOT auto-close)")
+            route = "tooling"
         _log(f"  no diff → info card (route={route or 'unclassified'}; {note[:50]})")
         pid = ""
         try:
@@ -295,10 +320,10 @@ def process_one(oid: str) -> None:
             pid = (ip or {}).get("id", "")
         except Exception as exc:
             _log(f"  info post failed: {exc}")
-        # OVER-OPENING FIX (root cause of the parked pile-up): a capture EXPLICITLY classified as a pure
-        # OBSERVATION or a captured PRINCIPLE is NOT a Tiger deliverable → AUTO-CLOSE its obligation so it
-        # never becomes a standing open loop. The capture is preserved (info card + close evidence); a
-        # principle still routes to GB. Unclassified/timeout no-diffs stay OPEN (may be a real edit).
+        # AUTO-CLOSE only GENUINE observations + captured principles. A pure observation (praise / info-question /
+        # meta) or a captured PRINCIPLE is not a Tiger deliverable → auto-close so it never becomes a standing open
+        # loop (the original over-opening fix). BUT a possible EDIT was already re-routed to 'tooling' by the
+        # over-close guard above, so it is NOT closed here. Unclassified/timeout no-diffs also stay OPEN.
         if route in ("observation", "principle"):
             tag = ("principle captured → GB fidelity/drift watch" if route == "principle"
                    else "observation/question — no action needed")
