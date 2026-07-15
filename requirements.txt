@@ -1,0 +1,7 @@
+# Canonical dependency source is pyproject.toml (PEP 621). This file exists only for the reflexive
+# `pip install -r requirements.txt` path and defers to the package + the reproducible lock
+# (audit 2026-06-13c #30 — the prior stub declared zero real deps and crashed on first yaml import).
+#
+# Equivalent to:  pip install -e . -c constraints.txt
+-e .
+-c constraints.txt

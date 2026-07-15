@@ -1,0 +1,265 @@
+"""
+Section — Hopper lane (read → one-gate write).
+
+The "hopper" is the Series Pipeline's intake: raw B51 voice-delta captures surface here as
+cards, and a single human action — **Send to Packet** — turns a card into a B32 obligation
+(a DRAFT debit) on the node ledger, where the governed loop picks it up. Capture → card →
+packet → (the existing review/apply loop). One human gate; reversible; honest labels.
+
+    GET  /hopper          → { meta, cards:[ {id, ts, source, preview, text, cyl} ] }
+    POST /hopper/packet   → open a B32 obligation seeded from a card → { obligation, … }
+
+Delta feed (TRUTH, honest mock-first per the ratified design note):
+  - If env HOPPER_SOURCE points at a B51 `session.yaml`, we render its real entries (live=True).
+  - Otherwise we render a small, clearly-labelled MOCK set (live=False) so the lane is usable
+    before the live HMC delta feed is wired. The *Send to Packet* write is REAL either way —
+    it opens a real obligation through the ledger seam (no fabricated state).
+
+No hardcoded principals (CONSTITUTION §1); the packet owner flows from the request principal.
+"""
+from __future__ import annotations
+
+import os
+import re
+from pathlib import Path
+
+from flask import Blueprint, jsonify, request
+
+from ...ndjson import read_ndjson_cached  # the ONE tolerant + memoized ndjson reader (Universalize Wave §1/§3)
+from .._filecache import memoize_on
+from ..auth import current_principal, require_principal
+from ..errors import route_error
+from ..deps import get_obligation_ledger
+
+bp = Blueprint("hopper", __name__, url_prefix="/api/v1")
+
+_MAX_CARDS = 8
+_PREVIEW = 180
+_TEXT_CAP = 4000
+
+# Honest mock deltas — drawn from the real recent ideation theme so the lane is meaningful before
+# the live feed is wired. Loudly labelled MOCK in meta so nothing reads as a real capture.
+_MOCK_CARDS = [
+    {"id": "mock_delta_1", "ts": "2026-06-03T17:16Z", "source": "Voice Note (MOCK)",
+     "text": "Continuous book→code loop: an agent scans the book series, finds a concept not yet "
+             "built into the code, and extrudes the YAML/spec for it — book-writing and code-writing "
+             "move together with a clean NLP handoff, gated through the governed loop."},
+    {"id": "mock_delta_2", "ts": "2026-06-03T17:19Z", "source": "Voice Note (MOCK)",
+     "text": "I want to write a book chapter and SEE the resulting code processed, approved or gated, "
+             "so we move through the series faster without giving up the human gate."},
+    {"id": "mock_delta_3", "ts": "2026-06-03T17:24Z", "source": "Voice Note (MOCK)",
+     "text": "Keep the Atrium lightweight and honest — the human stays at the stillpoint; agents do "
+             "the coding/alignment in the background; only meaningful, grouped decisions reach me."},
+]
+
+
+def _preview(text: str) -> str:
+    t = " ".join(str(text or "").split())
+    return t[:_PREVIEW] + ("…" if len(t) > _PREVIEW else "")
+
+
+@memoize_on(lambda path: [path])
+def _cards_from_session(path: Path):
+    """Parse a B51 capture into hopper cards. Handles BOTH formats:
+      - export session.yaml  (export.session_id + entries[].source)
+      - live HMC json        (top-level id/name + entries[].source_guess + tombstone fields)
+    yaml.safe_load reads JSON too (JSON ⊂ YAML). Returns (cards, session_id) or ([], None).
+    Memoized on the session file's (mtime,size) (Universalize Wave §3) — GET /hopper re-parsed the
+    capture every poll though the session rarely changes between polls."""
+    import yaml
+    try:
+        data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    except (OSError, yaml.YAMLError):
+        return [], None
+    sid = ((data.get("export") or {}).get("session_id")) or data.get("id") or data.get("name") or path.stem
+    entries = [e for e in (data.get("entries") or []) if isinstance(e, dict)]
+    # Skip deleted/tombstoned entries (live HMC) — never surface a retracted thought.
+    entries = [e for e in entries if not e.get("tombstoned_at")]
+
+    def _src(e):
+        return e.get("source") or e.get("source_guess") or e.get("content_type") or "capture"
+
+    # Voice-delta lane: prefer the operator's voice captures (a mixed session/cylinder also carries
+    # the node/G/screenshot/text entries — not hopper deltas). Fall back to all entries if none are voice.
+    def _is_voice(e):
+        return (str(e.get("content_type", "")).lower() == "voice"
+                or str(_src(e)).lower().startswith("voice"))
+    voiced = [e for e in entries if _is_voice(e)]
+    use = voiced if voiced else entries
+    cards = []
+    for e in reversed(use):  # newest first
+        text = str(e.get("content") or e.get("preview") or "")
+        if not text.strip():
+            continue
+        cards.append({
+            "id": e.get("id") or f"entry_{len(cards)}",
+            "ts": e.get("timestamp") or "",
+            "source": _src(e),
+            "preview": _preview(text),
+            "text": text[:_TEXT_CAP],
+            "cyl": sid,
+        })
+        if len(cards) >= _MAX_CARDS:
+            break
+    return cards, sid
+
+
+def _cards_from_feed(path: Path):
+    """Read the peer's iron-clad structured-suggestion feed (artifacts/hopper_feed.ndjson). the peer is the
+    sole writer (fence); this only consumes. Each line is a curated suggestion already targeted to a
+    lane/series — so Send-to-Packet routes correctly (no more Book-11 mis-route). Skips the _genesis
+    schema line. Returns a list of cards carrying lane/series_ref/lgp_hint/priority/ref for traceability."""
+    cards = []
+    for r in read_ndjson_cached(path).entries:   # tolerant + memoized gateway (Universalize Wave §1/§3)
+        if r.get("_genesis") or not r.get("one_line_intent"):
+            continue
+        cards.append({
+            "id": r.get("ref") or r.get("source_entry_hash") or f"feed_{len(cards)}",
+            "ts": r.get("ts", ""),
+            "source": r.get("series_ref") or r.get("lane") or "the peer feed",
+            "preview": _preview(r.get("one_line_intent", "")),
+            "text": str(r.get("one_line_intent", ""))[:_TEXT_CAP],
+            "cyl": r.get("source_cyl", ""),
+            "lane": r.get("lane", ""),
+            "series_ref": r.get("series_ref", ""),
+            "lgp_hint": r.get("lgp_hint", ""),
+            "priority": r.get("priority", "normal"),
+            "ref": r.get("ref", ""),
+            "source_entry_hash": r.get("source_entry_hash", ""),
+        })
+        # NO in-loop cap (the operator 2026-06-18: the old break collected only the OLDEST _MAX_CARDS*2 from the feed,
+        # so the NEWEST high-priority cards — e.g. the series-flow-model gate — were dropped before they could
+        # sort to the top and were invisible to the operator. Collect ALL; sort + cap downstream so newest live cards win.)
+    # priority high first, then RECENCY DESC within each priority (newest first). Two stable sorts:
+    cards.sort(key=lambda c: c.get("ts", ""), reverse=True)   # recency: newest first
+    cards.sort(key=lambda c: 0 if c.get("priority") == "high" else (1 if c.get("priority") == "normal" else 2))
+    return cards
+
+
+def _packeted_refs():
+    """Refs of obligations already opened from hopper cards — so a card that's been Sent-to-Packet
+    DISAPPEARS from the feed (no more re-approving the same card → no duplicate-obligation pileup).
+
+    Audit fix: route through the WIRED ledger (same path resolution as every writer). The old version
+    read ONLY from OBLIGATION_LEDGER_ROOT and silently returned an empty set when that env var was
+    unset — while the ledger itself falls back to <repo>/memory/obligations — so on a default node the
+    dedup no-op'd and re-surfaced already-packeted cards (the exact pileup it exists to prevent)."""
+    led = get_obligation_ledger()   # module-level binding (audit 2026-06-13d #25 — no cycle, no re-import)
+    return led.refs("debit")   # public read-gateway (audit 2026-06-13c #15)
+
+
+def _card_packeted(card: dict, packeted: set) -> bool:
+    """Has this feed card already become an obligation? Mirrors hopper_to_packet's ref derivation."""
+    cid = card.get("id") or ""
+    sref = card.get("series_ref") or ""
+    lane = card.get("lane") or ""
+    if lane == "tooling":
+        cands = {"tooling:" + (sref or cid)}
+    elif lane == "private-learning":
+        cands = {"private:" + (sref or cid)}
+    else:  # coordination / book → src_ref = card ref (= id) or b51:<id>
+        cands = {cid, "b51:" + cid}
+    return any(c in packeted for c in cands if c)
+
+
+@bp.get("/hopper")
+@require_principal
+def hopper_list():
+    # PREFERRED: the peer's iron-clad structured feed (clean, lane-targeted). Falls through to raw/mock.
+    feed = os.environ.get("HOPPER_FEED", "").strip()
+    if feed and Path(feed).is_file():
+        cards = _cards_from_feed(Path(feed))
+        # Hide cards you've already Sent-to-Packet (the re-approval loop fix) — fence-clean: the peer's feed file
+        # is untouched; the lens just stops showing a card once an obligation exists for it.
+        packeted = _packeted_refs()
+        cards = [c for c in cards if not _card_packeted(c, packeted)]
+        # Cap AFTER collect-all + recency-sort + Sent-to-Packet filter, so the cap keeps the NEWEST live
+        # high-priority cards (the flow-model gate), never the oldest. (the operator 2026-06-18 'I don't see a card'.)
+        cards = cards[:_MAX_CARDS * 2]
+        return jsonify({
+            "meta": {"live": True, "iron_clad": True, "source": feed,
+                     "note": ("the peer iron-clad feed — structured, lane-targeted suggestions distilled from your "
+                              "raw captures. Send to Packet routes to each card's lane/series.")
+                     if cards else
+                     ("the peer iron-clad feed is wired but empty — the peer seeds structured suggestions from your "
+                      "captures; they appear here.")},
+            "cards": cards,
+        })
+    src = os.environ.get("HOPPER_SOURCE", "").strip()
+    if src and Path(src).is_file():
+        cards, sid = _cards_from_session(Path(src))
+        if cards:
+            return jsonify({
+                "meta": {"live": True, "source": src, "session_id": sid,
+                         "note": "Live B51 capture session. Delta/unsealed tracking (only-new-since-last) "
+                                 "is forward; this shows the session's recent entries."},
+                "cards": cards,
+            })
+    # honest mock fallback
+    cards = [{"id": c["id"], "ts": c["ts"], "source": c["source"],
+              "preview": _preview(c["text"]), "text": c["text"], "cyl": "mock"} for c in _MOCK_CARDS]
+    return jsonify({
+        "meta": {"live": False, "source": src or None,
+                 "note": "MOCK delta feed — set HOPPER_SOURCE to a B51 session.yaml to render real "
+                         "captures. 'Send to Packet' is REAL (opens an obligation) regardless."},
+        "cards": cards,
+    })
+
+
+@bp.post("/hopper/packet")
+@require_principal
+def hopper_to_packet():
+    """Send to Packet — the one human action. Opens a B32 obligation (DRAFT debit) seeded from a
+    hopper card; the governed loop (review → accept → apply) takes it from there. Reversible."""
+    body = request.get_json(silent=True) or {}
+    text = str(body.get("text") or "").strip()
+    card_id = str(body.get("card_id") or "").strip()
+    if not text:
+        return jsonify(route_error(
+            error="missing_text",
+            what="A packet needs the delta text to seed the obligation.",
+            why="The request body had no non-empty 'text' field.",
+            next_step="POST /api/v1/hopper/packet with {\"card_id\":\"…\",\"text\":\"…\"}.")), 400
+    # Lane routing (from the iron-clad feed): a card already knows where it belongs, so the packet
+    # lands in the right lane — book → processable Hopper packet; tooling → Tooling/Build (skips the
+    # book producer); private-learning → its own lane (no Book-N mis-route). Generic when unknown.
+    lane = str(body.get("lane") or "").strip()
+    series_ref = str(body.get("series_ref") or "").strip()
+    lgp_hint = str(body.get("lgp_hint") or "").strip()
+    src_ref = str(body.get("ref") or "").strip() or ("b51:" + card_id if card_id else None)
+    preview = _preview(text)[:90] or card_id or "captured delta"
+    intent = text[:_TEXT_CAP]
+    if series_ref:
+        intent += "\nTarget: " + series_ref
+        m = re.search(r"\bB(?:ook )?(\d+)\b", series_ref)
+        if m:
+            intent += "\nPage: Book " + m.group(1)   # so the producer grounds against the right manuscript
+    if lgp_hint:
+        intent += "\nLGP hint: " + lgp_hint
+    if lane == "tooling":
+        title, ref = "Tooling/Build · " + preview, "tooling:" + (series_ref or card_id or "hopper")
+    elif lane == "private-learning":
+        title, ref = "Private learning — " + preview, "private:" + (series_ref or card_id or "")
+    elif lane == "coordination":
+        title, ref = "Coordination — " + preview, src_ref
+    else:  # book:* or unknown → processable Hopper packet
+        title, ref = "Hopper packet — " + preview, src_ref
+    try:
+        entry = get_obligation_ledger().open(
+            title=title,
+            owner=current_principal(),
+            classification="C2",
+            intent=intent,
+            ref=ref,
+            material=False,
+            next_gate="Human disposition (Atrium Review)",
+        )
+    except ValueError as exc:  # resolve-at-entry on a path-like feed ref (audit 2026-06-13 W5 #6)
+        return jsonify(route_error(
+            error="unresolvable_ref",
+            what=str(exc),
+            why="The packet's source ref is path-like but its leading file token does not resolve.",
+            next_step="Fix the feed ref to point at a real file (the ' + …' provenance tail is fine), "
+                      "or use a symbolic ref.")), 422
+    return jsonify({"status": "opened", "obligation": entry,
+                    "next_step": "It is now a DRAFT obligation on your node — disposition it in the loop."}), 201

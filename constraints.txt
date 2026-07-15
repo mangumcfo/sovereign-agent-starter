@@ -1,0 +1,33 @@
+# Reproducible constraints lock — scope note (audit 2026-06-16 #2b):
+#   - It FULLY governs the CI / crypto-assurance / dev path (pyyaml, flask, cryptography, pytest).
+#   - On the Docker / sovereign-install `.[portal]` path only the CORE pins apply (pyyaml + flask) —
+#     cryptography/pytest are dev/crypto-assurance-only and are NOT pulled into the [portal] runtime,
+#     so a constraint on them is simply inert there (constraints only bind what is actually installed).
+#
+# Use with:  pip install -e . -c constraints.txt            (core: pyyaml + flask)
+#       or:  pip install -e .[crypto-assurance,dev] -c constraints.txt
+#
+# Pins the transitive surface so an attestation-oriented package builds reproducibly and a future
+# Flask 4.x / PyYAML 7.x cannot silently install and break the JSON provider / yaml lenses.
+# breathline_primitives is intentionally absent — it is the private sealed substrate (see pyproject).
+#
+# ── Provenance (honest deps — record HOW these pins were captured; never a "re-verified, unchanged" claim) ──
+# Captured by `pip freeze` of a FRESH venv that installed `-e .[dev,crypto-assurance]` and ran the suite
+# GREEN. tests/test_constraints_lock.py asserts each pin below == the installed version, so this block can
+# never again claim a state it did not verify (audit 2026-06-16 HIGH — the false "re-verified, unchanged").
+# To regenerate after a dependency bump: build a fresh venv, install, run the suite green, then capture:
+#     <venv>/bin/python -c "import sys,platform; print(sys.version.split()[0], platform.platform())"
+#     <venv>/bin/python -c "import importlib.metadata as m; \
+#                 [print(f'{p}=={m.version(p)}') for p in ('PyYAML','Flask','cryptography','pytest')]"
+# Captured:
+#     interpreter : Python 3.12.3
+#     platform    : Linux-6.17.0-23-generic-x86_64-with-glibc2.39
+#     method      : pip freeze of a fresh venv (NOT the ambient interpreter — that was the 2026-06-15 defect)
+#     suite       : 271 green / 0 skipped (2026-06-16, Engine 95+ close-the-2 #a)
+#     history     : 237 green (2026-06-13) · 2026-06-15 pins were WRONG (ambient interp 6.0.1/9.0.2, never
+#                   installed) — corrected here to the real fresh-venv resolve below.
+PyYAML==6.0.3
+Flask==3.1.3
+cryptography==46.0.7
+# dev/assurance extras (only needed for the dev / crypto-assurance install paths)
+pytest==9.1.0

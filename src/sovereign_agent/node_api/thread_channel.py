@@ -1,0 +1,104 @@
+"""Agent Channel — node-side adapter onto the receipted node↔peer THREAD.
+
+Design origin (peer meta-review): "the operator is the message bus … the single largest burden."
+The channel removes that burden without removing the gate: an agent's prompt lands as an Atrium
+card, the operator clicks Relay, and THIS appends it to the THREAD directly — no copy-paste.
+The reply surfaces back off the same THREAD.
+
+The on-disk format is hash-chained and GENESIS-anchored (same receipt formula and entry shape
++ a re-rendered .md mirror) so any replay/verify tooling works on one shared record. An env
+override (BREATHLINE_THREAD_FILE) lets tests write a tmp thread instead of the live record.
+
+Receipt = sha256("prev|from|to|ref|msg"); chained from "GENESIS".
+"""
+from __future__ import annotations
+
+import datetime
+import hashlib
+import json
+import os
+from pathlib import Path
+
+from ..ndjson import read_ndjson  # the ONE tolerant ndjson reader (Universalize Wave §1)
+from ._filecache import memoize_on
+
+
+def _thread_path() -> Path:
+    """The THREAD ndjson. Defaults to the live coordination record; tests override via env."""
+    env = os.environ.get("BREATHLINE_THREAD_FILE")
+    if env:
+        return Path(env).expanduser()
+    # node_api/thread_channel.py -> node_api -> sovereign_agent -> src -> <repo root>
+    return Path(__file__).resolve().parents[3] / "memory" / "coordination" / "THREAD.ndjson"
+
+
+def _hash(prev: str, frm: str, to: str, ref: str, msg: str) -> str:
+    return hashlib.sha256("|".join([prev, frm, to, ref, msg]).encode("utf-8")).hexdigest()
+
+
+@memoize_on(lambda: [_thread_path()])
+def load() -> list[dict]:
+    # Memoized on the THREAD file's (mtime,size) (audit 2026-06-13d #5/#6): GET /relays folded every
+    # 'relayed' card via find_reply→load (full 498KB parse per card per poll), and /dialogue re-parsed it
+    # too. Re-derives only on change — and append()'s write between its two load() calls bumps the stat
+    # key, so the second load() (for the .md mirror) still sees the fresh chain.
+    # Tolerant read via the ONE gateway (Universalize Wave §1/G2): a THREAD truncated mid-append no longer
+    # raises and blanks every relay card — the clean prefix loads; a corrupt middle line surfaces loudly.
+    return read_ndjson(_thread_path()).entries
+
+
+def _render_md(entries: list[dict]) -> None:
+    """Re-render the human-readable .md mirror beside the ndjson (mirrors scripts/thread.py)."""
+    from ..config import get_node_id, get_peer_id
+    node, peer = get_node_id(), get_peer_id()
+    out = [f"# THREAD — {node} ↔ {peer} (receipted coordination)", "",
+           "Hash-chained async thread. Both agents append; each reads the other's notes here "
+           "(no operator ferrying). Entries are receipted and replay-verifiable.", ""]
+    for idx, e in enumerate(entries):
+        prevh = e.get("prev", "GENESIS")
+        prev = prevh[:16] if prevh != "GENESIS" else "GENESIS"
+        n = e.get("n", idx + 1)
+        out += [f"## [{n}] {e.get('ts','')} · {e.get('from','?')} → {e.get('to','?')}",
+                f"*ref: {e.get('ref','')}*", "", e.get("msg", ""), "",
+                f"`receipt sha256:{str(e.get('hash',''))[:16]}… · prev:{prev}`", "", "---", ""]
+    p = _thread_path()
+    p.with_suffix(".md").write_text("\n".join(out), encoding="utf-8")
+
+
+def append(frm: str, to: str, ref: str, msg: str) -> dict:
+    """Append a receipted entry to the THREAD and return it. Same chain math as scripts/thread.py.
+
+    Night-watch LOW fix (2026-06-12): the read-prev → compute-hash → write sequence is fenced under an
+    exclusive file lock. Without it, two concurrent appends could both read the same `prev` and fork the
+    hash chain (TOCTOU). The lock makes the critical section atomic across processes."""
+    import fcntl  # noqa: PLC0415 — POSIX advisory lock (node + cross-process scripts share this thread)
+    p = _thread_path()
+    p.parent.mkdir(parents=True, exist_ok=True)
+    lock = p.with_name(p.name + ".lock")
+    with lock.open("w", encoding="utf-8") as lf:
+        fcntl.flock(lf.fileno(), fcntl.LOCK_EX)
+        try:
+            entries = load()
+            prev = entries[-1]["hash"] if entries else "GENESIS"
+            ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+            h = _hash(prev, frm, to, ref, msg)
+            e = {"n": len(entries) + 1, "ts": ts, "from": frm, "to": to, "ref": ref, "msg": msg,
+                 "prev": prev, "hash": h}
+            with p.open("a", encoding="utf-8") as f:
+                f.write(json.dumps(e, ensure_ascii=False) + "\n")
+            _render_md(load())
+            return e
+        finally:
+            fcntl.flock(lf.fileno(), fcntl.LOCK_UN)
+
+
+def find_reply(to_agent: str, from_agent: str, after_n: int, ref_contains: str = "") -> dict | None:
+    """Surface the answer to a relayed prompt: the first THREAD entry FROM the relayed-to agent back to
+    the relayed-from agent, after the relay entry (by n). Optional ref filter. Returns None until it lands."""
+    for e in load():
+        if e.get("n", 0) <= after_n:
+            continue
+        if e.get("from") == to_agent and e.get("to") == from_agent:
+            if not ref_contains or ref_contains in (e.get("ref") or ""):
+                return e
+    return None

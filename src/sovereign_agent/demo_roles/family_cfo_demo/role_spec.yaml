@@ -1,0 +1,17 @@
+# family_cfo_demo — Self-contained demo role for Family / Legacy path
+# Always available after pip install. Produces real attested output.
+role:
+  id: family_cfo_demo
+  name: "Family CFO (Demo)"
+  description: "Generational prosperity agent — self-contained demo version"
+  framework: "simple-forecast"
+
+allowed_action_classes:
+  - produce_forecast_artifact
+  - generate_generational_outlook
+
+invocation_envelope:
+  default_horizon: 3
+  focus: "generational_wealth"
+  demo: true
+  note: "This is a bundled demo role. Set BREATHLINE_FEDERATION_ROOT for the full live family_cfo_agent from breathline-federation."

@@ -1,0 +1,17 @@
+# R22-5 — Graduated breath-gates by reviewer qualification (governance skin).
+# The TIER POLICY LIVES HERE, not in code: require_owner generalizes to require_qualification(tier).
+# "human disposes / under K1" (render-standard rule 2) extrudes directly to this table.
+
+# Qualifications ranked low → high. A reviewer meets a tier iff their rank >= the tier's required rank.
+qualifications:
+  - viewer        # read-only witness
+  - controller    # operational disposer (routine + class_x)
+  - compliance    # compliance officer (adds class_y review authority below owner)
+  - owner         # sovereign operator (owner) — top of chain
+
+# Action class → minimum qualification required to dispose it.
+gate_tiers:
+  routine:   viewer        # GREEN-class / FYI — any witness
+  class_x:   controller    # operational
+  class_y:   owner         # constitutional-surface — owner only
+  material:  compliance    # material actions need at least a compliance officer

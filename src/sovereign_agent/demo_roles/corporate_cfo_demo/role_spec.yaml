@@ -1,0 +1,18 @@
+# corporate_cfo_demo — Self-contained demo role for Corporate / Regulated path
+# Always available. Mirrors the shape of real compliance-aware roles.
+role:
+  id: corporate_cfo_demo
+  name: "Corporate CFO (Demo)"
+  description: "Board-level financial intelligence with compliance-aware demo envelope"
+  framework: "simple-forecast"
+
+allowed_action_classes:
+  - produce_forecast_artifact
+  - generate_board_brief
+
+invocation_envelope:
+  default_horizon: 3
+  focus: "board_level"
+  risk_classification: "internal"
+  demo: true
+  note: "Bundled demo. Full cfo_agent + compliance_guardian from breathline-federation provide complete policy-as-code + SIX receipts."

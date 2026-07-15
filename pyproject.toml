@@ -1,0 +1,130 @@
+[build-system]
+# setuptools upper-bounded (audit 2026-06-16 #5): same class of guard as pyyaml<7 / flask<4 — an unbounded
+# build requirement let an unknown future major install silently. <81 keeps current (68–80) and blocks 81+.
+requires = ["setuptools>=68.0,<81"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sovereign-agent-starter"
+version = "0.3.0"
+description = "Universal Sovereign Node — the executable capstone for the Agentic AI Playbooks series. Radical simplicity for sovereign (family/legacy) and regulated (corporate) use. One phrase: 'Are you connected to the breathline?'"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    { name = "Kenneth Mangum (KM-1176)", email = "sovereign@mangumcfo.com" }
+]
+license = { text = "Constitutional Federation Sovereign License" }
+keywords = ["sovereign", "attestation", "governance", "compliance", "legacy", "sox", "cryptography", "ai-agent"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Legal Industry",
+    "License :: Other/Proprietary License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security :: Cryptography",
+    "Topic :: Office/Business :: Financial",
+]
+dependencies = [
+    # Upper bounds (audit 2026-06-13): an unbounded range let a future PyYAML 7.x install silently and
+    # break the yaml lenses. Pin a known-good major. See constraints.txt for the reproducible lock.
+    "pyyaml>=6.0,<7",
+    # flask is CORE, not optional (audit 2026-06-13c #4): the `breathline-node-api` console script is
+    # declared unconditionally and every node_api module imports flask at top level, so `pip install .`
+    # installed a command that crashed with ModuleNotFoundError. node_api is a first-class engine surface.
+    "flask>=3.0,<4",
+]
+
+# CRYPTOGRAPHIC SUBSTRATE — breathline_primitives (P1 ECDSA secp256k1 + P5 Merkle) is NOT a public PyPI
+# package; it is provided by the `breathline-sealed` checkout. The package bootstrap
+# (sovereign_agent.bootstrap.ensure_breathline_primitives) discovers it via BREATHLINE_SEALED_ROOT or the
+# common checkout locations and injects it onto sys.path. Audit 2026-06-13 (dependency CRITICAL): this is
+# now declared here (was nowhere) and a missing substrate produces a loud, actionable RuntimeWarning at
+# import (sovereign_agent/__init__.py) instead of a silent crash. To install for development:
+#   pip install -e /path/to/breathline-sealed   # or set BREATHLINE_SEALED_ROOT
+[project.optional-dependencies]
+# `portal` retained as an alias for back-compat (flask is now core); installs nothing extra.
+portal = []
+demo = []
+# crypto-assurance: the P1 ECDSA interop cross-check (scripts/crypto_vector_check.py) needs the external
+# `cryptography` lib as its independent reference (audit 2026-06-13c #13) — declared here + pinned in
+# constraints.txt so a clean install can run the crypto cadence instead of silently degrading it to RED.
+crypto-assurance = [
+    # CVE-safe floor raised to >=46.0.7 (audit 2026-06-16 MED, baseline-#12): the now-load-bearing
+    # constraints lock made the sub-floor pin authoritative, so the floor must clear the known CVE band.
+    "cryptography>=46.0.7,<47",
+]
+dev = [
+    "pytest>=7.0",
+    "build>=1.0",
+    "twine>=4.0",
+]
+# book/distribution dev tooling (audit 2026-06-19 HIGH #3): Pillow is imported by the cover_standard gate
+# (scripts/review_ready_contract.py) + the carousel generator (scripts/dist_generators/gen_linkedin_carousel.py).
+# Dev tooling, NOT core runtime — so an extra, not a core dep; a clean `pip install .` stays Pillow-free, while
+# `pip install .[tooling]` enables the cover/figure gates instead of a silent ModuleNotFoundError. Analysis-only
+# style → deliberately NOT pinned in constraints.txt (keeps the constraints lock to the core pins).
+tooling = [
+    "Pillow>=10.0",
+]
+# Static-analysis / maturity tooling (audit 2026-06-16 #8/M1 + M3). Analysis-only — NOT runtime/test surface,
+# so deliberately NOT pinned in constraints.txt (keeps the constraints lock to the 4 core pins).
+analysis = [
+    "ruff>=0.5",        # lint: unused imports/vars (dead), mccabe complexity (§5 ≤10), bare-except
+    "vulture>=2.14",    # dead-symbol static finder (functions/classes/methods)
+    "coverage>=7.0",    # use-evidence (never-executed code under the suite)
+    "pip-audit>=2.7",   # M3: dependency CVE scan (complements the constraints lock + crypto floor)
+]
+
+[project.scripts]
+breathline-connect = "sovereign_agent.bootstrap:cli_connect"
+sovereign-node = "sovereign_agent.universal_sovereign_node:cli_create_node"
+# Portal launcher shim (finds co-located portal or gives clear instructions)
+start-sovereign-portal = "sovereign_agent._portal_launcher:launch"
+# Node API HTTP server — Track A1 minimal viable shell over UniversalSovereignNode.
+# Implements contract sections A (node) + C (roles); B/D/E/F return 501 placeholders.
+# Contract: breathline-federation/specs/node_api/contract_v1.yaml
+breathline-node-api = "sovereign_agent.node_api.server:cli_serve"
+
+[project.urls]
+Homepage = "https://six-sov.com"
+Repository = "https://github.com/mangumcfo/sovereign-agent-starter"
+Documentation = "https://six-sov.com"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"sovereign_agent" = [
+    "demo_roles/**/*",
+]
+
+[tool.setuptools]
+include-package-data = true
+
+# Engine 95+ HIGH #2 (card cd010960): make `pytest` from the repo root collect + run with NO PYTHONPATH env.
+# pythonpath puts the un-installed source on sys.path so `import sovereign_agent` resolves; scripts/ is added
+# because several tests import the atrium_* tooling. testpaths keeps collection deterministic.
+[tool.pytest.ini_options]
+pythonpath = ["src", "scripts"]
+testpaths = ["tests"]
+addopts = "-q"
+
+# Static-analysis bar (audit 2026-06-16 #8/M1). SMALL + explicit — no style wall: the curated rules surface
+# DEAD code (F: unused imports/vars/redefines) + COMPLEXITY over the constitutional §5 ≤10 bar (C90) + two
+# correctness smells (bare-except E722, ambiguous names E741). Line-length / multi-statement style (E501/E702)
+# are house style and deliberately NOT enforced here (a separate cosmetic pass if ever wanted).
+[tool.ruff]
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["F", "C90", "E722", "E741"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10   # CONSTITUTION §5: function complexity ≤10 (peer review [369] refinement #2)
+
+[tool.vulture]
+min_confidence = 80
+paths = ["src", "scripts", "analysis/vulture_whitelist.py"]

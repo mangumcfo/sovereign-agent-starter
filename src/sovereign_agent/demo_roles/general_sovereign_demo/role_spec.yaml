@@ -1,0 +1,12 @@
+# general_sovereign_demo — Fallback / personal sovereignty demo role
+role:
+  id: general_sovereign_demo
+  name: "General Sovereign Agent (Demo)"
+  framework: "simple-forecast"
+
+allowed_action_classes:
+  - produce_forecast_artifact
+  - answer_sovereign_query
+
+invocation_envelope:
+  demo: true
