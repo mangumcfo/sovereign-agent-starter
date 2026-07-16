@@ -1,0 +1,28 @@
+# Example catalog — two documents, fully generic. Run from this directory:
+#   python -m sovereign_agent.press build --all
+#   python -m sovereign_agent.press bundle EX-01 && python -m sovereign_agent.press build --offline EX-01
+# The "build" here just renders md -> txt via sed; a real node points build: at its
+# own renderer. Stage enum + gates + parity + seal queue are the REAL laws, unchanged.
+# NOTE: command values must not contain a raw # (mini-loader strips inline comments;
+# the pyyaml swap is on the refinement ledger).
+volumes:
+  EX-01:
+    title: The Node Charter
+    series: EX
+    stage: drafting
+    workdir: charter_src
+    build: sh -c "cp charter.md charter.txt"
+    gates:
+      - sh -c "test -s charter.txt"
+      - sh -c "grep -q 'human decision' charter.txt"
+    artifact: charter.txt
+  EX-02:
+    title: The Field Guide
+    series: EX
+    stage: drafting
+    depends_on: [EX-01]
+    workdir: fieldguide_src
+    build: sh -c "cp guide.md guide.txt"
+    gates:
+      - sh -c "test -s guide.txt"
+    artifact: guide.txt
