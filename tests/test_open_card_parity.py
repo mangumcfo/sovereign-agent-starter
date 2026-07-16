@@ -53,10 +53,17 @@ def test_harness_detects_a_broken_view(tmp_path, monkeypatch):
     assert any("by_owner" in v for v in res["violations"])
 
 
-def test_live_atrium_review_chain_holds_parity():
-    """Smoke: the LIVE review chain must hold parity (the deliverable verification)."""
+def test_review_chain_holds_parity(tmp_path):
+    """Smoke: a review chain must hold parity (the deliverable verification).
+    Runs against the LIVE chain when this host carries one; otherwise builds a
+    real fixture chain and verifies THAT — the zero-skip law means this proof
+    executes everywhere, never silently dropping coverage on clean checkouts."""
     root = Path(__file__).resolve().parents[1] / "memory" / "obligations" / "atrium_review"
     if not (root / "obligations.ndjson").exists():
-        pytest.skip("no live atrium_review chain on this host")
+        led = _ledger(tmp_path)  # fixture chain: open -> close with evidence
+        oid = led.open("review: fixture card", owner="reviewer")["id"]
+        led.close(oid, evidence="fixture evidence path", evidence_tier="E1",
+                  closed_by="reviewer")
+        root = tmp_path / "obligations"
     res = ocp.check_parity(root)
     assert res["ok"], res["violations"]
