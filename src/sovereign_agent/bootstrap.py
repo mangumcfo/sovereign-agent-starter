@@ -33,8 +33,15 @@ DEFAULT_SEARCH_PATHS = [
 
 
 def _find_breathline_sealed_root() -> Optional[Path]:
-    """Search common locations for a valid breathline-sealed checkout."""
-    for base in DEFAULT_SEARCH_PATHS:
+    """Search for a valid breathline-sealed checkout.
+
+    BREATHLINE_SEALED_ROOT is honored FIRST — the error text always said to set it,
+    and CI does; the search previously never consulted it (every dev machine masked
+    the gap via the home-layout fallbacks, so only clean environments ever saw it).
+    """
+    env_root = os.environ.get("BREATHLINE_SEALED_ROOT")
+    candidates = ([Path(env_root)] if env_root else []) + DEFAULT_SEARCH_PATHS
+    for base in candidates:
         if not base.exists():
             continue
         # A valid root must contain the breathline_primitives package or the scripts dir
