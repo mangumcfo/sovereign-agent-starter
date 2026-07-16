@@ -85,6 +85,7 @@ jobs:
           ! grep -rniE "$P" . \
             --exclude-dir=.git --exclude-dir=__pycache__ --exclude-dir=.venv \
             --exclude-dir=.pytest_cache --exclude-dir=.ruff_cache \
+            --exclude-dir=.breathline-sealed --exclude-dir='*.egg-info' \
             --exclude=ci.yml \
             | grep -v 'Kenneth Mangum (KM-1176)' \
             | grep -v 'gb_notes'
