@@ -717,8 +717,16 @@ def cmd_harden(target, approve_report=None):
     bundle = os.path.join(runs_root, f"{time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())}"
                                      f"_{os.urandom(2).hex()}_harden_{target}")
     os.makedirs(bundle)
+    # R-1: human-review VISIBILITY — projected into the proposal so the hand that
+    # speaks the word sees which human lenses have run. Never a floor check.
+    try:
+        from . import review_state as _review
+        review_vis = _review.summary(target)
+    except Exception as e:  # projection must never break the floor
+        review_vis = f"(review-state projection unavailable: {e})"
     rec = {"volume": target, "kind": "harden", "floor": steps,
-           "floor_pass": ok, "code_status_before": current}
+           "floor_pass": ok, "code_status_before": current,
+           "human_review_visibility": review_vis}
 
     if not ok and current == "provisional":
         # AUTO-DEMOTION (operator ruling: demotion is ungated): fail-closed, receipted reopen, no gate needed.
@@ -748,6 +756,7 @@ def cmd_harden(target, approve_report=None):
     rec["record_sha256"] = sha256_text(payload)
     json.dump(rec, open(os.path.join(bundle, "harden.json"), "w"), indent=2, sort_keys=True)
     print(f"[{'PASS' if ok else 'FAIL'}] harden {target} — {rec['action']}")
+    print(f"  human-review: {review_vis}  (visibility only — not a floor check; R-1)")
     print(f"  bundle: {bundle}")
     if ok and not approve_report:
         return 3  # awaiting the human word
