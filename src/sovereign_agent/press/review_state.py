@@ -36,6 +36,8 @@ import sys
 import time
 from pathlib import Path
 
+from ..ndjson import read_ndjson
+
 # Recommended layer vocabulary (WORKFLOW.md board rounds + the four alignment
 # lenses + the two independent hands). Free-form layers are permitted.
 LAYER_REGISTRY = [
@@ -83,22 +85,20 @@ def append_event(volume, layer, status, hand, artifact=None, note=None):
 
 
 def load_events(volume):
-    """All well-formed events for a volume, plus a skipped-malformed count."""
-    p = _path(volume)
-    events, skipped = [], 0
-    if p.exists():
-        for line in p.read_text(encoding="utf-8").splitlines():
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                ev = json.loads(line)
-                if ev.get("status") in STATUSES and ev.get("layer"):
-                    events.append(ev)
-                else:
-                    skipped += 1
-            except json.JSONDecodeError:
-                skipped += 1
+    """All well-formed events for a volume, plus a skipped count.
+
+    Reads through the kernel's tolerant ndjson gateway (§1 — the ONE chain-read
+    parser): a truncated trailing line is quarantined and repairable; a corrupt
+    middle line is LOUD at the gateway and counts as skipped here. Entries that
+    parse but fail the RS-1 shape (unknown status / missing layer) also count
+    as skipped — visible in `show`, never silently dropped."""
+    res = read_ndjson(_path(volume))
+    events, skipped = [], len(res.quarantined)
+    for ev in res.entries:
+        if isinstance(ev, dict) and ev.get("status") in STATUSES and ev.get("layer"):
+            events.append(ev)
+        else:
+            skipped += 1
     return events, skipped
 
 
