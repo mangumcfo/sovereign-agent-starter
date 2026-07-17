@@ -79,6 +79,21 @@ every clone is a recovery medium. `press build --offline <vol>` rebuilds from th
 ALONE in an isolated workdir: a missing file refuses, a tampered file refuses loud, and the
 parity law applies unchanged. No book embeds any other book.
 
+**The byte-parity domain (A1).** Renderer version + epoch are necessary but not
+sufficient: text-identical rebuilds can still differ in bytes when the *font files*
+differ. Declare `font_files:` on a volume and the bundle records each font's sha in its
+environment manifest; an offline rebuild compares the host's fonts against those pins and
+warns loud on drift, naming the cause up front — the parity gate itself remains the
+enforcement. Full byte-parity is guaranteed on **pinned-env hosts**: same renderer, same
+epoch, same font shas.
+
+**Gates travel with the volume (A2).** Declare `gate_files:` and the named scripts are
+staged to `<workdir>/.press_gates` on every build, copied INTO the bundle, and restored
+from it on offline rebuilds under the same laws as sources (missing refuses, tampered
+refuses loud). Gate commands reference them as `$PRESS_GATE_DIR/<name>` — the Press
+expands that token itself, shell or no shell — so the same manifest line runs the same
+gate bytes on the authoring node, a pure kernel node, and an offline rebuild alike.
+
 ## The Provisional lifecycle (code lane)
 
 `built → provisional → sealed`, tracked in `code_status.json` with full history. The
