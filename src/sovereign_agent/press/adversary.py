@@ -61,6 +61,13 @@ STOP = set("the a an of to in for and or with your you will that this is are be 
 # Placeholder markers that mean a beat is scaffolding, not a locked promise.
 PLACEHOLDER_BEAT = re.compile(r"\b(tbd|todo|placeholder|tktk|xxx|lorem)\b", re.I)
 
+# Typesetting furniture a full chapter may lawfully END with: \newpage, horizontal
+# rules, headings, bold-only lines, blank lines. Furniture stays IN the prose — it
+# is chapter content — but the end-of-chapter check reads the last PROSE line
+# beneath it. (Shared rule with the seed generation side; found by whole-pipeline
+# verification: a genuine full chapter ending in furniture was falsely refused.)
+FURNITURE = re.compile(r"^(\\newpage|-{3,}|#+\s.*|\*\*[^*]+\*\*|\s*)$")
+
 
 def _tokens(text):
     return {w for w in re.findall(r"[a-z0-9]+", text.lower()) if w not in STOP}
@@ -93,9 +100,12 @@ def validate_seed_unit(card):
     if len(_sentences(prose)) < 3:
         return ("seed-unit law (A4): prose too short to be a full chapter "
                 "(fewer than 3 sentences)")
-    if not re.search(r"[.!?][\"'”’)\]]*\s*$", prose):
+    lines = [ln for ln in prose.splitlines() if not FURNITURE.match(ln.strip())]
+    last_prose = lines[-1].strip() if lines else ""
+    if not re.search(r"[.!?][\"'”’)\]`]*\s*$", last_prose):
         return ("seed-unit law (A4): prose ends mid-sentence — excerpt refused "
-                "(the false-kill class the law exists to prevent)")
+                "(the false-kill class the law exists to prevent; trailing "
+                "typesetting furniture is skipped, not judged)")
     return None
 
 

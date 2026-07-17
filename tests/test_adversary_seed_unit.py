@@ -59,3 +59,37 @@ def test_unlawful_cards_refused_loud(tmp_path, mutation, needle):
 
 def test_validate_returns_none_for_lawful():
     assert adv.validate_seed_unit(dict(LAWFUL)) is None
+
+
+# The furniture refinement: a full chapter may lawfully END with typesetting
+# furniture (\newpage, rules, headings, bold-only lines). Found by whole-pipeline
+# verification — a genuine chapter ending `…sentence.` + `\newpage` was refused.
+@pytest.mark.parametrize("furniture_tail", [
+    "\n\n\\newpage",
+    "\n\n---",
+    "\n\n## What Comes Next",
+    "\n\n**End of chapter**",
+    "\n\n---\n\\newpage\n",
+])
+def test_furniture_final_full_chapter_is_lawful(tmp_path, furniture_tail):
+    card = dict(LAWFUL)
+    card["prose"] = LAWFUL["prose"] + furniture_tail
+    d = _write(tmp_path, card)
+    cards = adv.load_cards(d)
+    assert len(cards) == 1
+
+
+@pytest.mark.parametrize("prose", [
+    # the check reads the last PROSE line beneath the furniture — an excerpt
+    # hiding under \newpage is still an excerpt
+    "A start. A middle. And then the chapter simply\n\n\\newpage",
+    # pure furniture holds no chapter at all
+    "## Heading\n\n---\n\n\\newpage",
+])
+def test_furniture_never_launders_an_excerpt(tmp_path, prose):
+    card = dict(LAWFUL)
+    card["prose"] = prose
+    d = _write(tmp_path, card)
+    with pytest.raises(SystemExit) as e:
+        adv.load_cards(d)
+    assert "seed-unit law (A4)" in str(e.value), str(e.value)
