@@ -58,6 +58,9 @@ ACCOMPLISHMENT = re.compile(
     r"|\bruns today\b|\bis live\b|\bin production\b", re.I)
 STOP = set("the a an of to in for and or with your you will that this is are be on any".split())
 
+# Placeholder markers that mean a beat is scaffolding, not a locked promise.
+PLACEHOLDER_BEAT = re.compile(r"\b(tbd|todo|placeholder|tktk|xxx|lorem)\b", re.I)
+
 
 def _tokens(text):
     return {w for w in re.findall(r"[a-z0-9]+", text.lower()) if w not in STOP}
@@ -67,12 +70,44 @@ def _sentences(text):
     return [s.strip() for s in re.split(r"(?<=[.!?])\s+", text) if s.strip()]
 
 
+def validate_seed_unit(card):
+    """THE SEED-UNIT LAW (A4, operator-ruled): the adversary's seed unit is the
+    FULL CHAPTER plus LOCKED beats — enforced here, at the one choke point every
+    node's cards pass through, never by convention. The law exists because the
+    model judges inputs literally: placeholder beats get judged as real beats,
+    and chapter excerpts produce honest false-kills ("cuts off mid-sentence").
+    Returns a refusal reason, or None for a lawful card."""
+    if card.get("seed_unit") != "full_chapter":
+        return ("seed-unit law (A4): card must attest seed_unit: full_chapter — "
+                "excerpts are refused at load, not judged")
+    if card.get("beats_locked") is not True:
+        return ("seed-unit law (A4): beats_locked: true required — "
+                "unlocked beats are scaffolding, not promises")
+    beats = card.get("beats") or []
+    if not beats:
+        return "seed-unit law (A4): no beats — nothing promised, nothing to adversary"
+    placeholders = [b for b in beats if PLACEHOLDER_BEAT.search(str(b))]
+    if placeholders:
+        return f"seed-unit law (A4): placeholder beats refused: {placeholders}"
+    prose = (card.get("prose") or "").strip()
+    if len(_sentences(prose)) < 3:
+        return ("seed-unit law (A4): prose too short to be a full chapter "
+                "(fewer than 3 sentences)")
+    if not re.search(r"[.!?][\"'”’)\]]*\s*$", prose):
+        return ("seed-unit law (A4): prose ends mid-sentence — excerpt refused "
+                "(the false-kill class the law exists to prevent)")
+    return None
+
+
 def load_cards(seeds_dir: Path, chapter=None):
     cards = []
     for p in sorted(seeds_dir.glob("*.yaml")):
         c = yaml.safe_load(p.read_text(encoding="utf-8"))
         c["_file"] = str(p)
         if chapter is None or c.get("chapter") == chapter:
+            reason = validate_seed_unit(c)
+            if reason:
+                sys.exit(f"ADVERSARY FAIL: {p.name}: {reason}")
             cards.append(c)
     if not cards:
         sys.exit(f"ADVERSARY FAIL: no seed cards in {seeds_dir} (default-deny)")

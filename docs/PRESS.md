@@ -121,3 +121,10 @@ python -m sovereign_agent.press build --offline EX-01
 ```
 
 ∞Δ∞ *A tool you cannot leave with is a cage. This one ships its own way out.*
+
+**The seed-unit law (A4).** The adversary judges inputs literally, so the law is
+enforced where the inputs enter: every seed card must attest `seed_unit: full_chapter`
+and `beats_locked: true`, carry at least one non-placeholder beat, and hold prose that
+is a complete unit (three or more sentences, ending at a sentence boundary). Unlawful
+cards are refused loud at load — an excerpt is never judged, a scaffolding beat is
+never treated as a promise. Tooling, not convention.
