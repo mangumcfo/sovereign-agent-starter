@@ -125,6 +125,10 @@ python -m sovereign_agent.press build --offline EX-01
 **The seed-unit law (A4).** The adversary judges inputs literally, so the law is
 enforced where the inputs enter: every seed card must attest `seed_unit: full_chapter`
 and `beats_locked: true`, carry at least one non-placeholder beat, and hold prose that
-is a complete unit (three or more sentences, ending at a sentence boundary). Unlawful
-cards are refused loud at load — an excerpt is never judged, a scaffolding beat is
-never treated as a promise. Tooling, not convention.
+is a complete unit (three or more sentences, ending at a sentence boundary). The
+boundary check is furniture-aware: a chapter may lawfully end with typesetting
+furniture (`\newpage`, rules, headings, bold-only lines) — the check reads the last
+prose line beneath it, so furniture never launders an excerpt and never falsely
+kills a finished chapter. Unlawful cards are refused loud at load — an excerpt is
+never judged, a scaffolding beat is never treated as a promise. Tooling, not
+convention.
