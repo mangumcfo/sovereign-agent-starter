@@ -66,7 +66,31 @@ PLACEHOLDER_BEAT = re.compile(r"\b(tbd|todo|placeholder|tktk|xxx|lorem)\b", re.I
 # is chapter content — but the end-of-chapter check reads the last PROSE line
 # beneath it. (Shared rule with the seed generation side; found by whole-pipeline
 # verification: a genuine full chapter ending in furniture was falsely refused.)
-FURNITURE = re.compile(r"^(\\newpage|-{3,}|#+\s.*|\*\*[^*]+\*\*|\s*)$")
+# ── THE FURNITURE LEXICON (A6, operator-ruled): SINGLE-SOURCED here and exported.
+#    Generation tooling IMPORTS this — never copies it. Duplication was proven a drift
+#    class at catalog width (Campaign 2: 7 lawful full chapters refused because the
+#    kernel copy lagged the generation copy). Width classes, each from a real refused
+#    tail: images/dividers, table rows, code fences (plain or blockquoted), bare
+#    blockquote markers — alongside the original newpage/rules/headings/bold-only.
+FURNITURE = re.compile(
+    r"^(\\newpage|-{3,}|#+\s.*|\*\*[^*]+\*\*|!\[.*|\|.*\||>?\s*```.*|>\s*|\s*)$")
+# Sentence closers: quotes/brackets/backticks AND emphasis marks — a list item lawfully
+# ends "...reassess trust levels.**"; a blockquote line "...single contract.*"
+SENTENCE_END = re.compile(r"[.!?][\"'”’)\]`*_]*\s*$")
+_LINE_PREFIX = re.compile(r"^(?:>\s*)+|^(?:\d+\.|[-*+])\s+")
+
+
+def chapter_end_lawful(prose):
+    """The exported end-of-chapter check (single source for kernel AND generation).
+    Skips trailing furniture, strips blockquote/list prefixes from the last prose
+    line, then requires a sentence ending. Returns a refusal reason or None."""
+    stripped = [ln for ln in prose.splitlines() if not FURNITURE.match(ln.strip())]
+    final_line = _LINE_PREFIX.sub("", stripped[-1].strip()) if stripped else ""
+    if not SENTENCE_END.search(final_line):
+        return ("prose ends mid-sentence — excerpt refused (the false-kill class the "
+                "law exists to prevent; trailing typesetting furniture is skipped, "
+                "not judged)")
+    return None
 
 
 def _tokens(text):
@@ -100,12 +124,9 @@ def validate_seed_unit(card):
     if len(_sentences(prose)) < 3:
         return ("seed-unit law (A4): prose too short to be a full chapter "
                 "(fewer than 3 sentences)")
-    lines = [ln for ln in prose.splitlines() if not FURNITURE.match(ln.strip())]
-    last_prose = lines[-1].strip() if lines else ""
-    if not re.search(r"[.!?][\"'”’)\]`]*\s*$", last_prose):
-        return ("seed-unit law (A4): prose ends mid-sentence — excerpt refused "
-                "(the false-kill class the law exists to prevent; trailing "
-                "typesetting furniture is skipped, not judged)")
+    end_reason = chapter_end_lawful(prose)
+    if end_reason:
+        return "seed-unit law (A4): " + end_reason
     return None
 
 
