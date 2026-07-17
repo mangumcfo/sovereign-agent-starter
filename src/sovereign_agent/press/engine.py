@@ -356,6 +356,36 @@ def _adversary_fresh(vid, workdir, freshness_exclude=None):
     return None
 
 
+def _stage_gates(vol):
+    """A2 (Campaign 0): gate scripts TRAVEL WITH THE VOLUME. Declared
+    `gate_files` are staged into <workdir>/.press_gates and every gate
+    command's literal `$PRESS_GATE_DIR` token is expanded to that dir by the
+    Press itself (shell-independent), so the SAME manifest gate line runs on
+    the authoring node, a pure kernel node, and an offline rebuild alike.
+    A declared-but-missing gate file refuses loud (default-deny — a volume
+    whose gates cannot travel does not build). Returns (gate_dir, {name: sha})
+    or (None, {}) when no gate_files are declared."""
+    import shutil
+    gfs = vol.get("gate_files") or []
+    if not gfs:
+        return None, {}
+    wd = vol.get("workdir") or "."
+    gdir = os.path.join(wd, ".press_gates")
+    os.makedirs(gdir, exist_ok=True)
+    shas = {}
+    for g in gfs:
+        cand = [g] if os.path.isabs(g) else [os.path.join(wd, g), os.path.join(_ROOT, g)]
+        src = next((c for c in cand if os.path.isfile(c)), None)
+        if src is None:
+            fail(f"gate_files: {g!r} not found (tried {cand}) — gates must travel "
+                 f"with the volume; default-deny")
+        dst = os.path.join(gdir, os.path.basename(g))
+        if os.path.abspath(src) != os.path.abspath(dst):
+            shutil.copy2(src, dst)
+        shas[os.path.basename(g)] = sha256_file(dst)
+    return gdir, shas
+
+
 def build_volume(vid, vol, runs_root, mode_note):
     ts = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
     uniq = os.urandom(2).hex()
@@ -365,6 +395,7 @@ def build_volume(vid, vol, runs_root, mode_note):
     os.makedirs(bundle)
     steps, ok = [], True
     cwd = vol.get("workdir")
+    gate_dir, gate_shas = _stage_gates(vol)
 
     # Reprint safety (v0.1.1, P0 parity-run finding): a reprint must never
     # leave a sealed final/ altered on parity failure. Snapshot the artifact
@@ -402,7 +433,9 @@ def build_volume(vid, vol, runs_root, mode_note):
     for gate in (vol.get("gates") or []):
         if not ok:
             break
-        ok = run_step(f"gate:{gate}", gate, cwd, steps)
+        # A2: the Press expands the traveling-gates token itself — no shell needed.
+        cmd = gate.replace("$PRESS_GATE_DIR", gate_dir) if gate_dir else gate
+        ok = run_step(f"gate:{gate}", cmd, cwd, steps)
 
     parity = None
     frozen = vol.get("freeze_sha")
@@ -441,6 +474,7 @@ def build_volume(vid, vol, runs_root, mode_note):
         "mode": mode_note,
         "started_utc": ts,
         "steps": steps,
+        "gate_shas": gate_shas,  # A2: the traveling gates this run actually executed
         "parity": parity,
         "result": "PASS" if ok else "FAIL",
         "note": "The Press stops here. Sealing and publishing are human acts "
@@ -792,7 +826,8 @@ def cmd_bundle(target):
     os.makedirs(srcs)
     shas = {}
     for dirpath, dirs, files in os.walk(wd):
-        dirs[:] = [d for d in dirs if d not in ("bundle", "final", "__pycache__", "press_runs")]
+        dirs[:] = [d for d in dirs if d not in ("bundle", "final", "__pycache__",
+                                                "press_runs", ".press_gates")]
         for f in files:
             fp = os.path.join(dirpath, f)
             rel = os.path.relpath(fp, wd)
@@ -810,14 +845,37 @@ def cmd_bundle(target):
     for tok in shlex.split(vol.get("build") or ""):
         if tok.startswith("SOURCE_DATE_EPOCH="):
             epoch = tok.split("=", 1)[1]
+    # A1 (Campaign 0): renderer version + epoch are NOT enough — record the sha
+    # of every declared font file, so a rebuild host can prove (or see it has
+    # broken) the byte-parity domain. Declared-but-missing refuses loud.
+    fonts = {}
+    for fpath in (vol.get("font_files") or []):
+        if not os.path.isfile(fpath):
+            fail(f"font_files: {fpath!r} not found — the env manifest must record "
+                 f"real font shas (A1); default-deny")
+        fonts[fpath] = sha256_file(fpath)
+    # A2: the gate scripts travel INSIDE the bundle — a pure kernel node (or an
+    # offline rebuild) runs the volume's own gates, not whatever it has lying around.
+    gates_dir = os.path.join(bdir, "gates")
+    gate_shas = {}
+    if vol.get("gate_files"):
+        gdir, gate_shas = _stage_gates(vol)
+        os.makedirs(gates_dir)
+        for name in gate_shas:
+            shutil.copy2(os.path.join(gdir, name), os.path.join(gates_dir, name))
     meta = {"volume": target, "manifest_entry": vol, "source_shas": shas,
-            "env_manifest": {**env_rec, "SOURCE_DATE_EPOCH": epoch},
+            "env_manifest": {**env_rec, "SOURCE_DATE_EPOCH": epoch, "fonts": fonts,
+                             "parity_domain": ("full byte-parity is guaranteed on "
+                                               "pinned-env hosts: same renderer, same "
+                                               "epoch, AND same font shas (A1)")},
+            "gate_shas": gate_shas,
             "frozen_sha": vol.get("freeze_sha"),
             "bundled_utc": time.strftime("%Y%m%dT%H%M%SZ", time.gmtime()),
             "law": "rebuildable from this bundle alone; git carries it; nothing here seals"}
     with open(os.path.join(bdir, "bundle.json"), "w") as f:
         json.dump(meta, f, indent=2, sort_keys=True)
-    print(f"[bundled] {target} → {bdir}  ({len(shas)} source files, env pinned)")
+    print(f"[bundled] {target} → {bdir}  ({len(shas)} source files, "
+          f"{len(gate_shas)} traveling gates, {len(fonts)} font shas, env pinned)")
     return 0
 
 
@@ -852,6 +910,40 @@ def cmd_build_offline(target):
         os.makedirs(os.path.dirname(dst), exist_ok=True)
         shutil.copy2(src, dst)
     vol["workdir"] = work
+    # A2: traveling gates restore from the bundle under the SAME laws as sources —
+    # missing refuses (K2), tampered refuses loud. The restored copies become the
+    # volume's gate_files, so a host that never had the originals still runs them.
+    bundled_gates = meta.get("gate_shas") or {}
+    if bundled_gates:
+        gwork = os.path.join(work, ".press_gates")
+        os.makedirs(gwork, exist_ok=True)
+        restored = []
+        for name, expect in bundled_gates.items():
+            gsrc = os.path.join(bdir, "gates", name)
+            if not os.path.isfile(gsrc):
+                fail(f"bundle incomplete: gate {name} missing — offline build refuses (K2)")
+            if sha256_file(gsrc) != expect:
+                fail(f"bundle tampered: gate {name} sha mismatch — offline build refuses loud")
+            gdst = os.path.join(gwork, name)
+            shutil.copy2(gsrc, gdst)
+            restored.append(gdst)
+        vol["gate_files"] = restored
+    # A1: prove or break the parity domain BEFORE building — compare this host's
+    # font files against the bundle's recorded shas. A mismatch is a LOUD warning,
+    # not a block: the parity gate stays the enforcement; this names the cause the
+    # moment it exists instead of leaving a byte-diff mystery (Campaign 0, A1).
+    fonts = (meta.get("env_manifest") or {}).get("fonts") or {}
+    font_drift = []
+    for fpath, expect in fonts.items():
+        actual = sha256_file(fpath) if os.path.isfile(fpath) else "MISSING"
+        if actual != expect:
+            font_drift.append(f"{fpath}: recorded {expect[:16]} vs host {actual[:16]}")
+    if font_drift:
+        print("WARNING (A1): font environment differs from the bundle's pins — "
+              "full byte-parity is guaranteed only on pinned-env hosts. The parity "
+              "law still decides; this names the likely cause:")
+        for line in font_drift:
+            print(f"  font drift: {line}")
     _qlog(runs_root, vid=target, stage="volume", event="offline_rebuild_from_bundle",
           qmode="offline", bundle=bdir)
     base_stage = (vol.get("stage") or "").split("(")[0].strip()
