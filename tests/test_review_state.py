@@ -19,13 +19,13 @@ def _env(tmp_path):
 
 def test_append_derive_supersede(tmp_path, monkeypatch):
     monkeypatch.setenv("PRESS_DATA_ROOT", str(tmp_path))
-    rs.append_event("VOL-1", "board_r1", "run", hand="tiger")
-    rs.append_event("VOL-1", "board_r1", "findings_open", hand="tiger")
-    rs.append_event("VOL-1", "board_r1", "closed", hand="tiger", note="all fixed")
-    rs.append_event("VOL-1", "gb_fidelity", "run", hand="gb")
+    rs.append_event("VOL-1", "board_r1", "run", hand="the builder")
+    rs.append_event("VOL-1", "board_r1", "findings_open", hand="the builder")
+    rs.append_event("VOL-1", "board_r1", "closed", hand="the builder", note="all fixed")
+    rs.append_event("VOL-1", "peer_fidelity", "run", hand="the peer")
     state = rs.derive("VOL-1")
     assert state["board_r1"]["status"] == "closed"  # later lines supersede
-    assert state["gb_fidelity"]["status"] == "run"
+    assert state["peer_fidelity"]["status"] == "run"
     # append-only on disk: all four lines still present
     p = tmp_path / "artifacts" / "review_state" / "VOL-1.ndjson"
     assert len(p.read_text().splitlines()) == 4
@@ -34,10 +34,10 @@ def test_append_derive_supersede(tmp_path, monkeypatch):
 def test_summary_shapes(tmp_path, monkeypatch):
     monkeypatch.setenv("PRESS_DATA_ROOT", str(tmp_path))
     assert rs.summary("NOPE") == "no review state recorded"
-    rs.append_event("VOL-2", "board_r1", "closed", hand="tiger")
+    rs.append_event("VOL-2", "board_r1", "closed", hand="the builder")
     rs.append_event("VOL-2", "lens_book_ux", "findings_open", hand="g")
     s = rs.summary("VOL-2")
-    assert "R1:✓" in s and "LENS:OPEN" in s and "KM:—" in s
+    assert "R1:✓" in s and "LENS:OPEN" in s and "OP:—" in s
 
 
 def test_unknown_status_refused(tmp_path, monkeypatch):
@@ -51,7 +51,7 @@ def test_unknown_status_refused(tmp_path, monkeypatch):
 
 def test_malformed_lines_skipped_with_count(tmp_path, monkeypatch):
     monkeypatch.setenv("PRESS_DATA_ROOT", str(tmp_path))
-    rs.append_event("VOL-4", "km_read", "run", hand="km")
+    rs.append_event("VOL-4", "operator_read", "run", hand="the operator")
     p = tmp_path / "artifacts" / "review_state" / "VOL-4.ndjson"
     with open(p, "a") as f:
         f.write("not json at all\n")

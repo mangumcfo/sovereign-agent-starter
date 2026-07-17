@@ -43,14 +43,14 @@ from ..ndjson import read_ndjson
 LAYER_REGISTRY = [
     "board_r1", "board_r2", "board_r3",
     "lens_book_platform", "lens_book_ux", "lens_book_book", "lens_author_imposition",
-    "gb_fidelity", "km_read",
+    "peer_fidelity", "operator_read",
 ]
 _LENSES = {l for l in LAYER_REGISTRY if l.startswith("lens_")}
 STATUSES = ("run", "findings_open", "closed")
 _GLYPH = {"closed": "✓", "run": "run", "findings_open": "OPEN", None: "—"}
 # Compact labels for the six summary slots (lenses aggregate into one slot).
 _SUMMARY_SLOTS = [("board_r1", "R1"), ("board_r2", "R2"), ("board_r3", "R3"),
-                  ("LENSES", "LENS"), ("gb_fidelity", "GB"), ("km_read", "KM")]
+                  ("LENSES", "LENS"), ("peer_fidelity", "PEER"), ("operator_read", "OP")]
 
 
 def _dir():
@@ -123,7 +123,7 @@ def _worst(statuses):
 
 
 def summary(volume):
-    """Compact one-line projection, e.g. 'R1:✓ R2:run R3:— LENS:OPEN GB:✓ KM:—'."""
+    """Compact one-line projection, e.g. 'R1:✓ R2:run R3:— LENS:OPEN PEER:✓ OP:—'."""
     state = derive(volume)
     if not state:
         return "no review state recorded"
