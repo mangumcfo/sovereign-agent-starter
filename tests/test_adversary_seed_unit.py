@@ -93,3 +93,48 @@ def test_furniture_never_launders_an_excerpt(tmp_path, prose):
     with pytest.raises(SystemExit) as e:
         adv.load_cards(d)
     assert "seed-unit law (A4)" in str(e.value), str(e.value)
+
+
+# ── A6: the width lexicon, single-sourced and exported ─────────────────────────
+from sovereign_agent.press.adversary import chapter_end_lawful
+
+
+def _base_prose(tail):
+    return "First sentence here. Second one follows. A third completes the chapter.\n" + tail
+
+
+WIDTH_LAWFUL_TAILS = [
+    "\\newpage",                                     # typesetting directive
+    "3. **Set a calendar reminder in 30 days.**",    # list item closing in bold
+    "> *Visibility guaranteed; one renderer draws every surface.*",  # blockquote italic
+    "![Stage 3 Divider](divider_stage_3.png)",       # image/divider furniture
+    "---\n\\newpage\n![Card](card.png)",             # stacked furniture
+    "| receipts | append-only |",                    # table row tail
+    "> ```",                                         # blockquoted fence tail
+]
+
+
+def test_a6_width_tails_are_lawful():
+    for tail in WIDTH_LAWFUL_TAILS:
+        assert chapter_end_lawful(_base_prose(tail)) is None, f"lawful tail refused: {tail!r}"
+
+
+FURNITURE_ONLY_TAILS = ["\\newpage", "![Stage 3 Divider](divider_stage_3.png)",
+                        "---\n\\newpage\n![Card](card.png)", "| receipts | append-only |", "> ```"]
+
+
+def test_a6_truncation_still_refused_under_pure_furniture():
+    """An end-check sees THROUGH furniture to the last prose line. Beneath a PROSE
+    tail (list item, blockquote sentence) that lawful line IS the ending — an earlier
+    truncation is a completeness question, not an ending question. Beneath pure
+    furniture, the truncated line is the last prose and must refuse."""
+    for tail in FURNITURE_ONLY_TAILS:
+        prose = "First sentence. Second. This one cuts of\n" + tail
+        assert chapter_end_lawful(prose) is not None, f"truncation admitted under: {tail!r}"
+
+
+def test_a6_lexicon_is_the_single_source():
+    """Generation tooling imports these names; their existence IS the contract."""
+    from sovereign_agent.press import adversary
+    for name in ("FURNITURE", "SENTENCE_END", "chapter_end_lawful"):
+        assert hasattr(adversary, name)
