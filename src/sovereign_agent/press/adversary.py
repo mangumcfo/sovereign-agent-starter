@@ -268,9 +268,21 @@ def l1_check(card):
     }
     req = urllib.request.Request(f"{OLLAMA}/api/chat", data=json.dumps(payload).encode(),
                                  headers={"Content-Type": "application/json"})
+    stall_secs = int(os.environ.get("ADVERSARY_L1_STALL_SECS", "240"))
     for attempt in (1, 2):  # schema-strict: one retry, then fail loud
-        with urllib.request.urlopen(req, timeout=600) as r:
-            content = json.loads(r.read())["message"]["content"]
+        try:
+            with urllib.request.urlopen(req, timeout=stall_secs) as r:
+                content = json.loads(r.read())["message"]["content"]
+        except TimeoutError:
+            # MODEL STALL: a card that outruns the per-call budget is a LOUD verdict,
+            # never a hang and never a silent skip. Fail-closed: a stalled card cannot
+            # be certified. (Field origin: one 1.8k-word card looped the local judge
+            # indefinitely at temperature 0 while its siblings judged in ~35s.)
+            return {"chapter": card.get("chapter"), "lens": f"L1:{L1_MODEL}",
+                    "refuted": True, "stall": True,
+                    "reason": f"MODEL STALL: no response within {stall_secs}s — "
+                              "fail-closed, card not certified; diagnose the card or "
+                              "raise ADVERSARY_L1_STALL_SECS deliberately"}
         try:
             v = json.loads(content)
             return {"chapter": card.get("chapter"), "lens": f"L1:{L1_MODEL}",
