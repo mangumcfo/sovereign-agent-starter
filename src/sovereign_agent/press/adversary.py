@@ -254,7 +254,7 @@ def l1_check(card):
     if not _gpu_idle():
         sys.exit("ADVERSARY FAIL: local GPU not idle (>=20GB free required) — "
                  "rental law: refusing local call; rerun when idle or escalate tier.")
-    work_order = L1_WORK_ORDER.format(run_date=time.strftime("%Y-%m-%d", time.gmtime()))
+    work_order = L1_WORK_ORDER.replace("{run_date}", time.strftime("%Y-%m-%d", time.gmtime()))
     payload = {
         "model": L1_MODEL, "stream": False, "format": "json",
         "options": {"temperature": 0},
