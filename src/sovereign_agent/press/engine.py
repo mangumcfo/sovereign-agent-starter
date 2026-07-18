@@ -511,7 +511,9 @@ def _build_one(vid, vols, runs_root, qmode, lane=None, stage_locks=None, isolate
         ok = build_volume(vid, vol, runs_root, bmode)
         _qlog(runs_root, vid=vid, lane=lane, stage="build+gates", event="exit", qmode=qmode)
     _qlog(runs_root, vid=vid, lane=lane, stage="volume", event="pass" if ok else "fail", qmode=qmode)
-    if ok:
+    if ok and bmode != "reprint":
+        # A reprint reproduces an already-sealed artifact — its seal exists; enqueueing
+        # again would re-open a closed human question (queue-hygiene ruling).
         _seal_enqueue(runs_root, vid, "(see bundle run.json)")
     return ok
 
