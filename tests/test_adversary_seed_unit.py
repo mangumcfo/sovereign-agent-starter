@@ -201,3 +201,18 @@ def test_long_label_led_line_is_prose_not_furniture():
     long_tail = ("**How it works:** the optimization agent scans every data source the "
                  "other agents use and identifies savings projects, each project getting")
     assert chapter_end_lawful(_base_prose(long_tail)) is not None
+
+
+def test_full_contact_block_field_shape_is_lawful():
+    """The field-faithful five-line block that exposed the 24-char label bound:
+    'Sovereign Inference Exchange' is 28 chars. Fixture is the real shape, not a
+    convenient abbreviation — the first landing's fixtures were too polite."""
+    block = ("## Connect\n\n"
+             "**Website:** [example.com](https://example.com)\n\n"
+             "**Sovereign Inference Exchange:** example-exchange.com\n\n"
+             "**LinkedIn:** linkedin.com/in/example\n\n"
+             "**Email:** contact@[example.com](https://example.com)\n\n"
+             "**Publisher:** Example Press")
+    assert chapter_end_lawful(_base_prose(block)) is None
+    truncated = "First sentence. Second. This one cuts of\n" + block
+    assert chapter_end_lawful(truncated) is not None
