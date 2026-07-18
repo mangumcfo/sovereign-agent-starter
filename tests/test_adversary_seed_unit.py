@@ -237,3 +237,13 @@ def test_whole_line_italic_span_and_nbsp_are_furniture():
         assert chapter_end_lawful(_base_prose(tail)) is None, f"refused: {tail!r}"
         assert chapter_end_lawful(
             "First. Second. This one cuts of\n" + tail) is not None
+
+
+def test_l1_work_order_carries_the_run_date():
+    """The local judge's training prior is its implicit clock — a past-dated claim was
+    killed as 'a future date'. The work order must carry the run date so temporal
+    judgments anchor to the run, not the model's training cutoff."""
+    import time as _t
+    filled = adv.L1_WORK_ORDER.format(run_date="2026-07-18")
+    assert "The current date is 2026-07-18" in filled
+    assert "{run_date}" in adv.L1_WORK_ORDER

@@ -246,18 +246,20 @@ Worked example: beats include "Honest rendering guarantees"; the prose's only me
 unserved_beats=["Honest rendering guarantees"], refuted=true. But a beat explained in 2-3
 sentences of principle IS served, even with no implementation given.
 Judge only from the material below. If every beat is served at chapter scope and no claim
-outruns runs_today, then refuted=false and the lists are empty."""
+outruns runs_today, then refuted=false and the lists are empty.
+The current date is {run_date}; judge past/future claims against it, not your training prior."""
 
 
 def l1_check(card):
     if not _gpu_idle():
         sys.exit("ADVERSARY FAIL: local GPU not idle (>=20GB free required) — "
                  "rental law: refusing local call; rerun when idle or escalate tier.")
+    work_order = L1_WORK_ORDER.format(run_date=time.strftime("%Y-%m-%d", time.gmtime()))
     payload = {
         "model": L1_MODEL, "stream": False, "format": "json",
         "options": {"temperature": 0},
         "messages": [
-            {"role": "system", "content": L1_WORK_ORDER},
+            {"role": "system", "content": work_order},
             {"role": "user", "content": json.dumps({
                 "promise": card.get("promise"), "beats": card.get("beats"),
                 "runs_today": card.get("runs_today"), "prose": card.get("prose")},
