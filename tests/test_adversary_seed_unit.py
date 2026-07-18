@@ -244,6 +244,6 @@ def test_l1_work_order_carries_the_run_date():
     killed as 'a future date'. The work order must carry the run date so temporal
     judgments anchor to the run, not the model's training cutoff."""
     import time as _t
-    filled = adv.L1_WORK_ORDER.format(run_date="2026-07-18")
+    filled = adv.L1_WORK_ORDER.replace("{run_date}", "2026-07-18")
     assert "The current date is 2026-07-18" in filled
     assert "{run_date}" in adv.L1_WORK_ORDER
