@@ -73,7 +73,8 @@ PLACEHOLDER_BEAT = re.compile(r"\b(tbd|todo|placeholder|tktk|xxx|lorem)\b", re.I
 #    tail: images/dividers, table rows, code fences (plain or blockquoted), bare
 #    blockquote markers — alongside the original newpage/rules/headings/bold-only.
 FURNITURE = re.compile(
-    r"^(\\newpage|-{3,}|#+\s.*|\*\*[^*]+\*\*|!\[.*|\|.*\||>?\s*```.*|>\s*|\s*|[∞Δ∴☉◦·—–*_\s]{1,16})$")
+    r"^(\\newpage|-{3,}|#+\s.*|\*\*[^*]+\*\*|!\[.*|\|.*\||>?\s*```.*|>\s*|\s*|[∞Δ∴☉◦·—–*_\s]{1,16}"
+    r"|\*\*[^*:]{2,24}:\*\*\s?[^\n]{0,80})$")
 # Sentence closers: quotes/brackets/backticks AND emphasis marks — a list item lawfully
 # ends "...reassess trust levels.**"; a blockquote line "...single contract.*"
 SENTENCE_END = re.compile(r"[.!?][\"'”’)\]`*_]*\s*$")
