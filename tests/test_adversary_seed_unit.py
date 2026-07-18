@@ -169,3 +169,35 @@ def test_symbol_run_length_is_bounded():
     """A LONG symbol line is not a sigil — boundedness keeps the furniture class from
     swallowing content-bearing lines."""
     assert chapter_end_lawful(_base_prose("∞Δ∞" * 12)) is not None
+
+
+CONTACT_BLOCK_TAILS = [
+    "**Email:** contact@[example.com](https://example.com)",
+    "**Publisher:** Example Press",
+    "**Publisher:** Example Press — examplepress.com",
+    "**Email:** contact@[example.com](https://example.com)\n\n**Publisher:** Example Press",
+]
+
+
+def test_contact_block_tails_are_lawful():
+    """Back-matter contact blocks are typesetting metadata, not chapter prose. Field
+    origin, eight uniform reproductions: one series ends every volume on its contact
+    block (no epigraph, no sigil) and every final chapter refused as mid-sentence."""
+    for tail in CONTACT_BLOCK_TAILS:
+        assert chapter_end_lawful(_base_prose(tail)) is None, f"contact tail refused: {tail!r}"
+
+
+def test_truncation_still_refused_under_contact_block():
+    """Fail-direction preserved: a truncated last prose line beneath the contact
+    block still refuses — the block is furniture, never an ending."""
+    for tail in CONTACT_BLOCK_TAILS:
+        prose = "First sentence. Second. This one cuts of\n" + tail
+        assert chapter_end_lawful(prose) is not None, f"truncation admitted under: {tail!r}"
+
+
+def test_long_label_led_line_is_prose_not_furniture():
+    """Boundedness: a label-led CONTENT line ('**How it works:** <long sentence>') is
+    prose — if it trails off unfinished it must refuse, not hide behind the label."""
+    long_tail = ("**How it works:** the optimization agent scans every data source the "
+                 "other agents use and identifies savings projects, each project getting")
+    assert chapter_end_lawful(_base_prose(long_tail)) is not None
