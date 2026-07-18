@@ -247,3 +247,32 @@ def test_l1_work_order_carries_the_run_date():
     filled = adv.L1_WORK_ORDER.replace("{run_date}", "2026-07-18")
     assert "The current date is 2026-07-18" in filled
     assert "{run_date}" in adv.L1_WORK_ORDER
+
+
+def test_l1_stall_is_a_loud_fail_closed_verdict(monkeypatch):
+    """A card that outruns the per-call budget yields an explicit STALL verdict —
+    refuted (fail-closed, cannot certify), stall-marked, budget named in the reason.
+    Field origin: one card looped the local judge indefinitely; the volume run hung
+    on the socket three times before isolation."""
+    import urllib.request as _ur
+    def _hang(*a, **k):
+        raise TimeoutError("timed out")
+    monkeypatch.setattr(_ur, "urlopen", _hang)
+    monkeypatch.setattr(adv, "_gpu_idle", lambda: True)
+    monkeypatch.setattr(adv, "OLLAMA", "http://localhost:11434")
+    v = adv.l1_check({"chapter": 1, "promise": "p", "beats": ["b"],
+                      "runs_today": [], "prose": "Prose here."})
+    assert v["refuted"] is True
+    assert v.get("stall") is True
+    assert "MODEL STALL" in v["reason"] and "240" in v["reason"]
+
+
+def test_l1_stall_budget_is_operator_tunable(monkeypatch):
+    import urllib.request as _ur
+    monkeypatch.setattr(_ur, "urlopen", lambda *a, **k: (_ for _ in ()).throw(TimeoutError()))
+    monkeypatch.setattr(adv, "_gpu_idle", lambda: True)
+    monkeypatch.setattr(adv, "OLLAMA", "http://localhost:11434")
+    monkeypatch.setenv("ADVERSARY_L1_STALL_SECS", "7")
+    v = adv.l1_check({"chapter": 2, "promise": "p", "beats": ["b"],
+                      "runs_today": [], "prose": "Prose."})
+    assert v["stall"] is True and "7s" in v["reason"]
