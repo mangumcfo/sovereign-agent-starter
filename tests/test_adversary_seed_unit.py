@@ -210,6 +210,7 @@ def test_full_contact_block_field_shape_is_lawful():
     block = ("## Connect\n\n"
              "**Website:** [example.com](https://example.com)\n\n"
              "**Sovereign Inference Exchange:** example-exchange.com\n\n"
+             "**X:** @example\n\n"
              "**LinkedIn:** linkedin.com/in/example\n\n"
              "**Email:** contact@[example.com](https://example.com)\n\n"
              "**Publisher:** Example Press")
