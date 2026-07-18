@@ -217,3 +217,23 @@ def test_full_contact_block_field_shape_is_lawful():
     assert chapter_end_lawful(_base_prose(block)) is None
     truncated = "First sentence. Second. This one cuts of\n" + block
     assert chapter_end_lawful(truncated) is not None
+
+
+def test_sigil_after_terminal_punctuation_is_lawful():
+    """One house style closes chapters with a sigil-wrapped paragraph — the final line
+    ends '<sentence>. <sigil>' on the SAME line. Terminal punctuation followed by
+    trailing sigil glyphs is a lawful ending (eight uniform field reproductions,
+    swept before landing)."""
+    assert chapter_end_lawful(
+        "First sentence. A history that cannot change. ∞Δ∞") is None
+    assert chapter_end_lawful(
+        "First sentence. Second one. This one trails off ∞Δ∞") is not None  # no punct → refuse
+
+
+def test_whole_line_italic_span_and_nbsp_are_furniture():
+    """'*Published by Example Press*' and '&nbsp;' spacer lines are typesetting
+    back-matter; truncation beneath them still refuses."""
+    for tail in ("*Published by Example Press*", "&nbsp;", "&nbsp; &nbsp;"):
+        assert chapter_end_lawful(_base_prose(tail)) is None, f"refused: {tail!r}"
+        assert chapter_end_lawful(
+            "First. Second. This one cuts of\n" + tail) is not None
