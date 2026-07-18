@@ -138,3 +138,34 @@ def test_a6_lexicon_is_the_single_source():
     from sovereign_agent.press import adversary
     for name in ("FURNITURE", "SENTENCE_END", "chapter_end_lawful"):
         assert hasattr(adversary, name)
+
+
+SIGIL_TAILS = [
+    "∞Δ∞",                                   # book back-matter sigil (real S2 tail, n=2 in the field)
+    "* * *",                                 # classic dinkus
+    "···",                                   # dot dinkus
+    "— — —",                                 # dash rule
+    "---\n∞Δ∞",                              # rule then sigil (stacked, the observed real shape)
+]
+
+
+def test_sigil_and_dinkus_tails_are_lawful():
+    """Short symbol-only lines are typesetting furniture. Field origin: every volume in
+    one series ends its back-matter with a sigil line; before this rule the final
+    chapter of each refused as mid-sentence (two distinct volumes reproduced it)."""
+    for tail in SIGIL_TAILS:
+        assert chapter_end_lawful(_base_prose(tail)) is None, f"sigil tail refused: {tail!r}"
+
+
+def test_truncation_still_refused_under_sigil():
+    """Fail-direction preserved: the sigil is furniture, not an ending — a truncated
+    last prose line beneath it still refuses."""
+    for tail in SIGIL_TAILS:
+        prose = "First sentence. Second. This one cuts of\n" + tail
+        assert chapter_end_lawful(prose) is not None, f"truncation admitted under: {tail!r}"
+
+
+def test_symbol_run_length_is_bounded():
+    """A LONG symbol line is not a sigil — boundedness keeps the furniture class from
+    swallowing content-bearing lines."""
+    assert chapter_end_lawful(_base_prose("∞Δ∞" * 12)) is not None
