@@ -21,11 +21,21 @@ import os
 from . import seal as sealmod
 
 
-def _grade_line(vol):
-    """One honest line per card. 'stage' is the manifest's own word, not a guess."""
+def _grade_line(vol, seal_rec=None):
+    """One honest line per card.
+
+    A VERIFIED SEAL RECEIPT OUTRANKS THE MANIFEST STAGE. The stage is the plan; the
+    receipt is what happened. A card that printed "Provisional — not sealed" beside a
+    valid receipt would be contradicting itself on the one fact that matters most.
+    Without a receipt, the stage speaks and the card says designed·building plainly.
+    """
+    if seal_rec:
+        return "Sealed", ("runs today: sealed by receipt, artifact reproduces "
+                          "byte-for-byte from frozen sources")
     stage = (vol.get("stage") or "unknown").strip()
     if stage in ("published", "sealed-publication-ready", "sealed-awaiting-author"):
-        return "Sealed", "runs today: the artifact reproduces byte-for-byte from frozen sources"
+        return ("Built · Awaiting Seal",
+                "designed · building: built to a frozen artifact; no seal receipt on file")
     if stage in ("built-in-review", "pre-order"):
         return "Provisional", "designed · building: built and under review; not sealed"
     return "Designed · Building", "designed-toward: not yet built to a frozen artifact"
@@ -33,7 +43,7 @@ def _grade_line(vol):
 
 def render_card(vid, vol, seal_rec, surface):
     """Concise by ruling: a screen per volume, no prose dumps, no code."""
-    chip, grade = _grade_line(vol)
+    chip, grade = _grade_line(vol, seal_rec)
     lines = [f"# {vol.get('title', vid)}", "",
              f"**Status:** {chip}  ", f"**Grade:** {grade}", ""]
     if vol.get("series"):

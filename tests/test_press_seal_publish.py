@@ -180,3 +180,29 @@ def test_seal_must_name_its_human(monkeypatch):
     monkeypatch.setenv("PRESS_PRINCIPAL", "OPERATOR-1")
     who, err = sealmod.principal()
     assert who == "OPERATOR-1" and err is None
+
+
+def test_a_verified_receipt_outranks_the_manifest_stage(tmp_path):
+    """The stage is the plan; the receipt is what happened. A volume whose stage still
+    says 'built-in-review' but which carries a valid receipt renders as Sealed — the card
+    must not contradict itself on the one fact that matters most."""
+    prov = dict(VOL, stage="built-in-review")
+    rec = sealmod.make_receipt("V-3", "the word", prov["freeze_sha"], "built-in-review",
+                               None, KEY, "OPERATOR-1")
+    root = _ledger(tmp_path, rec)
+    written, refused = pubmod.publish({"V-3": prov}, "V-3", root, str(tmp_path / "out"),
+                                      surface="public", key=KEY)
+    assert refused == []
+    card = open(written[0][1], encoding="utf-8").read()
+    assert "**Status:** Sealed" in card
+    assert "not sealed" not in card
+
+
+def test_built_but_unsealed_never_claims_sealed(tmp_path):
+    """The inverse, and the more dangerous one: a 'published' stage with NO receipt must
+    not print 'Sealed'. Stage alone has never been evidence."""
+    written, _ = pubmod.publish({"V-4": VOL}, "V-4", str(tmp_path), str(tmp_path / "out"),
+                                surface="internal", key=KEY)
+    card = open(written[0][1], encoding="utf-8").read()
+    assert "**Status:** Sealed" not in card
+    assert "Awaiting Seal" in card and "no seal receipt on file" in card
