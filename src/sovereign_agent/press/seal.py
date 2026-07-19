@@ -27,6 +27,7 @@ import hashlib
 import hmac
 import json
 import os
+import re
 import time
 
 SEAL_LEDGER = "seal_ledger.jsonl"
@@ -58,6 +59,35 @@ def principal(env_get=os.environ.get):
         return None, ("PRESS_PRINCIPAL is not set — a seal must name the human who made "
                       "it. The kernel does not assume an identity.")
     return who, None
+
+
+PLACEHOLDER = re.compile(r"^\s*$|^<.*>$|your word|placeholder|word here|change ?me|xxx+",
+                         re.I)
+
+
+def read_word(prompt, opener=None):
+    """Take the seal word from the OPERATOR'S KEYBOARD, never from the command line.
+
+    Field-earned. A word passed as an argument can be pasted from a document (and so can
+    carry a placeholder), can be eaten out of a paste buffer by a shell `read`, and lands
+    in shell history. Reading it here removes all three: the terminal is opened directly,
+    so a pasted command line cannot supply the word, and nothing about it survives in
+    history. Placeholder-shaped words are refused outright — belt to the braces.
+    """
+    import getpass
+    try:
+        tty = (opener or open)("/dev/tty", "r+")
+    except OSError:
+        return None, ("no terminal available to read the seal word — a seal is spoken by a "
+                      "human at a keyboard, not supplied by a script")
+    try:
+        word = getpass.getpass(prompt, stream=tty)
+    finally:
+        tty.close()
+    if PLACEHOLDER.match(word or ""):
+        return None, (f"that is not a seal word ({word!r}) — it reads as a placeholder or "
+                      "is empty; nothing was written")
+    return word, None
 
 
 def _canonical(rec):
