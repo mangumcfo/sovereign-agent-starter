@@ -70,20 +70,35 @@ def read_word(prompt, opener=None):
 
     Field-earned. A word passed as an argument can be pasted from a document (and so can
     carry a placeholder), can be eaten out of a paste buffer by a shell `read`, and lands
-    in shell history. Reading it here removes all three: the terminal is opened directly,
-    so a pasted command line cannot supply the word, and nothing about it survives in
-    history. Placeholder-shaped words are refused outright — belt to the braces.
+    in shell history. Reading it here removes all three: the terminal is read directly, so
+    a pasted command line cannot supply the word, and nothing about it survives in history.
+    Placeholder-shaped words are refused outright — belt to the braces.
+
+    /dev/tty is preferred because it is immune to whatever is queued on stdin. Where the
+    console gives the shell no controlling terminal, we fall back to stdin — but only if
+    stdin is a terminal, so `seal < words.txt` still cannot produce a seal.
     """
     import getpass
+    import sys
+    tty, via = None, None
     try:
         tty = (opener or open)("/dev/tty", "r+")
+        via = "tty"
     except OSError:
-        return None, ("no terminal available to read the seal word — a seal is spoken by a "
-                      "human at a keyboard, not supplied by a script")
+        # Some consoles run the shell without a controlling terminal, so /dev/tty cannot be
+        # opened (ENXIO) even though a human is plainly typing. Fall back to stdin ONLY when
+        # stdin is itself a terminal — that keeps the property that matters (a script
+        # redirecting stdin still cannot seal) while working where /dev/tty does not.
+        if getattr(sys.stdin, "isatty", lambda: False)():
+            via = "stdin"
+        else:
+            return None, ("no terminal available to read the seal word — a seal is spoken by "
+                          "a human at a keyboard, not supplied by a script")
     try:
-        word = getpass.getpass(prompt, stream=tty)
+        word = getpass.getpass(prompt, stream=tty) if via == "tty" else getpass.getpass(prompt)
     finally:
-        tty.close()
+        if tty is not None:
+            tty.close()
     if PLACEHOLDER.match(word or ""):
         return None, (f"that is not a seal word ({word!r}) — it reads as a placeholder or "
                       "is empty; nothing was written")

@@ -313,3 +313,24 @@ def test_no_terminal_means_no_seal():
         raise OSError("no tty")
     word, err = sealmod.read_word("word: ", opener=no_tty)
     assert word is None and "no terminal available" in err
+
+
+def test_falls_back_to_interactive_stdin_when_there_is_no_controlling_terminal(monkeypatch):
+    """Some consoles run the shell with no controlling terminal, so /dev/tty cannot be
+    opened even though a human is plainly typing. Fall back to stdin — but only when
+    stdin is itself a terminal."""
+    def no_tty(p, m):
+        raise OSError(6, "No such device or address")
+    monkeypatch.setattr("sys.stdin", type("S", (), {"isatty": staticmethod(lambda: True)})())
+    monkeypatch.setattr("getpass.getpass", lambda prompt, stream=None: "a real word")
+    word, err = sealmod.read_word("word: ", opener=no_tty)
+    assert word == "a real word" and err is None
+
+
+def test_redirected_stdin_still_cannot_seal(monkeypatch):
+    """The property that matters survives the fallback: `seal < words.txt` is refused."""
+    def no_tty(p, m):
+        raise OSError(6, "No such device or address")
+    monkeypatch.setattr("sys.stdin", type("S", (), {"isatty": staticmethod(lambda: False)})())
+    word, err = sealmod.read_word("word: ", opener=no_tty)
+    assert word is None and "no terminal available" in err
