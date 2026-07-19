@@ -206,3 +206,67 @@ def test_built_but_unsealed_never_claims_sealed(tmp_path):
     card = open(written[0][1], encoding="utf-8").read()
     assert "**Status:** Sealed" not in card
     assert "Awaiting Seal" in card and "no seal receipt on file" in card
+
+
+# ── correction by appending ────────────────────────────────────────────────────
+
+def _seal(vol, word, prior, supersedes=None):
+    return sealmod.make_receipt(vol, word, "b" * 64, "published", prior, KEY, "OPERATOR-1",
+                                now="20260719T000000Z", supersedes=supersedes)
+
+
+def test_supersede_makes_the_new_receipt_active_and_keeps_the_old_as_history():
+    first = _seal("V-1", "placeholder", None)
+    second = _seal("V-1", "the real word", first["receipt_sha256"],
+                   supersedes=first["receipt_sha256"])
+    chain = [first, second]
+    assert sealmod.latest_for(chain, "V-1")["receipt_sha256"] == second["receipt_sha256"]
+    assert first in chain, "the superseded receipt must remain in the chain"
+    assert sealmod.verify_chain(chain, KEY) == [], "correction must not break the chain"
+
+
+def test_superseded_receipt_is_no_longer_active():
+    first = _seal("V-1", "placeholder", None)
+    second = _seal("V-1", "the real word", first["receipt_sha256"],
+                   supersedes=first["receipt_sha256"])
+    assert first["receipt_sha256"] in sealmod.superseded_ids([first, second])
+    assert sealmod.latest_for([first, second], "V-1") is not first
+
+
+def test_cannot_supersede_a_receipt_that_does_not_exist():
+    chain = [_seal("V-1", "w", None)]
+    assert "nothing to supersede" in sealmod.check_supersede(chain, "V-1", "deadbeefdeadbeef")
+
+
+def test_cannot_supersede_another_volumes_receipt():
+    a = _seal("V-1", "w", None)
+    b = _seal("V-2", "w", a["receipt_sha256"])
+    err = sealmod.check_supersede([a, b], "V-2", a["receipt_sha256"])
+    assert "stays within its own volume" in err
+
+
+def test_corrections_do_not_stack_on_the_same_receipt():
+    first = _seal("V-1", "placeholder", None)
+    second = _seal("V-1", "corrected", first["receipt_sha256"],
+                   supersedes=first["receipt_sha256"])
+    err = sealmod.check_supersede([first, second], "V-1", first["receipt_sha256"])
+    assert "already superseded" in err
+
+
+def test_a_valid_supersede_passes_its_rules():
+    first = _seal("V-1", "placeholder", None)
+    assert sealmod.check_supersede([first], "V-1", first["receipt_sha256"]) is None
+
+
+def test_card_shows_the_corrected_receipt_not_the_placeholder(tmp_path):
+    """After a correction the published card must cite the ACTIVE receipt."""
+    first = _seal("V-1", "placeholder", None)
+    second = _seal("V-1", "the real word", first["receipt_sha256"],
+                   supersedes=first["receipt_sha256"])
+    root = _ledger(tmp_path, first, second)
+    written, refused = pubmod.publish({"V-1": VOL}, "V-1", root, str(tmp_path / "out"),
+                                      surface="public", key=KEY)
+    assert refused == []
+    card = open(written[0][1], encoding="utf-8").read()
+    assert second["receipt_sha256"] in card
+    assert first["receipt_sha256"] not in card
