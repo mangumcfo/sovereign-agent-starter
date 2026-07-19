@@ -33,7 +33,7 @@ def _chain(n=2):
     out, prior = [], None
     for i in range(n):
         rec = sealmod.make_receipt(f"V-{i}", "the word", "b" * 64, "published", prior, KEY,
-                                   now="20260719T000000Z")
+                                   "OPERATOR-1", now="20260719T000000Z")
         out.append(rec)
         prior = rec["receipt_sha256"]
     return out
@@ -61,7 +61,7 @@ def test_receipt_signed_by_a_different_key_does_not_verify():
     """A forged receipt — right shape, wrong signer — is refused. Possession of the
     format is not possession of the gate."""
     forged = sealmod.make_receipt("V-0", "the word", "b" * 64, "published", None,
-                                  b"y" * 48, now="20260719T000000Z")
+                                  b"y" * 48, "OPERATOR-1", now="20260719T000000Z")
     fails = sealmod.verify_chain([forged], KEY)
     assert any("signature invalid" in f for f in fails)
 
@@ -87,7 +87,7 @@ def test_intact_chain_verifies():
 def test_word_is_recorded_but_not_stored_plaintext():
     """A seal is traceable to a human utterance; the utterance itself is not left lying
     in the ledger."""
-    rec = sealmod.make_receipt("V-0", "S0v7", "b" * 64, "published", None, KEY)
+    rec = sealmod.make_receipt("V-0", "S0v7", "b" * 64, "published", None, KEY, "OPERATOR-1")
     assert "S0v7" not in json.dumps(rec)
     assert rec["word_sha256"] == __import__("hashlib").sha256(b"S0v7").hexdigest()
 
@@ -127,7 +127,7 @@ def test_internal_surface_publishes_unsealed_with_the_command_not_a_button(tmp_p
 
 
 def test_public_surface_publishes_a_sealed_volume_with_its_receipt(tmp_path):
-    rec = sealmod.make_receipt("V-1", "the word", VOL["freeze_sha"], "published", None, KEY)
+    rec = sealmod.make_receipt("V-1", "the word", VOL["freeze_sha"], "published", None, KEY, "OPERATOR-1")
     root = _ledger(tmp_path, rec)
     written, refused = pubmod.publish({"V-1": VOL}, "V-1", root, str(tmp_path / "out"),
                                       surface="public", key=KEY)
@@ -169,3 +169,14 @@ def test_card_stays_concise(tmp_path):
 def test_bad_surface_refused():
     with pytest.raises(ValueError):
         pubmod.publish({}, "--all", ".", ".", surface="everywhere")
+
+
+def test_seal_must_name_its_human(monkeypatch):
+    """The kernel carries no identity and invents none. An unnamed seal is refused —
+    a receipt that cannot say who sealed it is not a seal."""
+    monkeypatch.delenv("PRESS_PRINCIPAL", raising=False)
+    who, err = sealmod.principal()
+    assert who is None and "must name the human" in err
+    monkeypatch.setenv("PRESS_PRINCIPAL", "OPERATOR-1")
+    who, err = sealmod.principal()
+    assert who == "OPERATOR-1" and err is None

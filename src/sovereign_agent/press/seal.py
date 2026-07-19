@@ -5,6 +5,8 @@ instrument for producing a seal that the ledger can verify: `press seal <volume>
 
 Three properties make the gate structural rather than promised:
 
+0. **A seal names its human.** `PRESS_PRINCIPAL` must be set; the kernel carries no
+   identity of its own and refuses to invent one.
 1. **A seal requires the operator's key.** Receipts are HMAC-signed with a key the operator
    holds (`PRESS_SEAL_KEY`, a file readable only by them). No key, no seal — the command
    refuses, loud and fail-closed. A web session, a build runner, or a remote node cannot
@@ -47,6 +49,17 @@ def _key(env_get=os.environ.get, read=None):
     return material.strip(), None
 
 
+def principal(env_get=os.environ.get):
+    """WHO sealed. The kernel carries no identity of its own and invents none: the
+    operator names themselves via PRESS_PRINCIPAL, and an unnamed seal is refused.
+    A receipt that cannot say who sealed it is not a seal."""
+    who = (env_get("PRESS_PRINCIPAL") or "").strip()
+    if not who:
+        return None, ("PRESS_PRINCIPAL is not set — a seal must name the human who made "
+                      "it. The kernel does not assume an identity.")
+    return who, None
+
+
 def _canonical(rec):
     """Signed payload = the receipt minus its own signature fields, canonically ordered."""
     body = {k: v for k, v in rec.items() if k not in ("signature", "receipt_sha256")}
@@ -67,7 +80,7 @@ def load_chain(ledger_path):
     return list(read_ndjson(ledger_path).entries)
 
 
-def make_receipt(volume, word, artifact_sha, edition, prior_hash, key, now=None):
+def make_receipt(volume, word, artifact_sha, edition, prior_hash, key, principal, now=None):
     """The receipt both paths emit — identical by construction, because there is only
     one emitter. The site path renders the command that calls this; it never calls it."""
     rec = {
@@ -75,7 +88,7 @@ def make_receipt(volume, word, artifact_sha, edition, prior_hash, key, now=None)
         "volume": volume,
         "edition": edition,
         "artifact_sha256": artifact_sha,
-        "principal": os.environ.get("PRESS_PRINCIPAL", "KM-1176"),
+        "principal": principal,
         "word_sha256": hashlib.sha256(word.encode()).hexdigest(),
         "sealed_utc": now or time.strftime("%Y%m%dT%H%M%SZ", time.gmtime()),
         "prior_receipt_sha256": prior_hash,

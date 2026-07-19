@@ -1006,8 +1006,11 @@ def cmd_seal(vol_id, word=None, verify=False):
              f"to a broken chain ({fails[0]})")
 
     prior = chain[-1]["receipt_sha256"] if chain else None
+    who, perr = sealmod.principal()
+    if perr:
+        fail(f"SEAL REFUSED: {perr}")
     rec = sealmod.make_receipt(vol_id, word, vol["freeze_sha"],
-                              vol.get("stage", "unknown"), prior, key)
+                              vol.get("stage", "unknown"), prior, key, who)
     os.makedirs(runs_root, exist_ok=True)
     with open(ledger, "a", encoding="utf-8") as f:
         f.write(json.dumps(rec, sort_keys=True) + "\n")
