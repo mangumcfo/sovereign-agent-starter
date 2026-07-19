@@ -21,6 +21,8 @@ Usage:
   python3 press.py build S0               # a series (manifest prefix match)
   python3 press.py seal <volume> --word "<your seal word>"   # the human gate (needs your key)
   python3 press.py seal --verify          # re-check the whole seal chain
+  python3 press.py seal <volume> --reseal --supersede <receipt-id> --word "..."
+                                          # correct a recorded word by APPENDING
   python3 press.py publish <volume> [--surface public|internal] [--out DIR] [--dry-run]
   python3 press.py build S0,S3            # multiple series
   python3 press.py build --all
@@ -958,7 +960,7 @@ def cmd_build_offline(target):
     return 0 if ok else 1
 
 
-def cmd_seal(vol_id, word=None, verify=False):
+def cmd_seal(vol_id, word=None, verify=False, reseal=False, supersede=None):
     """The operator's seal instrument. The Press still never seals: this refuses unless
     the operator's KEY and WORD are both present, and it records both in the receipt."""
     from . import seal as sealmod
@@ -992,12 +994,22 @@ def cmd_seal(vol_id, word=None, verify=False):
         fail(f"SEAL REFUSED: {vol_id} has no frozen artifact sha — build it first; a seal "
              "over nothing is not a seal.")
 
-    if sealmod.latest_for(chain, vol_id):
+    if reseal:
+        if not supersede:
+            fail("SEAL REFUSED: --reseal requires --supersede <prior-receipt-id> — a "
+                 "correction must say exactly which receipt it replaces")
+        err = sealmod.check_supersede(chain, vol_id, supersede)
+        if err:
+            fail(f"SEAL REFUSED: {err}")
+    elif supersede:
+        fail("SEAL REFUSED: --supersede requires --reseal")
+    else:
         prior_rec = sealmod.latest_for(chain, vol_id)
-        if prior_rec.get("artifact_sha256") == vol.get("freeze_sha"):
+        if prior_rec and prior_rec.get("artifact_sha256") == vol.get("freeze_sha"):
             print(f"already sealed: {vol_id} at receipt {prior_rec['receipt_sha256']} "
                   f"({prior_rec['sealed_utc']}) — the artifact has not changed since. "
-                  "Nothing to do.")
+                  "Nothing to do. (To correct the recorded word: --reseal --supersede "
+                  f"{prior_rec['receipt_sha256']})")
             return 0
 
     fails = sealmod.verify_chain(chain, key)
@@ -1010,7 +1022,8 @@ def cmd_seal(vol_id, word=None, verify=False):
     if perr:
         fail(f"SEAL REFUSED: {perr}")
     rec = sealmod.make_receipt(vol_id, word, vol["freeze_sha"],
-                              vol.get("stage", "unknown"), prior, key, who)
+                              vol.get("stage", "unknown"), prior, key, who,
+                              supersedes=supersede if reseal else None)
     os.makedirs(runs_root, exist_ok=True)
     with open(ledger, "a", encoding="utf-8") as f:
         f.write(json.dumps(rec, sort_keys=True) + "\n")
@@ -1024,8 +1037,12 @@ def cmd_seal(vol_id, word=None, verify=False):
                 e["sealed_by_receipt"] = rec["receipt_sha256"]
         json.dump(q, open(qp, "w"), indent=2)
 
-    print(f"[SEALED] {vol_id} — receipt {rec['receipt_sha256']} by {rec['principal']} "
+    verb = "RE-SEALED" if reseal else "SEALED"
+    print(f"[{verb}] {vol_id} — receipt {rec['receipt_sha256']} by {rec['principal']} "
           f"at {rec['sealed_utc']}")
+    if reseal:
+        print(f"  supersedes {supersede} — that receipt stays in the chain as history; "
+              "nothing was rewritten or deleted")
     print(f"  artifact {rec['artifact_sha256'][:16]} · chained to "
           f"{rec['prior_receipt_sha256'] or '(genesis)'}")
     print("  the Press did not seal this; you did.")
@@ -1397,6 +1414,10 @@ def main():
         return rc.returncode
     if cmd == "seal":
         word = opt("--word")
+        supersede = opt("--supersede")
+        reseal = "--reseal" in args
+        if reseal:
+            args.remove("--reseal")
         if "--verify" in args:
             args.remove("--verify")
             no_residue(0)
@@ -1404,7 +1425,7 @@ def main():
         if not args:
             fail("seal requires a volume target: seal <volume> --word \"<your seal word>\"")
         no_residue(1)
-        return cmd_seal(args[0], word=word)
+        return cmd_seal(args[0], word=word, reseal=reseal, supersede=supersede)
     if cmd == "publish":
         out = opt("--out")
         surface = opt("--surface", "internal")

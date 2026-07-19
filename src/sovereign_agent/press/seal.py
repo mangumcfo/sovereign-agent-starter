@@ -80,7 +80,14 @@ def load_chain(ledger_path):
     return list(read_ndjson(ledger_path).entries)
 
 
-def make_receipt(volume, word, artifact_sha, edition, prior_hash, key, principal, now=None):
+def superseded_ids(chain):
+    """Receipt ids that a later receipt has superseded. Superseded receipts stay in the
+    chain as history — they are never removed, only pointed past."""
+    return {r["supersedes"] for r in chain if r.get("supersedes")}
+
+
+def make_receipt(volume, word, artifact_sha, edition, prior_hash, key, principal,
+                 now=None, supersedes=None):
     """The receipt both paths emit — identical by construction, because there is only
     one emitter. The site path renders the command that calls this; it never calls it."""
     rec = {
@@ -95,6 +102,10 @@ def make_receipt(volume, word, artifact_sha, edition, prior_hash, key, principal
         "law": ("sealing is a human act; this receipt proves the operator's key and word "
                 "were both present. The Press never seals."),
     }
+    if supersedes:
+        rec["supersedes"] = supersedes
+        rec["law"] += (" This receipt SUPERSEDES an earlier one, which remains in the chain "
+                       "as history: the record is corrected by appending, never by rewriting.")
     rec["signature"] = sign(rec, key)
     rec["receipt_sha256"] = hashlib.sha256(_canonical(rec)).hexdigest()[:16]
     return rec
@@ -117,9 +128,25 @@ def verify_chain(chain, key):
 
 
 def latest_for(chain, volume):
+    """The ACTIVE receipt for a volume: the most recent one that nothing supersedes."""
+    dead = superseded_ids(chain)
     for rec in reversed(chain):
-        if rec.get("volume") == volume:
+        if rec.get("volume") == volume and rec.get("receipt_sha256") not in dead:
             return rec
+    return None
+
+
+def check_supersede(chain, volume, prior_id):
+    """The rules a correction must satisfy. Returns an error string, or None."""
+    match = [r for r in chain if r.get("receipt_sha256") == prior_id]
+    if not match:
+        return f"no receipt {prior_id!r} in the ledger — nothing to supersede"
+    prior = match[0]
+    if prior.get("volume") != volume:
+        return (f"receipt {prior_id!r} seals {prior.get('volume')!r}, not {volume!r} — "
+                "a correction stays within its own volume")
+    if prior_id in superseded_ids(chain):
+        return f"receipt {prior_id!r} is already superseded — corrections do not stack"
     return None
 
 
