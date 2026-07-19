@@ -19,7 +19,7 @@ Sovereignty invariants (enforced here, not promised):
 Usage:
   python3 press.py build VOL-01            # one volume
   python3 press.py build S0               # a series (manifest prefix match)
-  python3 press.py seal <volume> --word "<your seal word>"   # the human gate (needs your key)
+  python3 press.py seal <volume>          # prompts for the word (typed, never pasted)
   python3 press.py seal --verify          # re-check the whole seal chain
   python3 press.py seal <volume> --reseal --supersede <receipt-id> --word "..."
                                           # correct a recorded word by APPENDING
@@ -987,8 +987,14 @@ def cmd_seal(vol_id, word=None, verify=False, reseal=False, supersede=None):
     if vol_id not in vols:
         fail(f"{vol_id} not in manifest (default-deny) — nothing unknown can be sealed")
     if not word:
-        fail("SEAL REFUSED: --word is required. A seal records a human utterance, not just "
-             "possession of a key.")
+        # The word is normally NOT passed on the command line: it is typed here, into the
+        # terminal, so it cannot be pasted, eaten by a shell, or left in history.
+        word, werr = sealmod.read_word(f"{vol_id} seal word (typed, not pasted): ")
+        if werr:
+            fail(f"SEAL REFUSED: {werr}")
+    elif sealmod.PLACEHOLDER.match(word):
+        fail(f"SEAL REFUSED: --word {word!r} reads as a placeholder — nothing was written. "
+             "Omit --word entirely and the seal will prompt you for it.")
     vol = vols[vol_id]
     if not vol.get("freeze_sha"):
         fail(f"SEAL REFUSED: {vol_id} has no frozen artifact sha — build it first; a seal "

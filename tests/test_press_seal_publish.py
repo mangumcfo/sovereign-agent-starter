@@ -270,3 +270,46 @@ def test_card_shows_the_corrected_receipt_not_the_placeholder(tmp_path):
     card = open(written[0][1], encoding="utf-8").read()
     assert second["receipt_sha256"] in card
     assert first["receipt_sha256"] not in card
+
+
+# ── the word comes from the keyboard, not the command line ─────────────────────
+
+def test_placeholder_words_are_refused():
+    """Four field failures taught this: a word passed as an argument can be pasted from a
+    document, eaten out of a paste buffer by a shell read, or left in history. The first
+    of those is caught here; the prompt removes the other two."""
+    for bad in ("", "   ", "<your word>", "YOUR WORD HERE", "placeholder", "xxxx", "change me"):
+        assert sealmod.PLACEHOLDER.match(bad), f"should read as placeholder: {bad!r}"
+    for good in ("S0v7", "the extension stands", "1176-INFINITY-RHO"):
+        assert not sealmod.PLACEHOLDER.match(good), f"should be a real word: {good!r}"
+
+
+def test_word_is_read_from_the_terminal_not_stdin(monkeypatch):
+    """Opened against /dev/tty specifically, so a pasted command line cannot supply it."""
+    opened = {}
+
+    class FakeTTY:
+        def __init__(self): opened["yes"] = True
+        def close(self): pass
+
+    monkeypatch.setattr("getpass.getpass", lambda prompt, stream=None: "a real seal word")
+    word, err = sealmod.read_word("word: ", opener=lambda p, m: FakeTTY() if p == "/dev/tty"
+                                  else (_ for _ in ()).throw(AssertionError(p)))
+    assert opened.get("yes") and word == "a real seal word" and err is None
+
+
+def test_prompted_placeholder_is_also_refused(monkeypatch):
+    class FakeTTY:
+        def close(self): pass
+    monkeypatch.setattr("getpass.getpass", lambda prompt, stream=None: "<your word>")
+    word, err = sealmod.read_word("word: ", opener=lambda p, m: FakeTTY())
+    assert word is None and "placeholder" in err
+
+
+def test_no_terminal_means_no_seal():
+    """A seal is spoken by a human at a keyboard. No tty, no seal — scripts cannot supply
+    the word by redirecting stdin."""
+    def no_tty(p, m):
+        raise OSError("no tty")
+    word, err = sealmod.read_word("word: ", opener=no_tty)
+    assert word is None and "no terminal available" in err
