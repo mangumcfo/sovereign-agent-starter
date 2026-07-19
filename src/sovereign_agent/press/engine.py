@@ -19,6 +19,9 @@ Sovereignty invariants (enforced here, not promised):
 Usage:
   python3 press.py build VOL-01            # one volume
   python3 press.py build S0               # a series (manifest prefix match)
+  python3 press.py seal <volume> --word "<your seal word>"   # the human gate (needs your key)
+  python3 press.py seal --verify          # re-check the whole seal chain
+  python3 press.py publish <volume> [--surface public|internal] [--out DIR] [--dry-run]
   python3 press.py build S0,S3            # multiple series
   python3 press.py build --all
   python3 press.py status
@@ -955,6 +958,102 @@ def cmd_build_offline(target):
     return 0 if ok else 1
 
 
+def cmd_seal(vol_id, word=None, verify=False):
+    """The operator's seal instrument. The Press still never seals: this refuses unless
+    the operator's KEY and WORD are both present, and it records both in the receipt."""
+    from . import seal as sealmod
+    runs_root = _env_path("PRESS_RUNS_DIR", os.path.join(_HERE, "press_runs"))
+    ledger = os.path.join(runs_root, sealmod.SEAL_LEDGER)
+    key, err = sealmod._key()
+    if err:
+        fail(f"SEAL REFUSED: {err}")
+    chain = sealmod.load_chain(ledger)
+
+    if verify:
+        fails = sealmod.verify_chain(chain, key)
+        if fails:
+            print(f"SEAL LEDGER FAILED — {len(fails)} problem(s):")
+            for f in fails:
+                print("  -", f)
+            return 1
+        print(f"seal ledger verifies — {len(chain)} receipt(s), chain intact, "
+              "every signature valid under the operator's key")
+        return 0
+
+    manifest = load_manifest(_env_path("PRESS_MANIFEST", os.path.join(_HERE, "press_manifest.yaml")))
+    vols = validate(manifest)
+    if vol_id not in vols:
+        fail(f"{vol_id} not in manifest (default-deny) — nothing unknown can be sealed")
+    if not word:
+        fail("SEAL REFUSED: --word is required. A seal records a human utterance, not just "
+             "possession of a key.")
+    vol = vols[vol_id]
+    if not vol.get("freeze_sha"):
+        fail(f"SEAL REFUSED: {vol_id} has no frozen artifact sha — build it first; a seal "
+             "over nothing is not a seal.")
+
+    if sealmod.latest_for(chain, vol_id):
+        prior_rec = sealmod.latest_for(chain, vol_id)
+        if prior_rec.get("artifact_sha256") == vol.get("freeze_sha"):
+            print(f"already sealed: {vol_id} at receipt {prior_rec['receipt_sha256']} "
+                  f"({prior_rec['sealed_utc']}) — the artifact has not changed since. "
+                  "Nothing to do.")
+            return 0
+
+    fails = sealmod.verify_chain(chain, key)
+    if fails:
+        fail("SEAL REFUSED: the existing seal ledger does not verify — refusing to append "
+             f"to a broken chain ({fails[0]})")
+
+    prior = chain[-1]["receipt_sha256"] if chain else None
+    who, perr = sealmod.principal()
+    if perr:
+        fail(f"SEAL REFUSED: {perr}")
+    rec = sealmod.make_receipt(vol_id, word, vol["freeze_sha"],
+                              vol.get("stage", "unknown"), prior, key, who)
+    os.makedirs(runs_root, exist_ok=True)
+    with open(ledger, "a", encoding="utf-8") as f:
+        f.write(json.dumps(rec, sort_keys=True) + "\n")
+
+    qp = os.path.join(runs_root, "seal_queue.json")
+    if os.path.exists(qp):
+        q = json.load(open(qp))
+        for e in q:
+            if e.get("volume") == vol_id and not e.get("sealed"):
+                e["sealed"] = True
+                e["sealed_by_receipt"] = rec["receipt_sha256"]
+        json.dump(q, open(qp, "w"), indent=2)
+
+    print(f"[SEALED] {vol_id} — receipt {rec['receipt_sha256']} by {rec['principal']} "
+          f"at {rec['sealed_utc']}")
+    print(f"  artifact {rec['artifact_sha256'][:16]} · chained to "
+          f"{rec['prior_receipt_sha256'] or '(genesis)'}")
+    print("  the Press did not seal this; you did.")
+    return 0
+
+
+def cmd_publish(target, out_dir=None, surface="internal", dry_run=False):
+    """Explicit projection to the docs surface. Never a build side effect."""
+    from . import publish as pubmod
+    from . import seal as sealmod
+    manifest = load_manifest(_env_path("PRESS_MANIFEST", os.path.join(_HERE, "press_manifest.yaml")))
+    vols = validate(manifest)
+    runs_root = _env_path("PRESS_RUNS_DIR", os.path.join(_HERE, "press_runs"))
+    out = out_dir or _env_path("PRESS_DOCS_OUT", os.path.join(_HERE, "docs_projection"))
+    key, _err = sealmod._key()
+    written, refused = pubmod.publish(vols, target, runs_root, out,
+                                      surface=surface, key=key, dry_run=dry_run)
+    tag = "[dry-run] " if dry_run else ""
+    for vid, path, words in written:
+        print(f"{tag}published {vid} -> {path} ({words} words)")
+    for vid, why in refused:
+        print(f"REFUSED {vid}: {why}")
+    print(f"\n{tag}{len(written)} published, {len(refused)} refused "
+          f"(surface={surface}) — a projection holds no state; the Press remains the "
+          "source of truth.")
+    return 1 if (refused and surface == "public" and not written) else 0
+
+
 def cmd_status():
     manifest = load_manifest(_env_path("PRESS_MANIFEST", os.path.join(_HERE, "press_manifest.yaml")))
     vols = validate(manifest)
@@ -1296,6 +1395,28 @@ def main():
             fail(f"report requires a series id like S2 or 2 — got {args[0]!r}")
         rc = subprocess.run(shlex.split(_env_path("PRESS_REPORT_CMD", f"{sys.executable} -m sovereign_agent.press.report")) + [sid])
         return rc.returncode
+    if cmd == "seal":
+        word = opt("--word")
+        if "--verify" in args:
+            args.remove("--verify")
+            no_residue(0)
+            return cmd_seal(None, verify=True)
+        if not args:
+            fail("seal requires a volume target: seal <volume> --word \"<your seal word>\"")
+        no_residue(1)
+        return cmd_seal(args[0], word=word)
+    if cmd == "publish":
+        out = opt("--out")
+        surface = opt("--surface", "internal")
+        if surface not in ("public", "internal"):
+            fail(f"--surface must be public|internal, got {surface!r}")
+        dry = "--dry-run" in args
+        if dry:
+            args.remove("--dry-run")
+        if not args:
+            fail("publish requires a target (VOL-01 | --all)")
+        no_residue(1)
+        return cmd_publish(args[0], out_dir=out, surface=surface, dry_run=dry)
     if cmd == "status":
         no_residue(0)
         return cmd_status()
