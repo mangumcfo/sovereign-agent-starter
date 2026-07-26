@@ -138,6 +138,11 @@ def load_cards(seeds_dir: Path, chapter=None):
             continue  # D-5: metadata/retired files (_volume_input.yaml, _retired_*) are not cards —
                       # they must never be validated as cards nor hard-kill the run at load
         c = yaml.safe_load(p.read_text(encoding="utf-8"))
+        if not (c.get("prose") or "").strip():
+            # PILOT defect-2 fix: an UNDRAFTED sibling is not a card to judge and must
+            # never crash the run — skip LOUDLY (a silent skip would hide missing drafts).
+            print(f"ADVERSARY SKIP (undrafted, no prose): {p.name}")
+            continue
         c["_file"] = str(p)
         if chapter is None or c.get("chapter") == chapter:
             reason = validate_seed_unit(c)

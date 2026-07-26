@@ -630,6 +630,7 @@ def cmd_cycle(vol_id, seeds_dir):
     tiers = load_manifest(_env_path("PRESS_MODEL_TIERS", os.path.join(_HERE, "model_tiers.yaml")))
     prose_model = tiers["tiers"]["local_30b"]["prose_model"]
     adv_cmd = _env_path("PRESS_ADVERSARY_CMD", f"{sys.executable} -m sovereign_agent.press.adversary")
+    pre_cmd = _env_path("PRESS_PRESCREEN_CMD", f"{sys.executable} -m sovereign_agent.press.prescreen")
     fix_cmd = _env_path("PRESS_SEEDFIX_CMD", f"{sys.executable} -m sovereign_agent.press.fixer")
     adv_dir = _env_path("PRESS_ADVERSARY_DIR", os.path.join(_ROOT, "artifacts", "adversary"))
     runs_root = _env_path("PRESS_RUNS_DIR", os.path.join(_HERE, "press_runs"))
@@ -660,6 +661,16 @@ def cmd_cycle(vol_id, seeds_dir):
               model=model or "none", qmode="cycle")
         return ok
 
+    def prescreen_gate():
+        """gate_rev law: deterministic canon/voice/claims gate between L0 and L1.
+        A violation writes an adversary-format record (fixer targets it like any KILL)."""
+        ok = run_step("prescreen_L0", f"{pre_cmd} --seeds {work_seeds} --record-dir "
+                      f"{os.path.join(adv_dir, vol_id)} --volume {vol_id} --gate",
+                      None, steps, model=None)
+        _qlog(runs_root, vid=vol_id, stage="prescreen_L0", event="done" if ok else "kill",
+              model=None, qmode="cycle")
+        return ok
+
     def fix_round():
         rec = newest_record()
         card = _pick_killed_card(work_seeds, rec)  # D-3: repair the card the adversary REFUTED,
@@ -675,15 +686,19 @@ def cmd_cycle(vol_id, seeds_dir):
         return ok
 
     result = "KILL"
-    for level in ("L0", "L1"):
-        passed = adversary(level)
-        if not passed:
-            if not fix_round() or not adversary(level):
-                break
-    else:
+    # gate_rev law: the deterministic prescreen sits between L0 (mechanical) and L1 (model
+    # judgment). Each stage that fails gets ONE fix round then a re-verify, same discipline.
+    def _stage(fn):
+        if fn():
+            return True
+        return fix_round() and fn()
+
+    if _stage(lambda: adversary("L0")) and _stage(prescreen_gate) and _stage(lambda: adversary("L1")):
         result = "PASS"
 
-    cycle = {"volume": vol_id, "cycle": "seed→adversary→fix→re-verify",
+    from .prescreen import GATE_REV
+    cycle = {"volume": vol_id, "gate_rev": GATE_REV,
+             "cycle": "seed→adversary_L0→prescreen→L1→fix→re-verify",
              "batch_plan": batch_plan, "steps": steps, "result": result,
              "zero_frontier": True,
              "note": "all model orders resolved via local_30b tier (local host); the human "
