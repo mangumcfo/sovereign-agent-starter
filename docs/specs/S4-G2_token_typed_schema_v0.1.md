@@ -128,3 +128,52 @@ The contract packet landed after this spec was staged; reconciliation, point by 
   left open) — extended, never bypassed; the ledger-level refusal record shape is S4-G1 §4's.
 
 ∞Δ∞
+
+---
+
+## Build notes v0.1 (AA web-side, 2026-07-26)
+
+**Module locations.** Validators + replay folds: `src/sovereign_agent/obligations/token_schema.py`
+(pure, stateless, crypto-free — the quorum_guard/mandate_guard module idiom; imports projection
+only, no cycle). Ledger insertion points: `ledger.py` — `open(kind=, token=)` →
+`_stamp_and_validate_token_open()`; `close()` → `_close_write_checks()` (evidence floor + registry
+supply cap); refusal recording via `_refuse_token()`. One pure projection extension:
+`projection.is_executed()` (order-aware like `is_closed`, but a rejected credit never reads as
+executed). Acceptance tests: `tests/test_token_schema.py`, numbered 1–10 to §6.
+
+**Registry design choice (declared config, never constants).** The charter registry is an
+operator-declared constructor param — `ObligationLedger(token_registry={token_id: {precision,
+supply_cap?}})` — the same standup idiom as `class_quorum` / `node_identity`; the S4-G1 policy
+document's optional `token_registry:` key is honored as a fallback when the constructor omits it
+(constructor wins). Unregistered id ⇒ refuse at open, rule TOKEN-1, recorded + raised.
+
+**Ambiguities resolved (stated loudly, not guessed silently):**
+1. *Materiality at open.* All four event kinds AND the checkpoint must be OPENED `material=True`;
+   a non-material token open is REFUSED (rule TOKEN-GATE), never silently upgraded. The §1
+   "transfer per policy" gate-class relaxation would need a predicate the G1 v0.1 vocabulary does
+   not have — not invented; transfers are material in v0.1.
+2. *Transfer E1 floor.* Enforced in the close validator itself, so `require_e1=False` cannot duck
+   the §1 floor (test 4 proves both lanes).
+3. *Refusal recording.* G2 structural refusals are RECORDED on-chain in the S4-G1 §4 record shape
+   (`policy_id: "S4-G2"`, `policy_version: "0.1"`, rule ids TOKEN-1/-LEGS/-AMOUNT/-GATE/-EVIDENCE/
+   -CAP/-SCHEMA) and then raised — the addendum's raise-and-record posture applied to G2 too.
+4. *Rejected closes.* The pre-S4 credit shape did not record `close(rejected=True)` at all, so a
+   refused mint would have counted into supply. The credit now stamps `rejected: true` WHEN AND
+   ONLY WHEN the close is a rejection (additive; absent on every pre-S4 chain and every executed
+   close), and the folds count it as 0 via `is_executed`. "Open/refused entries count 0" §3.
+5. *No overdraft rule.* §2's validation list has no balance-floor check and none was invented — a
+   holder balance MAY go negative in v0.1 (a balance_floor predicate is future G1 vocabulary).
+6. *Checkpoint correctness is judged at verify, not open.* `validate_open` checks shape only;
+   `verify_checkpoint` recomputes from genesis and raises `TokenIntegrityBreach` on any drift —
+   exactly the §3 "verification recomputes" posture. Verification requires the checkpoint sealed.
+7. *Test 7 (cap) is delivered on BOTH lanes.* The registry-declared cap fires in the token
+   validator at close (rule TOKEN-CAP cited, same refusal shape) — the "until then" lane; the
+   S4-G1 `supply_cap` policy-rule wire is proven by G1 acceptance test 3 over the shared
+   `supply_cap_mint_history` fixture.
+
+**Not delivered (loud):** the S3-G1 `as_of` replay parameter — checkpoints verify against
+full-genesis replay only, exactly as §3 scopes for now. No staking schema (S4-G4, §5 fence).
+Suite proof: 442 baseline tests green before, 462 (442 + 20) green after; zero existing tests
+modified. `cmd_seal` untouched; money_path OFF.
+
+∞Δ∞

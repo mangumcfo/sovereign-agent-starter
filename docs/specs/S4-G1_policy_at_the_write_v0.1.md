@@ -133,3 +133,67 @@ no change to AH-1's authority (a rule may demand the human gate; nothing may wai
   (no-default) discipline.
 
 ∞Δ∞
+
+---
+
+## Build notes v0.1 (AA web-side, 2026-07-26)
+
+**Module locations.** Rule documents, the 6-predicate vocabulary, evaluation, refusal records:
+`src/sovereign_agent/obligations/write_rules.py`. Ledger insertion points: `ledger.py` —
+constructor `write_policy=` / `allow_placeholder=` (declaring a policy is the enforcement opt-in);
+`_open_write_checks()` / `_approve_point_policy()` / `_close_write_checks()` at the three write
+points; `_refuse_write()` implements raise-AND-record; `_policy_in_force()` derives the active
+policy by replay fold. The §5 retirement landed in `compliance/policy_loader.py`: `load_policy`
+now RAISES `PolicyNotLoadableError` on a missing document; the placeholder survives only behind
+`allow_placeholder=True` and stamps `version: PLACEHOLDER`. Acceptance tests:
+`tests/test_policy_at_write.py`, numbered 1–10 to §8 (test 3 shares G2's supply-cap fixture;
+test 10 = no policy declared ⇒ entry-for-entry identical shapes).
+
+**Module-location choice (stated loudly).** `write_rules.py` lives in `obligations/`, not
+`compliance/`: the ledger's write points import it, and importing `compliance.write_rules` would
+execute `compliance/__init__` → `compliance_engine` inside the ledger import path (heavier,
+cycle-prone). The "loads through the existing PolicyLoader path" clause is honored structurally:
+`load_write_policy` accepts a PolicyLoader-loaded `Policy` object (duck-typed on `.raw_content`),
+a dict document, a YAML path, or a `WritePolicy` — same document shape, `write_rules:` key added,
+legacy documents load unchanged.
+
+**Ambiguities resolved (stated loudly, not guessed silently):**
+1. *threshold_second_approver.* At open() a matched rule raises the quorum floor to 2 through the
+   existing quorum_guard compose (stamped `quorum` + `quorum_source: "rule:<id>"` — replayable
+   provenance; class floors and rule floors compose as floors, higher bar wins). approve() keeps
+   the existing Slice-2.2 semantics EXACTLY: a 1-of-2 approval appends and does not raise (that is
+   how quorum-pending approvals already behave). The spec's "an approve() that doesn't meet the
+   raised floor is then refused with the rule cited" is delivered at the close() write point —
+   where an under-floor EXECUTION is actually attempted — as a recorded refusal citing the rule
+   (acceptance test 5). Rule floors bind the material class only (AH-1's boundary, same as
+   class_quorum).
+2. *require_gate adds zero code by design* — it loads/validates (`gate: human` only) and delegates
+   wholly to AH-1; the DENIED record shape is byte-compatible with a policy-less ledger's (test 6).
+3. *POLICY-0 scope.* Refuses MATERIAL writes only (§5's words); non-material writes proceed on a
+   declared-but-unloadable-policy ledger.
+4. *As-of versioning.* Implemented as as-of-CHAIN-POSITION, not wall-clock: the active policy is
+   `active_policy(entries, declared)` — a fold taking the LAST SEALED (executed, not rejected)
+   `policy.amend` entry, whose full document + sha256 travel ON the debit (validated loadable at
+   open, E2-hash evidence enforced at close). On an append-only chain this is the same ordering
+   §6 names by time. Historical refusal records permanently carry the version in force at their
+   write (test 8 asserts 1.0 / 1.0 / 2.0); a fresh instance over the same chain re-derives the
+   same active version. Compromise stated: there is no retroactive rule re-EVALUATION lane — the
+   durable refusal records ARE the as-of derivation, which is §4's own posture (replay re-derives
+   the same refusals).
+5. *Amount source.* `token.amount` first, else `lgp.economic_value` (the B4 denomination seam). A
+   matched amount rule with NO readable amount refuses loudly — never a silent pass.
+6. *Load strictness.* Rule/effect pairing is fixed at load (threshold_second_approver ⇔
+   require_second_approver); duplicate ids, empty applies_to, unknown selectors/predicates,
+   float-typed Decimals and float YAML versions all refuse to load.
+7. *Evaluation ordering at close.* Policy close rules run after the evidence-tier guards and
+   BEFORE the human-primacy approval guard, so a rule-cited refusal is not masked by the generic
+   gate message. Applies only to policy-declared ledgers (opt-in, no default-path change).
+8. *classification selector* matches the entry's `classification` field verbatim — operator
+   vocabulary, no meaning hardcoded.
+
+**Not delivered (loud):** external anchoring of the document Merkle root — exactly as §6 already
+scopes (SEALED-HOST-SEAM; not claimed). No boolean rule composition, no runtime rule authoring
+(§7 fences). Suite proof: 442 baseline tests green before, 462 (442 + 20) green after; zero
+existing tests modified. `cmd_seal` untouched; money_path OFF.
+
+∞Δ∞

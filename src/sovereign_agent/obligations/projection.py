@@ -26,6 +26,21 @@ def is_closed(entries: list[dict], obligation_id: str) -> bool:
     return state == "closed"
 
 
+def is_executed(entries: list[dict], obligation_id: str) -> bool:
+    # Order-aware like is_closed, but a credit recorded as a REJECTION (rejected=True — a human
+    # refusal, not an execution) never counts as executed. S4-G2/G1 fold predicate: a refused token
+    # event moves no supply ("open/refused entries count 0") and a refused policy.amend amends
+    # nothing. Entries closed by the pre-S4 close() shape (no `rejected` field) read as executed —
+    # byte-identical to is_closed for every chain written before this field existed.
+    state = None
+    for e in entries:
+        if e.get("type") == "credit" and e.get("closes") == obligation_id:
+            state = "rejected" if e.get("rejected") else "executed"
+        elif e.get("type") == "reopen" and e.get("reopens") == obligation_id:
+            state = "open"
+    return state == "executed"
+
+
 def is_approved(entries: list[dict], obligation_id: str) -> bool:
     # AH-1 (Option A, the operator-ratified 2026-07-08): opener ≠ approver for the MATERIAL class. A material
     # obligation self-approved by its own owner does NOT clear the breath-gate — UNLESS a real human

@@ -42,6 +42,13 @@ class Policy:
     module_root: Optional[str] = None   # Merkle root for attestation
 
 
+class PolicyNotLoadableError(FileNotFoundError):
+    """S4-G1 §5: a requested policy document that cannot be found/loaded is a LOUD failure —
+    the silent permissive placeholder ("a green light with no bulb") is retired. Callers that
+    genuinely want a dev-harness stand-in must pass allow_placeholder=True and get a policy
+    stamped version PLACEHOLDER — visible, impossible to mistake for governance."""
+
+
 class PolicyLoader:
     """
     Loads Playbook 6-style policy definitions dynamically.
@@ -81,11 +88,17 @@ class PolicyLoader:
 
         return sorted(list(policies))
 
-    def load_policy(self, policy_id: str, force_reload: bool = False) -> Policy:
+    def load_policy(self, policy_id: str, force_reload: bool = False,
+                    allow_placeholder: bool = False) -> Policy:
         """
         Load a policy definition.
 
         Supports hot-reload if the underlying file has changed since last load.
+
+        S4-G1 §5: a missing/unfindable document RAISES PolicyNotLoadableError (fail-closed) —
+        the former silent permissive placeholder is retained ONLY behind allow_placeholder=True
+        (dev harnesses), and it stamps version PLACEHOLDER so replay can never mistake it for
+        governance.
         """
         cache_key = policy_id
 
@@ -116,10 +129,16 @@ class PolicyLoader:
                 break
 
         if content is None:
-            # Fallback placeholder for development / missing policies
+            if not allow_placeholder:
+                # S4-G1 §5: the silent permissive placeholder is retired — fail loud, rule POLICY-0.
+                raise PolicyNotLoadableError(
+                    f"[POLICY-0] policy '{policy_id}' declared but not loadable — fail-closed "
+                    f"(S4-G1 §5). No document at: {[str(c) for c in candidates]}. Pass "
+                    f"allow_placeholder=True ONLY for dev harnesses (stamps version PLACEHOLDER).")
+            # Dev-harness placeholder (explicit opt-in) — stamped PLACEHOLDER, visible in replay.
             content = {
                 "id": policy_id,
-                "version": "0.0",
+                "version": "PLACEHOLDER",
                 "data_classification_rules": {"default": "C1_INTERNAL"},
                 "charter_v7_rules": [],
                 "retention_rules": {"default": "sovereign_default"},

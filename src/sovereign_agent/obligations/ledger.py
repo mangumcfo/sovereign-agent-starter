@@ -26,6 +26,8 @@ from .provenance import _assert_source_ref_resolves
 from . import projection as _proj
 from . import mandate_guard as _mandate_guard
 from . import quorum_guard as _quorum_guard
+from . import token_schema as _token_schema
+from . import write_rules as _write_rules
 
 
 class AlreadyClosedError(RuntimeError):
@@ -45,7 +47,9 @@ class ObligationLedger:
                  principal_id: str = "node",
                  gate=None, attestor=None,
                  class_quorum: Optional[dict] = None,
-                 node_identity: Optional[dict] = None):
+                 node_identity: Optional[dict] = None,
+                 token_registry: Optional[dict] = None,
+                 write_policy=None, allow_placeholder: bool = False):
         """gate / attestor are OPTIONAL duck-typed callables (thin-waist injection):
           gate(action, obligation) -> {"status": "approved"|"denied", ...} — breath-gate disposition (Phase 2).
           attestor(action_class, principal_id, payload, result_summary) -> {"receipt_hash": str, ...}.
@@ -65,6 +69,33 @@ class ObligationLedger:
         #                   from identity at approve() and are stamped on the approval entry.
         self.class_quorum = dict(class_quorum) if class_quorum else None
         self.node_identity = dict(node_identity) if node_identity else None
+        # S4-G2/G1 declared config (both optional; absent ⇒ prior behavior byte-identical):
+        #   token_registry — {token_id: {precision, supply_cap?}} (operator-declared; an
+        #                    unregistered token_id refuses at open, rule TOKEN-1). May also ride
+        #                    the write-policy document's token_registry: key (constructor wins).
+        #   write_policy   — a write_rules document (dict / YAML path / PolicyLoader Policy /
+        #                    WritePolicy). DECLARING it enables policy-at-the-write enforcement;
+        #                    declared-but-unloadable ⇒ POLICY-0 fail-closed on every material
+        #                    write (S4-G1 §5) unless allow_placeholder=True (dev harnesses only —
+        #                    blessed entries are stamped policy_version: PLACEHOLDER, visible in
+        #                    replay, impossible to mistake for governance).
+        self.token_registry = dict(token_registry) if token_registry else None
+        self.write_policy_declared = write_policy is not None
+        self.allow_placeholder = bool(allow_placeholder)
+        self._declared_write_policy = None
+        self._write_policy_error = None
+        self._write_policy_ref = type(write_policy).__name__ if write_policy is not None else None
+        if write_policy is not None:
+            if isinstance(write_policy, (str, os.PathLike)):
+                self._write_policy_ref = str(write_policy)
+            try:
+                self._declared_write_policy = _write_rules.load_write_policy(write_policy)
+                self._write_policy_ref = self._declared_write_policy.id
+            except _write_rules.WritePolicyLoadError as exc:
+                self._write_policy_error = str(exc)   # POLICY-0 state — loud at the write, never silent
+            if self.token_registry is None and self._declared_write_policy is not None \
+                    and self._declared_write_policy.token_registry:
+                self.token_registry = dict(self._declared_write_policy.token_registry)
 
     # ── chain primitives ──────────────────────────────────────────────
     _ENTRIES_HEAD = 256   # bytes of the file head used to detect a rewrite vs a pure append
@@ -210,6 +241,170 @@ class ObligationLedger:
             tmp.replace(self.path)
             return {"repaired": True, "was_valid": False, "entries": len(entries), "backup": str(backup)}
 
+    # ── S4-G1 policy-at-the-write plumbing (opt-in: fires only when a write_policy is declared) ──
+    def _policy_in_force(self):
+        """(policy, placeholder) — the ACTIVE write policy by replay fold over sealed policy.amend
+        entries (write_rules.active_policy; §6 as-of correctness — never instance state).
+        (None, False) ⇒ declared-but-unloadable ⇒ POLICY-0 fail-closed on material writes (§5);
+        (None, True)  ⇒ dev-harness placeholder (allow_placeholder=True), stamps PLACEHOLDER."""
+        if self._write_policy_error is None and self._declared_write_policy is not None:
+            try:
+                return _write_rules.active_policy(self._entries(), self._declared_write_policy), False
+            except _write_rules.WritePolicyLoadError as exc:
+                self._write_policy_error = str(exc)   # sealed amendment no longer parses — fail closed
+        return (None, True) if self.allow_placeholder else (None, False)
+
+    def _refuse_write(self, violation, write_point: str, entry_ref: str):
+        """§4: raise-AND-record, never raise-only — the refusal is appended as a ledger fact (the
+        same recorded-disposition pattern as AH-1's DENIED), then raised in the
+        EconomicActionRefused posture (PermissionError family, loud, fail-closed)."""
+        self._append(_write_rules.refusal_record(violation, write_point=write_point,
+                                                 entry_ref=entry_ref, principal_id=self.principal_id))
+        raise _write_rules.WriteRefused(
+            f"policy refusal at {write_point}: [{violation.rule_id}] {violation.message} "
+            f"(policy {violation.policy_id} v{violation.policy_version}; refusal recorded, "
+            f"entry_ref {entry_ref})")
+
+    def _refuse_policy0(self, write_point: str, entry_ref: str):
+        """§5 loud fallback: declared-but-unloadable policy ⇒ every MATERIAL write refuses POLICY-0."""
+        self._refuse_write(_write_rules.policy0_violation(self._write_policy_ref or "UNKNOWN",
+                                                          self._write_policy_error),
+                           write_point, entry_ref)
+
+    def _refuse_token(self, exc, write_point: str, entry_ref: str):
+        """S4-G2 refusal as a ledger fact (the §4 record shape per the G2 addendum), then re-raise
+        the original TokenEventRefused (EconomicActionRefused posture — PermissionError family)."""
+        self._append(_write_rules.refusal_record(
+            _write_rules.Violation(rule_id=exc.rule_id, policy_id="S4-G2",
+                                   policy_version="0.1", message=str(exc)),
+            write_point=write_point, entry_ref=entry_ref, principal_id=self.principal_id))
+        raise exc
+
+    def _open_write_checks(self, entry: dict, kind, token, material: bool,
+                           policy_amendment) -> tuple:
+        """The open()-point S4 checks, in order: G2 token validation (§2, fires ONLY on token.*
+        kinds) → G1 §6 policy.amend load-at-open → G1 open-point rules. Returns the
+        (rule_quorum_floor, rule_id) a matched threshold_second_approver raised (1, None when none).
+        Opt-in throughout: no kind/token/policy declared ⇒ this stamps nothing and returns (1, None)."""
+        self._stamp_and_validate_token_open(entry, kind, token, material)
+        if kind == "policy.amend":
+            self._validate_policy_amend_open(entry, material, policy_amendment)
+        if not self.write_policy_declared:
+            return 1, None
+        policy, placeholder = self._policy_in_force()
+        if placeholder:
+            entry["policy_version"] = _write_rules.PLACEHOLDER_VERSION   # §5: visible in replay
+            return 1, None
+        if policy is None:
+            if material:
+                self._refuse_policy0("open", entry["id"])
+            return 1, None
+        violation, rule_floor, rule_floor_src = _write_rules.evaluate_open(
+            policy, _write_rules.entry_ctx(entry))
+        if violation is not None:
+            self._refuse_write(violation, "open", entry["id"])
+        return rule_floor, rule_floor_src
+
+    def _stamp_and_validate_token_open(self, entry: dict, kind, token, material: bool):
+        """Stamp kind/token on the entry, then S4-G2 §2 validation for token.* kinds — legs match
+        the kind's table, positive Decimal within precision, registered token_id, dr≠cr. Refusal
+        with reason (recorded + raised), never a silent drop."""
+        if kind:
+            entry["kind"] = kind
+        if token is not None:
+            entry["token"] = dict(token)
+        if _token_schema.is_token_kind(kind):
+            try:
+                _token_schema.validate_open(self.token_registry, kind, entry.get("token"),
+                                            material=material)
+            except _token_schema.TokenEventRefused as exc:
+                self._refuse_token(exc, "open", entry["id"])
+
+    def _validate_policy_amend_open(self, entry: dict, material: bool, policy_amendment):
+        """S4-G1 §6: the amendment document must LOAD at open (fail-closed at load, not at first
+        use) and TRAVELS ON the entry — the active policy is a pure replay fold over sealed
+        amendments, so the version in force at any write is re-derivable forever."""
+        if not material:
+            raise _write_rules.WriteRefused(
+                "policy.amend must be a MATERIAL obligation (AH-1 human gate + E2 seal — S4-G1 §6)")
+        doc = (policy_amendment or {}).get("document")
+        if doc is None:
+            raise _write_rules.WriteRefused(
+                "policy.amend requires policy_amendment={'document': <write_rules doc>} (S4-G1 §6)")
+        _write_rules.load_write_policy(doc)   # refuses to load ⇒ refuses to open (loud)
+        entry["policy_amendment"] = {"document": doc,
+                                     "document_sha256": _write_rules.document_sha256(doc)}
+
+    def _quorum_floor_and_source(self, material: bool, classification: str,
+                                 rule_floor: int, rule_floor_src) -> tuple:
+        """Compose the Charter's class floor (Slice 2.2) with an S4-G1 threshold_second_approver
+        floor: BOTH are floors — the higher bar wins, never the lower — and the source is stamped
+        so the bar's provenance replays (class:<classification> or rule:<rule_id>)."""
+        q_floor = _quorum_guard.class_quorum_floor(self.class_quorum, classification) if material else 1
+        if material and rule_floor > q_floor:   # rule floors bind the MATERIAL class only (K4 = AH-1's boundary)
+            return rule_floor, f"rule:{rule_floor_src}"
+        return q_floor, f"class:{classification}"
+
+    def _approve_point_policy(self, ob: dict, obligation_id: str):
+        """S4-G1 approve point: POLICY-0 fail-closes a material approve when the declared policy is
+        unloadable (§5); placeholder mode returns the PLACEHOLDER stamp. The two approve-point
+        predicates add no code here BY DESIGN: require_gate delegates to AH-1 (adds nothing —
+        nothing may waive it, §7); threshold_second_approver acts through the quorum floor stamped
+        at open() (addendum: not a third intercept)."""
+        if not self.write_policy_declared:
+            return None
+        policy, placeholder = self._policy_in_force()
+        if placeholder:
+            return _write_rules.PLACEHOLDER_VERSION
+        if policy is None and ob.get("material"):
+            self._refuse_policy0("approve", obligation_id)
+        return None
+
+    def _close_write_checks(self, ob: dict, obligation_id: str, tier, rejected: bool):
+        """The close()-point S4 checks: G2 evidence floor + registry supply cap (replay INCLUDING
+        the closing entry) → G1 §6 amendment E2 floor → G1 close-point rules. A rejection is exempt
+        throughout — refusing is itself the human disposition ('no' needs no floor/cap), and a
+        rejected close moves no supply / amends nothing (is_executed reads the `rejected` stamp).
+        Returns the PLACEHOLDER stamp for the credit (None outside placeholder mode)."""
+        if rejected:
+            return None
+        if _token_schema.is_token_kind(ob.get("kind")):
+            try:
+                _token_schema.validate_close(self.token_registry, ob, tier.value, self._entries())
+            except _token_schema.TokenEventRefused as exc:
+                self._refuse_token(exc, "close", obligation_id)
+        if ob.get("kind") == "policy.amend" and tier != EvidenceTier.E2_VERIFIED:
+            raise ValueError(
+                f"policy.amend '{obligation_id}' requires E2 evidence (the new document's file "
+                f"hash) to seal — got {tier.value} (S4-G1 §6)")
+        if not self.write_policy_declared:
+            return None
+        policy, placeholder = self._policy_in_force()
+        if placeholder:
+            return _write_rules.PLACEHOLDER_VERSION
+        if policy is None:
+            if ob.get("material"):
+                self._refuse_policy0("close", obligation_id)
+            return None
+        violation = _write_rules.evaluate_close(
+            policy, _write_rules.entry_ctx(ob), tier_value=tier.value, entries=self._entries(),
+            approved=self._is_approved(obligation_id) if ob.get("material") else True)
+        if violation is not None:
+            self._refuse_write(violation, "close", obligation_id)
+        return None
+
+    @staticmethod
+    def _s4_entry_stamps(rejected: bool, policy_stamp) -> dict:
+        """Additive S4 stamps for a credit/approval entry — {} for every pre-S4-shaped write."""
+        out = {}
+        if rejected:
+            # S4-G2/G1: the human REFUSAL is stamped so replay can tell a recorded 'no' from an
+            # execution (a rejected token event moves no supply; a rejected amend amends nothing).
+            out["rejected"] = True
+        if policy_stamp:
+            out["policy_version"] = policy_stamp   # §5: PLACEHOLDER visible in replay, always
+        return out
+
     # ── lifecycle ─────────────────────────────────────────────────────
     def open(self, title: str, owner: Optional[str] = None,
              classification: str = "C2", intent: Optional[str] = None,
@@ -217,7 +412,9 @@ class ObligationLedger:
              lgp: Optional[dict] = None, next_gate: Optional[str] = None,
              category: Optional[str] = None, lane: Optional[str] = None,
              requires_attestation: Optional[list] = None, veto_window: Optional[str] = None,
-             mandate: Optional[str] = None, quorum: Optional[int] = None) -> dict:
+             mandate: Optional[str] = None, quorum: Optional[int] = None,
+             kind: Optional[str] = None, token: Optional[dict] = None,
+             policy_amendment: Optional[dict] = None) -> dict:
         """Open an obligation = a DRAFT action-proposal (debit). CYL-006: starts draft.
 
         material=True ⇒ a gated ledger requires human approval (breath-gate) before close.
@@ -227,6 +424,9 @@ class ObligationLedger:
         category / lane (A2 capture classification) ⇒ the one-tap capture category (typo/wording/
           structure/technical/judgment) and the lane it routed to (batch | discrete). Travel WITH the
           obligation so triage never lands downstream — the 36% 'other' is killed at capture, not after.
+        kind (S4) ⇒ optional entry kind. token.* kinds carry a `token` block (S4-G2 §2: token_id/
+          amount/dr_account/cr_account[/memo]) validated at open; 'policy.amend' carries
+          policy_amendment={'document': …} (S4-G1 §6). All three params absent ⇒ behavior unchanged.
         """
         # Resolve-at-entry (audit 2026-06-13): a path-like `ref` sealed at open() must resolve, the same
         # resolve-or-symbolic-or-raise rule close()'s source_ref obeys — a pointer is never written false.
@@ -264,17 +464,25 @@ class ObligationLedger:
         if mandate:
             entry["mandate"] = mandate      # Slice 2.1: constitutional mandate this obligation is scoped
             #                                 to (S2-V4 Ch 2). Absent ⇒ unscoped / single-mandate sovereign.
+        # ── S4-G2 + S4-G1 open-point checks (both OPT-IN — a ledger opened as before never enters
+        # them: token validation fires only on token.* kinds; policy rules only when a write policy
+        # is declared). Every refusal is recorded AND raised; a matched threshold_second_approver
+        # returns a raised quorum floor composed below (the quorum_guard path — no new gate code).
+        rule_floor, rule_floor_src = self._open_write_checks(entry, kind, token, bool(material),
+                                                             policy_amendment)
         # Slice 2.2 + class-level config (S2-V3 Ch 5 "the operator sets it per proposal class"):
         # the Charter's class_quorum mapping is a FLOOR for MATERIAL obligations — a declaration may
         # raise the bar, never undercut it. Resolved HERE and stamped on the debit so is_approved()
         # remains a pure replay over committed entries (nothing external at read time). Non-material
         # keeps quorum-1 (the guard only enforces quorum on the material class — same boundary as AH-1).
-        q_floor = _quorum_guard.class_quorum_floor(self.class_quorum, classification) if material else 1
+        # S4-G1 K4 composes as a floor the same way (_quorum_floor_and_source — raise, never lower).
+        q_floor, q_src = self._quorum_floor_and_source(material, classification,
+                                                       rule_floor, rule_floor_src)
         q_eff = _quorum_guard.effective_quorum(quorum, q_floor)
         if q_eff > 1:
             entry["quorum"] = q_eff         # N distinct gate-valid approvers, opener excluded.
             if q_floor > 1 and q_eff == q_floor:
-                entry["quorum_source"] = f"class:{classification}"  # the Charter's class floor set the bar
+                entry["quorum_source"] = q_src
         return self._append(entry)
 
     # ── lookups ───────────────────────────────────────────────────────
@@ -312,6 +520,9 @@ class ObligationLedger:
         ob = self._require(obligation_id)  # audit guard: no orphan approvals (also: material-class check)
         if self._is_closed(obligation_id):
             raise AlreadyClosedError(f"obligation '{obligation_id}' is already closed — cannot approve")
+        # ── S4-G1 approve point (opt-in; see _approve_point_policy — POLICY-0 fail-closed / the
+        # PLACEHOLDER stamp; require_gate delegates to AH-1 below, adding + waiving nothing).
+        _policy_stamp = self._approve_point_policy(ob, obligation_id)
         disposition, gate_meta = "approved", None
         if self.gate is not None:
             verdict = self.gate("approve", {"id": obligation_id, "approved_by": approved_by,
@@ -335,6 +546,7 @@ class ObligationLedger:
             "principal_id": self.principal_id,
             "timestamp": _now(),
         }
+        entry.update(self._s4_entry_stamps(False, _policy_stamp))
         # Record the acting principal's mandate context ON the approval so is_approved()'s replay reads
         # committed data (same idiom as AH-1's recorded gate) — never external, self-asserted-at-write.
         # Held-mandate resolution from node identity (S2-V4 Ch 2 §215): when the acting principal is
@@ -401,6 +613,11 @@ class ObligationLedger:
                 f"Evidence tier E0 (claim-only) insufficient to close '{obligation_id}'. "
                 f"Provide an artifact pointer / hash / receipt (E1+)."
             )
+        # ── S4-G2 + S4-G1 close-point checks (both OPT-IN; see _close_write_checks): the G2
+        # evidence floor + registry supply cap replayed INCLUDING the closing entry, the §6
+        # amendment E2 floor, then the policy close rules — first failing rule refuses, recorded +
+        # raised (§4). A rejection is exempt throughout (refusing is itself the human disposition).
+        _policy_stamp = self._close_write_checks(ob, obligation_id, tier, rejected)
         # Human primacy (CYL-006): a MATERIAL obligation cannot EXECUTE (close with work-done) until it
         # has cleared the breath-gate. A rejection is exempt — refusing is itself the human disposition.
         # FAIL-CLOSED (audit 2026-06-13 MED): the guard no longer depends on `self.gate is not None`. A
@@ -463,6 +680,7 @@ class ObligationLedger:
             "receipt": receipt,
             "timestamp": _now(),
         }
+        entry.update(self._s4_entry_stamps(rejected, _policy_stamp))
         return self._append(entry)
 
     def _require(self, obligation_id: str) -> dict:
