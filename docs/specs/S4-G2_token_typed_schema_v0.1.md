@@ -103,3 +103,28 @@ deliberately ships without it.
 10. Existing 433-test suite stays green (no schema break).
 
 ∞Δ∞
+
+---
+
+## Addendum — reconciled against Tiger's B5 substrate contract (workbench 2bcf59b, starter 23a081d)
+
+The contract packet landed after this spec was staged; reconciliation, point by point:
+
+- **Ground truth advanced:** starter main is now `23a081d` (B4 Tiger-half: Breath-26 engines
+  wired). Verified: nothing in that commit conflicts with this spec; B4's adapter books value
+  as **free-string `lgp` attribution blocks** (`economic_value`, `denomination`,
+  `money_path: OFF`) on paired dr/cr obligations — the exact seam the contract names.
+- **The denomination seam, made explicit:** B4's `denomination`/`denomination_in/out` strings
+  are the pre-schema surface; this spec is their law. When G2 builds, a denomination string
+  resolves against the charter-registered `token_id` space (unregistered ⇒ refuse at open,
+  rule TOKEN-1). The `token:` block supersedes free-string denomination **for `token.*` kinds
+  only**; existing sealed B4 entries are never rewritten (append-only — coexistence, not
+  migration).
+- **Contract recommendations already honored as written:** field-extensions + projection-fold,
+  not a parallel store (§1/§3) · valuation/fee model left to B3 (§5) · stake greenfield,
+  composes later as S4-G4 (§5).
+- **Refusal idiom bound:** G2 validation refusals at the adapter surface ride
+  `EconomicActionRefused` (the PermissionError family, loud, fail-closed, proposed entries
+  left open) — extended, never bypassed; the ledger-level refusal record shape is S4-G1 §4's.
+
+∞Δ∞

@@ -113,3 +113,23 @@ no change to AH-1's authority (a rule may demand the human gate; nothing may wai
 10. Existing 433-test suite stays green with no policy declared (no behavior change by default).
 
 ∞Δ∞
+
+---
+
+## Addendum — reconciled against Tiger's B5 substrate contract (workbench 2bcf59b, starter 23a081d)
+
+- **Intercept points confirmed against live code:** the contract confirms there is *no policy
+  consult today* on `open/close` — those two are the intercepts (§1/§4 as written). The
+  `approve()`-point enforcement in this spec is **not a third intercept**: it is the quorum-floor
+  raise through the existing `quorum_guard` path plus AH-1 delegation — no new gate code, per
+  the contract's "exists ≠ wired" framing.
+- **Refusal contract bound:** refusals raise in the `EconomicActionRefused` posture (loud,
+  fail-closed, proposed obligations left open on the chain — B4's `_try_gate` precedent) AND
+  append the §4 refusal record. Raise-and-record, never raise-only: the "no" must survive replay.
+- **A4 precedent honored:** refuse-at-load (§2) mirrors the adversary's unattested-card
+  refusal exactly as the contract recommends; refuse-at-the-write-with-rule-cited is §4.
+- **Declared-config-never-constants:** confirmed — every threshold/cap/floor in this spec
+  lives in the policy document (§2/§3); zero constants, matching B4's required-`threshold`
+  (no-default) discipline.
+
+∞Δ∞
