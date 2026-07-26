@@ -21,6 +21,19 @@ manifest) and RE-DERIVES the yield computation from the bundle on verify (every 
 real cylinder; the roll-up re-runs the BoundedCompounder over the bundled inputs). Reproducibility is
 computed here; the cryptographic signature is the SEALED-HOST seam (the node lane), reported SEPARATELY.
 
+Slice 2.1 (IMPLEMENTED): Breath-26 engine wiring — the proven Breath-26 economic engines (engines/:
+constant-product AMMPool, MintEngine payout, RecircAllocator 70/20/10) are extracted into the kernel
+(each with a provenance header: origin path + source sha256 + self-test PASS lineage) and WIRED onto the
+receipted substrate by economic_actions.py: a swap / distribution is recorded as a BALANCED set of dr/cr
+obligations (attribution, not payment) with the declared-threshold gate (above an OPERATOR-DECLARED
+threshold the action is material, waits for the human breath-gate, and FAILS CLOSED unapproved; below it
+still seals as receipted obligations). What is INCLUDED: the constant-product swap math, the payout/recirc
+allocations, balanced double-entry, fail-closed gating, money_path OFF. What is NOT (deliberately absent,
+never invented): the fee model + pool-balance bands (Ch3 spec gap, register B3) — so NO cross-denomination
+value-equality is claimed for a swap; and the token-typed schema (stake/reward/release) is AA's S4-G2
+lane — this module exposes the seam (denomination parameters, normalized allocation form), it does not
+build the typed substrate adapters.
+
 Later slices (declared in the spec, NOT built here per the Authoritative Pattern Rule): the fuller
 economic drift safeguard (auto-proposed compensating obligations, S4-V3 Ch7) and the guardrail/token-
 Atrium surfaces.
@@ -36,6 +49,17 @@ from .compounding import (
     ResumeRefused,
     RollUp,
 )
+from .economic_actions import (
+    ActionLeg,
+    DistributionRecord,
+    EconomicActionRefused,
+    SwapRecord,
+    distribute_via_payout,
+    ledger_leg_balance,
+    payout_allocations,
+    recirc_allocations,
+    swap_via_pool,
+)
 from .economic_export import (
     BundleVerification,
     EconomicBundle,
@@ -50,4 +74,7 @@ __all__ = [
     "BoundedCompounder", "DriftBrake", "PeriodInput", "RollUp", "CompoundingRecord",
     "BrakeSignal", "CompoundingRefused", "ResumeRefused",
     "EconomicBundleExporter", "EconomicBundle", "BundleVerification", "EconomicExportRefused",
+    "swap_via_pool", "distribute_via_payout", "SwapRecord", "DistributionRecord",
+    "ActionLeg", "EconomicActionRefused", "ledger_leg_balance",
+    "payout_allocations", "recirc_allocations",
 ]
