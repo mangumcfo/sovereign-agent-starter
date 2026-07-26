@@ -134,6 +134,9 @@ def validate_seed_unit(card):
 def load_cards(seeds_dir: Path, chapter=None):
     cards = []
     for p in sorted(seeds_dir.glob("*.yaml")):
+        if p.name.startswith("_"):
+            continue  # D-5: metadata/retired files (_volume_input.yaml, _retired_*) are not cards —
+                      # they must never be validated as cards nor hard-kill the run at load
         c = yaml.safe_load(p.read_text(encoding="utf-8"))
         c["_file"] = str(p)
         if chapter is None or c.get("chapter") == chapter:

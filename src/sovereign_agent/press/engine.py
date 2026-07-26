@@ -592,6 +592,35 @@ def cmd_build(spec, qmode="single", approve_wave=None):
     fail(f"unknown queue mode {qmode!r}")
 
 
+def _pick_killed_card(work_seeds, rec_path):
+    """D-3 fix: the card handed to the fixer is the one the adversary KILLED.
+
+    The record's refuted verdicts name their chapter; pick the card whose `chapter`
+    matches the first refuted verdict. Fail LOUD if no card matches — repairing an
+    arbitrary card would burn a fix round on healthy prose and leave the killed
+    chapter killed (the exact N>1 defect the pilot audit named)."""
+    import json as _json
+    import yaml as _yaml
+    refuted = []
+    if rec_path and os.path.exists(rec_path):
+        recj = _json.loads(open(rec_path).read())
+        refuted = [str(v.get("chapter")) for v in recj.get("verdicts", []) if v.get("refuted")]
+    candidates = [f for f in sorted(os.listdir(work_seeds))
+                  if f.endswith(".yaml") and not f.endswith("_fixed.yaml")
+                  and not f.startswith("_")]
+    if refuted:
+        for f in candidates:
+            c = _yaml.safe_load(open(os.path.join(work_seeds, f)))
+            if str(c.get("chapter")) == refuted[0]:
+                return os.path.join(work_seeds, f)
+        fail(f"CYCLE FAIL: adversary refuted chapter {refuted[0]!r} but no matching card "
+             f"in {work_seeds} — refusing to repair an arbitrary card (D-3)")
+    if len(candidates) == 1:
+        return os.path.join(work_seeds, candidates[0])
+    fail(f"CYCLE FAIL: KILL with no refuted-chapter record and {len(candidates)} candidate "
+         "cards — cannot target the repair (D-3)")
+
+
 def cmd_cycle(vol_id, seeds_dir):
     """P3: one full chapter cycle — adversary → (draft-fix on the local host) → re-verify —
     zero frontier calls by construction (every model order resolves through the
@@ -633,8 +662,8 @@ def cmd_cycle(vol_id, seeds_dir):
 
     def fix_round():
         rec = newest_record()
-        card = next(os.path.join(work_seeds, f) for f in sorted(os.listdir(work_seeds))
-                    if f.endswith(".yaml") and not f.endswith("_fixed.yaml"))
+        card = _pick_killed_card(work_seeds, rec)  # D-3: repair the card the adversary REFUTED,
+                                                   # never the alphabetically-first one
         ok = run_step("draft_fix", f"{fix_cmd} {card} {rec} --out {work_seeds}",
                       None, steps, model=prose_model)
         _qlog(runs_root, vid=vol_id, stage="draft_fix", event="done" if ok else "fail",

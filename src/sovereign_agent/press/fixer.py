@@ -44,7 +44,14 @@ def main():
     out_dir = Path(sys.argv[sys.argv.index("--out") + 1]) if "--out" in sys.argv else card_p.parent
     card = yaml.safe_load(card_p.read_text(encoding="utf-8"))
     rec = json.loads(rec_p.read_text())
-    kill_reasons = [v["reason"] for v in rec.get("verdicts", []) if v.get("refuted")]
+    # D-3: only THIS card's refutations drive the repair — reasons harvested from other
+    # chapters would steer the rewrite at prose that was never refuted.
+    ch = str(card.get("chapter"))
+    kill_reasons = [v["reason"] for v in rec.get("verdicts", [])
+                    if v.get("refuted") and (str(v.get("chapter")) == ch or v.get("chapter") is None)]
+    if not kill_reasons:
+        sys.exit(f"SEED_FIX FAIL: record has no refuted verdicts for chapter {ch} — "
+                 "nothing to repair for this card (D-3 targeting)")
 
     payload = {"model": MODEL, "stream": False, "format": "json",
                "options": {"temperature": 0},
