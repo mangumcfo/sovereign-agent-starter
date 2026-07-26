@@ -34,7 +34,8 @@ from pathlib import Path
 
 import yaml
 
-GATE_REV = 1  # bump on ANY change to the kill set or its patterns; never reuse a rev
+GATE_REV = 2  # rev-2 (2026-07-26): + dup-n-gram / text-integrity kill (garbled duplicated
+              # spans escaped rev-1). Bump on ANY kill-set change; never reuse a rev
 
 LIVE = (r"\b(runs today|is live|are live|is running|are running|ships today|available today"
         r"|you can run (it|this) today|in production|is enforced|are enforced|enforces"
@@ -94,6 +95,21 @@ def gate_card(card: dict) -> tuple[list, dict]:
     if re.search(r"(?m)^#{1,6}.*agent-to-agent", prose, re.I):
         v.append({"chapter": ch, "lens": "L0:prescreen:canon_drift", "refuted": True,
                   "reason": "heading-level 'agent-to-agent' (canon term is 'peer role')"})
+
+    # TEXT-INTEGRITY (rev-2) — garbled duplication: an identical normalized sentence
+    # appearing 2+ times, or any 12-word n-gram repeating, is generation damage, not style.
+    sents_n = [re.sub(r"\W+", " ", s).strip().lower()
+               for s in re.split(r"(?<=[.!?])\s+", body_no_bq) if len(s.split()) >= 6]
+    dup_s = [s for s, n in collections.Counter(sents_n).items() if n >= 2]
+    words_l = re.findall(r"[a-z'’]+", body_no_bq.lower())
+    g12 = collections.Counter(tuple(words_l[i:i+12]) for i in range(len(words_l) - 11))
+    dup_g = [g for g, n in g12.items() if n >= 2]
+    if dup_s:
+        v.append({"chapter": ch, "lens": "L0:prescreen:text_integrity", "refuted": True,
+                  "reason": f"duplicated sentence x{len(dup_s)}: {dup_s[0][:90]!r}"})
+    if dup_g:
+        v.append({"chapter": ch, "lens": "L0:prescreen:text_integrity", "refuted": True,
+                  "reason": f"repeated 12-gram x{len(dup_g)}: {' '.join(dup_g[0])[:90]!r}"})
 
     # advisory (recorded, never gating)
     paras = [p.strip() for p in re.split(r"\n\s*\n", body_no_code)

@@ -7,9 +7,16 @@ from sovereign_agent.press.adversary import load_cards
 from sovereign_agent.press.engine import _pick_killed_card
 from pathlib import Path
 
-GOOD = ("The receipt is the atom of trust here — a sealed, signed record the operator can replay. "
-        "You verify it yourself; nothing asks for faith. Lasting Generational Prosperity (LGP) is the "
-        "test every design choice answers to. " * 12)
+GOOD = (
+    "The receipt is the atom of trust here — a sealed, signed record the operator can replay. "
+    "You verify it yourself; nothing asks for faith. Lasting Generational Prosperity (LGP) is the "
+    "test every design choice answers to, and it is a demanding one. Consider a distributor with "
+    "1,400 SKUs whose auditor asks for March's inventory position: the answer is a replay, not a "
+    "spreadsheet. Each movement seals as a balanced obligation, so the number carries its own proof. "
+    "When the founder hands the company to her daughter, the record does not ask to be believed — "
+    "it recomputes. That difference, small on a quiet day, is the entire inheritance on a bad one. "
+    "A registry entry is versioned; a version is sealed; a seal is checkable by anyone she names. "
+    "The pattern repeats up the stack without repeating its sentences, which is rather the point.")
 
 def _card(prose, ch="2"):
     return {"chapter": ch, "prose": prose, "beats": ["b"], "runs_today": []}
