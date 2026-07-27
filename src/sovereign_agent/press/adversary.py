@@ -264,7 +264,9 @@ def l1_check(card):
                  "rental law: refusing local call; rerun when idle or escalate tier.")
     work_order = L1_WORK_ORDER.replace("{run_date}", time.strftime("%Y-%m-%d", time.gmtime()))
     payload = {
-        "model": L1_MODEL, "stream": False, "format": "json",
+        # think:false — ollama>=0.20 thinking-default regression: content lands in
+        # .thinking unless disabled (pilot-2 blocker, 2026-07-27)
+        "model": L1_MODEL, "stream": False, "think": False, "format": "json",
         "options": {"temperature": 0},
         "messages": [
             {"role": "system", "content": work_order},

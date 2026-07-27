@@ -53,7 +53,8 @@ def main():
         sys.exit(f"SEED_FIX FAIL: record has no refuted verdicts for chapter {ch} — "
                  "nothing to repair for this card (D-3 targeting)")
 
-    payload = {"model": MODEL, "stream": False, "format": "json",
+    # think:false — ollama>=0.20 thinking-default regression (pilot-2 blocker, 2026-07-27)
+    payload = {"model": MODEL, "stream": False, "think": False, "format": "json",
                "options": {"temperature": 0},
                "messages": [{"role": "system", "content": ORDER},
                             {"role": "user", "content": json.dumps({
