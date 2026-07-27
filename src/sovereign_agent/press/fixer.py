@@ -130,19 +130,21 @@ def main():
                 sys.exit(f"SEED_FIX FAIL: unknown voice class {cls!r}")
             for s in _sentences_matching(prose, pat):
                 if cls == "empty_transition":
-                    # DETERMINISTIC: an empty transition is empty by definition — strip the
-                    # connective mechanically, no model call (temp-0 echo made model patching
-                    # of this class unreliable; observed live ch7 2026-07-27).
-                    new_s = re.sub(r"^(?:Furthermore|Moreover|Additionally|In conclusion|"
-                                   r"In summary|To summarize|That said|Indeed|Notably|"
-                                   r"Importantly|Ultimately),\\s*", "", s.strip())
-                    if new_s and new_s != s.strip():
-                        new_s = new_s[0].upper() + new_s[1:]
+                    # FULLY DETERMINISTIC: strip the connective wherever it opens a clause —
+                    # sentence-start OR after [.!?"] mid-span (quote-tails defeat sentence
+                    # splitting; observed live ch7: '..." Additionally,' survived the anchored
+                    # strip AND a model patch). No model call for this class, ever.
+                    _CONN = (r'(^|[.!?"\u201d]\s+)(?:Furthermore|Moreover|Additionally|'
+                             r'In conclusion|In summary|To summarize|That said|Indeed|Notably|'
+                             r'Importantly|Ultimately),\s*(\w)')
+                    new_s = re.sub(_CONN, lambda m: m.group(1) + m.group(2).upper(), s.strip())
+                    if new_s != s.strip():
                         if s not in prose:
                             sys.exit(f"SEED_FIX FAIL: span not spliceable: {s[:90]!r}")
                         prose = prose.replace(s, new_s, 1)
                         patches += 1
                         continue
+                    sys.exit(f"SEED_FIX FAIL: empty-transition span resisted mechanical strip: {s[:90]!r}")
                 prose = _patch_sentence(prose, s, "Remove the banned phrasing entirely; say it "
                                         "plainly in the house voice. You MUST NOT return the "
                                         "sentence unchanged — the banned wording must be gone.")
