@@ -24,11 +24,21 @@ OLLAMA = f"http://{LOCAL_HOST}:11434" if LOCAL_HOST else ""
 MODEL = os.environ.get("ADVERSARY_L1_MODEL", "gemma4:31b")
 
 ORDER = """You are fixing a book chapter SEED that an adversarial review KILLED.
-Rewrite ONLY the prose so that: (a) every beat in the beats list is SERVED at chapter
-scope — state what it is and the design principle behind it in 2-3 sentences (no
-implementation detail needed); (b) no sentence claims a capability as existing/live
-unless the runs_today list backs it — prospective design stays in future/design voice;
-(c) keep the original voice, length within +-30%, and everything that already works.
+FIRST LAW: read the kill_reasons list and SATISFY EVERY ONE OF THEM explicitly — the
+rewrite fails if any listed reason would still be true of the new prose. Kill-reason
+classes and their required repairs:
+- beat not served → serve it: state what it is and the design principle in 2-3 sentences.
+- unqualified live claim → requalify to design voice unless runs_today backs it.
+- banned voice / template frame / canon drift → remove or replace the exact phrasing named.
+- concreteness_floor items → ADD the missing element named: 'no question' → work at least
+  one genuine question into the prose (a reader's or a named actor's, not rhetorical
+  filler); missing numerals → thread real numbers from the card's worked_example; missing
+  named actor → let a named person from the card act. These are additions, not deletions —
+  a floor kill can NEVER be satisfied by re-emitting the same prose.
+- duplicated sentence / repeated span → rewrite one occurrence away entirely.
+Also: (a) every beat in the beats list stays SERVED at chapter scope; (b) no sentence
+claims a capability as existing/live unless the runs_today list backs it; (c) keep the
+original voice, length within +-30%, and everything that already works.
 
 Return ONLY a JSON object: {"prose": "<the full rewritten prose>"}
 
