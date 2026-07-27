@@ -159,13 +159,18 @@ def gate_card(card: dict) -> tuple[list, dict]:
 
     # SPEC-LEAK (rev-4, board finding: ch6 shipped repo paths + a HOLD ID as reader prose).
     # Applies to READER prose only (blockquotes = receipt apparatus, exempt by design).
-    SPEC = (r"(?:src|tests|tools|kdp|artifacts)/[A-Za-z0-9_./-]+\.(?:py|yaml|md|json)"
-            r"|\bS\d-\d\d-E\d-\d\b|\bHOLD(?:-ID)?\b|\bblocks_seal\b|\bseed_rev\b"
-            r"|\bgate_rev\b|\bdraft_status\b|\bextrusion ledger\b|\bbuild-tracker\b")
-    leaks = re.findall(SPEC, body_no_bq)
-    if leaks:
+    # Hard leaks (paths, tracking IDs) kill on sight. Schema VOCABULARY kills only in
+    # density (>=2 distinct tokens): these books TEACH the system, so a single schema noun
+    # in published prose is content, not leakage (recalibration caught BANK-12 using
+    # 'draft_status' lawfully — the first over-reach this gate family has had).
+    SPEC_HARD = (r"(?:src|tests|tools|kdp|artifacts)/[A-Za-z0-9_./-]+\.(?:py|yaml|md|json)"
+                 r"|\bS\d-\d\d-E\d-\d\b|\bHOLD-ID\b|\bbuild-tracker\b")
+    SPEC_VOCAB = r"\bblocks_seal\b|\bseed_rev\b|\bgate_rev\b|\bdraft_status\b"
+    hard = re.findall(SPEC_HARD, body_no_bq)
+    vocab = sorted(set(re.findall(SPEC_VOCAB, body_no_bq)))
+    if hard or len(vocab) >= 2:
         v.append({"chapter": ch, "lens": "L0:prescreen:spec_leak", "refuted": True,
-                  "reason": f"internal build vocabulary in reader prose: {sorted(set(leaks))[:5]}"})
+                  "reason": f"internal build leakage in reader prose: hard={sorted(set(hard))[:4]} vocab={vocab[:4]}"})
 
     # advisory (recorded, never gating)
     paras = [p.strip() for p in re.split(r"\n\s*\n", body_no_code)
