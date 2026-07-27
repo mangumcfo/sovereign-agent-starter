@@ -1489,6 +1489,32 @@ def main():
             fail("cycle requires: cycle <volume-id> --seeds DIR")
         no_residue(1)
         return cmd_cycle(args[0], seeds)
+    if cmd == "assemble":
+        # PS-2: deterministic assembler — places ratified material, never writes prose,
+        # refuses on any gap. Seeds resolve like the PS-4 ledger: manifest volume's
+        # extrusion_ledger, or --seeds.
+        from . import assembler
+        if not args:
+            fail("assemble requires: assemble <volume-id> [--seeds DIR] --out FILE [--receipt FILE]")
+        vol_id = args[0]
+        seeds = opt("--seeds")
+        if not seeds:
+            manifest = load_manifest(_env_path("PRESS_MANIFEST", os.path.join(_HERE, "press_manifest.yaml")))
+            _vols = manifest.get("volumes") if isinstance(manifest.get("volumes"), dict) else manifest
+            seeds = ((_vols or {}).get(vol_id) or {}).get("extrusion_ledger")
+        if not seeds:
+            fail(f"assemble: no seeds dir — {vol_id} has no manifest extrusion_ledger and no --seeds given")
+        out = opt("--out")
+        if not out:
+            fail("assemble requires --out FILE (assembly never picks its own destination)")
+        try:
+            receipt = assembler.assemble(seeds, out, opt("--receipt"))
+        except assembler.AssemblyRefusal as e:
+            fail(str(e))
+        print(json.dumps({k: receipt[k] for k in
+                          ("volume", "chapters", "claims_present", "claims_hold",
+                           "doc_words", "doc_sha256_16")}, indent=1))
+        return 0
     if cmd == "harden":
         approve = opt("--approve-report")
         if not args:

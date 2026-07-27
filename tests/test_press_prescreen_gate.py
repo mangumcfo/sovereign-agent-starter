@@ -83,3 +83,47 @@ def test_ps4_no_holds_when_resolved(tmp_path):
         {"id": "X-E2", "claim": "c2", "status": "DOWNGRADED", "receipt": "honest design voice"}]},
         open(d / "ch1.yaml", "w"))
     assert _open_seal_blocking_holds(str(d)) == []
+
+
+def _ps2_seed_dir(tmp_path):
+    import yaml as _y
+    d = tmp_path / "seeds"; d.mkdir()
+    frame = "Acme Corp is a worked scenario built to show the design."
+    (d / "_frame_declaration.md").write_text(frame)
+    _y.safe_dump({"title": "T", "subtitle": "S", "book_id": "s9_01_x",
+                  "continuity_canon": {"company": "Acme Corp"},
+                  "chapters": [{"n": 1}]}, open(d / "_volume_input.yaml", "w"))
+    _y.safe_dump([{"name": "f1", "must_pattern": "Acme", "required_in": [1]}],
+                 open(d / "_continuity_facts.yaml", "w"))
+    _y.safe_dump({"chapter": "1", "title": "One", "settled": True,
+                  "prose": frame + "\n\nBody prose here.",
+                  "receipt_box": {"claim": "c", "runs_today": "nothing runs"},
+                  "verify_affordance": ["check it yourself"],
+                  "extrusion": [{"id": "E1", "claim": "x", "status": "HOLD",
+                                 "blocks_seal": True}]}, open(d / "ch1.yaml", "w"))
+    return d
+
+
+def test_ps2_assembles_and_places_verbatim(tmp_path):
+    from sovereign_agent.press.assembler import assemble
+    d = _ps2_seed_dir(tmp_path)
+    out = tmp_path / "vol.md"
+    r = assemble(str(d), str(out), str(tmp_path / "r.json"))
+    doc = out.read_text()
+    assert "Body prose here." in doc and "worked scenario" in doc
+    assert doc.count("**How you check.**") == 1
+    assert r["claims_hold"] == 1 and r["chapters"] == 1
+
+
+def test_ps2_refuses_on_gaps_with_full_list(tmp_path):
+    import pytest, yaml as _y
+    from sovereign_agent.press.assembler import assemble, AssemblyRefusal
+    d = _ps2_seed_dir(tmp_path)
+    (d / "_frame_declaration.md").unlink()
+    c = _y.safe_load(open(d / "ch1.yaml")); del c["receipt_box"]
+    _y.safe_dump(c, open(d / "ch1.yaml", "w"))
+    with pytest.raises(AssemblyRefusal) as ei:
+        assemble(str(d), str(tmp_path / "vol.md"))
+    gaps = ei.value.gaps
+    assert any("frame declaration missing" in g for g in gaps)
+    assert any("receipt_box.claim" in g for g in gaps)  # full list, not first-fail
