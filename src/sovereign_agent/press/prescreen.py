@@ -96,6 +96,34 @@ def gate_card(card: dict) -> tuple[list, dict]:
         v.append({"chapter": ch, "lens": "L0:prescreen:canon_drift", "refuted": True,
                   "reason": "heading-level 'agent-to-agent' (canon term is 'peer role')"})
 
+    # VARIETY PACK deterministic subset (rev-2, pack v1.0 §1/§3) — template tells + floor
+    body_words = _w(body_no_code)
+    VP_BAN = r"The fundamental failure of|The fundamental problem|The design calls for|The design principle here is"
+    hits = re.findall(VP_BAN, body_no_bq)
+    if hits:
+        v.append({"chapter": ch, "lens": "L0:prescreen:template_frame", "refuted": True,
+                  "reason": f"banned frame: {sorted(set(hits))}"})
+    budgets = [
+        (r"(?m)(?:^|[.!?]\s)The design\b", 2, "sentence-initial 'The design'"),
+        (r"\bThis (?:ensures|creates|prevents|eliminates|transforms|allows)\b", 3, "'This ensures/…' frame"),
+        (r"\bensur(?:es|e|ing)\b", 4, "'ensures' family"),
+        (r"\bnot (?:a|an|the) [^,.;]{2,40}, but (?:a|an|the)\b", 2, "not-X-but-Y chiasmus"),
+        (r"\bThe result is a\b", 1, "'The result is a'"),
+        (r"\bstructural\b", 2, "'structural'"),
+    ]
+    for pat, cap, name in budgets:
+        n = len(re.findall(pat, body_no_bq, re.I))
+        if n > cap:
+            v.append({"chapter": ch, "lens": "L0:prescreen:template_budget", "refuted": True,
+                      "reason": f"{name}: {n} > budget {cap}"})
+    if body_words >= 600:  # concreteness floor applies at chapter scale only
+        floor_fails = []
+        if len(re.findall(r"\b\d[\d,.]*\b", body_no_bq)) < 3: floor_fails.append("numerals<3")
+        if "?" not in body_no_bq: floor_fails.append("no question")
+        if floor_fails:
+            v.append({"chapter": ch, "lens": "L0:prescreen:concreteness_floor", "refuted": True,
+                      "reason": f"floor: {floor_fails}"})
+
     # TEXT-INTEGRITY (rev-2) — garbled duplication: an identical normalized sentence
     # appearing 2+ times, or any 12-word n-gram repeating, is generation damage, not style.
     sents_n = [re.sub(r"\W+", " ", s).strip().lower()
