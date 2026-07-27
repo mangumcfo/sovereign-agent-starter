@@ -97,7 +97,8 @@ def _ps2_seed_dir(tmp_path):
                  open(d / "_continuity_facts.yaml", "w"))
     _y.safe_dump({"chapter": "1", "title": "One", "settled": True,
                   "prose": frame + "\n\nBody prose here.",
-                  "receipt_box": {"claim": "c", "runs_today": "nothing runs"},
+                  "receipt_box": {"claim": "c", "runs_today": "the mechanism is implemented and test-checked",
+                                  "designed": "your deployed system is the design you build"},
                   "verify_affordance": ["check it yourself"],
                   "extrusion": [{"id": "E1", "claim": "x", "status": "HOLD",
                                  "blocks_seal": True}]}, open(d / "ch1.yaml", "w"))

@@ -39,24 +39,27 @@ import yaml
 from .prescreen import CANON
 
 # ── The assembler's own manifest: every fixed string it may emit, declared here. ──
+# PS-5 plain-name dialect: the reader-facing apparatus carries NO internal build language
+# (no repo paths, no test-function names, no "settled"/tracker vocabulary, no "rendered from
+# the continuity ledger" label). Reader receipts say what runs and what is designed in plain
+# terms; the code trace lives in the spec + extrusion ledger for auditors, never on the page.
 SCAFFOLD = {
     "frame_heading":   "## About the Worked Scenario",
     "glossary_heading": "## Cast & Canon",
-    "glossary_note":   "*(rendered from the volume's continuity ledger — values, not prose)*",
+    "glossary_note":   "*(the people, figures, and terms this volume holds constant)*",
     "verify_heading":  "## Verification Index",
-    "verify_note":     "*(every chapter's reader-runnable checks, verbatim)*",
+    "verify_note":     "*(every chapter's reader-runnable checks)*",
     "receipt_title":   "Receipt — Chapter {n}",
     "receipt_claim":   "**Claim.**",
     "receipt_runs":    "**What runs today.**",
     "receipt_designed": "**What is designed, not yet running.**",
     "receipt_check":   "**How you check.**",
     "counts_rows": [
-        ("Chapters, settled", "{n_ch}"),
-        ("Claims validated in code today", "{n_present}"),
-        ("Claims designed, not yet running", "{n_hold}"),
+        ("Chapters", "{n_ch}"),
+        ("Mechanisms implemented and test-checked in the platform's object library", "{n_present}"),
+        ("Deployed as a live system of record", "none yet — the volume is the design you build"),
     ],
     "none_marker": "—",
-    "code_traced": "*(code-traced: `{module}`, test `{test}`)*",
 }
 
 
@@ -138,7 +141,7 @@ def load_volume(seeds_dir):
         if not c.get("title"):
             gaps.append(f"{f}: title missing")
         rb = c.get("receipt_box") or {}
-        for k in ("claim", "runs_today"):
+        for k in ("claim", "runs_today", "designed"):
             if not str(rb.get(k, "")).strip():
                 gaps.append(f"{f}: receipt_box.{k} missing — the reader receipt "
                             "cannot be placed")
@@ -172,27 +175,21 @@ def load_volume(seeds_dir):
 
 
 def _receipt_box_md(n, c):
-    """Reader-facing four-field receipt box. Every sentence is placed, never written."""
+    """Reader-facing four-field receipt box (PS-5 plain-name dialect). Every string is
+    PLACED from the seed's receipt_box + verify affordances — no repo paths, no test
+    names, no per-row code tracing (that trail lives in the spec + extrusion ledger for
+    auditors, never on the reader's page). 'What is designed' is the seed's `designed`
+    field, plus any genuine HOLD/DOWNGRADED rows still open."""
     S = SCAFFOLD
     rb = c["receipt_box"]
-    present = [e for e in c["extrusion"] if str(e.get("status", "")).upper() == "PRESENT"]
-    holds = [e for e in c["extrusion"] if str(e.get("status", "")).upper() == "HOLD"]
-    downgraded = [e for e in c["extrusion"]
-                  if str(e.get("status", "")).upper() == "DOWNGRADED"]
+    holds = [e for e in c["extrusion"]
+             if str(e.get("status", "")).upper() in ("HOLD", "DOWNGRADED")]
     lines = [f"> **{S['receipt_title'].format(n=n)}**", ">",
              f"> {S['receipt_claim']} {str(rb['claim']).strip()}", ">",
-             f"> {S['receipt_runs']} {str(rb['runs_today']).strip()}"]
-    for e in present:
-        lines.append(f"> - {str(e.get('claim', '')).strip()} " +
-                     S["code_traced"].format(module=e.get("target_module", ""),
-                                             test=e.get("acceptance_test", "")))
-    lines.append(">")
-    lines.append(f"> {S['receipt_designed']}")
-    if holds or downgraded:
-        for e in holds + downgraded:
-            lines.append(f"> - {str(e.get('claim', '')).strip()}")
-    else:
-        lines.append(f"> {S['none_marker']}")
+             f"> {S['receipt_runs']} {str(rb['runs_today']).strip()}", ">",
+             f"> {S['receipt_designed']} {str(rb.get('designed', '')).strip()}"]
+    for e in holds:  # any still-open hold is named plainly (no E-ID, no path)
+        lines.append(f"> - {str(e.get('claim', '')).strip()}")
     lines.append(">")
     lines.append(f"> {S['receipt_check']}")
     for v in c["verify_affordance"]:
@@ -224,10 +221,15 @@ def assemble(seeds_dir, out_path, receipt_path=None):
     pieces["frame_declaration"] = f"{S['frame_heading']}\n\n{frame}"
 
     # chapters — settled prose verbatim + the four-field receipt box
+    # The frame declaration is shown ONCE, in the front-matter "About the Worked Scenario"
+    # section. Frame-lock still requires it to open ch1 verbatim in the SEED (integrity), but
+    # the rendered chapter strips that leading copy so the reader never meets it twice.
     body = []
     for n, c in chapters:
-        body.append(f"# Chapter {n} — {c['title']}\n\n{str(c['prose']).strip()}\n\n"
-                    + _receipt_box_md(n, c))
+        prose = str(c["prose"]).strip()
+        if prose.startswith(frame):
+            prose = prose[len(frame):].lstrip()
+        body.append(f"# Chapter {n} — {c['title']}\n\n{prose}\n\n" + _receipt_box_md(n, c))
     pieces["chapters"] = "\n\n---\n\n".join(body)
 
     # glossary — continuity canon values + CANON terms, rendered not written
