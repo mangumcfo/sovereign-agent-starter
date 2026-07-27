@@ -52,6 +52,18 @@ BANNED = {
     "hedged": r"(?i)\bcan help you\b|\bmay be able to\b|\bmight be able to\b|\bcould potentially\b",
 }
 
+# Template frames + budget locators — MODULE-LEVEL so the targeted-patch fixer locates
+# spans with the SAME regexes that kill them (single source; KM ruling 2026-07-27).
+VP_BAN = r"The fundamental failure of|The fundamental problem|The design calls for|The design principle here is"
+BUDGET_PATTERNS = {
+    "sentence-initial 'The design'": (r"(?m)(?:^|[.!?]\s)The design\b", 2),
+    "'This ensures/…' frame": (r"\bThis (?:ensures|creates|prevents|eliminates|transforms|allows)\b", 3),
+    "'ensures' family": (r"\bensur(?:es|e|ing)\b", 4),
+    "not-X-but-Y chiasmus": (r"\bnot (?:a|an|the) [^,.;]{2,40}, but (?:a|an|the)\b", 2),
+    "'The result is a'": (r"\bThe result is a\b", 1),
+    "'structural'": (r"\bstructural\b", 2),
+}
+
 # House canon: term -> the ONLY lawful expansion. The drafter is fed the glossary
 # (prevention); this gate is the backstop (detection). Extend deliberately + bump rev.
 CANON = {"LGP": "lasting generational prosperity"}
@@ -101,7 +113,6 @@ def gate_card(card: dict) -> tuple[list, dict]:
 
     # VARIETY PACK deterministic subset (rev-2, pack v1.0 §1/§3) — template tells + floor
     body_words = _w(body_no_code)
-    VP_BAN = r"The fundamental failure of|The fundamental problem|The design calls for|The design principle here is"
     hits = re.findall(VP_BAN, body_no_bq)
     if hits:
         v.append({"chapter": ch, "lens": "L0:prescreen:template_frame", "refuted": True,
@@ -112,14 +123,8 @@ def gate_card(card: dict) -> tuple[list, dict]:
     shape_name = str((card.get("shape") or {}).get("name", "")).lower() if isinstance(card.get("shape"), dict) else str(card.get("shape") or "").lower()
     comparison_led = "comparison" in shape_name
     chiasmus_cap = 4 if comparison_led else 2
-    budgets = [
-        (r"(?m)(?:^|[.!?]\s)The design\b", 2, "sentence-initial 'The design'"),
-        (r"\bThis (?:ensures|creates|prevents|eliminates|transforms|allows)\b", 3, "'This ensures/…' frame"),
-        (r"\bensur(?:es|e|ing)\b", 4, "'ensures' family"),
-        (r"\bnot (?:a|an|the) [^,.;]{2,40}, but (?:a|an|the)\b", chiasmus_cap, "not-X-but-Y chiasmus"),
-        (r"\bThe result is a\b", 1, "'The result is a'"),
-        (r"\bstructural\b", 2, "'structural'"),
-    ]
+    budgets = [(pat, (chiasmus_cap if name == "not-X-but-Y chiasmus" else cap), name)
+               for name, (pat, cap) in BUDGET_PATTERNS.items()]
     for pat, cap, name in budgets:
         n = len(re.findall(pat, body_no_bq, re.I))
         if n > cap:
