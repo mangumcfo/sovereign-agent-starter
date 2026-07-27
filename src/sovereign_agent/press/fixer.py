@@ -185,15 +185,45 @@ def main():
             prose = "\n\n".join(paras)
             patches += 1
 
-        else:  # L1 beat-service or unknown class: additive serve, never whole-prose
-            passage = _call(INSERT_SYS, json.dumps({
-                "kill_reason": reason[:400], "beats": card.get("beats"),
-                "worked_example": card.get("worked_example")}, ensure_ascii=False)[:2500],
-                "passage")
-            paras = prose.split("\n\n")
-            paras.insert(max(len(paras) - 1, 1), passage)
-            prose = "\n\n".join(paras)
-            patches += 1
+        else:
+            # L1 verdicts NAME their spans in structured tails: "| overclaims: [..]" and
+            # "| unserved: [..]" (adversary reason format). Overclaim sentences are
+            # REWRITE targets (requalify); unserved beats are ADDITIVE. Never whole-prose.
+            over, unserved = [], []
+            mo = re.search(r"overclaims:\s*(\[.*?\])", reason)
+            mu = re.search(r"unserved:\s*(\[.*?\])", reason)
+            try:
+                over = json.loads(mo.group(1)) if mo else []
+            except json.JSONDecodeError:
+                over = []
+            try:
+                unserved = json.loads(mu.group(1)) if mu else []
+            except json.JSONDecodeError:
+                unserved = []
+            for oc in over:
+                frag = str(oc)[:60]
+                hits = [s for s in re.split(r"(?<=[.!?])\s+", prose) if frag[:40] in s]
+                if not hits:
+                    # locate by longest common fragment: fall back to token overlap
+                    toks = [w for w in re.findall(r"[A-Za-z_./]{5,}", str(oc))][:4]
+                    hits = [s for s in re.split(r"(?<=[.!?])\s+", prose)
+                            if toks and all(tk in s for tk in toks[:2])]
+                if not hits:
+                    sys.exit(f"SEED_FIX FAIL: L1 overclaim not locatable: {str(oc)[:90]!r}")
+                prose = _patch_sentence(prose, hits[0].strip(),
+                                        "Requalify: this capability/binding is designed-toward, "
+                                        "not live — keep the design content, drop the live claim.")
+                patches += 1
+            if unserved or not over:
+                passage = _call(INSERT_SYS, json.dumps({
+                    "kill_reason": reason[:400], "unserved_beats": unserved or None,
+                    "beats": card.get("beats"),
+                    "worked_example": card.get("worked_example")}, ensure_ascii=False)[:2500],
+                    "passage")
+                paras = prose.split("\n\n")
+                paras.insert(max(len(paras) - 1, 1), passage)
+                prose = "\n\n".join(paras)
+                patches += 1
 
     card["prose"] = prose
     card.pop("_file", None)
