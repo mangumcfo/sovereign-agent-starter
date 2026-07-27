@@ -135,7 +135,7 @@ def main():
                     # of this class unreliable; observed live ch7 2026-07-27).
                     new_s = re.sub(r"^(?:Furthermore|Moreover|Additionally|In conclusion|"
                                    r"In summary|To summarize|That said|Indeed|Notably|"
-                                   r"Importantly|Ultimately),\s*", "", s.strip())
+                                   r"Importantly|Ultimately),\\s*", "", s.strip())
                     if new_s and new_s != s.strip():
                         new_s = new_s[0].upper() + new_s[1:]
                         if s not in prose:
@@ -191,9 +191,19 @@ def main():
             patches += 1
 
         elif "concreteness_floor" in lens:
-            ctx = json.dumps({"worked_example": card.get("worked_example"),
-                              "need": reason}, ensure_ascii=False)[:2000]
+            need_q = "no question" in reason
+            ctx = json.dumps({"worked_example": card.get("worked_example"), "need": reason,
+                              "hard_requirement": ("the passage MUST contain a literal question "
+                                                   "ending with '?'" if need_q else None)},
+                             ensure_ascii=False)[:2000]
             passage = _call(INSERT_SYS, ctx, "passage")
+            if need_q and "?" not in passage:
+                passage = _call(INSERT_SYS, ctx + ' REMINDER: a literal "?" is mandatory.', "passage")
+                if "?" not in passage:
+                    sys.exit("SEED_FIX FAIL: floor insert lacks the required question twice")
+            if passage in prose:
+                sys.exit("SEED_FIX FAIL: identical insert already present — refusing duplicate "
+                         "insertion (dup-explosion guard)")
             paras = prose.split("\n\n")
             idx = 1 if len(paras) > 1 else 0
             paras.insert(idx + 1, passage)
@@ -235,6 +245,9 @@ def main():
                     "beats": card.get("beats"),
                     "worked_example": card.get("worked_example")}, ensure_ascii=False)[:2500],
                     "passage")
+                if passage in prose:
+                    sys.exit("SEED_FIX FAIL: identical L1 insert already present — refusing "
+                             "duplicate insertion (dup-explosion guard)")
                 paras = prose.split("\n\n")
                 paras.insert(max(len(paras) - 1, 1), passage)
                 prose = "\n\n".join(paras)
