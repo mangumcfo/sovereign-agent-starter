@@ -60,3 +60,26 @@ def test_picker_targets_refuted_chapter():
     rec = f"{d}/rec.json"
     json.dump({"verdicts": [{"chapter": "3", "refuted": True, "reason": "r"}]}, open(rec, "w"))
     assert _pick_killed_card(d, rec).endswith("ch3.yaml")
+
+
+def test_ps4_open_holds_scanner(tmp_path):
+    import yaml as _y
+    from sovereign_agent.press.engine import _open_seal_blocking_holds
+    d = tmp_path / "seeds"; d.mkdir()
+    _y.safe_dump({"chapter": "1", "extrusion": [
+        {"id": "X-E1", "claim": "c", "status": "HOLD", "blocks_seal": True},
+        {"id": "X-E2", "claim": "c2", "status": "PRESENT"}]}, open(d / "ch1.yaml", "w"))
+    _y.safe_dump({"meta": 1}, open(d / "_volume_input.yaml", "w"))
+    holds = _open_seal_blocking_holds(str(d))
+    assert len(holds) == 1 and holds[0].startswith("X-E1")
+
+
+def test_ps4_no_holds_when_resolved(tmp_path):
+    import yaml as _y
+    from sovereign_agent.press.engine import _open_seal_blocking_holds
+    d = tmp_path / "seeds"; d.mkdir()
+    _y.safe_dump({"chapter": "1", "extrusion": [
+        {"id": "X-E1", "claim": "c", "status": "PRESENT"},
+        {"id": "X-E2", "claim": "c2", "status": "DOWNGRADED", "receipt": "honest design voice"}]},
+        open(d / "ch1.yaml", "w"))
+    assert _open_seal_blocking_holds(str(d)) == []

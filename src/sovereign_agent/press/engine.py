@@ -1013,6 +1013,28 @@ def cmd_build_offline(target):
     return 0 if ok else 1
 
 
+def _open_seal_blocking_holds(seeds_dir):
+    """PS-4 (KM ruling 2026-07-27): every extrusion entry with status HOLD and
+    blocks_seal:true is an OPEN debt against the volume. The seal refuses while any
+    exist — silent deferral is structurally impossible, not merely forbidden.
+    Resolution paths are exactly three (design note): Extrude (code lands, tested,
+    receipted -> status flips), Downgrade (text amended to honest design voice, hold
+    withdrawn on receipt), or Hold (and the volume cannot seal). E5-2 is the precedent."""
+    import yaml as _yaml
+    holds = []
+    if not os.path.isdir(seeds_dir):
+        fail(f"SEAL REFUSED: extrusion ledger dir missing: {seeds_dir} — a declared "
+             "ledger that cannot be read is an OPEN ledger (fail-closed)")
+    for f in sorted(os.listdir(seeds_dir)):
+        if not f.endswith(".yaml") or f.startswith("_"):
+            continue
+        c = _yaml.safe_load(open(os.path.join(seeds_dir, f)))
+        for e in (c or {}).get("extrusion") or []:
+            if str(e.get("status", "")).upper() == "HOLD" and e.get("blocks_seal") is True:
+                holds.append(f"{e.get('id')} ({e.get('claim', '')[:60]}…)")
+    return holds
+
+
 def cmd_seal(vol_id, word=None, verify=False, reseal=False, supersede=None):
     """The operator's seal instrument. The Press still never seals: this refuses unless
     the operator's KEY and WORD are both present, and it records both in the receipt."""
@@ -1036,6 +1058,16 @@ def cmd_seal(vol_id, word=None, verify=False, reseal=False, supersede=None):
         return 0
 
     manifest = load_manifest(_env_path("PRESS_MANIFEST", os.path.join(_HERE, "press_manifest.yaml")))
+    _vols = manifest.get("volumes") if isinstance(manifest.get("volumes"), dict) else manifest
+    _vol_entry = (_vols or {}).get(vol_id) or {}
+    _ledger_dir = _vol_entry.get("extrusion_ledger") or os.environ.get("PRESS_EXTRUSION_LEDGER")
+    if _ledger_dir:
+        _holds = _open_seal_blocking_holds(_ledger_dir)
+        if _holds:
+            fail("SEAL REFUSED (PS-4): volume carries " + str(len(_holds)) + " open seal-blocking "
+                 "HOLD(s) — resolve each by Extrude (code lands + tested + receipted) or "
+                 "Downgrade (honest design voice, receipted) before the seal will hear a word:\n  - "
+                 + "\n  - ".join(_holds[:20]))
     vols = validate(manifest)
     if vol_id not in vols:
         fail(f"{vol_id} not in manifest (default-deny) — nothing unknown can be sealed")
