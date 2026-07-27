@@ -127,3 +127,54 @@ def test_ps2_refuses_on_gaps_with_full_list(tmp_path):
     gaps = ei.value.gaps
     assert any("frame declaration missing" in g for g in gaps)
     assert any("receipt_box.claim" in g for g in gaps)  # full list, not first-fail
+
+
+def test_rev5_bare_numeral_end_detector():
+    from sovereign_agent.press.prescreen import bare_numeral_ends
+    # the two production-board garbles fire (number reappears with its dropped unit)
+    body = ("The proof uses a set of 16 siblings. It is absolute but limited to a single 16. "
+            "The audit runs 640 hashes; the audit is a calculation of 640.")
+    hits = bare_numeral_ends(body)
+    assert any("single 16" in h for h in hits) and any("of 640" in h for h in hits)
+    # predicate values and unit-carrying ends are spared
+    assert bare_numeral_ends("The proof depth is 16. It took 12 minutes and cost $412,000.") == []
+    # rhetorical elision with no domain-unit reappearance is spared
+    assert bare_numeral_ends("You pay for 20 salespeople and get the selling capacity of 7.") == []
+
+
+def test_rev5_apparatus_leak_detector():
+    from sovereign_agent.press.prescreen import apparatus_leaks
+    hard, stale = apparatus_leaks([
+        "traced in src/sovereign_agent/merkle_accumulator.py, proven in tests/test_merkle_accumulator.py",
+        "the rules module stays in its lane", "Nothing in this volume's object model runs today"])
+    assert any(".py" in h for h in hard) and any("test_" in h for h in hard)
+    assert any("lane" in h for h in hard) and stale
+    # clean reader prose passes
+    h2, s2 = apparatus_leaks(["Dana reconciles the ledger of accounts to the bank statement each month."])
+    assert h2 == [] and s2 == []
+
+
+def test_rev5_pinned_continuity_fact_kills(tmp_path):
+    import subprocess, sys, yaml as _y, os
+    d = tmp_path / "seeds"; d.mkdir()
+    _y.safe_dump([{"name": "insurance_owner", "pin": True,
+                   "canonical": "Family Trust owns the policy; Operating holds a read grant",
+                   "scope": [6], "forbid_pattern": r"policy[^.]{0,60}(owned by|belongs to)[^.]{0,20}Properties LLC"}],
+                 open(d / "_continuity_facts.yaml", "w"))
+    good = {"chapter": 6, "prose": "The insurance policy belongs to the Family Trust; Operating holds a read grant. "
+            "This crossing is one of twelve. The population is 41,830 objects across the classes.", "runs_today": []}
+    bad = {"chapter": 6, "prose": "The insurance policy is owned by Properties LLC. "
+           "This crossing is declared. The population is 41,830 objects across the classes.", "runs_today": []}
+    other = {"chapter": 2, "prose": "The registry gives each object a stable identity. "
+             "Authorship travels with every version. Ridgeline holds 41,830 objects in all.", "runs_today": []}
+    _y.safe_dump(good, open(d / "ch6.yaml", "w"))
+    _y.safe_dump(other, open(d / "ch2.yaml", "w"))
+    r = subprocess.run([sys.executable, "-m", "sovereign_agent.press.prescreen", "--seeds", str(d)],
+                       cwd=str(__import__("pathlib").Path(__file__).resolve().parents[1] / "src"),
+                       capture_output=True, text=True, env={**os.environ, "PYTHONPATH": ""})
+    assert '"result": "PASS"' in r.stdout, r.stdout
+    _y.safe_dump(dict(bad), open(d / "ch6.yaml", "w"))
+    r = subprocess.run([sys.executable, "-m", "sovereign_agent.press.prescreen", "--seeds", str(d)],
+                       cwd=str(__import__("pathlib").Path(__file__).resolve().parents[1] / "src"),
+                       capture_output=True, text=True, env={**os.environ, "PYTHONPATH": ""})
+    assert "continuity_pin" in r.stdout and "PINNED" in r.stdout, r.stdout

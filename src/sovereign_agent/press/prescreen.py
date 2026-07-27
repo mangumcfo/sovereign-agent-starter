@@ -34,8 +34,11 @@ from pathlib import Path
 
 import yaml
 
-GATE_REV = 4  # rev-4 (2026-07-27, board findings): + spec-leak detector (repo paths /
-              # HOLD-IDs / build-tracker vocab in reader prose) + cross-chapter duplicate-shingle
+GATE_REV = 5  # rev-5 (2026-07-27, production board findings): + bare-numeral sentence-end
+              # detector (substitution artifacts "a calculation of 640.") + apparatus-leak
+              # detector (test names / paths / internal coordination notes / stale runs-today
+              # in reader-facing prose AND receipt boxes — PS-5) + pinned continuity facts
+              # (a canonical value cannot be contradicted). rev-4: spec-leak + duplicate-shingle.
               # scan + continuity-facts ledger check (volume mode). rev-3 = shape-aware exception.
               # Old rev-3 note: # rev-3 (2026-07-27, KM narrow ruling): shape-aware exception — comparison-led
               # chapters (card shape.name) get chiasmus cap 2->4 and 12-gram dup tolerance
@@ -70,6 +73,68 @@ BUDGET_PATTERNS = {
 # House canon: term -> the ONLY lawful expansion. The drafter is fed the glossary
 # (prevention); this gate is the backstop (detection). Extend deliberately + bump rev.
 CANON = {"LGP": "lasting generational prosperity"}
+
+# APPARATUS-LEAK (rev-5, production board §Stage-3): internal build/coordination language
+# that must NEVER reach reader-facing text — body OR receipt boxes (PS-5: receipts are the
+# product now). MODULE-LEVEL so the fixer strips with the same patterns that kill.
+#   HARD  — kill on sight anywhere reader-facing (paths, pytest node ids, test-fn names,
+#           schema nouns used as apparatus, internal agent/coordination phrasings).
+#   STALE_RUNS — a post-extrusion volume may not print the pre-extrusion "nothing runs
+#           today" absolute; the honest form names present foundations. Kills on sight.
+APPARATUS_HARD = (
+    r"(?:src|tests|tools|kdp|artifacts)/[A-Za-z0-9_./-]+\.(?:py|yaml|md|json)"
+    r"|\btest_[A-Za-z0-9_]{3,}\b|::test_[A-Za-z0-9_]+"
+    r"|\bblocks_seal\b|\bseed_rev\b|\bgate_rev\b|\bdraft_status\b|\bsettled_cycle\b"
+    r"|\bwrite_rules\b|\bco_extrude\w*\b|\bacceptance_test\b|\bextrusion ledger\b"
+    r"|\bstays? in (?:its|their|his|her) lane\b|\bobligation-granularity\b"
+    r"|\bcontinuity ledger\b|\bcalibration bank\b|\bc-?extrusion\b"
+    r"|\brendered from the volume's continuity\b")
+APPARATUS_STALE_RUNS = (
+    r"[Nn]othing in this volume'?s? object model runs today"
+    r"|[Nn]othing .{0,30}runs today.{0,30}design only")
+
+
+def bare_numeral_ends(body: str) -> list:
+    """rev-5: sentences terminating on a BARE cardinal number that stands in for a dropped
+    COUNT noun ("limited to a single 16." / "a calculation of 640." — the substitution
+    artifacts the production board caught). Three necessary conditions, tuned so published
+    prose passes (calibration: 0 fires on 1,098 published paragraphs; the two real garbles
+    fire):
+      1. the number sits in a NOUN slot — after an article/quantifier/preposition
+         (a|an|the|single|only|just|of|to|into), NOT after a copula (is/are/was/were),
+         so predicate values like "The proof depth is 16." are spared;
+      2. no currency/percent marker ("$412,000." / "40%." are complete);
+      3. the SAME number reappears elsewhere in the body immediately followed by a
+         lowercase unit word ("16 siblings", "640 hashes") — proof the bare token is a
+         lifted count with its noun dropped, not a deliberate rhetorical value
+         ("the selling capacity of 7." — 7 carries no unit elsewhere — passes)."""
+    # domain count-units: nouns this book counts. A bare sentence-final number whose unit
+    # is one of these — dropped — is the artifact; years/scores/ratios never carry these.
+    UNIT = (r"sibling|hash|object|proof|version|byte|check|leaf|leaves|node|row|item|"
+            r"record|entry|entries|manifest|vendor|facilit|policy|policies|mandate|"
+            r"crossing|class|classe|wave|attestation|transition|gate|packet")
+    out = []
+    for s in re.split(r"(?<=[.!?])\s+", body):
+        s = s.strip()
+        m = re.search(r"(?i)\b(?:a|an|the|single|only|just|of|to|into)\s+(\d[\d,]*)\.\s*$", s)
+        if not m or re.search(r"(?i)\b(?:is|are|was|were|equals?)\s+\d[\d,]*\.\s*$", s):
+            continue
+        if re.search(r"[$%]\s*\d[\d,]*\.\s*$", s):
+            continue
+        num = re.escape(m.group(1))
+        # the dropped noun is a domain count-unit that this number carries elsewhere
+        if re.search(r"\b" + num + r"\s+(?:" + UNIT + r")", body, re.I):
+            out.append(s[-70:])
+    return out
+
+
+def apparatus_leaks(texts) -> tuple:
+    """rev-5: scan reader-facing strings (body + receipt/verify fields). Returns
+    (hard_hits, stale_hits)."""
+    blob = "\n".join(t for t in texts if t)
+    hard = sorted(set(re.findall(APPARATUS_HARD, blob)))
+    stale = re.findall(APPARATUS_STALE_RUNS, blob)
+    return hard, stale
 
 
 def _w(s):
@@ -172,6 +237,27 @@ def gate_card(card: dict) -> tuple[list, dict]:
         v.append({"chapter": ch, "lens": "L0:prescreen:spec_leak", "refuted": True,
                   "reason": f"internal build leakage in reader prose: hard={sorted(set(hard))[:4]} vocab={vocab[:4]}"})
 
+    # BARE-NUMERAL SENTENCE-END (rev-5) — substitution artifacts, reader-facing body only
+    bare = bare_numeral_ends(body_no_bq)
+    if bare:
+        v.append({"chapter": ch, "lens": "L0:prescreen:bare_numeral_end", "refuted": True,
+                  "reason": f"sentence terminates on a bare numeral (dropped noun) x{len(bare)}: {bare[0]!r}"})
+
+    # APPARATUS-LEAK (rev-5, PS-5) — internal build/coordination language in reader-facing
+    # text. Unlike spec_leak, this INCLUDES the receipt box + verify affordances: PS-5 makes
+    # those the product, so a test name or a "stays in its lane" note there is a leak.
+    rb = card.get("receipt_box") or {}
+    reader_faces = [body_no_bq,
+                    str(rb.get("claim", "")), str(rb.get("runs_today", ""))]
+    reader_faces += [str(x) for x in (card.get("verify_affordance") or [])]
+    ap_hard, ap_stale = apparatus_leaks(reader_faces)
+    if ap_hard:
+        v.append({"chapter": ch, "lens": "L0:prescreen:apparatus_leak", "refuted": True,
+                  "reason": f"internal apparatus in reader-facing text: {ap_hard[:6]}"})
+    if ap_stale:
+        v.append({"chapter": ch, "lens": "L0:prescreen:apparatus_stale_runs", "refuted": True,
+                  "reason": f"stale pre-extrusion 'nothing runs today' claim (volume is post-extrusion): {ap_stale[0][:80]!r}"})
+
     # advisory (recorded, never gating)
     paras = [p.strip() for p in re.split(r"\n\s*\n", body_no_code)
              if p.strip() and not p.strip().startswith(("#", ">", "-", "*", "|"))]
@@ -232,22 +318,29 @@ def main():
                 seen.setdefault(sh, c.get("chapter"))
         # (b) continuity-facts ledger: _continuity_facts.yaml beside the seeds declares
         # canonical facts (must/forbid patterns per chapter scope). Contradictions KILL.
+        # rev-5: PINNED facts (pin:true) name their canonical value and get a louder lens —
+        # a fact that flipped more than once is pinned so it cannot silently drift again.
+        # forbid_pattern may be scoped to certain chapters via `scope` (default: all).
         ledger_p = seeds / "_continuity_facts.yaml"
         if ledger_p.exists():
             ledger = yaml.safe_load(ledger_p.read_text()) or []
             for fact in ledger:
                 fpat, mpat = fact.get("forbid_pattern"), fact.get("must_pattern")
+                pinned = bool(fact.get("pin"))
+                lens = "L0:prescreen:continuity_pin" if pinned else "L0:prescreen:continuity_fact"
+                canon = f" (canonical: {fact['canonical']})" if fact.get("canonical") else ""
+                scope = [str(x) for x in fact["scope"]] if fact.get("scope") else None
                 for c in cards:
                     body = re.sub(r"(?m)^>.*$", "", c.get("prose") or "")
-                    if fpat and re.search(fpat, body, re.I):
-                        verdicts.append({"chapter": c.get("chapter"),
-                                         "lens": "L0:prescreen:continuity_fact", "refuted": True,
-                                         "reason": f"contradicts ledger fact {fact.get('name')!r}: "
-                                                   f"forbidden pattern present"})
+                    in_scope = scope is None or str(c.get("chapter")) in scope
+                    if fpat and in_scope and re.search(fpat, body, re.I):
+                        verdicts.append({"chapter": c.get("chapter"), "lens": lens, "refuted": True,
+                                         "reason": f"contradicts {'PINNED ' if pinned else ''}fact "
+                                                   f"{fact.get('name')!r}{canon}: forbidden pattern present"})
                     if mpat and fact.get("required_in") and str(c.get("chapter")) in [str(x) for x in fact["required_in"]]                             and not re.search(mpat, body, re.I):
-                        verdicts.append({"chapter": c.get("chapter"),
-                                         "lens": "L0:prescreen:continuity_fact", "refuted": True,
-                                         "reason": f"ledger fact {fact.get('name')!r} missing required statement"})
+                        verdicts.append({"chapter": c.get("chapter"), "lens": lens, "refuted": True,
+                                         "reason": f"{'PINNED ' if pinned else ''}fact {fact.get('name')!r}{canon} "
+                                                   f"missing required statement"})
     result = "KILL" if verdicts else "PASS"
     print(json.dumps({"gate_rev": GATE_REV, "result": result,
                       "violations": len(verdicts), "advisory": adv}, indent=1))
