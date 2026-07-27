@@ -11,6 +11,7 @@ Usage: seed_fix.py <card.yaml> <adversary_record.json> [--out DIR]
 Env:   PRESS_LOCAL_MODEL_HOST / ADVERSARY_L1_MODEL (shared with the adversary)
 """
 import json
+import re
 import os
 import sys
 import urllib.request
@@ -68,6 +69,9 @@ def main():
         with urllib.request.urlopen(req, timeout=900) as r:
             content = json.loads(r.read())["message"]["content"]
         try:
+            # gemma (ollama>=0.20, think:false) wraps format:json output in a ```json fence —
+            # strip before parse (Wall-1 defect, pilot-2 launch-2, 2026-07-27)
+            content = re.sub(r"^\s*```(?:json)?\s*|\s*```\s*$", "", content.strip())
             fixed_prose = json.loads(content)["prose"]
             break
         except (json.JSONDecodeError, KeyError):

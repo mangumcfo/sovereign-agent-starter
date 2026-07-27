@@ -294,6 +294,7 @@ def l1_check(card):
                               "fail-closed, card not certified; diagnose the card or "
                               "raise ADVERSARY_L1_STALL_SECS deliberately"}
         try:
+            content = re.sub(r"^\s*```(?:json)?\s*|\s*```\s*$", "", content.strip())  # fence-strip (Wall-1 class)
             v = json.loads(content)
             return {"chapter": card.get("chapter"), "lens": f"L1:{L1_MODEL}",
                     "refuted": bool(v.get("refuted")),
