@@ -34,7 +34,10 @@ from pathlib import Path
 
 import yaml
 
-GATE_REV = 3  # rev-3 (2026-07-27, KM narrow ruling): shape-aware exception — comparison-led
+GATE_REV = 4  # rev-4 (2026-07-27, board findings): + spec-leak detector (repo paths /
+              # HOLD-IDs / build-tracker vocab in reader prose) + cross-chapter duplicate-shingle
+              # scan + continuity-facts ledger check (volume mode). rev-3 = shape-aware exception.
+              # Old rev-3 note: # rev-3 (2026-07-27, KM narrow ruling): shape-aware exception — comparison-led
               # chapters (card shape.name) get chiasmus cap 2->4 and 12-gram dup tolerance
               # >=2 -> >=3 (one twin-entity repeat allowed). EVERYTHING else unchanged.
               # Pack-level shape/budget reconciliation deferred to post-pilot design.
@@ -154,6 +157,16 @@ def gate_card(card: dict) -> tuple[list, dict]:
         v.append({"chapter": ch, "lens": "L0:prescreen:text_integrity", "refuted": True,
                   "reason": f"repeated 12-gram x{len(dup_g)}: {' '.join(dup_g[0])[:90]!r}"})
 
+    # SPEC-LEAK (rev-4, board finding: ch6 shipped repo paths + a HOLD ID as reader prose).
+    # Applies to READER prose only (blockquotes = receipt apparatus, exempt by design).
+    SPEC = (r"(?:src|tests|tools|kdp|artifacts)/[A-Za-z0-9_./-]+\.(?:py|yaml|md|json)"
+            r"|\bS\d-\d\d-E\d-\d\b|\bHOLD(?:-ID)?\b|\bblocks_seal\b|\bseed_rev\b"
+            r"|\bgate_rev\b|\bdraft_status\b|\bextrusion ledger\b|\bbuild-tracker\b")
+    leaks = re.findall(SPEC, body_no_bq)
+    if leaks:
+        v.append({"chapter": ch, "lens": "L0:prescreen:spec_leak", "refuted": True,
+                  "reason": f"internal build vocabulary in reader prose: {sorted(set(leaks))[:5]}"})
+
     # advisory (recorded, never gating)
     paras = [p.strip() for p in re.split(r"\n\s*\n", body_no_code)
              if p.strip() and not p.strip().startswith(("#", ">", "-", "*", "|"))]
@@ -191,6 +204,45 @@ def main():
         vv, aa = gate_card(c)
         verdicts += vv
         adv[str(c.get("chapter"))] = aa
+
+    # rev-4 VOLUME-MODE checks (only when screening a directory of cards)
+    if seeds.is_dir() and len(cards) > 1:
+        # (a) duplicate-shingle scan: a 10-word shingle in 2+ chapters' reader prose =
+        # recycled boilerplate (board: 11 verbatim glossary shingles). Attach to the
+        # LATER chapter. The bare canonical expansion itself is lawful (canon law
+        # requires it per chapter) — it is < 10 words, so it never trips this.
+        seen = {}
+        for c in sorted(cards, key=lambda x: int(x.get("chapter", 0))):
+            body = re.sub(r"(?m)^>.*$", "", re.sub(r"```.*?```", "", c.get("prose") or "", flags=re.S))
+            words = re.findall(r"[a-z'’]+", body.lower())
+            mine = set(tuple(words[i:i+10]) for i in range(len(words) - 9))
+            for sh in mine:
+                if sh in seen and seen[sh] != c.get("chapter"):
+                    verdicts.append({"chapter": c.get("chapter"),
+                                     "lens": "L0:prescreen:duplicate_shingle", "refuted": True,
+                                     "reason": f"10-word shingle recycled from ch{seen[sh]}: "
+                                               f"{' '.join(sh)[:80]!r}"})
+                    break  # one verdict per chapter-pair is enough to KILL and target
+            for sh in mine:
+                seen.setdefault(sh, c.get("chapter"))
+        # (b) continuity-facts ledger: _continuity_facts.yaml beside the seeds declares
+        # canonical facts (must/forbid patterns per chapter scope). Contradictions KILL.
+        ledger_p = seeds / "_continuity_facts.yaml"
+        if ledger_p.exists():
+            ledger = yaml.safe_load(ledger_p.read_text()) or []
+            for fact in ledger:
+                fpat, mpat = fact.get("forbid_pattern"), fact.get("must_pattern")
+                for c in cards:
+                    body = re.sub(r"(?m)^>.*$", "", c.get("prose") or "")
+                    if fpat and re.search(fpat, body, re.I):
+                        verdicts.append({"chapter": c.get("chapter"),
+                                         "lens": "L0:prescreen:continuity_fact", "refuted": True,
+                                         "reason": f"contradicts ledger fact {fact.get('name')!r}: "
+                                                   f"forbidden pattern present"})
+                    if mpat and fact.get("required_in") and str(c.get("chapter")) in [str(x) for x in fact["required_in"]]                             and not re.search(mpat, body, re.I):
+                        verdicts.append({"chapter": c.get("chapter"),
+                                         "lens": "L0:prescreen:continuity_fact", "refuted": True,
+                                         "reason": f"ledger fact {fact.get('name')!r} missing required statement"})
     result = "KILL" if verdicts else "PASS"
     print(json.dumps({"gate_rev": GATE_REV, "result": result,
                       "violations": len(verdicts), "advisory": adv}, indent=1))
