@@ -34,8 +34,11 @@ from pathlib import Path
 
 import yaml
 
-GATE_REV = 2  # rev-2 (2026-07-26): + dup-n-gram / text-integrity kill (garbled duplicated
-              # spans escaped rev-1). Bump on ANY kill-set change; never reuse a rev
+GATE_REV = 3  # rev-3 (2026-07-27, KM narrow ruling): shape-aware exception — comparison-led
+              # chapters (card shape.name) get chiasmus cap 2->4 and 12-gram dup tolerance
+              # >=2 -> >=3 (one twin-entity repeat allowed). EVERYTHING else unchanged.
+              # Pack-level shape/budget reconciliation deferred to post-pilot design.
+              # rev-2: + text-integrity kill. Bump on ANY kill-set change; never reuse a rev
 
 LIVE = (r"\b(runs today|is live|are live|is running|are running|ships today|available today"
         r"|you can run (it|this) today|in production|is enforced|are enforced|enforces"
@@ -103,11 +106,17 @@ def gate_card(card: dict) -> tuple[list, dict]:
     if hits:
         v.append({"chapter": ch, "lens": "L0:prescreen:template_frame", "refuted": True,
                   "reason": f"banned frame: {sorted(set(hits))}"})
+    # rev-3 shape-aware exception (KM 2026-07-27, narrow): a chapter ASSIGNED the
+    # comparison-led shape structurally generates comparative constructions — raise ONLY
+    # the two colliding caps for that shape; generic template abuse still kills.
+    shape_name = str((card.get("shape") or {}).get("name", "")).lower() if isinstance(card.get("shape"), dict) else str(card.get("shape") or "").lower()
+    comparison_led = "comparison" in shape_name
+    chiasmus_cap = 4 if comparison_led else 2
     budgets = [
         (r"(?m)(?:^|[.!?]\s)The design\b", 2, "sentence-initial 'The design'"),
         (r"\bThis (?:ensures|creates|prevents|eliminates|transforms|allows)\b", 3, "'This ensures/…' frame"),
         (r"\bensur(?:es|e|ing)\b", 4, "'ensures' family"),
-        (r"\bnot (?:a|an|the) [^,.;]{2,40}, but (?:a|an|the)\b", 2, "not-X-but-Y chiasmus"),
+        (r"\bnot (?:a|an|the) [^,.;]{2,40}, but (?:a|an|the)\b", chiasmus_cap, "not-X-but-Y chiasmus"),
         (r"\bThe result is a\b", 1, "'The result is a'"),
         (r"\bstructural\b", 2, "'structural'"),
     ]
@@ -131,7 +140,8 @@ def gate_card(card: dict) -> tuple[list, dict]:
     dup_s = [s for s, n in collections.Counter(sents_n).items() if n >= 2]
     words_l = re.findall(r"[a-z'’]+", body_no_bq.lower())
     g12 = collections.Counter(tuple(words_l[i:i+12]) for i in range(len(words_l) - 11))
-    dup_g = [g for g, n in g12.items() if n >= 2]
+    dup_thresh = 3 if comparison_led else 2  # rev-3: one twin-entity repeat allowed for comparison-led
+    dup_g = [g for g, n in g12.items() if n >= dup_thresh]
     if dup_s:
         v.append({"chapter": ch, "lens": "L0:prescreen:text_integrity", "refuted": True,
                   "reason": f"duplicated sentence x{len(dup_s)}: {dup_s[0][:90]!r}"})
