@@ -25,7 +25,11 @@ MODEL = os.environ.get("ADVERSARY_L1_MODEL", "gemma4:31b")
 
 ORDER = """You are fixing a book chapter SEED that an adversarial review KILLED.
 FIRST LAW: read the kill_reasons list and SATISFY EVERY ONE OF THEM explicitly — the
-rewrite fails if any listed reason would still be true of the new prose. Kill-reason
+rewrite fails if any listed reason would still be true of the new prose. COUNT each
+budgeted frame named in a kill reason and reduce it BELOW its cap (a reason like
+"'structural': 3 > budget 2" means at most 2 may remain — count yours before returning);
+remove EVERY repeated span entirely (not one occurrence — all duplication gone); satisfy
+every kill reason in the current round, not across rounds. Kill-reason
 classes and their required repairs:
 - beat not served → serve it: state what it is and the design principle in 2-3 sentences.
 - unqualified live claim → requalify to design voice unless runs_today backs it.

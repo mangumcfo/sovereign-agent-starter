@@ -689,9 +689,17 @@ def cmd_cycle(vol_id, seeds_dir):
     # gate_rev law: the deterministic prescreen sits between L0 (mechanical) and L1 (model
     # judgment). Each stage that fails gets ONE fix round then a re-verify, same discipline.
     def _stage(fn):
+        # Bounded exception to one-fix-per-round (KM ruling 2026-07-27, ch6 single-round
+        # convergence class): MAX 2 fix rounds per stage — 3 total attempts. After the
+        # second failed fix the KILL is terminal. Not an open loop.
         if fn():
             return True
-        return fix_round() and fn()
+        for _ in range(2):
+            if not fix_round():
+                return False
+            if fn():
+                return True
+        return False
 
     if _stage(lambda: adversary("L0")) and _stage(prescreen_gate) and _stage(lambda: adversary("L1")):
         result = "PASS"
