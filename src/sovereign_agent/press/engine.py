@@ -706,6 +706,7 @@ def cmd_cycle(vol_id, seeds_dir):
 
     from .prescreen import GATE_REV
     cycle = {"volume": vol_id, "gate_rev": GATE_REV,
+             "settlement_rule": "per-chapter (KM 2026-07-27): settled PASS = receipt, never re-opened",
              "cycle": "seed→adversary_L0→prescreen→L1→fix→re-verify",
              "batch_plan": batch_plan, "steps": steps, "result": result,
              "zero_frontier": True,

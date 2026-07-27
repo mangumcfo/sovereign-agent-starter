@@ -138,6 +138,12 @@ def load_cards(seeds_dir: Path, chapter=None):
             continue  # D-5: metadata/retired files (_volume_input.yaml, _retired_*) are not cards —
                       # they must never be validated as cards nor hard-kill the run at load
         c = yaml.safe_load(p.read_text(encoding="utf-8"))
+        if c.get("settled") is True:
+            # PER-CHAPTER SETTLEMENT (KM ruling 2026-07-27): a PASSed+healed chapter is a
+            # RECEIPT, not a lottery ticket — later cycles never re-open it (judge-instability
+            # finding: L1 refuted byte-identical text it had passed, sha-verified).
+            print(f"ADVERSARY SETTLED (pass receipt {str(c.get('settled_cycle'))[:16]}): {p.name} — not re-judged")
+            continue
         if not (c.get("prose") or "").strip():
             # PILOT defect-2 fix: an UNDRAFTED sibling is not a card to judge and must
             # never crash the run — skip LOUDLY (a silent skip would hide missing drafts).

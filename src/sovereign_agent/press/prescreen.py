@@ -177,6 +177,9 @@ def main():
         if p.name.startswith("_") or p.name.endswith("_fixed.yaml"):
             continue
         c = yaml.safe_load(p.read_text(encoding="utf-8"))
+        if c.get("settled") is True:
+            print(f"prescreen SETTLED (pass receipt): {p.name} — not re-screened")
+            continue
         if not (c.get("prose") or "").strip():
             print(f"prescreen SKIP (undrafted): {p.name}")
             continue
