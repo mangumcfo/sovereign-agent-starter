@@ -17,15 +17,19 @@ Required inputs (volume seeds dir):
                           verify_affordance[] · extrusion[] (every HOLD blocks_seal)
 
 Assembled output (markdown):
-  front matter (title/subtitle/series line + claim-count table) · frame declaration
-  ("About the Worked Scenario") · chapters (settled prose VERBATIM + reader-facing
-  four-field receipt box: Claim / What runs today / What is designed / How you check) ·
-  glossary ("Cast & Canon" rendered from continuity canon + CANON terms) ·
-  verification index (every chapter's verify affordances, verbatim)
-plus an assembly receipt JSON: sha256 of every placed piece.
+  front matter (title/subtitle/series line + a build-state table single-sourced from the
+  ledger) · frame declaration ("About the Worked Scenario") · chapters (settled prose
+  VERBATIM + a GENERATED four-field receipt box) · Cast & Canon (plain-name rendering of
+  the continuity facts — no dotted config keys) · Do-It-Yourself worksheets (each
+  chapter's verify affordances) plus an assembly receipt JSON: sha256 of every piece.
 
-The only English this module contributes is the fixed structural scaffolding below —
-declared once, visible, and never varied per volume.
+PS-5 generation (2nd production board): the reader receipt is DERIVED, per chapter, from
+the live extrusion ledger + the chapter — never hand-maintained, never identical across
+chapters. 'What runs today' lists that chapter's PRESENT claims (plain-English ledger
+data); 'What is designed' names the deployment form derived from the title; 'How you
+check' is the affordance worksheet. Chapter PROSE is still placed verbatim; the module
+still writes no prose and still refuses on any missing piece. The fixed scaffolding it
+contributes is declared once in SCAFFOLD below.
 """
 from __future__ import annotations
 import hashlib
@@ -47,13 +51,20 @@ SCAFFOLD = {
     "frame_heading":   "## About the Worked Scenario",
     "glossary_heading": "## Cast & Canon",
     "glossary_note":   "*(the people, figures, and terms this volume holds constant)*",
-    "verify_heading":  "## Verification Index",
-    "verify_note":     "*(every chapter's reader-runnable checks)*",
+    "verify_heading":  "## Do It Yourself — Chapter Worksheets",
+    "verify_note":     "*(each chapter's checks, to run against your own records)*",
     "receipt_title":   "Receipt — Chapter {n}",
     "receipt_claim":   "**Claim.**",
     "receipt_runs":    "**What runs today.**",
+    "runs_frame":      ("These mechanisms are implemented in the platform's object library and "
+                        "checked by their own tests — what is proven is the mechanism, not a live "
+                        "deployment (Ridgeline is a worked scenario):"),
     "receipt_designed": "**What is designed, not yet running.**",
+    "designed_frame":  ("Deploying the {form} over your own business records — not Ridgeline's — is "
+                        "the design this chapter equips you to build. It is not running for any "
+                        "business yet; that step is yours."),
     "receipt_check":   "**How you check.**",
+    "check_frame":     "Run these against your own records:",
     "counts_rows": [
         ("Chapters", "{n_ch}"),
         ("Mechanisms implemented and test-checked in the platform's object library", "{n_present}"),
@@ -140,11 +151,13 @@ def load_volume(seeds_dir):
             gaps.append(f"{f}: prose missing or empty")
         if not c.get("title"):
             gaps.append(f"{f}: title missing")
+        # PS-5 generation: the reader receipt is GENERATED from the extrusion ledger +
+        # continuity, not hand-maintained. The seed supplies only the one editorial thesis
+        # line (`claim`); runs-today / designed / how-to-check are derived below.
         rb = c.get("receipt_box") or {}
-        for k in ("claim", "runs_today", "designed"):
-            if not str(rb.get(k, "")).strip():
-                gaps.append(f"{f}: receipt_box.{k} missing — the reader receipt "
-                            "cannot be placed")
+        if not str(rb.get("claim", "")).strip():
+            gaps.append(f"{f}: receipt_box.claim (the chapter thesis) missing — "
+                        "the reader receipt cannot be generated")
         va = c.get("verify_affordance") or []
         if not (isinstance(va, list) and va):
             gaps.append(f"{f}: verify_affordance missing/empty — no reader-runnable check")
@@ -174,27 +187,93 @@ def load_volume(seeds_dir):
     return vol, frame, facts, chapters
 
 
+def _deployed_form(title):
+    """Derive a chapter's 'deployed form' noun phrase from its title, so the 'what is
+    designed' line varies per chapter without a hand-maintained field. Preserves proper
+    capitalization (Merkle, Object); problem chapters ('… Fail …') fall back to the volume
+    noun; comparison/appendage tails ('vs …', '& …') are dropped."""
+    t = str(title).strip()
+    if re.search(r"\bFail\b", t):
+        return "sovereign object model"
+    t = re.sub(r"^(?:The|A|An)\s+", "", t)
+    t = re.split(r"\s+(?:vs|versus|&)\s+", t)[0].strip()
+    return t or "object model"
+
+
 def _receipt_box_md(n, c):
-    """Reader-facing four-field receipt box (PS-5 plain-name dialect). Every string is
-    PLACED from the seed's receipt_box + verify affordances — no repo paths, no test
-    names, no per-row code tracing (that trail lives in the spec + extrusion ledger for
-    auditors, never on the reader's page). 'What is designed' is the seed's `designed`
-    field, plus any genuine HOLD/DOWNGRADED rows still open."""
+    """GENERATED reader receipt (PS-5). The four fields are derived from the live extrusion
+    ledger + the chapter, never hand-maintained and never identical across chapters:
+      Claim              — the chapter's editorial thesis (the one seed line)
+      What runs today    — this chapter's PRESENT claims, plain-English, from the ledger
+      What is designed   — this chapter's open HOLDs + the deployment form derived from the title
+      How you check      — this chapter's verify affordances as a numbered worksheet
+    Varied by construction: each chapter carries different claims and a different deployed form."""
     S = SCAFFOLD
     rb = c["receipt_box"]
+    present = [e for e in c["extrusion"] if str(e.get("status", "")).upper() == "PRESENT"]
     holds = [e for e in c["extrusion"]
              if str(e.get("status", "")).upper() in ("HOLD", "DOWNGRADED")]
     lines = [f"> **{S['receipt_title'].format(n=n)}**", ">",
              f"> {S['receipt_claim']} {str(rb['claim']).strip()}", ">",
-             f"> {S['receipt_runs']} {str(rb['runs_today']).strip()}", ">",
-             f"> {S['receipt_designed']} {str(rb.get('designed', '')).strip()}"]
-    for e in holds:  # any still-open hold is named plainly (no E-ID, no path)
+             f"> {S['receipt_runs']} {S['runs_frame']}"]
+    for e in present:  # plain-English claim text from the ledger — no E-ID, no path, no test
         lines.append(f"> - {str(e.get('claim', '')).strip()}")
-    lines.append(">")
-    lines.append(f"> {S['receipt_check']}")
-    for v in c["verify_affordance"]:
-        lines.append(f"> - {str(v).strip()}")
+    lines += [">", f"> {S['receipt_designed']} "
+              + S["designed_frame"].format(form=_deployed_form(c["title"]))]
+    for e in holds:
+        lines.append(f"> - {str(e.get('claim', '')).strip()}")
+    lines += [">", f"> {S['receipt_check']} {S['check_frame']}"]
+    for i, v in enumerate(c["verify_affordance"], 1):
+        lines.append(f"> {i}. {str(v).strip()}")
     return "\n".join(lines)
+
+
+# ── plain-name Cast & Canon generation (PS-5: no dotted config keys in the reader doc) ──
+_CANON_GROUPS = [  # (canon key path, reader label, value transform)
+    ("company", "The company", lambda v: str(v).split(" - ", 1)[-1] if " - " in str(v) else str(v)),
+    ("personas.controller", None, None), ("personas.successor", None, None),
+    ("personas.auditor", None, None), ("personas.trustee", None, None),
+    ("population.total_objects", "Objects in all", str),
+    ("population.classes", "Object classes", str),
+    ("mandates.operating", None, None), ("mandates.trust", None, None),
+    ("mandates.properties", None, None), ("mandates.crossings", "Declared crossings", str),
+    ("objects.C-1042", "C-1042", str), ("objects.WO-88214", "WO-88214", str),
+    ("integrity.proof_depth", "Proof depth", str),
+    ("integrity.proof_size", "Proof size", str), ("integrity.root_size", "Root size", str),
+    ("integrity.manifest", "Year-end manifest", str),
+    ("integrity.design_target_proof_check", "Proof check (design target)", str),
+    ("migration.sourced", "Sourced at cutover", str),
+    ("migration.unsourced", "Unsourced at cutover", str),
+    ("audit_day.sample", "Audit sample", str),
+    ("audit_day.hashes_checked", "Hash checks in the sample", str),
+    ("audit_day.design_target_elapsed", "Tie-out (design target)", str),
+    ("audit_day.prior_year_actual", "Prior-year tie-out (incumbent)", str),
+]
+
+
+def _dig(canon, path):
+    node = canon
+    for k in path.split("."):
+        if not isinstance(node, dict) or k not in node:
+            return None
+        node = node[k]
+    return node
+
+
+def _cast_and_canon(canon):
+    """Render selected continuity facts with plain reader labels — persons by name, figures by
+    a readable label. No dotted snake_case keys reach the page (the 2nd board's worst offender)."""
+    rows = []
+    for path, label, xform in _CANON_GROUPS:
+        val = _dig(canon, path)
+        if val is None:
+            continue
+        if path.startswith(("personas.", "mandates.")):  # "Name - description" -> Name | description
+            name, _, desc = str(val).partition(" - ")
+            rows.append((name.strip(), desc.strip() or name.strip()))
+        else:
+            rows.append((label, xform(val)))
+    return rows
 
 
 def assemble(seeds_dir, out_path, receipt_path=None):
@@ -232,21 +311,20 @@ def assemble(seeds_dir, out_path, receipt_path=None):
         body.append(f"# Chapter {n} — {c['title']}\n\n{prose}\n\n" + _receipt_box_md(n, c))
     pieces["chapters"] = "\n\n---\n\n".join(body)
 
-    # glossary — continuity canon values + CANON terms, rendered not written
-    rows = _flatten_canon(vol["continuity_canon"])
+    # Cast & Canon — PLAIN-NAME rendering (no dotted config keys; the 2nd board's worst offender)
     gl = [f"{S['glossary_heading']}\n", S["glossary_note"], "", "| | |", "|---|---|"]
-    for k, v in rows:
-        gl.append(f"| {k} | {v} |")
+    for label, val in _cast_and_canon(vol["continuity_canon"]):
+        gl.append(f"| **{label}** | {val} |")
     for term, gloss in CANON.items():
-        gl.append(f"| {term} | {gloss} |")
+        gl.append(f"| **{term}** | {gloss} |")
     pieces["glossary"] = "\n".join(gl)
 
-    # verification index — every chapter's affordances, verbatim
+    # worksheet-style verification index — each chapter's checks, framed to run on your own records
     vi = [f"{S['verify_heading']}\n", S["verify_note"], ""]
     for n, c in chapters:
         vi.append(f"### Chapter {n} — {c['title']}")
         for i, v in enumerate(c["verify_affordance"], 1):
-            vi.append(f"{i}. {str(v).strip()}")
+            vi.append(f"- [ ] **{i}.** {str(v).strip()}")
         vi.append("")
     pieces["verification_index"] = "\n".join(vi).rstrip()
 
