@@ -701,14 +701,39 @@ def cmd_cycle(vol_id, seeds_dir):
                 return True
         return False
 
-    if _stage(lambda: adversary("L0")) and _stage(prescreen_gate) and _stage(lambda: adversary("L1")):
+    co_extrude_receipt = None
+
+    def co_extrude_stage():
+        """P-G3 (4th cycle stage): a cycle that clears L0→prescreen→L1 then proves every runtime
+        claim — PRESENT modules exist + acceptance tests pass now; HOLDs carry blocks_seal. A
+        defect fails the cycle (the seed lied about the substrate). Runs once, after L1 passes."""
+        nonlocal co_extrude_receipt
+        from . import co_extrude as _cx
+        t0 = time.time()
+        co_extrude_receipt = _cx.run(work_seeds, repo=os.environ.get("PRESS_CODE_REPO"),
+                                     receipt_out=os.path.join(bundle, "co_extrude_receipt.json"))
+        ok = not co_extrude_receipt["defects"]
+        steps.append({"step": "co_extrude", "exit": 0 if ok else 1,
+                      "secs": round(time.time() - t0, 2), "model": "none",
+                      "ts": time.strftime("%Y%m%dT%H%M%SZ", time.gmtime()),
+                      "present_validated": co_extrude_receipt["present_validated"],
+                      "present_failed": co_extrude_receipt["present_failed"],
+                      "holds": co_extrude_receipt["holds"]})
+        _qlog(runs_root, vid=vol_id, stage="co_extrude", event="pass" if ok else "kill",
+              model="none", qmode="cycle")
+        return ok
+
+    if _stage(lambda: adversary("L0")) and _stage(prescreen_gate) and _stage(lambda: adversary("L1")) \
+            and co_extrude_stage():
         result = "PASS"
 
     from .prescreen import GATE_REV
     cycle = {"volume": vol_id, "gate_rev": GATE_REV,
              "settlement_rule": "per-chapter (KM 2026-07-27): settled PASS = receipt, never re-opened",
-             "cycle": "seed→adversary_L0→prescreen→L1→fix→re-verify",
+             "cycle": "seed→adversary_L0→prescreen→L1→co_extrude→fix→re-verify",
              "batch_plan": batch_plan, "steps": steps, "result": result,
+             "co_extrude": co_extrude_receipt and {k: co_extrude_receipt[k] for k in
+                          ("present_validated", "present_failed", "holds", "defects")},
              "zero_frontier": True,
              "note": "all model orders resolved via local_30b tier (local host); the human "
                      "seal remains outside this program — a PASS only queues, never ships"}

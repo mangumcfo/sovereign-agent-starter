@@ -240,3 +240,25 @@ def test_ps4_default_deny_no_ledger(tmp_path, monkeypatch):
     # legacy volume -> passes the HOLD gate to the word line (no default-deny)
     out = _seal("legacy_ok")
     assert "default-deny" not in out, out
+
+
+def test_co_extrude_present_and_hold(tmp_path):
+    """P-G3: PRESENT with a passing test validates; HOLD without blocks_seal is a defect;
+    a missing PRESENT module is a defect."""
+    from sovereign_agent.press import co_extrude
+    import yaml as _y
+    d = tmp_path / "seeds"; d.mkdir()
+    (tmp_path / "src").mkdir(); (tmp_path / "tests").mkdir()
+    (tmp_path / "src" / "real.py").write_text("x = 1\n")
+    (tmp_path / "tests" / "test_real.py").write_text("def test_ok():\n    assert True\n")
+    _y.safe_dump({"chapter": "1", "extrusion": [
+        {"id": "E1", "claim": "c", "status": "present",
+         "target_module": "src/real.py", "acceptance_test": "tests/test_real.py"},
+        {"id": "E2", "claim": "c2", "status": "HOLD"},                      # missing blocks_seal
+        {"id": "E3", "claim": "c3", "status": "present",
+         "target_module": "src/missing.py", "acceptance_test": "tests/test_real.py"}]},
+        open(d / "ch1.yaml", "w"))
+    r = co_extrude.run(str(d), repo=str(tmp_path))
+    assert r["present_validated"] == 1
+    ids = {x["id"] for x in r["defects"]}
+    assert ids == {"E2", "E3"}, r["defects"]
