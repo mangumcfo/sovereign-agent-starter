@@ -34,11 +34,15 @@ from pathlib import Path
 
 import yaml
 
-GATE_REV = 5  # rev-5 (2026-07-27, production board findings): + bare-numeral sentence-end
-              # detector (substitution artifacts "a calculation of 640.") + apparatus-leak
-              # detector (test names / paths / internal coordination notes / stale runs-today
-              # in reader-facing prose AND receipt boxes — PS-5) + pinned continuity facts
-              # (a canonical value cannot be contradicted). rev-4: spec-leak + duplicate-shingle.
+GATE_REV = 6  # rev-6 (2026-07-27, 2nd production board — connective-tissue register): the
+              # boards proved the tissue is generatively bad. New voice/pacing budgets, each
+              # calibrated 0-fire across 9,180 published paragraphs: (1) "This X allows [Name]
+              # to Y" frame KILLED on sight; (2) pronominalize — a full "First Last" name twice
+              # in one paragraph kills (name once per scene); (3) cast-as-decoration — 2+ named
+              # characters as reaction-verb subjects in one paragraph kills; (4) near-verbatim
+              # restatement backstop (Jaccard>=0.6 within a paragraph). Class-shape pins (R-4):
+              # possessive owner forms + name+managed-verb proximity. rev-5: bare-numeral +
+              # apparatus-leak + pinned continuity. rev-4: spec-leak + duplicate-shingle.
               # scan + continuity-facts ledger check (volume mode). rev-3 = shape-aware exception.
               # Old rev-3 note: # rev-3 (2026-07-27, KM narrow ruling): shape-aware exception — comparison-led
               # chapters (card shape.name) get chiasmus cap 2->4 and 12-gram dup tolerance
@@ -135,6 +139,73 @@ def apparatus_leaks(texts) -> tuple:
     hard = sorted(set(re.findall(APPARATUS_HARD, blob)))
     stale = re.findall(APPARATUS_STALE_RUNS, blob)
     return hard, stale
+
+
+# rev-6 connective-tissue register budgets. Cast + reaction-verb vocab kept module-level
+# so the drafter order and the fixer share one source. Each calibrated 0-fire on published.
+_CAST_FULL = ("Dana Reyes", "Ilse Vogt", "Theo Ridgeline", "Harold Bhatt")
+_CAST_ANY = r"(?:Dana|Ilse|Theo|Harold)"
+_REACT = (r"(?:sees?|observes?|notes?|views?|watches|watched|recognizes?|relies|relied|"
+          r"confirms?|understands?|understood|accepts?|considers?|examines?|monitors?|"
+          r"realizes?|feels?|senses?)")
+THIS_X_ALLOWS = (r"\bThis\s+\w+(?:\s\w+)?\s+(?:allows?|enables?|lets|permits?)\s+"
+                 r"(?:" + _CAST_ANY + r"|the controller|the successor|the auditor|the trustee|"
+                 r"the operator|the reader)\s+to\b")
+_TISSUE_STOP = set("the a an of to in on for and or but is are was were be been that this these "
+                   "those it its their his her they them he she we you your our with as at by from "
+                   "into than then so not no can will would should could may might each every any "
+                   "all one two some such other more most over under about which who whom whose when "
+                   "where why how do does did has have had".split())
+
+
+def _content_words(s):
+    return {w for w in re.findall(r"[a-z']+", s.lower()) if len(w) > 3 and w not in _TISSUE_STOP}
+
+
+def _is_narrative(s):
+    s = s.strip()
+    if not s or not s[0].isupper() or not s.endswith((".", "?", "!")):
+        return False
+    return not re.search(r"[\[\]\*\|]|^\d|\b\d\.$|\(\d+ points?\)", s)
+
+
+def tissue_budgets(body: str) -> list:
+    """rev-6: return violation dicts for the connective-tissue register budgets."""
+    v = []
+    paras = re.split(r"\n\s*\n", body)
+    # (1) "This X allows [Name] to Y" frame — killed on sight
+    allows = re.findall(THIS_X_ALLOWS, body, re.I)
+    if allows:
+        v.append(("tissue_this_x_allows", f"'This X allows [actor] to Y' frame x{len(allows)}: {allows[:3]}"))
+    # (2) pronominalize — a full "First Last" name twice in one paragraph
+    pron = []
+    for p in paras:
+        for full in _CAST_FULL:
+            if len(re.findall(re.escape(full), p)) >= 2:
+                pron.append(full)
+    if pron:
+        v.append(("tissue_pronominalize", f"full name repeated in a scene (pronominalize after first): {sorted(set(pron))}"))
+    # (3) cast-as-decoration — 2+ named characters as reaction-verb subjects in one paragraph
+    for p in paras:
+        chars = set()
+        for s in re.split(r"(?<=[.!?])\s+", p):
+            m = re.match(r"\s*(" + _CAST_ANY + r")(?:\s+\w+)?\s+" + _REACT + r"\b", s)
+            if m:
+                chars.add(m.group(1))
+        if len(chars) >= 2:
+            v.append(("tissue_cast_decoration", f"cast-as-decoration: {sorted(chars)} each a reaction-verb subject in one paragraph"))
+            break
+    # (4) near-verbatim restatement backstop (synonym restatement is the L1's + drafter's job)
+    for p in paras:
+        sents = [s.strip() for s in re.split(r"(?<=[.!?])\s+", p) if len(s.split()) >= 8 and _is_narrative(s)]
+        for i in range(len(sents)):
+            for j in range(i + 1, len(sents)):
+                a, b = _content_words(sents[i]), _content_words(sents[j])
+                if len(a) >= 6 and len(b) >= 6 and len(a & b) / len(a | b) >= 0.6 \
+                        and (len(a - b) >= 3 or len(b - a) >= 3):
+                    v.append(("tissue_restatement", f"near-verbatim restatement (Jaccard>=0.6): {sents[i][:60]!r}"))
+                    return v
+    return v
 
 
 def _w(s):
@@ -257,6 +328,10 @@ def gate_card(card: dict) -> tuple[list, dict]:
     if ap_stale:
         v.append({"chapter": ch, "lens": "L0:prescreen:apparatus_stale_runs", "refuted": True,
                   "reason": f"stale pre-extrusion 'nothing runs today' claim (volume is post-extrusion): {ap_stale[0][:80]!r}"})
+
+    # rev-6 CONNECTIVE-TISSUE REGISTER budgets (2nd board: voice/pacing failed here)
+    for lens_suffix, reason in tissue_budgets(body_no_bq):
+        v.append({"chapter": ch, "lens": f"L0:prescreen:{lens_suffix}", "refuted": True, "reason": reason})
 
     # advisory (recorded, never gating)
     paras = [p.strip() for p in re.split(r"\n\s*\n", body_no_code)

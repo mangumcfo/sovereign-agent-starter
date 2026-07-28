@@ -179,3 +179,29 @@ def test_rev5_pinned_continuity_fact_kills(tmp_path):
                        cwd=str(__import__("pathlib").Path(__file__).resolve().parents[1] / "src"),
                        capture_output=True, text=True, env={**os.environ, "PYTHONPATH": ""})
     assert "continuity_pin" in r.stdout and "PINNED" in r.stdout, r.stdout
+
+
+def test_rev6_tissue_budgets():
+    from sovereign_agent.press.prescreen import tissue_budgets
+    lenses = lambda body: {v[0] for v in tissue_budgets(body)}
+    # "This X allows [Name] to Y" frame killed
+    assert "tissue_this_x_allows" in lenses("This mechanism allows Dana to verify the root herself.")
+    # full name twice in one paragraph -> pronominalize
+    assert "tissue_pronominalize" in lenses("Dana Reyes opened the ledger. Later, Dana Reyes closed it.")
+    # 2+ cast as reaction-verb subjects in one paragraph -> cast-as-decoration
+    assert "tissue_cast_decoration" in lenses(
+        "Dana observes the change. Ilse notes the discrepancy. The root holds.")
+    # clean disciplined prose passes
+    assert tissue_budgets(
+        "Dana opened the ledger and recomputed the root; it matched the published value. "
+        "The proof carried sixteen siblings, and the check took a single pass.") == []
+
+
+def test_rev6_calibration_published_clean():
+    # the disciplined register must not fire on genuinely-varied published-style prose
+    from sovereign_agent.press.prescreen import tissue_budgets
+    good = ("Send too little context, and the specialist produces a shallow analysis. "
+            "Send the wrong context, and the specialist produces a confident but wrong answer. "
+            "The controller reconciles cash to the bank statement each month, tying every line "
+            "to a record held outside her own books.")
+    assert tissue_budgets(good) == []
