@@ -1061,8 +1061,19 @@ def cmd_seal(vol_id, word=None, verify=False, reseal=False, supersede=None):
     _vols = manifest.get("volumes") if isinstance(manifest.get("volumes"), dict) else manifest
     _vol_entry = (_vols or {}).get(vol_id) or {}
     _ledger_dir = _vol_entry.get("extrusion_ledger") or os.environ.get("PRESS_EXTRUSION_LEDGER")
-    if _ledger_dir:
-        _holds = _open_seal_blocking_holds(_ledger_dir)
+    # PS-4 fail-closed (P-G4, KM order 2026-07-27): the HOLD check runs OUTSIDE any `if`.
+    # Default-deny: a volume with no resolvable extrusion ledger cannot be sealed — we cannot
+    # prove it carries no open HOLD — UNLESS its manifest entry EXPLICITLY declares it legacy
+    # (pre-extrusion books: S0..S4 sealed before the object model). Silent skip is gone.
+    _legacy = str(_vol_entry.get("extrusion", "")).lower() == "none" or bool(_vol_entry.get("legacy"))
+    if not _ledger_dir:
+        if not _legacy:
+            fail("SEAL REFUSED (PS-4, default-deny): " + vol_id + " declares no extrusion_ledger "
+                 "and is not marked legacy (extrusion: none) — a production seal cannot proceed "
+                 "without a ledger to prove it carries no open seal-blocking HOLD. Declare the "
+                 "ledger, or explicitly mark the volume legacy if it predates the object model.")
+    else:
+        _holds = _open_seal_blocking_holds(_ledger_dir)  # itself fail-closes on an unreadable dir
         if _holds:
             fail("SEAL REFUSED (PS-4): volume carries " + str(len(_holds)) + " open seal-blocking "
                  "HOLD(s) — resolve each by Extrude (code lands + tested + receipted) or "

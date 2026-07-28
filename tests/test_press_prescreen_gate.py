@@ -205,3 +205,38 @@ def test_rev6_calibration_published_clean():
             "The controller reconciles cash to the bank statement each month, tying every line "
             "to a record held outside her own books.")
     assert tissue_budgets(good) == []
+
+
+def test_ps4_default_deny_no_ledger(tmp_path, monkeypatch):
+    """The HOLD-check hole: a production volume whose manifest entry omits extrusion_ledger
+    must REFUSE (default-deny), not silently skip. Legacy volumes (extrusion:none) skip."""
+    import subprocess, sys, os, textwrap
+    man = tmp_path / "m.yaml"
+    man.write_text(textwrap.dedent('''
+      volumes:
+        prod_no_ledger:
+          title: p
+          stage: built-in-review
+          freeze_sha: "0000000000000000"
+        legacy_ok:
+          title: l
+          stage: published
+          freeze_sha: "1111111111111111"
+          extrusion: none
+    ''').lstrip())
+    src = str(__import__("pathlib").Path(__file__).resolve().parents[1] / "src")
+    env = {**os.environ, "PYTHONPATH": "", "PRESS_MANIFEST": str(man),
+           "PRESS_SEAL_KEY": os.path.expanduser("~/.press_seal_key"), "PRESS_PRINCIPAL": "KM-1176"}
+    env.pop("PRESS_EXTRUSION_LEDGER", None)
+    def _seal(vol):
+        r = subprocess.run([sys.executable, "-c",
+            f"import sys; sys.path.insert(0,{src!r}); from sovereign_agent.press.engine import main; "
+            f"sys.argv=['x','seal',{vol!r}]\ntry:\n main()\nexcept SystemExit:\n pass"],
+            capture_output=True, text=True, env=env)
+        return r.stdout + r.stderr
+    # production volume without a ledger -> default-deny refusal (not the word line)
+    out = _seal("prod_no_ledger")
+    assert "default-deny" in out and "no extrusion_ledger" in out, out
+    # legacy volume -> passes the HOLD gate to the word line (no default-deny)
+    out = _seal("legacy_ok")
+    assert "default-deny" not in out, out
