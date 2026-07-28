@@ -1152,10 +1152,13 @@ def cmd_run(vol_id, seeds_dir, out_dir=None):
         return 1
 
     cont = board_stage1.continuity_check(seeds_dir)
-    if cont["result"] != "PASS":
+    # Stage-1 scope law (s5_04 board): also scan the ASSEMBLED interior (apparatus included).
+    cont_asm = board_stage1.continuity_check_assembled(assembled, seeds_dir)
+    all_findings = cont["findings"] + cont_asm["findings"]
+    if all_findings:
         print(f"[run] STOP {vol_id}: deterministic continuity FAIL "
-              f"({len(cont['findings'])} findings) — fix before the board:")
-        for fnd in cont["findings"]:
+              f"({len(all_findings)} findings; seeds + assembled interior) — fix before the board:")
+        for fnd in all_findings:
             print(f"    · {fnd}")
         return 1
     pkg = board_stage1.build_board_package(seeds_dir, assembled, os.path.join(out_dir, "board_package"))

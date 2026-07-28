@@ -100,6 +100,27 @@ def continuity_check(seeds_dir) -> dict:
             "result": "PASS" if not findings else "FAIL", "findings": findings}
 
 
+def continuity_check_assembled(assembled_path, seeds_dir) -> dict:
+    """Stage-1 SCOPE LAW (s5_04 board 2026-07-28, F1 rule): deterministic stage-1 also runs against
+    the ASSEMBLED interior — receipts, front matter, Cast & Canon, worksheets — never the chapter
+    seeds alone. The killing s5_04 defect was an ARC propagated through apparatus (~19% of the
+    interior) the seed-only scan could not see. Volume-wide (apparatus is not chapter-scoped): every
+    forbid_pattern must be absent anywhere; every arc must_pattern must be present somewhere."""
+    text = Path(assembled_path).read_text()
+    seeds = Path(seeds_dir)
+    ledger = yaml.safe_load((seeds / "_continuity_facts.yaml").read_text()) if (seeds / "_continuity_facts.yaml").exists() else []
+    findings = []
+    for f in ledger or []:
+        pin = " (PINNED)" if f.get("pin") else ""
+        fp, mp = f.get("forbid_pattern"), f.get("must_pattern")
+        if fp and re.search(fp, text, re.I):
+            findings.append(f"assembled: contradicts{pin} ledger fact {f.get('name')!r} (forbidden pattern in interior)")
+        if mp and f.get("required_in") and not re.search(mp, text, re.I):
+            findings.append(f"assembled: arc {f.get('name')!r} origin absent from the interior (pin-by-absence)")
+    return {"tool": "board_stage1.continuity_check_assembled", "target": str(assembled_path),
+            "result": "PASS" if not findings else "FAIL", "findings": findings}
+
+
 def build_board_package(seeds_dir, assembled_path, out_dir) -> dict:
     """Deterministic board package (F4-ready). prose-only chapters + assembled reader doc +
     settlement receipts + MANIFEST.sha256.json. Returns the manifest."""

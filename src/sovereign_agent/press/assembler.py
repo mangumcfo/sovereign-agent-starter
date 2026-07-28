@@ -193,16 +193,12 @@ def load_volume(seeds_dir):
 
 
 def _deployed_form(title):
-    """Derive a chapter's 'deployed form' noun phrase from its title, so the 'what is
-    designed' line varies per chapter without a hand-maintained field. Preserves proper
-    capitalization (Merkle, Object); problem chapters ('… Fail …') fall back to the volume
-    noun; comparison/appendage tails ('vs …', '& …') are dropped."""
-    t = str(title).strip()
-    if re.search(r"\bFail\b", t):
-        return "sovereign object model"
-    t = re.sub(r"^(?:The|A|An)\s+", "", t)
-    t = re.split(r"\s+(?:vs|versus|&)\s+", t)[0].strip()
-    return t or "object model"
+    """Derive a chapter's 'deployed form' from its title for the 'what is designed' line.
+    SEAM-4 fix (s5_04 board 2026-07-28): use the FULL title, article-stripped only — NEVER
+    truncate at 'vs'/'&' tails (that produced the reader's firm-suspicion tell 'Deploying the
+    Self-Healing…') and NEVER hard-code a volume noun (was S5-05-specific). Volume-agnostic."""
+    t = re.sub(r"^(?:The|A|An)\s+", "", str(title).strip())
+    return t or "mechanisms this chapter builds"
 
 
 def _receipt_box_md(n, c):
@@ -341,6 +337,22 @@ def assemble(seeds_dir, out_path, receipt_path=None):
     doc = "\n\n---\n\n".join(pieces[k] for k in
                              ("front_matter", "frame_declaration", "chapters",
                               "glossary", "verification_index")) + "\n"
+
+    # RECEIPT-TRUTH CHECK (s5_04 board 2026-07-28, F1 rule): the assembler receipt may not declare a
+    # piece the interior does not render — fail-closed at package build. Each apparatus section's
+    # actual reader-facing heading must appear in the rendered doc; the receipt records those real
+    # headings (not internal keys like 'glossary'/'verification_index') so a Seal Summary cannot
+    # inherit an over-declaration (SEAM-5: the receipt named a glossary/verification index a reader
+    # would not find — the rendered sections are 'Cast & Canon' and 'Do It Yourself — Worksheets').
+    _headings = {"frame_declaration": S["frame_heading"], "chapters": "# Chapter 1",
+                 "glossary": S["glossary_heading"], "verification_index": S["verify_heading"]}
+    _missing = [k for k, h in _headings.items()
+                if pieces.get(k) and h.splitlines()[0].strip() not in doc]
+    if _missing:
+        raise AssemblyRefusal([f"receipt-truth: declared piece(s) {_missing} have no rendered heading "
+                               f"in the interior — refusing to over-declare (fail-closed at build)"])
+    rendered_sections = [h.splitlines()[0].strip() for k, h in _headings.items() if pieces.get(k)]
+
     os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
     open(out_path, "w").write(doc)
 
@@ -351,6 +363,7 @@ def assemble(seeds_dir, out_path, receipt_path=None):
         "volume": vol["book_id"], "chapters": len(chapters),
         "claims_present": n_present, "claims_hold": n_hold,
         "piece_sha256_16": {k: _sha(v) for k, v in pieces.items()},
+        "rendered_sections": rendered_sections,
         "doc_sha256_16": _sha(doc), "doc_words": len(doc.split()),
     }
     if receipt_path:
