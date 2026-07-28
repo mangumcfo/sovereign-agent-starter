@@ -112,7 +112,7 @@ def test_ps2_assembles_and_places_verbatim(tmp_path):
     r = assemble(str(d), str(out), str(tmp_path / "r.json"))
     doc = out.read_text()
     assert "Body prose here." in doc and "worked scenario" in doc
-    assert doc.count("**How you check.**") == 1
+    assert doc.count("**What runs today.**") == 1
     assert r["claims_hold"] == 1 and r["chapters"] == 1
 
 

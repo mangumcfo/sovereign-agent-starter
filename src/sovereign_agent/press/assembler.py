@@ -60,9 +60,14 @@ SCAFFOLD = {
                         "checked by their own tests — what is proven is the mechanism, not a live "
                         "deployment (Ridgeline is a worked scenario):"),
     "receipt_designed": "**What is designed, not yet running.**",
-    "designed_frame":  ("Deploying the {form} over your own business records — not Ridgeline's — is "
-                        "the design this chapter equips you to build. It is not running for any "
-                        "business yet; that step is yours."),
+    "designed_frame":  ("Deploying the {form} over your own records is the design this chapter "
+                        "equips you to build."),
+    "receipt_disclosure": (
+        "> **About these receipts.** Each chapter closes with a receipt. \"Implemented + "
+        "test-checked\" means the mechanism runs in the platform's object library and passes its "
+        "own tests — it is **not** deployed as a live system for any business. Ridgeline is a "
+        "worked scenario; building the deployed model is your work. This note is printed once; "
+        "the per-chapter receipts carry only what is specific to that chapter."),
     "receipt_check":   "**How you check.**",
     "check_frame":     "Run these against your own records:",
     "counts_rows": [
@@ -201,13 +206,12 @@ def _deployed_form(title):
 
 
 def _receipt_box_md(n, c):
-    """GENERATED reader receipt (PS-5). The four fields are derived from the live extrusion
-    ledger + the chapter, never hand-maintained and never identical across chapters:
-      Claim              — the chapter's editorial thesis (the one seed line)
-      What runs today    — this chapter's PRESENT claims, plain-English, from the ledger
-      What is designed   — this chapter's open HOLDs + the deployment form derived from the title
-      How you check      — this chapter's verify affordances as a numbered worksheet
-    Varied by construction: each chapter carries different claims and a different deployed form."""
+    """GENERATED reader receipt (PS-5, N-3 scaffold variation — S5-05 O-7 proof board). The
+    standing disclosure ('these are implemented mechanisms, not a live deployment') and the
+    'how you check' worksheets are printed ONCE elsewhere (front matter + the Do-It-Yourself
+    section) — never repeated in every box, which trained the reader to skip them. Each box
+    carries ONLY its varied per-chapter content: the thesis, this chapter's PRESENT claims,
+    and this chapter's designed deployment form. No two boxes are identical."""
     S = SCAFFOLD
     rb = c["receipt_box"]
     present = [e for e in c["extrusion"] if str(e.get("status", "")).upper() == "PRESENT"]
@@ -215,16 +219,13 @@ def _receipt_box_md(n, c):
              if str(e.get("status", "")).upper() in ("HOLD", "DOWNGRADED")]
     lines = [f"> **{S['receipt_title'].format(n=n)}**", ">",
              f"> {S['receipt_claim']} {str(rb['claim']).strip()}", ">",
-             f"> {S['receipt_runs']} {S['runs_frame']}"]
+             f"> {S['receipt_runs']} Implemented + test-checked in the platform's object library:"]
     for e in present:  # plain-English claim text from the ledger — no E-ID, no path, no test
         lines.append(f"> - {str(e.get('claim', '')).strip()}")
     lines += [">", f"> {S['receipt_designed']} "
               + S["designed_frame"].format(form=_deployed_form(c["title"]))]
     for e in holds:
         lines.append(f"> - {str(e.get('claim', '')).strip()}")
-    lines += [">", f"> {S['receipt_check']} {S['check_frame']}"]
-    for i, v in enumerate(c["verify_affordance"], 1):
-        lines.append(f"> {i}. {str(v).strip()}")
     return "\n".join(lines)
 
 
@@ -294,7 +295,8 @@ def assemble(seeds_dir, out_path, receipt_path=None):
     counts = "\n".join(f"| {label.format()} | {val.format(n_ch=len(chapters), n_present=n_present, n_hold=n_hold)} |"
                        for label, val in S["counts_rows"])
     pieces["front_matter"] = (f"# {vol['title']}\n\n*{vol['subtitle']}*\n\n"
-                              f"{series_line}\n\n| | |\n|---|---|\n{counts}")
+                              f"{series_line}\n\n| | |\n|---|---|\n{counts}\n\n"
+                              f"{S['receipt_disclosure']}")
 
     # frame declaration — ratified text, verbatim
     pieces["frame_declaration"] = f"{S['frame_heading']}\n\n{frame}"
@@ -303,12 +305,18 @@ def assemble(seeds_dir, out_path, receipt_path=None):
     # The frame declaration is shown ONCE, in the front-matter "About the Worked Scenario"
     # section. Frame-lock still requires it to open ch1 verbatim in the SEED (integrity), but
     # the rendered chapter strips that leading copy so the reader never meets it twice.
-    body = []
+    body, receipts = [], []
     for n, c in chapters:
         prose = str(c["prose"]).strip()
         if prose.startswith(frame):
             prose = prose[len(frame):].lstrip()
-        body.append(f"# Chapter {n} — {c['title']}\n\n{prose}\n\n" + _receipt_box_md(n, c))
+        box = _receipt_box_md(n, c)
+        receipts.append(box)
+        body.append(f"# Chapter {n} — {c['title']}\n\n{prose}\n\n" + box)
+    # D6 backstop: no two reader receipts may be identical (the ×8 boilerplate the board caught).
+    if len(set(receipts)) != len(receipts):
+        raise AssemblyRefusal(["receipt boxes are not all distinct — the PS-2 scaffold is "
+                               "printing identical apparatus (D6). Vary per chapter from the ledger."])
     pieces["chapters"] = "\n\n---\n\n".join(body)
 
     # Cast & Canon — PLAIN-NAME rendering (no dotted config keys; the 2nd board's worst offender)
