@@ -291,3 +291,24 @@ def test_cmd_settle_folds_and_receipts(tmp_path, monkeypatch):
     monkeypatch.setenv("PRESS_RUNS_DIR", str(empty))
     with pytest.raises(SystemExit):
         engine.cmd_settle("vX", str(seeds))
+
+
+def test_board_stage1_continuity_and_package(tmp_path):
+    """P-G5/6: stage-1 catches a ledger contradiction; package builder emits a sha-manifest."""
+    from sovereign_agent.press import board_stage1
+    import yaml as _y
+    d = tmp_path / "seeds"; d.mkdir()
+    _y.safe_dump([{"name": "owner", "pin": True, "scope": [1],
+                   "forbid_pattern": "Properties LLC owns"}], open(d / "_continuity_facts.yaml", "w"))
+    _y.safe_dump({"continuity_canon": {"population": {"classes": "a 10 · b 20 (sums to 30)",
+                                                      "total_objects": "30"}}}, open(d / "_volume_input.yaml", "w"))
+    _y.safe_dump({"chapter": "1", "title": "T", "prose": "The Properties LLC owns the policy.",
+                  "receipt_box": {}, "verify_affordance": []}, open(d / "ch1.yaml", "w"))
+    r = board_stage1.continuity_check(str(d))
+    assert r["result"] == "FAIL" and any("owner" in f for f in r["findings"])
+    # clean it -> PASS; classes sum matches total (parenthetical stripped)
+    _y.safe_dump({"chapter": "1", "title": "T", "prose": "The Family Trust owns the policy.",
+                  "receipt_box": {}, "verify_affordance": []}, open(d / "ch1.yaml", "w"))
+    assert board_stage1.continuity_check(str(d))["result"] == "PASS"
+    pkg = board_stage1.build_board_package(str(d), None, str(tmp_path / "out"))
+    assert pkg["files"] >= 2 and (tmp_path / "out" / "MANIFEST.sha256.json").exists()
