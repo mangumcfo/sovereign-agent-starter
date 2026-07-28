@@ -35,6 +35,7 @@ Environment:
 import hashlib
 import json
 import os
+import re
 import shlex
 import subprocess
 import sys
@@ -1060,6 +1061,60 @@ def _open_seal_blocking_holds(seeds_dir):
     return holds
 
 
+def cmd_settle(vol_id, seeds_dir, bundle=None):
+    """P-G2 (proof-path subset 3/5): settle a volume from a PASSing cycle bundle — the last
+    hand-only step, now a command. Folds the bundle's (possibly fixer-healed) prose back to the
+    source seeds, stamps settled/settled_cycle, and writes settlement_receipts.json. REFUSES on:
+    no PASS bundle · a chapter whose bundle prose does not sha-match what it wrote to source
+    (fold integrity) · a source/bundle chapter-set mismatch. No prose is regenerated."""
+    import yaml as _yaml
+    runs_root = _env_path("PRESS_RUNS_DIR", os.path.join(_HERE, "press_runs"))
+    if bundle is None:  # newest PASSing cycle bundle for this volume
+        cands = sorted(d for d in (os.listdir(runs_root) if os.path.isdir(runs_root) else [])
+                       if d.endswith(f"_cycle_{vol_id}"))
+        for d in reversed(cands):
+            cj = os.path.join(runs_root, d, "cycle.json")
+            if os.path.exists(cj) and (json.load(open(cj)).get("result") == "PASS"):
+                bundle = os.path.join(runs_root, d)
+                break
+        if bundle is None:
+            fail(f"SETTLE REFUSED: no PASSing cycle bundle for {vol_id} in {runs_root}")
+    cj = os.path.join(bundle, "cycle.json")
+    if not os.path.exists(cj):
+        fail(f"SETTLE REFUSED: {bundle} has no cycle.json")
+    cyc = json.load(open(cj))
+    if cyc.get("result") != "PASS":
+        fail(f"SETTLE REFUSED: cycle {bundle} did not PASS (result={cyc.get('result')})")
+    cycle_sha = (cyc.get("cycle_sha256") or "")[:16]
+    bseeds = os.path.join(bundle, "seeds")
+    src_ch = {f for f in os.listdir(seeds_dir) if re.fullmatch(r"ch\d+\.yaml", f)}
+    bun_ch = {f for f in os.listdir(bseeds) if re.fullmatch(r"ch\d+\.yaml", f)}
+    if src_ch != bun_ch:
+        fail(f"SETTLE REFUSED: chapter set mismatch source vs bundle: {src_ch ^ bun_ch}")
+    receipts = []
+    for f in sorted(src_ch, key=lambda x: int(re.search(r"\d+", x).group())):
+        sc = _yaml.safe_load(open(os.path.join(seeds_dir, f)))
+        bc = _yaml.safe_load(open(os.path.join(bseeds, f)))
+        healed = bc.get("prose", "")
+        sc["prose"] = healed
+        sc["settled"] = True
+        sc["settled_cycle"] = cycle_sha
+        with open(os.path.join(seeds_dir, f), "w") as fh:
+            _yaml.safe_dump(sc, fh, allow_unicode=True, width=100, sort_keys=False)
+        # fold integrity: what we wrote to source must sha-match the bundle prose
+        back = _yaml.safe_load(open(os.path.join(seeds_dir, f))).get("prose", "")
+        if sha256_text(back) != sha256_text(healed):
+            fail(f"SETTLE REFUSED: {f} prose sha-mismatch after fold — settlement is not honest")
+        receipts.append({"chapter": sc.get("chapter"), "file": f, "settled_cycle": cycle_sha,
+                         "words": len(healed.split()), "prose_sha256": sha256_text(healed)})
+    out = os.path.join(seeds_dir, "settlement_receipts.json")
+    json.dump({"volume": vol_id, "settled_cycle": cycle_sha, "bundle": os.path.basename(bundle),
+               "ts": time.strftime("%Y%m%dT%H%M%SZ", time.gmtime()), "chapters": receipts},
+              open(out, "w"), indent=1)
+    print(f"SETTLED {vol_id}: {len(receipts)} chapters on cycle {cycle_sha} → {out}")
+    return 0
+
+
 def cmd_seal(vol_id, word=None, verify=False, reseal=False, supersede=None):
     """The operator's seal instrument. The Press still never seals: this refuses unless
     the operator's KEY and WORD are both present, and it records both in the receipt."""
@@ -1525,6 +1580,12 @@ def main():
             fail("cycle requires: cycle <volume-id> --seeds DIR")
         no_residue(1)
         return cmd_cycle(args[0], seeds)
+    if cmd == "settle":
+        seeds = opt("--seeds")
+        if not args or not seeds:
+            fail("settle requires: settle <volume-id> --seeds DIR [--bundle DIR]")
+        no_residue(1)
+        return cmd_settle(args[0], seeds, bundle=opt("--bundle"))
     if cmd == "assemble":
         # PS-2: deterministic assembler — places ratified material, never writes prose,
         # refuses on any gap. Seeds resolve like the PS-4 ledger: manifest volume's

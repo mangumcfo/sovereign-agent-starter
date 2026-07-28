@@ -262,3 +262,32 @@ def test_co_extrude_present_and_hold(tmp_path):
     assert r["present_validated"] == 1
     ids = {x["id"] for x in r["defects"]}
     assert ids == {"E2", "E3"}, r["defects"]
+
+
+def test_cmd_settle_folds_and_receipts(tmp_path, monkeypatch):
+    """P-G2: settle folds a PASS bundle's prose to source, stamps settled/settled_cycle, writes
+    settlement_receipts.json, and refuses when there is no PASS bundle."""
+    import yaml as _y, os as _os
+    from sovereign_agent.press import engine
+    runs = tmp_path / "runs"; (runs / "20260101T000000Z_cycle_vX" / "seeds").mkdir(parents=True)
+    seeds = tmp_path / "seeds"; seeds.mkdir()
+    # source (unsettled) vs bundle (healed prose the fixer produced)
+    _y.safe_dump({"chapter": "1", "prose": "old prose", "settled": False}, open(seeds / "ch1.yaml", "w"))
+    bseeds = runs / "20260101T000000Z_cycle_vX" / "seeds"
+    _y.safe_dump({"chapter": "1", "prose": "healed prose two words"}, open(bseeds / "ch1.yaml", "w"))
+    import json as _j
+    _j.dump({"result": "PASS", "cycle_sha256": "deadbeefdeadbeef00"},
+            open(runs / "20260101T000000Z_cycle_vX" / "cycle.json", "w"))
+    monkeypatch.setenv("PRESS_RUNS_DIR", str(runs))
+    engine.cmd_settle("vX", str(seeds))
+    got = _y.safe_load(open(seeds / "ch1.yaml"))
+    assert got["settled"] is True and got["settled_cycle"] == "deadbeefdeadbeef"
+    assert got["prose"] == "healed prose two words"  # folded from the bundle
+    rec = _j.load(open(seeds / "settlement_receipts.json"))
+    assert rec["chapters"][0]["words"] == 4
+    # refuses with no PASS bundle
+    import pytest
+    empty = tmp_path / "empty"; empty.mkdir()
+    monkeypatch.setenv("PRESS_RUNS_DIR", str(empty))
+    with pytest.raises(SystemExit):
+        engine.cmd_settle("vX", str(seeds))
