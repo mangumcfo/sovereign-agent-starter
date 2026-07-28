@@ -340,3 +340,38 @@ def test_seal_summary_refuses_and_generates(tmp_path):
     assert "1 present" in doc and "claim one" in doc and "`src/x.py`" in doc
     assert "binding bar): CLEAR" in doc and "suspicion point: **none**" in doc
     assert "474 → 477" in doc
+
+
+def test_rev7_tissue_subset():
+    from sovereign_agent.press import prescreen as P
+    # full-name density: >2 per chapter fires
+    assert P.full_name_density("Dana Reyes did. Dana Reyes saw. Dana Reyes left.", ["Dana Reyes"])
+    assert P.full_name_density("Dana Reyes did it once, then Dana finished.", ["Dana Reyes"]) == []
+    # rotation: 3+ cast in one paragraph
+    assert P.rotation_density("Dana notes it. Ilse checks it. Theo sees it.", ["Dana", "Ilse", "Theo"])
+    # sentence integrity: orphaned article fragment + doubled word
+    assert P.sentence_integrity("She holds the root. the leakage of intelligence during audit. A party proves.")
+    assert P.sentence_integrity("The the root is fixed and clear enough to hold.")
+    # clean prose passes all
+    assert P.sentence_integrity("Dana holds the root. She verifies it herself. The proof closes.") == []
+    # C2 design-target-as-event
+    assert P.design_target_frame("The tie-out took 12 minutes — built to hit the target.")
+    # heading == beat leak
+    assert P.heading_not_beat("### Merkle Tree Design\n\nbody", ["Merkle Tree Design", "Other"])
+    assert P.heading_not_beat("### A Real Section\n\nbody", ["Merkle Tree Design"]) == []
+    # gloss ledger: expansion in >1 chapter fires
+    assert P.gloss_ledger([("1", "lasting generational prosperity (LGP)"),
+                           ("2", "lasting generational prosperity again")])
+    assert P.gloss_ledger([("1", "lasting generational prosperity (LGP)"), ("2", "bare LGP here")]) == []
+
+
+def test_rev7_calibration_clean_on_disciplined_prose():
+    from sovereign_agent.press.prescreen import gate_card
+    # a disciplined paragraph fires none of the rev-7 per-chapter checks
+    good = ("Dana opened the ledger and recomputed the root; it matched the published value. "
+            "The proof carried sixteen siblings, and a single comparison closed it. She needed "
+            "no one's word for the result.")
+    v, _ = gate_card({"chapter": "1", "prose": good, "runs_today": [], "beats": []})
+    r7 = [x for x in v if x["lens"].split(":")[-1] in
+          ("redundancy", "sentence_integrity", "design_target_frame", "heading_is_beat")]
+    assert r7 == [], r7

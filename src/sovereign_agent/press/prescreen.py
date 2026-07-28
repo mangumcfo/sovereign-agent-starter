@@ -34,7 +34,12 @@ from pathlib import Path
 
 import yaml
 
-GATE_REV = 6  # rev-6 (2026-07-27, 2nd production board — connective-tissue register): the
+GATE_REV = 7  # rev-7 (2026-07-28, S5-05 O-7 proof board): the deferred tissue subset now live —
+              # full-name density (A7ii), intra-paragraph redundancy (A6), rotation density (A7i),
+              # sentence integrity (fragment/doubled/a-vowel), design-target frame (C2),
+              # heading≠beat, and LGP gloss-owned-by-first-use (A9, replacing the old per-chapter
+              # must-expand). Each calibrated 0-fire on 9,180 published paragraphs. rev-6 below:
+              # rev-6 (2026-07-27, 2nd production board — connective-tissue register): the
               # boards proved the tissue is generatively bad. New voice/pacing budgets, each
               # calibrated 0-fire across 9,180 published paragraphs: (1) "This X allows [Name]
               # to Y" frame KILLED on sight; (2) pronominalize — a full "First Last" name twice
@@ -141,6 +146,126 @@ def apparatus_leaks(texts) -> tuple:
     return hard, stale
 
 
+# ── gate_rev-7 (2026-07-28, S5-05 O-7 proof board): the deferred tissue-check subset. Each
+#    calibrated 0-fire on 9,180 published paragraphs before adoption. Maps 1:1 to the failures
+#    the proof board measured (full-name density, LGP re-gloss, restatement, rotation, sentence
+#    integrity, heading≠beat, design-target frame). ──
+_T7_ABBR = r"(?:vs|etc|e\.g|i\.e|no|al|Inc|Corp|Ltd|Dr|Mr|Mrs|Ms|Jr|Sr|St|U\.S|a\.m|p\.m|Fig|approx|cf|Ph\.D)"
+_T7_STOP = set(
+    "the a an of to in on for and or but is are was were be been that this these those it its "
+    "their his her they them he she we you your our with as at by from into than then so not no "
+    "can will would should could may might each every any all one two some such other more most "
+    "over under about which who whom whose when where why how do does did has have had".split())
+
+
+def _t7_cw(s):
+    return [w for w in re.findall(r"[a-z']+", s.lower()) if len(w) > 3 and w not in _T7_STOP]
+
+
+def _t7_paras(b):
+    return [p for p in re.split(r"\n\s*\n", b)
+            if p.strip() and not p.strip().startswith(("#", ">", "|"))]
+
+
+def _t7_islist(p):
+    return bool(re.match(r"^\s*(?:\d+\.|[-*•]|\|)", p)) or bool(re.search(r"\n\s*\d+\.", p))
+
+
+def full_name_density(body, cast, cap=2):
+    """A7(ii): a full 'First Last' cast name used more than `cap` times in a chapter — after the
+    first introduction per scene it should pronominalize. `cast` = the volume's persona names."""
+    return [f"{full}×{c}" for full in cast for c in [len(re.findall(re.escape(full), body))] if c > cap]
+
+
+def intra_paragraph_redundancy(body):
+    """A6 (high-precision backstop): a paragraph with ≥2 sentences that each RESTATE an earlier
+    one — ≥6 shared content words AND the overlap covers ≥60% of the shorter sentence (a near-
+    subset, not elaboration). Synonym restatement is semantic (the strong-model one-statement law
+    + the reader carry it); this catches the lexical case with zero published false positives."""
+    out = []
+    for p in _t7_paras(body):
+        if _t7_islist(p):
+            continue
+        S = [s.strip() for s in re.split(r"(?<=[.!?])\s+", p) if len(s.split()) >= 9]
+        if len(S) < 3:
+            continue
+        cw = [set(_t7_cw(s)) for s in S]
+        redundant = 0
+        for i in range(1, len(S)):
+            for j in range(i):
+                ov = cw[i] & cw[j]
+                if len(ov) >= 6 and len(cw[i]) >= 6 and len(cw[j]) >= 6 \
+                        and len(ov) / min(len(cw[i]), len(cw[j])) >= 0.6:
+                    redundant += 1
+                    break
+        if redundant >= 2:
+            out.append(f"{redundant} sentences restate an earlier one")
+    return out
+
+
+def rotation_density(body, cast_first):
+    """A7(i): a paragraph naming ≥3 distinct cast members (the roll-call shape)."""
+    out = []
+    for p in _t7_paras(body):
+        present = {f for f in cast_first if re.search(r"\b" + re.escape(f) + r"\b", p)}
+        if len(present) >= 3:
+            out.append(sorted(present))
+    return out
+
+
+def sentence_integrity(body):
+    """E-family: an orphaned fragment (a '.'-terminated segment resuming on a lowercase article/
+    preposition — a dropped-subject noun phrase), a doubled word, or 'a'+vowel ('a environment')."""
+    out = []
+    b = re.sub(_T7_ABBR + r"\.", lambda m: m.group(0)[:-1], re.sub(r"(?m)^>.*$", "", body))
+    for p in _t7_paras(b):
+        if _t7_islist(p) or p.count("[") >= 1 or p.count(":") >= 3:
+            continue
+        m = re.search(r"(?<![\]\):])\.\s+((?:the|a|an|of|in|for|with|at|by|from|to|and)\s+\w+)", p)
+        if m:
+            out.append(f"orphaned fragment: {p[max(0, m.start() - 12):m.start() + 40].strip()!r}")
+            break
+    if re.search(r"\b(the|a|an|of|to|and|is|in|that|balanced|by|for|with)\s+\1\b", b, re.I):
+        out.append("doubled word")
+    m = re.search(r"\ba\s+([aeio]\w+)", b)
+    if m and m.group(1) not in ("one", "once", "European", "euro", "hour", "honest", "heir"):
+        out.append(f"a+vowel: {m.group(0)!r}")
+    return out
+
+
+def design_target_frame(body):
+    """C2: a design target narrated as a completed event in one clause ('took N minutes — built
+    to hit …' / 'the design commits … to hitting')."""
+    out = []
+    for pat in (r"took\s+(?:about\s+)?\d[\d,]*\s+\w+\s*[—-].{0,40}(?:built to hit|design)",
+                r"design commits[^.]{0,40}to hitting",
+                r"\d[\d,]*\s+minutes[^.]{0,40}(?:built to hit|the design (?:targets|commits|is built))"):
+        if re.search(pat, body, re.I):
+            out.append("design-target narrated as a completed event")
+            break
+    return out
+
+
+def heading_not_beat(prose, beats):
+    """NEW: a section heading (### …) must not render a seed beat string verbatim — that leaks
+    the beat scaffold (and the forbidden five-slot spine) as visible structure."""
+    heads = [h.strip().lstrip("#").strip() for h in re.findall(r"(?m)^#{1,6}.*$", prose)]
+    bset = {str(b).strip().lower() for b in (beats or [])}
+    return [h for h in heads if h.lower() in bset]
+
+
+def gloss_ledger(cards):
+    """A9: a house term's full expansion is owned by its FIRST use across the volume; re-expanding
+    it in a later chapter is the 'drafted blind to each other' tell. cards = [(chapter, prose)]."""
+    out = []
+    for term, canonical in CANON.items():
+        expanded_in = [ch for ch, prose in cards if canonical.lower() in prose.lower()]
+        if len(expanded_in) > 1:
+            out.append(f"{term}: full expansion re-printed in {len(expanded_in)} chapters "
+                       f"(first use owns the gloss; bare acronym thereafter)")
+    return out
+
+
 # rev-6 connective-tissue register budgets. Cast + reaction-verb vocab kept module-level
 # so the drafter order and the fixer share one source. Each calibrated 0-fire on published.
 _CAST_FULL = ("Dana Reyes", "Ilse Vogt", "Theo Ridgeline", "Harold Bhatt")
@@ -240,16 +365,16 @@ def gate_card(card: dict) -> tuple[list, dict]:
             v.append({"chapter": ch, "lens": f"L0:prescreen:voice_{name}", "refuted": True,
                       "reason": f"banned voice ({name}): {flat}"})
 
-    # CANON — house-term drift
+    # CANON — house-term drift (WRONG expansion only). The "must expand once" rule moved to
+    # VOLUME mode (gloss_ledger, A9): a term's full expansion is owned by its FIRST use across
+    # the volume; requiring a per-chapter expansion (the old rule) produced the ×7 re-gloss the
+    # proof board caught. A single chapter is no longer required to self-expand.
     for term, canonical in CANON.items():
         for m in re.finditer(r"([A-Za-z][A-Za-z \-]{5,60})\s*\(" + term + r"\)|" + term + r"\s*\(([^)]{5,60})\)", prose):
             exp = (m.group(1) or m.group(2) or "").strip()
             if exp and canonical not in exp.lower():
                 v.append({"chapter": ch, "lens": "L0:prescreen:canon_drift", "refuted": True,
                           "reason": f"{term} expanded as {exp!r} (canon: {canonical!r})"})
-        if re.search(r"\b" + term + r"\b", prose) and not re.search(canonical, prose, re.I):
-            v.append({"chapter": ch, "lens": "L0:prescreen:canon_drift", "refuted": True,
-                      "reason": f"{term} used but never expanded to canonical {canonical!r}"})
     if re.search(r"(?m)^#{1,6}.*agent-to-agent", prose, re.I):
         v.append({"chapter": ch, "lens": "L0:prescreen:canon_drift", "refuted": True,
                   "reason": "heading-level 'agent-to-agent' (canon term is 'peer role')"})
@@ -337,6 +462,19 @@ def gate_card(card: dict) -> tuple[list, dict]:
     for lens_suffix, reason in tissue_budgets(body_no_bq):
         v.append({"chapter": ch, "lens": f"L0:prescreen:{lens_suffix}", "refuted": True, "reason": reason})
 
+    # rev-7 DEFERRED TISSUE SUBSET (per-chapter; O-7 proof board). Cast-dependent checks
+    # (full-name density, rotation) run in volume mode where the persona names are available.
+    for reason in intra_paragraph_redundancy(body_no_bq):
+        v.append({"chapter": ch, "lens": "L0:prescreen:redundancy", "refuted": True, "reason": reason})
+    for reason in sentence_integrity(body_no_bq):
+        v.append({"chapter": ch, "lens": "L0:prescreen:sentence_integrity", "refuted": True, "reason": reason})
+    for reason in design_target_frame(body_no_bq):
+        v.append({"chapter": ch, "lens": "L0:prescreen:design_target_frame", "refuted": True, "reason": reason})
+    beat_heads = heading_not_beat(prose, card.get("beats"))
+    if beat_heads:
+        v.append({"chapter": ch, "lens": "L0:prescreen:heading_is_beat", "refuted": True,
+                  "reason": f"section heading renders a seed beat verbatim (scaffold leak): {beat_heads[:3]}"})
+
     # advisory (recorded, never gating)
     paras = [p.strip() for p in re.split(r"\n\s*\n", body_no_code)
              if p.strip() and not p.strip().startswith(("#", ">", "-", "*", "|"))]
@@ -377,6 +515,31 @@ def main():
 
     # rev-4 VOLUME-MODE checks (only when screening a directory of cards)
     if seeds.is_dir() and len(cards) > 1:
+        # rev-7 CAST-DEPENDENT + GLOSS checks: read the persona full/first names from the volume
+        # canon, then flag full-name density (A7ii) and rotation (A7i) per chapter, and re-gloss
+        # of a house term across chapters (A9). These need the whole-volume view.
+        cast_full, cast_first = [], []
+        vin = seeds / "_volume_input.yaml"
+        if vin.exists():
+            personas = ((yaml.safe_load(vin.read_text()) or {}).get("continuity_canon") or {}).get("personas") or {}
+            for val in personas.values():
+                name = str(val).split(" - ")[0].strip()
+                if re.fullmatch(r"[A-Z][a-z]+ [A-Z][a-z]+", name):
+                    cast_full.append(name)
+                    cast_first.append(name.split()[0])
+        for c in cards:
+            body = re.sub(r"(?m)^>.*$", "", c.get("prose") or "")
+            for nm in full_name_density(body, cast_full):
+                verdicts.append({"chapter": c.get("chapter"), "lens": "L0:prescreen:full_name_density",
+                                 "refuted": True, "reason": f"full name over-used (pronominalize after first): {nm}"})
+            rot = rotation_density(body, cast_first)
+            if rot:
+                verdicts.append({"chapter": c.get("chapter"), "lens": "L0:prescreen:rotation_density",
+                                 "refuted": True, "reason": f"roll-call paragraph — {len(rot)} para(s) name ≥3 cast: {rot[0]}"})
+        for reason in gloss_ledger([(str(c.get("chapter")), c.get("prose") or "") for c in cards]):
+            verdicts.append({"chapter": "volume", "lens": "L0:prescreen:gloss_ledger",
+                             "refuted": True, "reason": reason})
+
         # (a) duplicate-shingle scan: a 10-word shingle in 2+ chapters' reader prose =
         # recycled boilerplate (board: 11 verbatim glossary shingles). Attach to the
         # LATER chapter. The bare canonical expansion itself is lawful (canon law
