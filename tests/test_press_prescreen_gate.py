@@ -312,3 +312,31 @@ def test_board_stage1_continuity_and_package(tmp_path):
     assert board_stage1.continuity_check(str(d))["result"] == "PASS"
     pkg = board_stage1.build_board_package(str(d), None, str(tmp_path / "out"))
     assert pkg["files"] >= 2 and (tmp_path / "out" / "MANIFEST.sha256.json").exists()
+
+
+def test_seal_summary_refuses_and_generates(tmp_path):
+    """P-G11: refuses on a missing receipt; else emits the §5 contract from receipts only."""
+    from sovereign_agent.press import seal_summary
+    import yaml as _y, json as _j, pytest
+    d = tmp_path / "seeds"; d.mkdir()
+    _y.safe_dump({"title": "S5-05 X", "subtitle": "sub", "description": "desc"}, open(d / "_volume_input.yaml", "w"))
+    _y.safe_dump({"chapter": "1", "extrusion": [
+        {"id": "E1", "claim": "claim one", "status": "present",
+         "target_module": "src/x.py", "acceptance_test": "tests/test_x.py"}]}, open(d / "ch1.yaml", "w"))
+    cyc = tmp_path / "cycle.json"; cyc.write_text(_j.dumps({"gate_rev": 6, "result": "PASS", "cycle_sha256": "abc123"}))
+    stl = tmp_path / "s.json"; stl.write_text(_j.dumps({"settled_cycle": "abc123", "chapters": []}))
+    asm = tmp_path / "a.json"; asm.write_text(_j.dumps({"doc_sha256_16": "deadbeef"}))
+    brd = tmp_path / "b.json"; brd.write_text(_j.dumps({
+        "parity": [{"dim": "Voice", "cand": 4.0, "ctrl": 4.5}],
+        "reader": {"verdict": "reads as an honest book", "suspicion_point": "none"},
+        "continuity": "PASS", "binding_bar": "CLEAR"}))
+    # refuses without the board verdict
+    with pytest.raises(seal_summary.SummaryRefusal):
+        seal_summary.generate(str(d), str(cyc), str(stl), str(asm), str(tmp_path / "missing.json"))
+    # generates with all receipts
+    doc = seal_summary.generate(str(d), str(cyc), str(stl), str(asm), str(brd),
+                                suite_before=474, suite_after=477)
+    assert "Seal Summary — S5-05 X" in doc
+    assert "1 present" in doc and "claim one" in doc and "`src/x.py`" in doc
+    assert "binding bar): CLEAR" in doc and "suspicion point: **none**" in doc
+    assert "474 → 477" in doc
