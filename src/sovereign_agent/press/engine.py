@@ -1115,6 +1115,67 @@ def cmd_settle(vol_id, seeds_dir, bundle=None):
     return 0
 
 
+def cmd_run(vol_id, seeds_dir, out_dir=None):
+    """The Foundry orchestration slice — drive ONE title through the proven proof-path
+    primitives with a single command, halting at the two lines a machine may not cross.
+
+    Composition only (no new policy): cycle → settle → assemble → board_stage1 package.
+    Each primitive keeps its own refusal; this chains them and stops the instant one
+    refuses, so a bad title never advances silently. The chain deliberately STOPS before
+    the two human gates:
+      · the AA board — the binding reader/parity judgement the machine does not own;
+      · the KM seal — `cmd_seal` → `read_word`, a word spoken at a keyboard.
+    So a clean run ends "staged for AA board", never "sealed". This is what makes the 84
+    pass a controlled pass: every title walks the identical path S5-05 walked, and the
+    same two humans still gate every one.
+    """
+    from . import assembler
+    from . import board_stage1
+
+    print(f"[run] {vol_id}: cycle → settle → assemble → board package (halts at AA board)")
+    if cmd_cycle(vol_id, seeds_dir) != 0:
+        print(f"[run] STOP {vol_id}: cycle did not PASS — title is not board-ready. "
+              f"Nothing settled, nothing staged (a FAIL never advances).")
+        return 1
+    if cmd_settle(vol_id, seeds_dir) != 0:
+        print(f"[run] STOP {vol_id}: settle refused.")
+        return 1
+
+    out_dir = out_dir or os.path.join(_env_path("PRESS_RUNS_DIR",
+              os.path.join(_HERE, "press_runs")), f"run_{vol_id}")
+    os.makedirs(out_dir, exist_ok=True)
+    assembled = os.path.join(out_dir, "assembled.md")
+    try:
+        arec = assembler.assemble(seeds_dir, assembled, os.path.join(out_dir, "assembly_receipt.json"))
+    except assembler.AssemblyRefusal as e:
+        print(f"[run] STOP {vol_id}: assemble refused —\n{e}")
+        return 1
+
+    cont = board_stage1.continuity_check(seeds_dir)
+    if cont["result"] != "PASS":
+        print(f"[run] STOP {vol_id}: deterministic continuity FAIL "
+              f"({len(cont['findings'])} findings) — fix before the board:")
+        for fnd in cont["findings"]:
+            print(f"    · {fnd}")
+        return 1
+    pkg = board_stage1.build_board_package(seeds_dir, assembled, os.path.join(out_dir, "board_package"))
+
+    print(f"[run] {vol_id} STAGED FOR AA BOARD — machine path complete, both human gates ahead.")
+    print(json.dumps({"volume": vol_id,
+                      "assembled": assembled,
+                      "assembled_words": arec["doc_words"],
+                      "assembled_sha16": arec["doc_sha256_16"],
+                      "claims_present": arec["claims_present"],
+                      "claims_hold": arec["claims_hold"],
+                      "continuity": cont["result"],
+                      "board_package": pkg["out"],
+                      "next_human_gate_1": "AA board (parity + binding reader-sim) → emits board.json",
+                      "next_human_gate_2": f"press seal {vol_id}  (KM types the word at the keyboard)",
+                      "seal_summary_after_board": "press summary — refuses until AA board.json exists"},
+                     indent=1))
+    return 0
+
+
 def cmd_seal(vol_id, word=None, verify=False, reseal=False, supersede=None):
     """The operator's seal instrument. The Press still never seals: this refuses unless
     the operator's KEY and WORD are both present, and it records both in the receipt."""
@@ -1586,6 +1647,22 @@ def main():
             fail("settle requires: settle <volume-id> --seeds DIR [--bundle DIR]")
         no_residue(1)
         return cmd_settle(args[0], seeds, bundle=opt("--bundle"))
+    if cmd == "run":
+        # Foundry orchestration slice: cycle→settle→assemble→board-package as one command,
+        # halting before the two human gates (AA board, KM seal). Seeds resolve like PS-4:
+        # manifest volume's extrusion_ledger, or --seeds.
+        if not args:
+            fail("run requires: run <volume-id> [--seeds DIR] [--out DIR]")
+        vol_id = args[0]
+        seeds = opt("--seeds")
+        if not seeds:
+            manifest = load_manifest(_env_path("PRESS_MANIFEST", os.path.join(_HERE, "press_manifest.yaml")))
+            _vols = manifest.get("volumes") if isinstance(manifest.get("volumes"), dict) else manifest
+            seeds = ((_vols or {}).get(vol_id) or {}).get("extrusion_ledger")
+        if not seeds:
+            fail(f"run: no seeds dir — {vol_id} has no manifest extrusion_ledger and no --seeds given")
+        no_residue(1)
+        return cmd_run(vol_id, seeds, out_dir=opt("--out"))
     if cmd == "assemble":
         # PS-2: deterministic assembler — places ratified material, never writes prose,
         # refuses on any gap. Seeds resolve like the PS-4 ledger: manifest volume's

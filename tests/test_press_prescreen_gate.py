@@ -314,6 +314,23 @@ def test_board_stage1_continuity_and_package(tmp_path):
     assert pkg["files"] >= 2 and (tmp_path / "out" / "MANIFEST.sha256.json").exists()
 
 
+def test_run_halts_on_cycle_fail(tmp_path, monkeypatch):
+    """Foundry slice: `run` STOPS the instant cycle does not PASS — nothing settles, nothing
+    stages for the board. A FAIL never advances (the controlled-pass safety contract)."""
+    from sovereign_agent.press import engine
+    import yaml as _y
+    seeds = tmp_path / "seeds"; seeds.mkdir()
+    _y.safe_dump({"chapter": "1", "prose": "p", "settled": False}, open(seeds / "ch1.yaml", "w"))
+    out = tmp_path / "out"
+    # cycle FAIL → run returns 1, never reaches settle/assemble/board
+    monkeypatch.setattr(engine, "cmd_cycle", lambda v, s: 1)
+    called = {"settle": False}
+    monkeypatch.setattr(engine, "cmd_settle", lambda *a, **k: called.__setitem__("settle", True) or 0)
+    assert engine.cmd_run("vX", str(seeds), out_dir=str(out)) == 1
+    assert called["settle"] is False           # a FAIL never advances to settle
+    assert not (out / "board_package").exists()  # nothing staged for AA
+
+
 def test_seal_summary_refuses_and_generates(tmp_path):
     """P-G11: refuses on a missing receipt; else emits the §5 contract from receipts only."""
     from sovereign_agent.press import seal_summary
