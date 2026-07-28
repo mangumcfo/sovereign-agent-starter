@@ -148,9 +148,13 @@ _CAST_ANY = r"(?:Dana|Ilse|Theo|Harold)"
 _REACT = (r"(?:sees?|observes?|notes?|views?|watches|watched|recognizes?|relies|relied|"
           r"confirms?|understands?|understood|accepts?|considers?|examines?|monitors?|"
           r"realizes?|feels?|senses?)")
-THIS_X_ALLOWS = (r"\bThis\s+\w+(?:\s\w+)?\s+(?:allows?|enables?|lets|permits?)\s+"
-                 r"(?:" + _CAST_ANY + r"|the controller|the successor|the auditor|the trustee|"
-                 r"the operator|the reader)\s+to\b")
+THIS_X_ALLOWS = (r"\b(?:This|The|These|That)\s+\w+(?:\s\w+)?\s+(?:allows?|enables?|lets|permits?)\s+"
+                 # the actor: a named character (with optional surname), a role, or a bare
+                 # party/organization/reader — the whole "lets them do X" scaffold the board killed
+                 r"(?:" + _CAST_ANY + r"(?:\s+(?:Reyes|Vogt|Ridgeline|Bhatt))?"
+                 r"|the\s+(?:controller|successor|auditor|trustee|operator|reader)"
+                 r"|(?:a|an|the)\s+(?:party|organization|business|successor|auditor|operator|reader))"
+                 r"\s+to\b")
 _TISSUE_STOP = set("the a an of to in on for and or but is are was were be been that this these "
                    "those it its their his her they them he she we you your our with as at by from "
                    "into than then so not no can will would should could may might each every any "
