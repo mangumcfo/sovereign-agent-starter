@@ -1,8 +1,8 @@
 """co_extrude.py — condition-5 (co-extrusion) enforcement, in the single press authority.
 
-Promoted into the kernel package (2026-07-28, KM proof-path subset P-G3) from the workbench
-script tools/press/co_extrude_check.py, so the orchestrator calls ONE gate chain. Wired as the
-4th cmd_cycle stage: a cycle that passes L0→prescreen→L1 then proves every runtime claim.
+Promoted into the kernel package (2026-07-28, KM proof-path subset P-G3) from the legacy
+workbench co-extrude script, so the orchestrator calls ONE gate chain. Wired as the 4th
+cmd_cycle stage: a cycle that passes L0→prescreen→L1 then proves every runtime claim.
 
 Each `extrusion:` entry in a seed is either VALIDATED in-cycle or an explicit blocking HOLD —
 silent deferral is forbidden:
