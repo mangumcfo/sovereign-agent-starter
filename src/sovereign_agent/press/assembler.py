@@ -234,7 +234,9 @@ _CANON_GROUPS = [  # (canon key path, reader label, value transform)
     ("company", "The company", lambda v: str(v).split(" - ", 1)[-1] if " - " in str(v) else str(v)),
     ("personas.controller", None, None), ("personas.successor", None, None),
     ("personas.auditor", None, None), ("personas.trustee", None, None),
-    ("population.total_objects", "Objects in all", str),
+    # NB-1 (4th board): 41,830 is the Operating Co. registry, NOT the grand total across
+    # mandates (41,830+214+368 = 42,412). Label it accurately so it does not read as "all".
+    ("population.total_objects", "Objects in the sovereign registry (Operating Co.)", str),
     ("population.classes", "Object classes", str),
     ("mandates.operating", None, None), ("mandates.trust", None, None),
     ("mandates.properties", None, None), ("mandates.crossings", "Declared crossings", str),
