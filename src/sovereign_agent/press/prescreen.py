@@ -150,7 +150,7 @@ def apparatus_leaks(texts) -> tuple:
 #    calibrated 0-fire on 9,180 published paragraphs before adoption. Maps 1:1 to the failures
 #    the proof board measured (full-name density, LGP re-gloss, restatement, rotation, sentence
 #    integrity, heading≠beat, design-target frame). ──
-_T7_ABBR = r"(?:vs|etc|e\.g|i\.e|no|al|Inc|Corp|Ltd|Dr|Mr|Mrs|Ms|Jr|Sr|St|U\.S|a\.m|p\.m|Fig|approx|cf|Ph\.D)"
+_T7_ABBR = r"(?:vs|etc|e\.g|i\.e|no|al|Inc|Corp|Ltd|Co|LLC|Dr|Mr|Mrs|Ms|Jr|Sr|St|U\.S|a\.m|p\.m|Fig|approx|cf|Ph\.D)"
 _T7_STOP = set(
     "the a an of to in on for and or but is are was were be been that this these those it its "
     "their his her they them he she we you your our with as at by from into than then so not no "
@@ -204,12 +204,18 @@ def intra_paragraph_redundancy(body):
 
 
 def rotation_density(body, cast_first):
-    """A7(i): a paragraph naming ≥3 distinct cast members (the roll-call shape)."""
+    """A7(i): the ROLL-CALL shape — a paragraph where ≥3 distinct cast members each open a
+    sentence as its subject (the dutiful 'Dana notes… Ilse sees… Theo confirms…' rotation).
+    A scene where several people merely appear is fine; the tell is the round-robin of clauses."""
     out = []
     for p in _t7_paras(body):
-        present = {f for f in cast_first if re.search(r"\b" + re.escape(f) + r"\b", p)}
-        if len(present) >= 3:
-            out.append(sorted(present))
+        subjects = set()
+        for s in re.split(r"(?<=[.!?])\s+", p):
+            m = re.match(r"\s*([A-Z][a-z]+)\b", s)
+            if m and m.group(1) in cast_first:
+                subjects.add(m.group(1))
+        if len(subjects) >= 3:
+            out.append(sorted(subjects))
     return out
 
 
