@@ -34,7 +34,9 @@ from pathlib import Path
 
 import yaml
 
-GATE_REV = 7  # rev-7 (2026-07-28, S5-05 O-7 proof board): the deferred tissue subset now live —
+GATE_REV = 8  # rev-8 (2026-07-29, s5_06 board 'gates vs bar separated'): + repeated_hinge (volume-wide
+              # template-tell — a rhetorical question hinge reused >=3× ; calibrated 0-fire on published).
+              # rev-7 (2026-07-28, S5-05 O-7 proof board): the deferred tissue subset now live —
               # full-name density (A7ii), intra-paragraph redundancy (A6), rotation density (A7i),
               # sentence integrity (fragment/doubled/a-vowel), design-target frame (C2),
               # heading≠beat, and LGP gloss-owned-by-first-use (A9, replacing the old per-chapter
@@ -490,6 +492,25 @@ def gate_card(card: dict) -> tuple[list, dict]:
     return v, advisory
 
 
+_QHINGE = re.compile(r"\b(where|what|why|how|which)\s+(would|does|do|is|are|can|will|could)\b", re.I)
+def repeated_hinge(cards, floor=3):
+    """gate_rev-8 (s5_06 board 2026-07-29, 'gates vs bar separated'): the SAME rhetorical-question hinge
+    reused across the volume ('Where would an operator…' fired 3× and a blind reader named it the machine
+    tell). Volume-wide: >= floor question-sentences sharing a 2-word opener fire. Calibrated 0-fire on
+    published S2–S4 prose (their questions do not repeat a hinge >= 3×). The aphorism-metronome and
+    predictable-paragraph-order tells are craft-uniformity a deterministic gate cannot isolate without
+    false-firing published prose — those stay a drafting-discipline + reader-read matter, not gated here."""
+    seen = {}
+    for _, prose in cards:
+        for s in re.split(r"(?<=[.!?])\s+", str(prose)):
+            s = s.strip()
+            if s.endswith("?"):
+                m = _QHINGE.match(s) or _QHINGE.search(s[:24])
+                if m:
+                    seen.setdefault(f"{m.group(1).lower()} {m.group(2).lower()}", []).append(s[:44])
+    return {k: v for k, v in seen.items() if len(v) >= floor}
+
+
 def main():
     args = sys.argv[1:]
     def opt(flag, default=None):
@@ -545,6 +566,9 @@ def main():
         for reason in gloss_ledger([(str(c.get("chapter")), c.get("prose") or "") for c in cards]):
             verdicts.append({"chapter": "volume", "lens": "L0:prescreen:gloss_ledger",
                              "refuted": True, "reason": reason})
+        for hinge, uses in repeated_hinge([(str(c.get("chapter")), c.get("prose") or "") for c in cards]).items():
+            verdicts.append({"chapter": "volume", "lens": "L0:prescreen:repeated_hinge", "refuted": True,
+                             "reason": f"template tell — rhetorical hinge {hinge!r} reused {len(uses)}× across the volume"})
 
         # (a) duplicate-shingle scan: a 10-word shingle in 2+ chapters' reader prose =
         # recycled boilerplate (board: 11 verbatim glossary shingles). Attach to the

@@ -392,3 +392,17 @@ def test_rev7_calibration_clean_on_disciplined_prose():
     r7 = [x for x in v if x["lens"].split(":")[-1] in
           ("redundancy", "sentence_integrity", "design_target_frame", "heading_is_beat")]
     assert r7 == [], r7
+
+
+def test_rev8_repeated_hinge():
+    from sovereign_agent.press.prescreen import repeated_hinge
+    # >=3 question-sentences sharing a 2-word hinge = template tell
+    fire = [("1", "Where would an operator watch all of this?"),
+            ("2", "Where would an operator see the drift?"),
+            ("3", "Where would Dana reconcile the two?")]
+    assert repeated_hinge(fire), "should fire on a hinge reused 3x"
+    # varied question openers do not fire (published-style discipline)
+    clean = [("1", "What does the receipt prove on a clean machine?"),
+             ("2", "Where would an operator watch this?"),
+             ("3", "Why does an unreadable signal brake?")]
+    assert not repeated_hinge(clean), "must not fire on varied questions"
