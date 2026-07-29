@@ -131,9 +131,14 @@ def _apparatus_vs_prose(assembled_text) -> list:
     if not sep:
         return []
     findings = []
-    # (a) scaffolding notes must not reach the reader table (e.g. "the change chapter 1 cannot recover")
-    for m in re.finditer(r"chapter\s+\d+\s+(?:cannot|can not|verifies|recover|recovers|answers for)", tail, re.I):
-        findings.append(f"apparatus: scaffolding note in reader-facing Cast & Canon: {m.group().strip()!r}")
+    # (a) scaffolding/authoring notes must not reach the reader table — the classes AA named on the s5_06
+    #     board: narrative meta ("the change chapter 1 cannot recover"), authoring parentheticals
+    #     ("(never named …"), and self-referential hedges ("design target, not a measurement", "sums to N").
+    _scaffold = (r"chapter\s+\d+\s+(?:cannot|can not|verifies|recover|recovers|answers for)"
+                 r"|\(\s*never named|design target[^)|]*not a measurement|sums to\s+[\d,]+"
+                 r"|answers for the records|not yet named")
+    for m in re.finditer(_scaffold, tail, re.I):
+        findings.append(f"apparatus: scaffolding/authoring note in reader-facing Cast & Canon: {m.group().strip()!r}")
     # (b) a named canon object asserted in the table must appear in the chapter prose (KILL-2)
     for label, val in re.findall(r"(?m)^\|\s*\*\*(.+?)\*\*\s*\|\s*(.+?)\s*\|\s*$", tail):
         for tok in set(re.findall(r"\b(?:C-\d{3,}|WO-?\d{4,}|M-\d{4}-\d\d-\d\d)\b", f"{label} {val}")):

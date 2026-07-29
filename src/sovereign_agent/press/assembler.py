@@ -343,7 +343,11 @@ def assemble(seeds_dir, out_path, receipt_path=None):
     # headings (not internal keys like 'glossary'/'verification_index') so a Seal Summary cannot
     # inherit an over-declaration (SEAM-5: the receipt named a glossary/verification index a reader
     # would not find — the rendered sections are 'Cast & Canon' and 'Do It Yourself — Worksheets').
-    _headings = {"frame_declaration": S["frame_heading"], "chapters": "# Chapter 1",
+    # SEAM-5 v2 (s5_06 board 2026-07-29): verify the FULL rendered heading, never a truncated prefix.
+    # The chapters heading is the actual first-chapter line ("# Chapter 1 — <title>"), so a truncated
+    # "# Chapter 1" no longer passes the check.
+    _ch1_heading = f"# Chapter {chapters[0][0]} — {chapters[0][1]['title']}"
+    _headings = {"frame_declaration": S["frame_heading"], "chapters": _ch1_heading,
                  "glossary": S["glossary_heading"], "verification_index": S["verify_heading"]}
     _missing = [k for k, h in _headings.items()
                 if pieces.get(k) and h.splitlines()[0].strip() not in doc]
@@ -351,10 +355,11 @@ def assemble(seeds_dir, out_path, receipt_path=None):
         raise AssemblyRefusal([f"receipt-truth: declared piece(s) {_missing} have no rendered heading "
                                f"in the interior — refusing to over-declare (fail-closed at build)"])
     rendered_sections = [h.splitlines()[0].strip() for k, h in _headings.items() if pieces.get(k)]
-    # SEAM-5 (KM 2026-07-29): the receipt DECLARES each piece under its EXACT rendered heading (clean,
-    # no '#'), never an internal key a reader/Seal-Summary would not find. front_matter has no ## heading.
+    # The receipt DECLARES each piece under its EXACT rendered heading (clean, no '#'); 'chapters' is the
+    # whole run, declared as 'Chapters'. front_matter has no ## heading.
     _clean = lambda h: re.sub(r"^#+\s*", "", h.splitlines()[0]).strip()
-    _declared = {**{k: _clean(v) for k, v in _headings.items()}, "front_matter": "Front Matter"}
+    _declared = {**{k: _clean(v) for k, v in _headings.items()},
+                 "chapters": "Chapters", "front_matter": "Front Matter"}
 
     os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
     open(out_path, "w").write(doc)
