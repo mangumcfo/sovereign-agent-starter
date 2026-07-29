@@ -117,8 +117,29 @@ def continuity_check_assembled(assembled_path, seeds_dir) -> dict:
             findings.append(f"assembled: contradicts{pin} ledger fact {f.get('name')!r} (forbidden pattern in interior)")
         if mp and f.get("required_in") and not re.search(mp, text, re.I):
             findings.append(f"assembled: arc {f.get('name')!r} origin absent from the interior (pin-by-absence)")
+    findings += _apparatus_vs_prose(text)
     return {"tool": "board_stage1.continuity_check_assembled", "target": str(assembled_path),
             "result": "PASS" if not findings else "FAIL", "findings": findings}
+
+
+def _apparatus_vs_prose(assembled_text) -> list:
+    """Wave-wide SCAFFOLDING RULE (s5_06 board, KM 2026-07-29 — the durable fix for KILL-1/KILL-2):
+    reader-facing apparatus (Cast & Canon) may carry NO scaffolding note, and may NOT assert a named
+    canon object the chapter prose never uses. Splits the interior at the Cast & Canon heading; body =
+    chapters, tail = apparatus. Mechanizes what a reader would flag: a table entry with no home in the prose."""
+    body, sep, tail = assembled_text.partition("## Cast & Canon")
+    if not sep:
+        return []
+    findings = []
+    # (a) scaffolding notes must not reach the reader table (e.g. "the change chapter 1 cannot recover")
+    for m in re.finditer(r"chapter\s+\d+\s+(?:cannot|can not|verifies|recover|recovers|answers for)", tail, re.I):
+        findings.append(f"apparatus: scaffolding note in reader-facing Cast & Canon: {m.group().strip()!r}")
+    # (b) a named canon object asserted in the table must appear in the chapter prose (KILL-2)
+    for label, val in re.findall(r"(?m)^\|\s*\*\*(.+?)\*\*\s*\|\s*(.+?)\s*\|\s*$", tail):
+        for tok in set(re.findall(r"\b(?:C-\d{3,}|WO-?\d{4,}|M-\d{4}-\d\d-\d\d)\b", f"{label} {val}")):
+            if tok.replace("WO", "WO-").replace("WO--", "WO-") not in body and tok not in body:
+                findings.append(f"apparatus: canon object {tok!r} asserted in Cast & Canon but absent from the prose")
+    return findings
 
 
 def build_board_package(seeds_dir, assembled_path, out_dir) -> dict:

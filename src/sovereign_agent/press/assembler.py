@@ -60,8 +60,8 @@ SCAFFOLD = {
                         "checked by their own tests — what is proven is the mechanism, not a live "
                         "deployment (Ridgeline is a worked scenario):"),
     "receipt_designed": "**What is designed, not yet running.**",
-    "designed_frame":  ("Deploying the {form} over your own records is the design this chapter "
-                        "equips you to build."),
+    "designed_frame":  ("Building this design over your own records — your own classes, rules, and "
+                        "boundaries — is the work this chapter equips you to do."),
     "receipt_disclosure": (
         "> **About these receipts.** Each chapter closes with a receipt. \"Implemented + "
         "test-checked\" means the mechanism runs in the platform's object library and passes its "
@@ -218,8 +218,7 @@ def _receipt_box_md(n, c):
              f"> {S['receipt_runs']} Implemented + test-checked in the platform's object library:"]
     for e in present:  # plain-English claim text from the ledger — no E-ID, no path, no test
         lines.append(f"> - {str(e.get('claim', '')).strip()}")
-    lines += [">", f"> {S['receipt_designed']} "
-              + S["designed_frame"].format(form=_deployed_form(c["title"]))]
+    lines += [">", f"> {S['receipt_designed']} " + S["designed_frame"]]
     for e in holds:
         lines.append(f"> - {str(e.get('claim', '')).strip()}")
     return "\n".join(lines)
@@ -352,6 +351,10 @@ def assemble(seeds_dir, out_path, receipt_path=None):
         raise AssemblyRefusal([f"receipt-truth: declared piece(s) {_missing} have no rendered heading "
                                f"in the interior — refusing to over-declare (fail-closed at build)"])
     rendered_sections = [h.splitlines()[0].strip() for k, h in _headings.items() if pieces.get(k)]
+    # SEAM-5 (KM 2026-07-29): the receipt DECLARES each piece under its EXACT rendered heading (clean,
+    # no '#'), never an internal key a reader/Seal-Summary would not find. front_matter has no ## heading.
+    _clean = lambda h: re.sub(r"^#+\s*", "", h.splitlines()[0]).strip()
+    _declared = {**{k: _clean(v) for k, v in _headings.items()}, "front_matter": "Front Matter"}
 
     os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
     open(out_path, "w").write(doc)
@@ -362,7 +365,7 @@ def assemble(seeds_dir, out_path, receipt_path=None):
         "seeds_dir": os.path.abspath(seeds_dir), "out": os.path.abspath(out_path),
         "volume": vol["book_id"], "chapters": len(chapters),
         "claims_present": n_present, "claims_hold": n_hold,
-        "piece_sha256_16": {k: _sha(v) for k, v in pieces.items()},
+        "section_sha256_16": {_declared.get(k, k): _sha(v) for k, v in pieces.items()},
         "rendered_sections": rendered_sections,
         "doc_sha256_16": _sha(doc), "doc_words": len(doc.split()),
     }
