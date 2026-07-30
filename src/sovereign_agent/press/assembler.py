@@ -59,7 +59,7 @@ SCAFFOLD = {
     "runs_frame":      ("These mechanisms are implemented in the platform's object library and "
                         "checked by their own tests — what is proven is the mechanism, not a live "
                         "deployment (Ridgeline is a worked scenario):"),
-    "receipt_designed": "**What is designed, not yet running.**",
+    "receipt_designed": "**Designed-toward — named closing home.**",
     "designed_frame":  ("Building this design over your own records — your own classes, rules, and "
                         "boundaries — is the work this chapter equips you to do."),
     "receipt_disclosure": (
@@ -177,6 +177,9 @@ def load_volume(seeds_dir):
                 if st == "HOLD" and e.get("blocks_seal") is not True:
                     gaps.append(f"{f}: extrusion {e.get('id')} HOLD without "
                                 "blocks_seal:true — silent deferral forbidden")
+                if st == "HOLD" and not str(e.get("closes_in", "")).strip():
+                    gaps.append(f"{f}: extrusion {e.get('id')} HOLD without "
+                                "closes_in — unhosted designed-toward forbidden (name a closing home)")
         chapters.append((n, c))
 
     # frame lock: the declaration must open ch1 verbatim (drift = refuse)
@@ -219,8 +222,10 @@ def _receipt_box_md(n, c):
     for e in present:  # plain-English claim text from the ledger — no E-ID, no path, no test
         lines.append(f"> - {str(e.get('claim', '')).strip()}")
     lines += [">", f"> {S['receipt_designed']} " + S["designed_frame"]]
-    for e in holds:
-        lines.append(f"> - {str(e.get('claim', '')).strip()}")
+    for e in holds:  # P-1/HG-1: render the named closing home beside each designed-toward bullet
+        ci = str(e.get("closes_in", "")).strip()
+        home = f" — designed-toward, closes in {ci}" if ci else ""
+        lines.append(f"> - {str(e.get('claim', '')).strip()}{home}")
     return "\n".join(lines)
 
 

@@ -39,6 +39,15 @@ def _repo_root(repo=None):
     return Path(__file__).resolve().parents[3]
 
 
+def _vol_key(s):
+    """Normalized (series, volume) from a volume-shaped token — for the disposition rule
+    'a closes_in naming THIS volume is unbuilt scope, not a deferral'. Handles both the entry-id
+    shape (S5-06-E2-3) and the closes_in shape (S5-V6 / S6-V5). Returns None for non-volume tokens
+    (OPEN-DECISION:..., spec paths, 'live-runtime cutover')."""
+    m = re.search(r"S(\d+)[-\s]?V?(\d+)", str(s), re.I)
+    return (m.group(1), str(int(m.group(2)))) if m else None
+
+
 def run(seeds_dir, repo=None, receipt_out=None) -> dict:
     """Validate a volume's extrusion ledger against the code repo. Returns the receipt dict;
     `receipt["defects"]` empty == pass. Never raises on a defect — the caller decides."""
@@ -72,10 +81,20 @@ def run(seeds_dir, repo=None, receipt_out=None) -> dict:
                         rec["why"] = (r.stdout + r.stderr)[-300:]
                         defects.append(rec)
             elif st == "HOLD":
+                ci = str(e.get("closes_in", "")).strip()          # P-1/HG-1: required book home
+                this_vol = _vol_key(rec["id"])
                 if e.get("blocks_seal") is not True:
                     rec["why"] = "HOLD without blocks_seal:true — silent deferral forbidden"
                     defects.append(rec)
+                elif not ci:
+                    rec["why"] = "HOLD without closes_in — unhosted designed-toward forbidden"
+                    defects.append(rec)
+                elif this_vol and _vol_key(ci) == this_vol:
+                    rec["why"] = (f"closes_in names this volume ({ci}) — unbuilt scope, not a "
+                                  "deferral; build it in-volume or REMOVE the claim")
+                    defects.append(rec)
                 else:
+                    rec["closes_in"] = ci
                     tp = str(e.get("acceptance_test", "")).split("::")[0]
                     if tp and not (root / tp).exists():
                         rec["test_pending"] = tp

@@ -67,7 +67,7 @@ def test_ps4_open_holds_scanner(tmp_path):
     from sovereign_agent.press.engine import _open_seal_blocking_holds
     d = tmp_path / "seeds"; d.mkdir()
     _y.safe_dump({"chapter": "1", "extrusion": [
-        {"id": "X-E1", "claim": "c", "status": "HOLD", "blocks_seal": True},
+        {"id": "X-E1", "claim": "c", "status": "HOLD", "blocks_seal": True, "closes_in": "OPEN-DECISION:test"},
         {"id": "X-E2", "claim": "c2", "status": "PRESENT"}]}, open(d / "ch1.yaml", "w"))
     _y.safe_dump({"meta": 1}, open(d / "_volume_input.yaml", "w"))
     holds = _open_seal_blocking_holds(str(d))
@@ -101,7 +101,7 @@ def _ps2_seed_dir(tmp_path):
                                   "designed": "your deployed system is the design you build"},
                   "verify_affordance": ["check it yourself"],
                   "extrusion": [{"id": "E1", "claim": "x", "status": "HOLD",
-                                 "blocks_seal": True}]}, open(d / "ch1.yaml", "w"))
+                                 "blocks_seal": True, "closes_in": "OPEN-DECISION:test"}]}, open(d / "ch1.yaml", "w"))
     return d
 
 
