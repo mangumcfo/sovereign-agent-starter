@@ -34,7 +34,9 @@ from pathlib import Path
 
 import yaml
 
-GATE_REV = 8  # rev-8 (2026-07-29, s5_06 board 'gates vs bar separated'): + repeated_hinge (volume-wide
+GATE_REV = 9  # rev-9 (2026-07-30, D12 wired): + unhomed_forward — a forward marker must name a closing
+              # home within ~200 chars (volume id / spec / OPEN-DECISION:<owner> / named series) or KILL.
+              # rev-8 (2026-07-29, s5_06 board 'gates vs bar separated'): + repeated_hinge (volume-wide
               # template-tell — a rhetorical question hinge reused >=3× ; calibrated 0-fire on published).
               # rev-7 (2026-07-28, S5-05 O-7 proof board): the deferred tissue subset now live —
               # full-name density (A7ii), intra-paragraph redundancy (A6), rotation density (A7i),
@@ -61,6 +63,28 @@ LIVE = (r"\b(runs today|is live|are live|is running|are running|ships today|avai
         r"|you can run (it|this) today|in production|is enforced|are enforced|enforces"
         r"|blocks at the write|code-traced|built \+ tested|already runs)\b")
 QUAL = r"(designed.toward|\(planned\)|is the build|not built|structurally OFF|forward.arc|closes in|when built|the design calls for)"
+
+# P-5' (2026-07-30, D12): every forward marker must NAME a closing home within ~200 chars — a volume id
+# (S6-V5), a spec path (*.yaml), 'live-runtime cutover', OPEN-DECISION:<owner>, or a named series
+# (Inter-Node / Zero-Trust). Wired into gate_card as a KILL and exposed for an assembled-text scan.
+_FWD_MARKER = re.compile(
+    r"designed[-\s]toward|forward[-\s]arc|\bcloses in\b|\(planned\)|\bwhen built\b|the design calls for"
+    r"|designed,?\s+not\s+yet\s+(?:built|running)|is designed,\s+not|\bnot yet built\b"
+    r"|designed for tomorrow", re.I)
+_HOME_TOKEN = re.compile(
+    r"S\d+[-\s]?V?\d+|OPEN-DECISION\s*:\s*\w+|\b[\w/]+\.yaml\b|live-runtime cutover"
+    r"|Inter-Node|Zero-Trust|Series\s+\d", re.I)
+
+
+def unhomed_forwards(text, window=200):
+    """D12 scan: forward markers whose ~200-char forward window names no closing home. Reusable on a
+    card's prose (in-gate KILL) and on assembled interior text (pre-seal checklist)."""
+    text = re.sub(r"```.*?```", "", str(text), flags=re.S)   # ignore fenced code
+    hits = []
+    for m in _FWD_MARKER.finditer(text):
+        if not _HOME_TOKEN.search(text[m.start():m.start() + window]):
+            hits.append(text[max(0, m.start() - 24):m.start() + 90].strip())
+    return hits
 
 BANNED = {
     "empty_transition": r'(?m)(?:^|[.!?"]\s)(Furthermore|Moreover|Additionally|In conclusion|In summary|To summarize|That said|Indeed|Notably|Importantly|Ultimately),',
@@ -365,6 +389,11 @@ def gate_card(card: dict) -> tuple[list, dict]:
                 v.append({"chapter": ch, "lens": "L0:prescreen:live_claim", "refuted": True,
                           "reason": f"unqualified live-capability claim in runs_today:[] volume: {s.strip()[:120]!r}"})
 
+    # D12 (P-5', gate_rev-9) — a forward marker must name its closing home within ~200 chars
+    for frag in unhomed_forwards(body_no_bq):
+        v.append({"chapter": ch, "lens": "L0:prescreen:unhomed_forward", "refuted": True,
+                  "reason": f"forward marker names no closing home within 200 chars: {frag[:100]!r}"})
+
     # CHECK5 — banned voice
     for name, pat in BANNED.items():
         hits = re.findall(pat, prose)
@@ -515,6 +544,12 @@ def main():
     args = sys.argv[1:]
     def opt(flag, default=None):
         return args[args.index(flag) + 1] if flag in args else default
+    if "--scan-forwards" in args:  # P-5' / checklist #5: D12 lint on assembled interior text
+        hits = unhomed_forwards(Path(opt("--scan-forwards")).read_text(encoding="utf-8"))
+        print(f"D12 unhomed forward markers: {len(hits)}")
+        for h in hits[:60]:
+            print(f"  - …{h}…")
+        return 1 if hits else 0
     seeds = Path(opt("--seeds") or args[0])
     gate = "--gate" in args
     rec_dir = opt("--record-dir")

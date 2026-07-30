@@ -49,3 +49,29 @@ def test_p1_receipt_box_renders_the_home(tmp_path):
     box = assembler._receipt_box_md(2, c)
     assert "closes in S6-V5" in box
     assert "Designed-toward — named closing home" in box
+
+
+# ── P-5' / D12: a forward marker must name its closing home within ~200 chars ──
+
+def test_p5_d12_unhomed_forward_is_flagged():
+    from sovereign_agent.press import prescreen
+    txt = "Helix distribution rendering is designed-toward and unbuilt. The book runs on the record."
+    assert len(prescreen.unhomed_forwards(txt)) == 1
+
+
+def test_p5_d12_homed_forward_is_clean():
+    from sovereign_agent.press import prescreen
+    assert prescreen.unhomed_forwards(
+        "Helix distribution rendering is designed-toward, closes in S6-V5.") == []
+    assert prescreen.unhomed_forwards(
+        "This surface is designed-toward — OPEN-DECISION:KM until the home is ruled.") == []
+    assert prescreen.unhomed_forwards(
+        "The join layer is designed-toward; it closes in S6 Inter-Node.") == []
+
+
+def test_p5_d12_gate_card_kills_unhomed_forward():
+    from sovereign_agent.press import prescreen
+    card = {"chapter": "2", "runs_today": ["x"],
+            "prose": "The rendering layer is designed-toward and unbuilt."}
+    v, _adv = prescreen.gate_card(card)
+    assert any(x["lens"] == "L0:prescreen:unhomed_forward" for x in v)
