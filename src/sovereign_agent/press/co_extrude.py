@@ -68,8 +68,12 @@ def run(seeds_dir, repo=None, receipt_out=None) -> dict:
                 paths = [re.sub(r"\s*\([^)]*\)", "", part).strip()
                          for part in raw.split(" + ") if part.strip()]
                 missing = [q for q in paths if q and not (root / q).exists()]
-                test = str(e.get("acceptance_test", ""))
-                if missing:
+                test = str(e.get("acceptance_test", "")).strip()
+                if not test:   # P-6: a PRESENT claim must name a passing test, not an empty string
+                    rec["validated"] = False
+                    rec["why"] = "empty acceptance_test — a PRESENT claim must name a passing test"
+                    defects.append(rec)
+                elif missing:
                     rec["validated"] = False
                     rec["why"] = f"module(s) missing: {missing}"
                     defects.append(rec)
@@ -95,9 +99,14 @@ def run(seeds_dir, repo=None, receipt_out=None) -> dict:
                     defects.append(rec)
                 else:
                     rec["closes_in"] = ci
-                    tp = str(e.get("acceptance_test", "")).split("::")[0]
-                    if tp and not (root / tp).exists():
-                        rec["test_pending"] = tp
+                    at = str(e.get("acceptance_test", "")).strip()   # P-6: emptiness is a defect
+                    if not at:
+                        rec["why"] = "empty acceptance_test — a HOLD must name its test path"
+                        defects.append(rec)
+                    else:
+                        tp = at.split("::")[0]
+                        if tp and not (root / tp).exists():   # a non-empty not-yet path is a pending warning
+                            rec["test_pending"] = tp
             elif st:
                 rec["why"] = f"unknown status {st!r}"
                 defects.append(rec)

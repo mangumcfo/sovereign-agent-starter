@@ -15,8 +15,9 @@ def _seeds(tmp_path, entry):
 
 
 def _hold(**kw):
+    # default carries a non-empty (not-yet-existing) test path → test_pending, not a P-6 defect
     e = {"id": "S5-99-E1-1", "claim": "a designed surface", "status": "HOLD",
-         "blocks_seal": True, "acceptance_test": ""}
+         "blocks_seal": True, "acceptance_test": "tests/test_future_home.py"}
     e.update(kw)
     return e
 
@@ -75,3 +76,20 @@ def test_p5_d12_gate_card_kills_unhomed_forward():
             "prose": "The rendering layer is designed-toward and unbuilt."}
     v, _adv = prescreen.gate_card(card)
     assert any(x["lens"] == "L0:prescreen:unhomed_forward" for x in v)
+
+
+# ── P-6: empty acceptance_test is a defect (not a silent pass) ──
+
+def test_p6_empty_acceptance_test_is_defect(tmp_path):
+    from sovereign_agent.press import co_extrude
+    r = co_extrude.run(_seeds(tmp_path, _hold(closes_in="OPEN-DECISION:KM", acceptance_test="")),
+                       repo=str(tmp_path))
+    assert any("empty acceptance_test" in (d.get("why") or "") for d in r["defects"])
+
+
+def test_p6_nonexistent_test_is_pending_not_defect(tmp_path):
+    from sovereign_agent.press import co_extrude
+    r = co_extrude.run(_seeds(tmp_path, _hold(closes_in="OPEN-DECISION:KM",
+                                              acceptance_test="tests/test_nope.py")), repo=str(tmp_path))
+    assert r["defects"] == []
+    assert r["entries"][0].get("test_pending") == "tests/test_nope.py"
