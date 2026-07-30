@@ -102,6 +102,10 @@ def generate(seeds_dir, cycle_json, settlement_json, assembly_json, board_json,
     if subtitle:
         L.append(f"*{subtitle}*")
     L.append("")
+    verdict = str(board.get("verdict_at_board", "")).strip()
+    if verdict:  # P-3: the board's own verdict, verbatim + prominent (was silently dropped)
+        L.append(f"> **BOARD VERDICT:** {verdict}")
+        L.append("")
     if hold > 0:  # P-2: unmissable banner when the volume is not seal-ready
         L.append(f"> ⚠ **OPEN BLOCKING HOLDS — DO NOT SEAL** — {hold} open blocking HOLD(s). "
                  "PS-4 will refuse the seal word; this summary is NOT seal-ready.")
@@ -126,6 +130,15 @@ def generate(seeds_dir, cycle_json, settlement_json, assembly_json, board_json,
     L.append(f"- **Reader-simulation (binding bar): {binding}** — suspicion point: "
              f"**{suspicion or 'none'}**" + (f" · verdict: *{reader.get('verdict')}*" if reader.get("verdict") else ""))
     L.append(f"- **Continuity attestation:** {board.get('continuity', 'see board_stage1 receipt')}")
+    # P-3: never silently drop a board field — render any key we do not otherwise present, and warn.
+    _rendered = {"parity", "reader", "binding_bar", "story_line", "ladder_line", "continuity",
+                 "residuals", "verdict_at_board"}
+    _extra = [k for k in (board or {}) if k not in _rendered]
+    if _extra:
+        L.append("")
+        L.append("### Board fields not otherwise rendered")
+        for k in _extra:
+            L.append(f"- ⚠ `{k}`: {board.get(k)}")
     L.append("")
     # Code section
     L.append("## Code")

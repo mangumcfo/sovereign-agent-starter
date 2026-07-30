@@ -55,3 +55,19 @@ def test_p2_zero_holds_clean(tmp_path):
     assert "DO NOT SEAL" not in doc
     assert "zero by construction" not in doc
     assert "**Seal**" in doc                      # the seal line is offered when clean
+
+
+def test_p3_surfaces_board_verdict_and_unknown_keys(tmp_path):
+    """P-3: verdict_at_board rendered verbatim; unknown board keys surfaced with a warning, never dropped."""
+    from sovereign_agent.press import seal_summary
+    d, cyc, stl, asm, brd = _setup(tmp_path, 2, 0)   # 0 HOLD → clean return path
+    _j.dump({
+        "parity": [], "reader": {"verdict": "ok", "suspicion_point": "none"},
+        "continuity": "PASS", "binding_bar": "CLEAR",
+        "verdict_at_board": "DOES NOT CLEAR FOR SEAL — strongest first-pass board any volume has run",
+        "novel_metric": 0.42}, open(brd, "w"))
+    doc = seal_summary.generate(d, cyc, stl, asm, brd)
+    assert "DOES NOT CLEAR FOR SEAL" in doc           # verdict rendered verbatim
+    assert "BOARD VERDICT:" in doc
+    assert "novel_metric" in doc                       # unknown key surfaced, not dropped
+    assert "not otherwise rendered" in doc
