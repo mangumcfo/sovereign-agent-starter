@@ -33,6 +33,18 @@ class SummaryRefusal(Exception):
                          "generated is a title that is not done:\n  - " + "\n  - ".join(self.missing))
 
 
+class OpenBlockingHolds(Exception):
+    """P-2 (2026-07-30): the volume carries open blocking HOLD(s). The Summary is still generated
+    (the human MUST see the true state — carried on `.doc`), but it is NOT seal-ready and the
+    generator refuses in kind, matching PS-4's posture (which refuses the seal word itself). This
+    replaces the old hardcoded '(zero by construction)' literal that printed regardless of the count."""
+    def __init__(self, hold, doc):
+        self.hold = int(hold)
+        self.doc = doc
+        super().__init__(f"SEAL SUMMARY NOT SEAL-READY: {self.hold} open blocking HOLD(s) — "
+                         "DO NOT SEAL (PS-4 refuses any seal carrying an open blocking HOLD).")
+
+
 def _load(path, gaps, label):
     p = Path(path) if path else None
     if not p or not p.exists():
@@ -54,6 +66,12 @@ def generate(seeds_dir, cycle_json, settlement_json, assembly_json, board_json,
         gaps.append(f"_volume_input.yaml: {vin}")
     if gaps:
         raise SummaryRefusal(gaps)
+
+    # settlement_receipts.json ships as a per-chapter LIST; the summary's "settled on" line needs the
+    # volume's settled_cycle — derive it from the receipts (was crashing with .get on a list).
+    if isinstance(settle, list):
+        settle = {"settled_cycle": next((str(x.get("settled_cycle")) for x in settle
+                                         if isinstance(x, dict) and x.get("settled_cycle")), "")}
 
     vi = yaml.safe_load(vin.read_text())
     title = vi.get("title", seeds.name)
@@ -84,6 +102,10 @@ def generate(seeds_dir, cycle_json, settlement_json, assembly_json, board_json,
     if subtitle:
         L.append(f"*{subtitle}*")
     L.append("")
+    if hold > 0:  # P-2: unmissable banner when the volume is not seal-ready
+        L.append(f"> ⚠ **OPEN BLOCKING HOLDS — DO NOT SEAL** — {hold} open blocking HOLD(s). "
+                 "PS-4 will refuse the seal word; this summary is NOT seal-ready.")
+        L.append("")
     L.append("> Generated from receipts only (`press.seal_summary`). No judgement authored here; "
              "the boards are the evidence, the ledger is the Code section, the human word is the "
              "only remaining act.")
@@ -107,8 +129,11 @@ def generate(seeds_dir, cycle_json, settlement_json, assembly_json, board_json,
     L.append("")
     # Code section
     L.append("## Code")
-    L.append(f"- **{present} claims, {present} present · {hold} HOLD (zero by construction — PS-4 "
-             f"refuses any seal carrying an open blocking HOLD).**")
+    if hold == 0:  # P-2: the parenthetical is now COMPUTED from the real HOLD count, not hardcoded
+        L.append(f"- **{present} claims, {present} present · 0 HOLD — the ledger is fully PRESENT.**")
+    else:
+        L.append(f"- **{present} present · {hold} open blocking HOLD — this volume is NOT seal-ready; "
+                 "PS-4 refuses any seal carrying an open blocking HOLD.**")
     if suite_before is not None and suite_after is not None:
         L.append(f"- kernel test suite: {suite_before} → {suite_after} (green).")
     L.append("")
@@ -129,11 +154,17 @@ def generate(seeds_dir, cycle_json, settlement_json, assembly_json, board_json,
     L.append("## The word")
     L.append(f"- gate_rev **{cyc.get('gate_rev')}** · cycle `{(cyc.get('cycle_sha256') or '')[:16]}` · "
              f"settled on `{settle.get('settled_cycle','')}` · assembled `{(asm.get('doc_sha256_16') or asm.get('doc_sha256') or '')}`")
-    L.append("- **Seal** · per-item overrides · or bounce-with-reason. The seal is spoken by a human "
-             "at a keyboard; nothing here supplies it.")
+    if hold == 0:
+        L.append("- **Seal** · per-item overrides · or bounce-with-reason. The seal is spoken by a "
+                 "human at a keyboard; nothing here supplies it.")
+    else:  # P-2: no seal offered while blocking HOLDs are open
+        L.append(f"- **SEAL BLOCKED** — {hold} open blocking HOLD(s). Resolve or KM-override each "
+                 "before any seal word; PS-4 will refuse a seal that carries an open blocking HOLD.")
     doc = "\n".join(L) + "\n"
     if out:
-        Path(out).write_text(doc)
+        Path(out).write_text(doc)  # the human must see the true state even when we refuse
+    if hold > 0:
+        raise OpenBlockingHolds(hold, doc)
     return doc
 
 
@@ -145,6 +176,13 @@ def main():
         doc = generate(opt("--seeds"), opt("--cycle"), opt("--settlement"), opt("--assembly"),
                        opt("--board"), opt("--suite-before"), opt("--suite-after"), opt("--out"))
     except SummaryRefusal as e:
+        print(str(e))
+        return 1
+    except OpenBlockingHolds as e:  # P-2: summary written for review, but seal refused (exit 1)
+        if not opt("--out"):
+            print(e.doc)
+        else:
+            print(f"Seal Summary → {opt('--out')} ({len(e.doc.split())} words)")
         print(str(e))
         return 1
     if not opt("--out"):
