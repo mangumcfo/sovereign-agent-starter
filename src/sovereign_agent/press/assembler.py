@@ -60,6 +60,9 @@ SCAFFOLD = {
                         "checked by their own tests — what is proven is the mechanism, not a live "
                         "deployment (Ridgeline is a worked scenario):"),
     "receipt_designed": "**Designed-toward — named closing home.**",
+    # non-marker heading for all-PRESENT chapters (nothing roadmap-designed-toward; the deployment
+    # note is the reader's own build) — keeps the deployment frame without leaking a D12 forward marker.
+    "receipt_deploy":  "**Your build from here.**",
     "designed_frame":  ("Building this design over your own records — your own classes, rules, and "
                         "boundaries — is the work this chapter equips you to do."),
     "receipt_disclosure": (
@@ -221,11 +224,22 @@ def _receipt_box_md(n, c):
              f"> {S['receipt_runs']} Implemented + test-checked in the platform's object library:"]
     for e in present:  # plain-English claim text from the ledger — no E-ID, no path, no test
         lines.append(f"> - {str(e.get('claim', '')).strip()}")
-    lines += [">", f"> {S['receipt_designed']} " + S["designed_frame"]]
-    for e in holds:  # P-1/HG-1: render the named closing home beside each designed-toward bullet
-        ci = str(e.get("closes_in", "")).strip()
-        home = f" — designed-toward, closes in {ci}" if ci else ""
-        lines.append(f"> - {str(e.get('claim', '')).strip()}{home}")
+    # D12 (P-5' interaction): "Designed-toward — named closing home." is itself a forward marker.
+    # Show it ONLY when the chapter has designed-toward holds, and name the distinct closing homes
+    # IN the label so the home token lands within D12's window (and the label delivers the home it
+    # promises). An all-PRESENT chapter has nothing designed-toward → its deployment note renders
+    # under a non-marker heading, so no unhomed marker leaks into the assembled interior.
+    lines.append(">")
+    if holds:
+        homes = sorted({str(e.get("closes_in", "")).strip() for e in holds if str(e.get("closes_in", "")).strip()})
+        home_tag = (" Closes in " + ", ".join(homes) + ".") if homes else ""
+        lines.append(f"> {S['receipt_designed']}{home_tag} " + S["designed_frame"])
+        for e in holds:  # P-1/HG-1: render the named closing home beside each designed-toward bullet
+            ci = str(e.get("closes_in", "")).strip()
+            home = f" — designed-toward, closes in {ci}" if ci else ""
+            lines.append(f"> - {str(e.get('claim', '')).strip()}{home}")
+    else:
+        lines.append(f"> {S['receipt_deploy']} " + S["designed_frame"])
     return "\n".join(lines)
 
 

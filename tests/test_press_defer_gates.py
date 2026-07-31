@@ -52,6 +52,26 @@ def test_p1_receipt_box_renders_the_home(tmp_path):
     assert "Designed-toward — named closing home" in box
 
 
+def test_p1_receipt_label_is_d12_clean_and_present_only_drops_marker():
+    """D12 (P-5' interaction): the 'Designed-toward' receipt label must not leak an UNHOMED
+    forward marker into the assembled interior — a HOLD chapter names its home in the label;
+    an all-PRESENT chapter shows no designed-toward marker at all."""
+    from sovereign_agent.press import assembler
+    from sovereign_agent.press.prescreen import unhomed_forwards
+    # HOLD chapter: label carries the closing home inline → D12-clean
+    c_hold = {"receipt_box": {"claim": "the thesis"},
+              "extrusion": [{"status": "HOLD", "closes_in": "S8-V4", "claim": "the designed surface"}]}
+    box_h = assembler._receipt_box_md(1, c_hold)
+    assert "Designed-toward — named closing home." in box_h and "Closes in S8-V4." in box_h
+    assert unhomed_forwards(box_h) == []
+    # all-PRESENT chapter: no designed-toward marker; deployment note under a non-marker heading
+    c_present = {"receipt_box": {"claim": "the thesis"},
+                 "extrusion": [{"status": "PRESENT", "claim": "a built mechanism"}]}
+    box_p = assembler._receipt_box_md(2, c_present)
+    assert "Designed-toward" not in box_p and "Your build from here." in box_p
+    assert unhomed_forwards(box_p) == []
+
+
 # ── P-5' / D12: a forward marker must name its closing home within ~200 chars ──
 
 def test_p5_d12_unhomed_forward_is_flagged():
