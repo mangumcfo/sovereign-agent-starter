@@ -102,6 +102,72 @@ def coherence():
                     "summary": {"coherent": coherent, "drift": drift, "gaps": gaps}})
 
 
+def _book_code_tree_path() -> Path:
+    explicit = os.environ.get("BOOK_CODE_TREE")
+    return Path(explicit) if explicit else Path(__file__).resolve().parents[4] / "artifacts" / "book_code_tree.json"
+
+
+@bp.get("/coherence/distribution")
+@require_principal
+def coherence_distribution():
+    """Helix distribution rendering (S5-06-E2-3, KM/G ruling 2026-07-31; read-only): the one authoritative
+    book↔code join, RENDERED across the three read-only sources that already exist — nothing invented:
+      1. book↔code coherence records   (memory/coherence_registry.json, via _compute)
+      2. the book_code_tree            (artifacts/book_code_tree.json, book↔code structure + edges)
+      3. the CHANNEL_TRACKER overlay   (series._channel_index — distribution-federation state per book_id)
+    Composes them into a per-book distribution join view so the operator can see, for each authoritative
+    book, its live code-coherence + its structural book↔code edges + its distribution channels — the join
+    read from one source of truth, not synced copies. No writes; same posture as GET /coherence."""
+    from . import series  # lazy — reuse the CHANNEL_TRACKER overlay; avoids an import cycle
+    repo = Path(__file__).resolve().parents[4]
+
+    # SOURCE 1 — book↔code coherence records
+    reg = read_json_cached(_registry_path(), {})
+    out, coherent, drift = _compute(reg, repo) if reg else ([], 0, 0)
+    cohere_by = {}
+    for e in out:
+        k = _norm(e.get("book_id") or e.get("book", ""))
+        c = cohere_by.setdefault(k, {"book_id": e.get("book_id", ""), "book": e.get("book", ""),
+                                     "coherent": 0, "drift": 0})
+        c["coherent"] += e["status"] == "coherent"
+        c["drift"] += e["status"] != "coherent"
+
+    # SOURCE 2 — book_code_tree (book↔code structure + edges)
+    tree = read_json_cached(_book_code_tree_path(), {})
+    edges = tree.get("edges", []) if isinstance(tree, dict) else []
+    tree_edges_by = {}
+    for ed in edges:
+        k = _norm(ed.get("book", ""))
+        tree_edges_by[k] = tree_edges_by.get(k, 0) + 1
+
+    # SOURCE 3 — CHANNEL_TRACKER distribution overlay
+    channels = series._channel_index()          # {book_id: {channel: {...}}}
+    chan_by = {_norm(bid): {"book_id": bid, "channels": ch} for bid, ch in channels.items()}
+
+    keys = set(cohere_by) | set(tree_edges_by) | set(chan_by)
+    join = []
+    for k in sorted(keys):
+        join.append({
+            "key": k,
+            "book_id": (cohere_by.get(k, {}).get("book_id") or chan_by.get(k, {}).get("book_id") or ""),
+            "book": cohere_by.get(k, {}).get("book", ""),
+            "coherence": ({"coherent": cohere_by[k]["coherent"], "drift": cohere_by[k]["drift"]}
+                          if k in cohere_by else None),
+            "tree_edges": tree_edges_by.get(k, 0),
+            "channels": chan_by.get(k, {}).get("channels"),
+        })
+
+    return jsonify({
+        "join_record": join,
+        "sources": {"coherence_records": bool(reg), "book_code_tree": bool(tree),
+                    "channel_overlay": bool(channels)},
+        "summary": {"books": len(join), "coherent": coherent, "drift": drift,
+                    "tree_edges_total": len(edges), "channels_total": len(channels)},
+        "note": "Helix distribution rendering (read-only): one book↔code join rendered from the coherence "
+                "records + book_code_tree + CHANNEL_TRACKER distribution overlay. Composed, not invented.",
+    })
+
+
 @bp.get("/coherence/rollup")
 @require_principal
 def coherence_rollup():
