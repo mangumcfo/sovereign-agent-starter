@@ -25,7 +25,7 @@ from pathlib import Path
 
 import yaml
 
-from .prescreen import apparatus_leaks
+from .prescreen import apparatus_leaks, unhomed_forwards
 
 
 def _sha(t: str) -> str:
@@ -118,6 +118,13 @@ def continuity_check_assembled(assembled_path, seeds_dir) -> dict:
         if mp and f.get("required_in") and not re.search(mp, text, re.I):
             findings.append(f"assembled: arc {f.get('name')!r} origin absent from the interior (pin-by-absence)")
     findings += _apparatus_vs_prose(text)
+    # D12 in the board path (audit 2026-08-01, KM GO #1): the ASSEMBLED interior — receipts and
+    # apparatus included — must scan 0 unhomed forward markers, the same law the seed-side gate
+    # (prescreen GATE_REV=9) enforces per card. A fully-homed volume is 0; anything else STOPs the
+    # board path, since cmd_run folds these findings in. No silent skip: the guarantee is now rail,
+    # not a manual `prescreen --scan-forwards`.
+    for h in unhomed_forwards(text):
+        findings.append(f"assembled: unhomed forward marker (D12) — no closing home within ~200 chars: …{h}…")
     return {"tool": "board_stage1.continuity_check_assembled", "target": str(assembled_path),
             "result": "PASS" if not findings else "FAIL", "findings": findings}
 

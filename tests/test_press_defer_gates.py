@@ -113,3 +113,25 @@ def test_p6_nonexistent_test_is_pending_not_defect(tmp_path):
                                               acceptance_test="tests/test_nope.py")), repo=str(tmp_path))
     assert r["defects"] == []
     assert r["entries"][0].get("test_pending") == "tests/test_nope.py"
+
+
+# ── Audit 2026-08-01 (KM GO #1): D12 is now in the board path — cmd_run's assembled-interior
+#    scan (continuity_check_assembled) flags unhomed forward markers, not just the seed-side gate ──
+
+def test_d12_assembled_interior_flags_unhomed_forward(tmp_path):
+    from sovereign_agent.press import board_stage1
+    seeds = tmp_path / "seeds"; seeds.mkdir()
+    asm = tmp_path / "assembled.md"
+    asm.write_text("The book runs on the record.\n\nThe rendering layer is designed-toward and unbuilt.\n")
+    r = board_stage1.continuity_check_assembled(str(asm), str(seeds))
+    assert r["result"] == "FAIL"
+    assert any("unhomed forward marker (D12)" in f for f in r["findings"])
+
+
+def test_d12_assembled_interior_clean_when_homed(tmp_path):
+    from sovereign_agent.press import board_stage1
+    seeds = tmp_path / "seeds"; seeds.mkdir()
+    asm = tmp_path / "assembled.md"
+    asm.write_text("The rendering layer is designed-toward — a later book in Series 8 builds it.\n")
+    r = board_stage1.continuity_check_assembled(str(asm), str(seeds))
+    assert not any("unhomed forward marker (D12)" in f for f in r["findings"])

@@ -14,7 +14,8 @@ python -m sovereign_agent.press status | report S2 | selftest
 python -m sovereign_agent.press bundle EX-01         # write the offline recovery bundle
 python -m sovereign_agent.press build --offline EX-01
 python -m sovereign_agent.press harden VOL-01       # hardening floor -> promotion proposal
-python -m sovereign_agent.press cycle DEMO --seeds seeds/DEMO
+python -m sovereign_agent.press run  VOL-01 --seeds seeds/VOL-01   # book rail: cycle→settle→assemble→board
+python -m sovereign_agent.press seal VOL-01 --word "<the word>"    # the human seal, at a keyboard
 ```
 
 ## The laws (enforced in code, not promised)
@@ -34,6 +35,64 @@ python -m sovereign_agent.press cycle DEMO --seeds seeds/DEMO
    that ran it (`model: none` for deterministic steps — gates never relax by model class).
 5. **Demotion never waits; promotion always does.** Any hardening-floor finding auto-demotes
    `provisional → built` with a reopen receipt. Every promotion requires the human word.
+
+## The book-drafting rail (seed → cycle → settle → board)
+
+A catalog volume is drafted from **seed cards** — one per chapter, each carrying `beats`,
+`prose`, an `extrusion` ledger (the code claims), and a `receipt_box` — not a manifest `build`
+line. One command drives a title from seeds to a board-ready package, halting before the two
+gates a machine may not cross:
+
+```
+python -m sovereign_agent.press run  <vol> --seeds seeds/<vol>   # cycle → settle → assemble → board_package
+python -m sovereign_agent.press cycle <vol> --seeds DIR          # the gate battery alone
+python -m sovereign_agent.press settle <vol> --seeds DIR         # fold a PASS bundle back to the source seeds
+python -m sovereign_agent.press assemble <vol> --seeds DIR --out FILE
+python -m sovereign_agent.press seal <vol> --word "<the word>"   # the human seal, at a keyboard
+```
+
+`run` STOPs the instant any stage refuses; a clean run ends **"staged for AA board"**, never
+sealed. The two human gates ahead are the **AA board** (the binding reader/parity judgement)
+and the **KM seal** (`cmd_seal → read_word`, a word typed at a keyboard — the same law as §1).
+
+**The cycle gate order (`gate_rev`, stamped on every cycle receipt — S5 ran rev-9):**
+
+1. **adversary L0** — deterministic, no model: weasel lexicon · ungated present-tense
+   accomplishment (a runs-today claim must be backed by the card's `runs_today`) · full-name
+   density (pronominalize after first mention) · duplicate 10-word shingles across chapters ·
+   repeated question-hinge (the same interrogative opener ≥3× volume-wide is a template tell).
+2. **prescreen** — the deterministic canon/voice/claims gate between L0 and L1, carrying **D12**:
+   every forward marker (`designed-toward`, `is designed, not`, `not yet built`, `closes in`, …)
+   must name a **closing home** within ~200 chars — a volume/series id (`S8-V4`, `Series 8`), a
+   spec path (`*.yaml`), `live-runtime cutover`, or `OPEN-DECISION:<owner>` — or KILL. A
+   charter-barred capability is homed nowhere by principle: it carries no forward marker at all.
+3. **adversary L1** — one chapter per call on the local model host (rental-safe: refuses the
+   local call unless the shared GPU is idle). Judges served-beats and overclaim against
+   `runs_today`; a claim scoped larger than its evidence (an ERP-scale noun on a book↔code-only
+   primitive, an operator-cockpit surface asserted as running) is refuted.
+4. **co-extrusion** — every extrusion claim proven against the code. **PRESENT** ⇒ its
+   `target_module` exists AND its `acceptance_test` passes *now* (pytest) — no "code later" for a
+   claim the prose treats as present. **HOLD** ⇒ must carry `blocks_seal: true` and a `closes_in`
+   home; a HOLD with no home, or one naming *this* volume, is a defect, and a HOLD whose test
+   path does not exist yet is a recorded `test_pending` warning, never a silent drop.
+
+A cycle PASS requires all four in order; a FAIL never advances (nothing settles, nothing stages).
+
+**D12 also runs on the assembled interior.** Beyond the per-card seed-side gate, `run`'s
+board-package step (`board_stage1.continuity_check_assembled`) scans D12 over the **whole
+rendered interior** — receipts and Cast-&-Canon apparatus included — so a fully-homed volume
+reads **0 unhomed forwards end to end**, not merely per card. Any unhomed marker STOPs the
+package. (Guardrail added 2026-08-01; the S5 board packages pass it at 0.)
+
+**The receipt label is itself D12-clean.** A chapter with designed-toward HOLDs renders
+"**Designed-toward — named closing home.** Closes in `<home>`." — the closing homes are named
+*in the label*, so the label never injects an unhomed marker into the interior. A chapter with
+nothing designed-toward renders its deployment note under a non-marker heading instead.
+
+**The front-matter count is claim-plus-test honest.** The counts table reads
+"*N* claims, backed by *M* distinct acceptance tests": one read-only route legitimately backs
+several claims, so the raw claim count is shown beside the distinct-test count rather than
+mis-read as *N* independent mechanisms.
 
 ## The manifest
 
