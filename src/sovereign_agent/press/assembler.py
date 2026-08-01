@@ -75,7 +75,8 @@ SCAFFOLD = {
     "check_frame":     "Run these against your own records:",
     "counts_rows": [
         ("Chapters", "{n_ch}"),
-        ("Mechanisms implemented and test-checked in the platform's object library", "{n_present}"),
+        ("Mechanisms implemented and test-checked in the platform's object library",
+         "{n_present} claims, backed by {n_tests} distinct acceptance tests"),
         ("Deployed as a live system of record", "none yet — the volume is the design you build"),
     ],
     "none_marker": "—",
@@ -303,12 +304,18 @@ def assemble(seeds_dir, out_path, receipt_path=None):
                     if str(e.get("status", "")).upper() == "PRESENT")
     n_hold = sum(1 for _, c in chapters for e in c["extrusion"]
                  if str(e.get("status", "")).upper() == "HOLD")
+    # S-5 (s5_04/s5_06 board 2026-07-31): count DISTINCT acceptance tests behind the PRESENT claims,
+    # so the headline reads "N claims, backed by M tests" (one read-only route backs several claims —
+    # legitimate, but "N mechanisms" over-reads as N independent things).
+    n_tests = len({str(e.get("acceptance_test", "")).strip()
+                   for _, c in chapters for e in c["extrusion"]
+                   if str(e.get("status", "")).upper() == "PRESENT" and str(e.get("acceptance_test", "")).strip()})
 
     # front matter — title/subtitle placed from the registry record; counts from the ledger
     m = re.match(r"s(\d+)_(\d+)_", str(vol["book_id"]))
     series_line = (f"Series {int(m.group(1))} · Volume {int(m.group(2))}" if m
                    else str(vol["book_id"]))
-    counts = "\n".join(f"| {label.format()} | {val.format(n_ch=len(chapters), n_present=n_present, n_hold=n_hold)} |"
+    counts = "\n".join(f"| {label.format()} | {val.format(n_ch=len(chapters), n_present=n_present, n_hold=n_hold, n_tests=n_tests)} |"
                        for label, val in S["counts_rows"])
     pieces["front_matter"] = (f"# {vol['title']}\n\n*{vol['subtitle']}*\n\n"
                               f"{series_line}\n\n| | |\n|---|---|\n{counts}\n\n"
