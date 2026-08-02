@@ -135,3 +135,44 @@ def test_d12_assembled_interior_clean_when_homed(tmp_path):
     asm.write_text("The rendering layer is designed-toward — a later book in Series 8 builds it.\n")
     r = board_stage1.continuity_check_assembled(str(asm), str(seeds))
     assert not any("unhomed forward marker (D12)" in f for f in r["findings"])
+
+
+# ── PS-4a (KM ruling 2026-08-02): external-series HOLD = disclosed deferral, not an open debt ──
+
+def _seed_holds(tmp_path, entries):
+    import yaml as _y
+    d = tmp_path / "seeds"; d.mkdir(exist_ok=True)
+    _y.safe_dump({"chapter": "1", "prose": "p", "extrusion": entries}, open(d / "ch1.yaml", "w"))
+    return str(d)
+
+
+def _hold_e(cid, closes_in):
+    return {"id": cid, "claim": "a designed surface", "status": "HOLD",
+            "blocks_seal": True, "closes_in": closes_in, "acceptance_test": "tests/test_x.py"}
+
+
+def test_ps4a_external_series_hold_does_not_block(tmp_path):
+    from sovereign_agent.press.engine import _open_seal_blocking_holds
+    seeds = _seed_holds(tmp_path, [_hold_e("S5-04-E1-2", "S8-V4"), _hold_e("S5-04-E3-3", "S7-V1")])
+    # sealing an S5 volume: both HOLDs close in a DIFFERENT series → exempt → nothing blocks
+    assert _open_seal_blocking_holds(seeds, this_series=5) == []
+
+
+def test_ps4a_same_series_and_unhomed_still_block(tmp_path):
+    from sovereign_agent.press.engine import _open_seal_blocking_holds
+    seeds = _seed_holds(tmp_path, [
+        _hold_e("S5-04-Ea", "S5-V6"),   # same series → blocks
+        _hold_e("S5-04-Eb", ""),        # unhomed → blocks
+        _hold_e("S5-04-Ec", "S8-V4"),   # external → exempt
+    ])
+    blocking = _open_seal_blocking_holds(seeds, this_series=5)
+    assert len(blocking) == 2
+    assert any("S5-04-Ea" in b for b in blocking) and any("S5-04-Eb" in b for b in blocking)
+    assert not any("S5-04-Ec" in b for b in blocking)
+
+
+def test_ps4a_disabled_without_series_every_hold_blocks(tmp_path):
+    """this_series=None → pre-PS-4a behaviour: every blocks_seal HOLD blocks (fail-closed default)."""
+    from sovereign_agent.press.engine import _open_seal_blocking_holds
+    seeds = _seed_holds(tmp_path, [_hold_e("S5-04-E1-2", "S8-V4")])
+    assert len(_open_seal_blocking_holds(seeds, this_series=None)) == 1

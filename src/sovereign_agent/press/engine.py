@@ -1039,13 +1039,27 @@ def cmd_build_offline(target):
     return 0 if ok else 1
 
 
-def _open_seal_blocking_holds(seeds_dir):
-    """PS-4 (KM ruling 2026-07-27): every extrusion entry with status HOLD and
-    blocks_seal:true is an OPEN debt against the volume. The seal refuses while any
-    exist — silent deferral is structurally impossible, not merely forbidden.
-    Resolution paths are exactly three (design note): Extrude (code lands, tested,
-    receipted -> status flips), Downgrade (text amended to honest design voice, hold
-    withdrawn on receipt), or Hold (and the volume cannot seal). E5-2 is the precedent."""
+def _series_num(s):
+    """The integer series of a token: 'S8-V4'/'S7-V1'/'S6' -> 8/7/6; 'Series 8' -> 8; else None."""
+    import re as _re
+    m = _re.search(r"\bS(\d+)\b", str(s)) or _re.search(r"\bSeries\s+(\d+)\b", str(s), _re.I)
+    return int(m.group(1)) if m else None
+
+
+def _open_seal_blocking_holds(seeds_dir, this_series=None):
+    """PS-4 (KM ruling 2026-07-27) + PS-4a external-home exception (KM ruling 2026-08-02).
+
+    Every extrusion entry with status HOLD and blocks_seal:true is an OPEN debt against the volume
+    and the seal refuses while any exist — EXCEPT a HOLD whose `closes_in` names a DIFFERENT series
+    (an honest external home, e.g. S7-V1, S8-V4). That is a DISCLOSED deferral, not an open debt on
+    THIS volume, so it does not block THIS volume's seal. Disclosure is preserved by construction: the
+    HOLD is never stripped, so the assembler renders its DESIGNED-TOWARD line (`closes in <home>`) into
+    the interior — the exemption never launders a silent drop.
+
+    Still blocks (Extrude | Downgrade | no-seal) when closes_in is: THIS volume, unset/unhomed, or
+    another volume in the SAME series wave (no explicit external series id). `this_series` is the
+    integer series of the volume being sealed (e.g. 5 for an S5 volume); None disables the exception
+    (pre-PS-4a behaviour — every blocks_seal HOLD blocks)."""
     import yaml as _yaml
     holds = []
     if not os.path.isdir(seeds_dir):
@@ -1057,7 +1071,12 @@ def _open_seal_blocking_holds(seeds_dir):
         c = _yaml.safe_load(open(os.path.join(seeds_dir, f)))
         for e in (c or {}).get("extrusion") or []:
             if str(e.get("status", "")).upper() == "HOLD" and e.get("blocks_seal") is True:
-                holds.append(f"{e.get('id')} ({e.get('claim', '')[:60]}…)")
+                home = str(e.get("closes_in", "")).strip()
+                hs = _series_num(home)
+                # PS-4a: exempt ONLY a HOLD homed to an explicit DIFFERENT series (disclosed deferral).
+                if this_series is not None and hs is not None and hs != this_series:
+                    continue
+                holds.append(f"{e.get('id')} (closes_in={home or 'UNSET'}) ({e.get('claim', '')[:50]}…)")
     return holds
 
 
@@ -1217,12 +1236,16 @@ def cmd_seal(vol_id, word=None, verify=False, reseal=False, supersede=None):
                  "without a ledger to prove it carries no open seal-blocking HOLD. Declare the "
                  "ledger, or explicitly mark the volume legacy if it predates the object model.")
     else:
-        _holds = _open_seal_blocking_holds(_ledger_dir)  # itself fail-closes on an unreadable dir
+        # PS-4a: pass THIS volume's series so a HOLD homed to a DIFFERENT series (disclosed external
+        # deferral) does not block; a same-series / unhomed / this-volume HOLD still refuses.
+        _this_series = _series_num(_vol_entry.get("series")) or _series_num(vol_id)
+        _holds = _open_seal_blocking_holds(_ledger_dir, _this_series)  # fail-closes on an unreadable dir
         if _holds:
             fail("SEAL REFUSED (PS-4): volume carries " + str(len(_holds)) + " open seal-blocking "
-                 "HOLD(s) — resolve each by Extrude (code lands + tested + receipted) or "
-                 "Downgrade (honest design voice, receipted) before the seal will hear a word:\n  - "
-                 + "\n  - ".join(_holds[:20]))
+                 "HOLD(s) that close in THIS series (or are unhomed) — resolve each by Extrude (code "
+                 "lands + tested + receipted) or Downgrade (honest design voice, receipted) before the "
+                 "seal will hear a word. (A HOLD homed to a DIFFERENT series is a disclosed deferral and "
+                 "does not block — PS-4a.):\n  - " + "\n  - ".join(_holds[:20]))
     vols = validate(manifest)
     if vol_id not in vols:
         fail(f"{vol_id} not in manifest (default-deny) — nothing unknown can be sealed")
