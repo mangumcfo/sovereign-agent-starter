@@ -37,6 +37,11 @@ import sys
 
 import pytest
 
+from _substrate import substrate_available  # noqa: E402  (F-1 GUARD, KM 2026-08-03)
+pytestmark = pytest.mark.skipif(not substrate_available(),
+    reason="breathline_primitives (sealed crypto substrate) absent — honest skip, not a broken clone")
+
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 os.environ["BREATHLINE_NODE_API_DEV"] = "1"

@@ -7,6 +7,11 @@ import textwrap
 
 import pytest
 
+from _substrate import substrate_available  # noqa: E402  (F-1 GUARD, KM 2026-08-03)
+pytestmark = pytest.mark.skipif(not substrate_available(),
+    reason="breathline_primitives (sealed crypto substrate) absent — honest skip, not a broken clone")
+
+
 SESSION_YAML = textwrap.dedent(
     """
     export:

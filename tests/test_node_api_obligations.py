@@ -1,6 +1,11 @@
 """R-23 Phase 3 — Node API /obligations endpoints (Flask test client)."""
 import pytest
 
+from _substrate import substrate_available  # noqa: E402  (F-1 GUARD, KM 2026-08-03)
+pytestmark = pytest.mark.skipif(not substrate_available(),
+    reason="breathline_primitives (sealed crypto substrate) absent — honest skip, not a broken clone")
+
+
 
 @pytest.fixture
 def client(tmp_path, monkeypatch):
