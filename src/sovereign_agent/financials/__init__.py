@@ -31,6 +31,10 @@ from .drivers import (
 from .close_workflow import (
     new_close, soft_close, complete_step, hard_close, CloseWorkflowError,
 )
+from .investment import holdings, total_by_issuer, InvestmentError
+from .investment_policy import check_investment, PolicyViolation
+from .financing import new_facility, outstanding, draw, available, FinancingError
+from .exposure import exposure_by_issuer, concentration, breaches
 from .posting import (
     Line,
     UnbalancedPostingError,
@@ -54,4 +58,8 @@ __all__ = [
     "weights_from_driver", "allocate_by_driver", "DriverError",
     "PROPORTIONAL", "EQUAL", "FIXED", "DRIVERS",
     "new_close", "soft_close", "complete_step", "hard_close", "CloseWorkflowError",
+    "holdings", "total_by_issuer", "InvestmentError",
+    "check_investment", "PolicyViolation",
+    "new_facility", "outstanding", "draw", "available", "FinancingError",
+    "exposure_by_issuer", "concentration", "breaches",
 ]
