@@ -7,6 +7,7 @@ of a posting is provided by the existing ObligationLedger / projection (already 
 the financial-accounting invariants those records must satisfy. A full posting/statement/consolidation engine
 stays designed-toward its own volumes (Framing A: exists != wired)."""
 from .treasury import cash_position, total_by_currency, liquidity_coverage
+from .project import budget_status, portfolio_roll_up
 from .posting import (
     Line,
     UnbalancedPostingError,
@@ -21,4 +22,5 @@ __all__ = [
     "Line", "UnbalancedPostingError", "validate_balanced", "post",
     "trial_balance", "allocate", "AllocationError",
     "cash_position", "total_by_currency", "liquidity_coverage",
+    "budget_status", "portfolio_roll_up",
 ]
