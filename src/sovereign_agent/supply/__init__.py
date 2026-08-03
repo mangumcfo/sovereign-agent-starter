@@ -6,5 +6,6 @@ inventory movement come from the existing ObligationLedger / object model / witn
 supply-chain views those governed records must satisfy — on-hand quantity as a replay of movements, and a
 no-phantom-stock check. Demand planning, optimization, and carrier integration stay designed-toward."""
 from .inventory import on_hand, on_hand_for, would_overdraw, NegativeStockError
+from .bom import explode_bom, can_build
 
-__all__ = ["on_hand", "on_hand_for", "would_overdraw", "NegativeStockError"]
+__all__ = ["on_hand", "on_hand_for", "would_overdraw", "NegativeStockError", "explode_bom", "can_build"]
