@@ -8,6 +8,21 @@ the financial-accounting invariants those records must satisfy. A full posting/s
 stays designed-toward its own volumes (Framing A: exists != wired)."""
 from .treasury import cash_position, total_by_currency, liquidity_coverage
 from .project import budget_status, portfolio_roll_up
+from .controlling import (
+    validate_coa,
+    roll_up_accounts,
+    allocate_cost_pool,
+    roll_up_center_costs,
+    CoAError,
+)
+from .period_close import (
+    period_is_balanced,
+    close_period,
+    guard_post_open,
+    PeriodNotBalancedError,
+    PeriodClosedError,
+)
+from .fx import convert, combine_converted, FXError
 from .posting import (
     Line,
     UnbalancedPostingError,
@@ -23,4 +38,8 @@ __all__ = [
     "trial_balance", "allocate", "AllocationError",
     "cash_position", "total_by_currency", "liquidity_coverage",
     "budget_status", "portfolio_roll_up",
+    "validate_coa", "roll_up_accounts", "allocate_cost_pool", "roll_up_center_costs", "CoAError",
+    "period_is_balanced", "close_period", "guard_post_open",
+    "PeriodNotBalancedError", "PeriodClosedError",
+    "convert", "combine_converted", "FXError",
 ]
