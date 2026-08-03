@@ -8,12 +8,15 @@ an accountable input, never sourced or guessed), it is refused at a non-positive
 must use rate 1, and converted amounts are summed only within a single target currency — currencies are never
 blended into one figure.
 
-Framing A (exists != wired): the conversion *act* + no-blend are PRESENT and tested. The FX *rate engine* — rate
-sourcing, curves, period-end revaluation — is designed-toward THIS volume's own growth path, not re-homed."""
+The rate engine over this act is now landed too (KM ratify Option B 2026-08-03): a governed rate table holds supplied
+rates by (from, to, as-of date), and period-end revaluation converts open foreign balances at the closing rate and
+reports the unrealized gain/loss -- each a recorded conversion act. What stays external is the *sourcing* of live
+market rates and forward curves from a data provider (network connectivity), homed in S6-V07; the rates in the table
+here are governed inputs, not a live feed. Framing A (exists != wired) holds at that seam."""
 from __future__ import annotations
 
 from decimal import Decimal
-from typing import Dict, Iterable, Mapping, Union
+from typing import Dict, Iterable, List, Mapping, Tuple, Union
 
 Number = Union[int, float, str, Decimal]
 
@@ -56,3 +59,48 @@ def combine_converted(records: Iterable[Mapping]) -> Dict[str, Decimal]:
         ccy = rec["to"]["currency"]
         totals[ccy] = totals.get(ccy, Decimal("0")) + _dec(rec["to"]["amount"])
     return totals
+
+
+def rate_for(table: Mapping[Tuple[str, str, str], Number], from_ccy: str, to_ccy: str, as_of: str) -> Decimal:
+    """Look up a governed rate for (from_ccy, to_ccy, as_of) in a rate table, fail-closed if it is absent.
+
+    The table is a mapping of (from, to, date) -> rate: rates that were *entered as governed inputs*, not sourced from
+    a live market feed (that sourcing is external connectivity, homed in S6-V07). A missing rate is refused rather than
+    guessed -- a revaluation must not run on a rate the ledger does not hold."""
+    key = (from_ccy, to_ccy, as_of)
+    if key not in table:
+        raise FXError(f"no governed rate for {from_ccy}->{to_ccy} as of {as_of}")
+    r = _dec(table[key])
+    if r <= 0:
+        raise FXError(f"rate for {from_ccy}->{to_ccy} as of {as_of} must be > 0 (got {r})")
+    return r
+
+
+def revalue(open_balances: Iterable[Mapping], table: Mapping[Tuple[str, str, str], Number],
+            base_ccy: str, as_of: str) -> List[Dict[str, object]]:
+    """Revalue open foreign-currency balances at a governed closing rate, reporting the unrealized gain/loss.
+
+    Each open balance is a mapping with `amount`, `currency` (a foreign currency), and the `book_value` at which it
+    currently sits in `base_ccy`. For each, the closing value is a receipted conversion at the governed rate for
+    (currency, base_ccy, as_of); the unrealized gain/loss is closing_value - book_value. A same-currency balance is
+    skipped (nothing to revalue). Currencies are never blended -- each result carries its own currency and its base
+    equivalent, and gain/loss is expressed in the base currency only."""
+    out: List[Dict[str, object]] = []
+    for bal in open_balances:
+        ccy = bal["currency"]
+        if ccy == base_ccy:
+            continue
+        rate = rate_for(table, ccy, base_ccy, as_of)
+        act = convert(bal["amount"], ccy, base_ccy, rate)
+        closing = act["to"]["amount"]
+        book = _dec(bal["book_value"])
+        out.append({
+            "currency": ccy,
+            "amount": _dec(bal["amount"]),
+            "book_value": book,
+            "closing_value": closing,
+            "unrealized_gl": closing - book,
+            "as_of": as_of,
+            "rate": rate,
+        })
+    return out

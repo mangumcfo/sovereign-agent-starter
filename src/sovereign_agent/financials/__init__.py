@@ -22,7 +22,15 @@ from .period_close import (
     PeriodNotBalancedError,
     PeriodClosedError,
 )
-from .fx import convert, combine_converted, FXError
+from .fx import convert, combine_converted, rate_for, revalue, FXError
+from .dimensions import validate_dimension, roll_up_members, slice_amounts, DimensionError
+from .drivers import (
+    weights_from_driver, allocate_by_driver, DriverError,
+    PROPORTIONAL, EQUAL, FIXED, DRIVERS,
+)
+from .close_workflow import (
+    new_close, soft_close, complete_step, hard_close, CloseWorkflowError,
+)
 from .posting import (
     Line,
     UnbalancedPostingError,
@@ -41,5 +49,9 @@ __all__ = [
     "validate_coa", "roll_up_accounts", "allocate_cost_pool", "roll_up_center_costs", "CoAError",
     "period_is_balanced", "close_period", "guard_post_open",
     "PeriodNotBalancedError", "PeriodClosedError",
-    "convert", "combine_converted", "FXError",
+    "convert", "combine_converted", "rate_for", "revalue", "FXError",
+    "validate_dimension", "roll_up_members", "slice_amounts", "DimensionError",
+    "weights_from_driver", "allocate_by_driver", "DriverError",
+    "PROPORTIONAL", "EQUAL", "FIXED", "DRIVERS",
+    "new_close", "soft_close", "complete_step", "hard_close", "CloseWorkflowError",
 ]
