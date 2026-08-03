@@ -6,6 +6,7 @@ of attestation, so they run in a pure public clone with no skip. The *immutabili
 of a posting is provided by the existing ObligationLedger / projection (already tested); this module adds only
 the financial-accounting invariants those records must satisfy. A full posting/statement/consolidation engine
 stays designed-toward its own volumes (Framing A: exists != wired)."""
+from .treasury import cash_position, total_by_currency, liquidity_coverage
 from .posting import (
     Line,
     UnbalancedPostingError,
@@ -19,4 +20,5 @@ from .posting import (
 __all__ = [
     "Line", "UnbalancedPostingError", "validate_balanced", "post",
     "trial_balance", "allocate", "AllocationError",
+    "cash_position", "total_by_currency", "liquidity_coverage",
 ]
