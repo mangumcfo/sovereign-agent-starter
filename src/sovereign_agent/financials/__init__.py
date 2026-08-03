@@ -36,6 +36,7 @@ from .investment_policy import check_investment, PolicyViolation
 from .financing import new_facility, outstanding, draw, available, FinancingError
 from .exposure import exposure_by_issuer, concentration, breaches
 from .reporting import income_statement, balance_sheet, cash_flow_statement, ReportingError
+from .report_packs import build_pack, build_named_pack, PackError, MANAGEMENT_PACK, STATUTORY_PACK, PACKS
 from .posting import (
     Line,
     UnbalancedPostingError,
@@ -64,4 +65,5 @@ __all__ = [
     "new_facility", "outstanding", "draw", "available", "FinancingError",
     "exposure_by_issuer", "concentration", "breaches",
     "income_statement", "balance_sheet", "cash_flow_statement", "ReportingError",
+    "build_pack", "build_named_pack", "PackError", "MANAGEMENT_PACK", "STATUTORY_PACK", "PACKS",
 ]
