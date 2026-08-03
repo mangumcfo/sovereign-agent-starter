@@ -59,6 +59,7 @@ class PolicyLoader:
         self.secondary_source = secondary_source or sovereign_config.get_playbooks_dir()
         self._loaded_policies: Dict[str, Policy] = {}
         self._file_mtimes: Dict[str, float] = {}  # for hot-reload detection
+        self._current_policy: Optional[Policy] = None  # last successfully loaded (get_active_policy)
 
     def discover_policies(self) -> List[str]:
         """Discover available policy keys from breathline-federation."""
@@ -148,6 +149,7 @@ class PolicyLoader:
         policy.module_root = tree.get_root().hex()
 
         self._loaded_policies[cache_key] = policy
+        self._current_policy = policy
         if isinstance(source_path, Path):
             self._file_mtimes[str(source_path)] = source_path.stat().st_mtime
 
