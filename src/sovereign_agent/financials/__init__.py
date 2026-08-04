@@ -42,13 +42,14 @@ from .posting import (
     UnbalancedPostingError,
     validate_balanced,
     post,
+    from_entry,
     trial_balance,
     allocate,
     AllocationError,
 )
 
 __all__ = [
-    "Line", "UnbalancedPostingError", "validate_balanced", "post",
+    "Line", "UnbalancedPostingError", "validate_balanced", "post", "from_entry",
     "trial_balance", "allocate", "AllocationError",
     "cash_position", "total_by_currency", "liquidity_coverage",
     "budget_status", "portfolio_roll_up",

@@ -78,6 +78,20 @@ def post(lines: List[Line], memo: str = "") -> Dict:
     }
 
 
+def from_entry(entry: Mapping, memo: str = "") -> Dict:
+    """Consumer adapter: post an ap_entry-shaped record as a balanced double-entry posting.
+
+    A ledger-bound emitter -- e.g. procurement.ap_entry, the three-way-match AP posting -- returns its own record
+    shape: an optional `invoice_id`, a `debits` list, and a `credits` list, each entry {account, amount}. This adapter
+    reads that shape and posts it through the sealed posting invariants (validate_balanced -> fail-closed
+    debits == credits), WITHOUT changing the emitter's return shape: from_entry consumes the shape, it never alters the
+    emitter. Any balanced {debits, credits} record composes the general ledger this way, so an emitter stays sealed and
+    the ledger stays the single home of the posting invariant."""
+    lines = [Line.dr(d["account"], d["amount"]) for d in entry.get("debits", ())]
+    lines += [Line.cr(c["account"], c["amount"]) for c in entry.get("credits", ())]
+    return post(lines, memo=memo or (f"ap_entry {entry['invoice_id']}" if entry.get("invoice_id") else ""))
+
+
 def trial_balance(postings: List[Dict]) -> Dict[str, Decimal]:
     """Net movement per account across a set of balanced postings. The sum of all nets is exactly zero —
     the trial balance balances by construction, because every posting did."""
