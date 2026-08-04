@@ -7,13 +7,17 @@ that carries its full breakdown. The volume does transparent, receipted, re-runn
 black-box scoring by construction. External data feeds are homed in S6-V07; consolidation in S5-V18; reporting and
 compliance in the sealed S5-V14."""
 from .insight import metric_with_provenance, InsightError
-from .forecast import project, scenario, ForecastError, MOVING_AVERAGE, LINEAR_TREND
+from .forecast import (project, scenario, ForecastError,
+    MOVING_AVERAGE, LINEAR_TREND, WEIGHTED_MOVING_AVERAGE, EXPONENTIAL_MOVING_AVERAGE)
+from .rollup import rollup_metric
 from .planning import net_requirements, schedule, allocate_by_priority, PlanningError
 from .decision_support import score_options, rank, recommend, DecisionError
 
 __all__ = [
     "metric_with_provenance", "InsightError",
-    "project", "scenario", "ForecastError", "MOVING_AVERAGE", "LINEAR_TREND",
+    "project", "scenario", "ForecastError",
+    "MOVING_AVERAGE", "LINEAR_TREND", "WEIGHTED_MOVING_AVERAGE", "EXPONENTIAL_MOVING_AVERAGE",
+    "rollup_metric",
     "net_requirements", "schedule", "allocate_by_priority", "PlanningError",
     "score_options", "rank", "recommend", "DecisionError",
 ]

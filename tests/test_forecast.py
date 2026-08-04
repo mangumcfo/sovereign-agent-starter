@@ -43,3 +43,29 @@ def test_scenario_applies_named_adjustments_reproducibly():
     assert up["adjustments"]["factor"] == Decimal("1.10")
     plus = scenario(base, {"delta": "25"})
     assert plus["projections"] == [Decimal("125.00"), Decimal("125.00")]
+
+
+# ---- Option B+ named methods: weighted moving average + exponential moving average ----
+from sovereign_agent.analytics import WEIGHTED_MOVING_AVERAGE, EXPONENTIAL_MOVING_AVERAGE
+
+
+def test_weighted_moving_average_weights_recent_more():
+    # history 10,20,30 window 3: weights 1,2,3 -> (10*1+20*2+30*3)/6 = 140/6 = 23.33
+    r = project([10, 20, 30], periods=1, method=WEIGHTED_MOVING_AVERAGE, window=3)
+    assert r["method"] == "weighted_moving_average"
+    assert r["projections"][0] == Decimal("23.33")
+    assert r["params"]["window"] == 3
+
+
+def test_exponential_moving_average_holds_at_final_ema():
+    # history 100,110,120 alpha 0.5: ema0=100; ema1=.5*110+.5*100=105; ema2=.5*120+.5*105=112.50 -> flat
+    r = project([100, 110, 120], periods=2, method=EXPONENTIAL_MOVING_AVERAGE, alpha="0.5")
+    assert r["projections"] == [Decimal("112.50"), Decimal("112.50")]
+    assert r["params"]["alpha"] == Decimal("0.5")
+
+
+def test_ema_alpha_out_of_range_refused():
+    with pytest.raises(ForecastError):
+        project([1, 2, 3], periods=1, method=EXPONENTIAL_MOVING_AVERAGE, alpha="0")
+    with pytest.raises(ForecastError):
+        project([1, 2, 3], periods=1, method=EXPONENTIAL_MOVING_AVERAGE, alpha="1.5")
