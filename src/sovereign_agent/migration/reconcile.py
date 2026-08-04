@@ -52,9 +52,11 @@ def _canon(record: Mapping) -> bytes:
 
 def manifest_root(records: Sequence[Mapping]) -> str:
     """The provenance root of a record set: the merkle root over the canonical records (composing the sealed merkle
-    accumulator). The set that reconciles carries this root, so the set that is cut over can be proven to be the same
-    set -- not a later, quietly-altered copy. Returns a hex root, or '' for an empty set."""
-    leaves = [_canon(r) for r in records]
+    accumulator). The leaves are SORTED before the root is built, so the root depends on the SET of records, not the
+    order they were supplied in -- the same records in any order produce the same root, and any added, dropped, or
+    altered record produces a different one. The set that reconciles carries this root, so the set that is cut over can
+    be proven to be the same set -- not a later, quietly-altered copy. Returns a hex root, or '' for an empty set."""
+    leaves = sorted(_canon(r) for r in records)
     root = MerkleAccumulator.from_leaves(leaves).get_root() if leaves else None
     return root.hex() if root else ""
 

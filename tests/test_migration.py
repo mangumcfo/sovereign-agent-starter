@@ -40,12 +40,14 @@ def test_injected_and_mismatched_records_refused():
         assert_reconciled(SOURCE, tampered)
 
 
-def test_provenance_root_stable_and_distinguishes_sets():
+def test_provenance_root_order_independent_and_distinguishes_sets():
     r1 = manifest_root(SOURCE)
-    r2 = manifest_root(GOOD)
-    assert r1 and r1 == r2                                       # same records -> same root (key order independent)
+    reordered = list(reversed(SOURCE))
+    assert r1 and manifest_root(reordered) == r1                # SAME records in ANY order -> SAME root
     r3 = manifest_root(SOURCE[:2])
     assert r3 != r1                                              # a different set -> a different root
+    altered = [{"id": "AR-1", "amount": "1000"}, {"id": "AR-2", "amount": "999"}, {"id": "AP-1", "amount": "-400"}]
+    assert manifest_root(altered) != r1                         # any altered record -> a different root
 
 
 def test_cutover_fail_closed_on_unreconciled():
