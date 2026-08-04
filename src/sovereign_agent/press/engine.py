@@ -1263,6 +1263,20 @@ def cmd_seal(vol_id, word=None, verify=False, reseal=False, supersede=None):
         fail(f"SEAL REFUSED: {vol_id} has no frozen artifact sha — build it first; a seal "
              "over nothing is not a seal.")
 
+    # STALE-FREEZE REFUSE (KM 2026-08-04, s5_18): a seal must attest the BYTES ON DISK, not a registered sha
+    # that has drifted — e.g. a re-render whose manifest freeze_sha was never refreshed (the s5_17 near-miss,
+    # where a seal stamped the pre-expand manuscript). When the volume declares an artifact path that exists,
+    # recompute its sha256 and refuse on mismatch. The check is silent when there is no artifact path or the
+    # path is not yet built (build-first ordering), but a DRIFTED existing artifact can never be sealed.
+    _art = vol.get("artifact")
+    if _art and os.path.isfile(_art):
+        _live = sha256_file(_art)
+        if _live != str(vol["freeze_sha"]):
+            fail(f"SEAL REFUSED (stale freeze): {vol_id} artifact {_art} hashes to {_live[:16]} but the "
+                 f"registered freeze_sha is {str(vol['freeze_sha'])[:16]} — the freeze has drifted from the "
+                 "bytes on disk. Re-freeze the manifest to the shipped artifact, then seal. A seal must attest "
+                 "the artifact it points at, never a stale record of it.")
+
     if reseal:
         if not supersede:
             fail("SEAL REFUSED: --reseal requires --supersede <prior-receipt-id> — a "
@@ -1359,6 +1373,46 @@ def cmd_selftest():
     """Fixture catalog: proves conductor, DAG, gates, parity, receipts —
     with zero real sources. Run anywhere."""
     with tempfile.TemporaryDirectory() as td:
+        # ── STALE-FREEZE REFUSE proof (KM 2026-08-04, s5_18): a seal must attest the bytes on disk.
+        # A legacy volume whose artifact has DRIFTED from its registered freeze_sha must be REFUSED.
+        _sf_key = os.path.join(td, "sealkey"); open(_sf_key, "w").write("x" * 40)
+        _sf_art = os.path.join(td, "sf.txt"); open(_sf_art, "w").write("DRIFTED bytes, not the frozen ones")
+        _sf_manifest = f"""
+volumes:
+  SF-01:
+    series: SF
+    stage: built-in-review
+    extrusion: none
+    artifact: {_sf_art}
+    freeze_sha: {sha256_text('the-registered-frozen-bytes')}
+"""
+        _sf_mpath = os.path.join(td, "sf_manifest.yaml"); open(_sf_mpath, "w").write(_sf_manifest)
+        _sf_saved = {k: os.environ.get(k) for k in
+                     ("PRESS_MANIFEST", "PRESS_RUNS_DIR", "PRESS_SEAL_KEY", "PRESS_PRINCIPAL")}
+        os.environ["PRESS_MANIFEST"] = _sf_mpath
+        os.environ["PRESS_RUNS_DIR"] = os.path.join(td, "sf_runs")
+        os.environ["PRESS_SEAL_KEY"] = _sf_key
+        os.environ["PRESS_PRINCIPAL"] = "SELFTEST"
+        _sf_refused = False
+        try:
+            cmd_seal("SF-01", word="ceremony-of-the-typed-word")
+        except SystemExit as e:
+            _sf_refused = bool(e.code)
+        for _k, _v in _sf_saved.items():
+            if _v is None:
+                os.environ.pop(_k, None)
+            else:
+                os.environ[_k] = _v
+        if not _sf_refused:
+            print("selftest: STALE-FREEZE ARTIFACT WAS SEALED — defect", file=sys.stderr)
+            return 1
+        # and the ledger must NOT carry a receipt for the refused seal
+        _sf_led = os.path.join(td, "sf_runs", "seal_ledger.jsonl")
+        if os.path.isfile(_sf_led) and open(_sf_led).read().strip():
+            print("selftest: REFUSED SEAL LEFT A RECEIPT — defect", file=sys.stderr)
+            return 1
+        print("selftest: stale-freeze seal refused, no receipt minted (attests bytes on disk) ✔")
+
         art_a, art_b = os.path.join(td, "a.txt"), os.path.join(td, "b.txt")
         manifest = f"""
 volumes:
