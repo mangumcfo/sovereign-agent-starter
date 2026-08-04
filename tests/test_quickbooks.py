@@ -12,7 +12,11 @@ from sovereign_agent.migration.quickbooks import (
     map_to_coa, opening_entry, receipted_cutover, QuickBooksError,
 )
 from sovereign_agent.financials.controlling import CoAError
-from sovereign_agent.financials.posting import UnbalancedPostingError
+from sovereign_agent.financials.posting import UnbalancedPostingError, trial_balance
+
+from _substrate import substrate_available  # noqa: E402  (F-1 GUARD, KM 2026-08-03)
+pytestmark = pytest.mark.skipif(not substrate_available(),
+    reason="breathline_primitives (sealed crypto substrate) absent — honest skip, not a broken clone")
 
 COA = {"ASSETS": {"parent": None}, "CASH": {"parent": "ASSETS"}, "AR": {"parent": "ASSETS"},
        "LIAB": {"parent": None}, "AP": {"parent": "LIAB"},
@@ -70,3 +74,15 @@ def test_source_root_order_independent():
     reordered = {k: QB_TB[k] for k in reversed(list(QB_TB))}     # same set, different order
     r2 = receipted_cutover("MIG-QB-5", reordered, MAP, COA)["source_root"]
     assert r1 == r2 and r1                                       # provenance depends on the SET, not the order
+
+
+def test_opening_posting_integrates_with_sealed_ledger():
+    """SPINE integration step (AA meta lane §3): the escape's opening balances are a first-class sealed-ledger
+    posting -- run receipted_cutover's opening posting back through the sealed ledger's own trial_balance projection
+    (financials.posting) and confirm it reconstitutes exactly the mapped chart, signed. This crosses the seam
+    migration.quickbooks -> financials.posting, so the posting-shape spine is proven in code, not on paper."""
+    rec = receipted_cutover("MIG-QB-SPINE", QB_TB, MAP, COA)
+    tb = trial_balance([rec["opening_posting"]])                 # the sealed ledger's own projection over the posting
+    assert tb == {"CASH": Decimal("1000"), "AR": Decimal("500"),
+                  "AP": Decimal("-300"), "RETAINED": Decimal("-1200")}   # == the mapped balances, net dr - cr
+    assert sum(tb.values(), Decimal("0")) == Decimal("0")        # and the opening trial balance balances by construction

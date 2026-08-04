@@ -11,6 +11,10 @@ from sovereign_agent.migration import (
     reconcile, assert_reconciled, manifest_root, open_migration, transition, cutover, MigrationError,
 )
 
+from _substrate import substrate_available  # noqa: E402  (F-1 GUARD, KM 2026-08-04 — merkle provenance needs the substrate)
+pytestmark = pytest.mark.skipif(not substrate_available(),
+    reason="breathline_primitives (sealed crypto substrate) absent — honest skip, not a broken clone")
+
 SOURCE = [{"id": "AR-1", "amount": "1000"}, {"id": "AR-2", "amount": "250.50"}, {"id": "AP-1", "amount": "-400"}]
 GOOD = [{"id": "AR-1", "amount": "1000"}, {"id": "AR-2", "amount": "250.50"}, {"id": "AP-1", "amount": "-400"}]
 

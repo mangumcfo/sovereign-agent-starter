@@ -12,6 +12,10 @@ from sovereign_agent.regulated import (
     lot_transition, release, TraceabilityError,
 )
 
+from _substrate import substrate_available  # noqa: E402  (F-1 GUARD, KM 2026-08-04 — merkle provenance needs the substrate)
+pytestmark = pytest.mark.skipif(not substrate_available(),
+    reason="breathline_primitives (sealed crypto substrate) absent — honest skip, not a broken clone")
+
 # A clean batch: 100 received at the warehouse, 40 moved to the line, 30 consumed into product.
 CLEAN = [
     receipt("LOT-1", "API-X", 100, "WH"),
