@@ -5,7 +5,7 @@ posting (procurement.ap_entry) composes the sealed double-entry posting invarian
 changing ap_entry's return shape, and that a tampered (unbalanced) entry is refused fail-closed."""
 from decimal import Decimal
 import pytest
-from sovereign_agent.financials import from_entry, post, UnbalancedPostingError
+from sovereign_agent.financials import from_entry, post, trial_balance, UnbalancedPostingError
 from sovereign_agent.procurement import three_way_match, ap_entry
 
 PO = {"po_id": "PO-9", "lines": [{"item": "plate", "quantity": "20", "unit_price": "15.00"}]}
@@ -33,11 +33,22 @@ def test_from_entry_is_a_pure_adapter_not_a_rewrite():
     assert entry == before                                 # emitter record untouched by the adapter
 
 
+def test_bridged_entry_nets_zero_in_trial_balance():
+    posting = from_entry(ap_entry(three_way_match(PO, GR, INV)))
+    tb = trial_balance([posting])                          # the bridged posting is ledger-ready
+    assert sum(tb.values(), Decimal("0")) == Decimal("0")  # a balanced posting nets to zero
+
+
 def test_unbalanced_entry_refused_fail_closed():
     tampered = {"invoice_id": "X", "debits": [{"account": "a", "amount": "100"}],
                 "credits": [{"account": "b", "amount": "90"}]}   # debits != credits
     with pytest.raises(UnbalancedPostingError):
         from_entry(tampered)
+
+
+def test_empty_entry_refused_fail_closed():
+    with pytest.raises(UnbalancedPostingError):
+        from_entry({"debits": [], "credits": []})          # empty posting — refused, not a no-op
 
 
 def test_from_entry_matches_hand_built_posting():
