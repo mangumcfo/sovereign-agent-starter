@@ -63,7 +63,7 @@ def govern_handoff(package: Mapping, *, approver: str, approval_ref: str) -> Dic
     if not str(approver).strip():
         raise HandoffError("generational handoff refused: a named human approver is required (no silent handoff)")
     if not str(approval_ref).strip():
-        raise HandoffError("generational handoff refused: a resolvable approval reference is required")
+        raise HandoffError("generational handoff refused: an approval reference naming the act is required")
     return {
         "handed_off": True,
         "package_root": (package.get("manifest") or {}).get("root"),
