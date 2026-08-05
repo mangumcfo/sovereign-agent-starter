@@ -15,9 +15,10 @@ a second master-data system:
     change that adds a field cannot silently corrupt intake), and two source fields mapping to one sovereign field
     with different values is a refused collision. Value-conserving: each mapped value crosses unchanged.
   * `ingest_record` turns the mapped payload into a sealed **object version** via `objects.identity.make_version`
-    (Sovereign Object Model) — authored, provenance-checked (a false source citation is refused), immutable,
-    version-hashed. The identity, authorship, and integrity are the object model's; this module adds only the
-    mapping.
+    (Sovereign Object Model) — authored, provenance-stamped (make_version refuses a missing author, and a
+    path-like source_ref that does not resolve; a symbolic standard citation is recorded as stated, not verified
+    against the standard), immutable, version-hashed. The identity, authorship, and integrity are the object
+    model's; this module adds only the mapping.
   * `ingest_standard` ingests a batch and anchors it to a **provenance root** (`objects.proofs.tree_root` over the
     version leaves) as receipted ingestion evidence — fail-closed: if *any* record drifts or lacks a natural key,
     the whole batch is refused (a partial ingest is a drifted ingest).
@@ -85,9 +86,11 @@ def ingest_record(
     drop: Sequence[str] = (),
 ) -> Dict[str, object]:
     """Map an external-standard record into a sealed sovereign OBJECT VERSION -- composing the Sovereign Object
-    Model (`object_id` + `make_version`). The mapped payload becomes an authored, provenance-checked, immutable,
-    version-hashed object version: `make_version` refuses a missing author or a false source citation (the
-    provenance law), so an ingested record carries who ingested it and from which standard, unfalsifiably. The
+    Model (`object_id` + `make_version`). The mapped payload becomes an authored, provenance-stamped, immutable,
+    version-hashed object version: `make_version` refuses a missing author, and a path-like source_ref that does
+    not resolve (the provenance law); a symbolic standard citation (e.g. an EDI/ISO profile name) is recorded as
+    stated, not verified against the standard. So an ingested record carries who ingested it and which standard it
+    cites, with honest authorship and tamper-evident integrity -- not a proof the cited standard is genuine. The
     sovereign identity is `cls_` + the record's natural key (from the mapped payload). No second master-data system:
     identity, authorship, provenance, and integrity are all the object model's."""
     payload = map_record(external, mapping, drop=drop)
