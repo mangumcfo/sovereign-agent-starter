@@ -13,8 +13,8 @@ Object Model and the human-gate convention, not by building a successor-packet e
     `build_packet` (Sovereign Object Model) into a self-verifying successor packet, which a successor validates from
     its own bytes on a machine holding none of the operator's systems.
   * `govern_handoff` -- the handoff is **fail-closed**: the successor package must VERIFY (composing the sealed
-    `verify_packet`) AND the handoff must be approved by a NAMED human (an approver + a resolvable approval
-    reference, the object model's own human-gate convention). A package that does not verify, or a handoff with no
+    `verify_packet`) AND the handoff must be approved by a NAMED human (an approver + a non-empty approval
+    reference naming the act, the object model's own human-gate convention). A package that does not verify, or a handoff with no
     human approval, is refused -- a business is not handed on on faith, and not without a human's assent.
 
 No successor-packet engine, no second object model -- only the handoff governance over the sealed floors. Pure
@@ -29,7 +29,7 @@ from ..objects.inheritance import build_packet, verify_packet
 
 class HandoffError(ValueError):
     """Raised when a generational handoff cannot proceed honestly: a successor package that does not verify, or a
-    handoff with no named human approver / no resolvable approval reference. Fail-closed -- a business is handed on
+    handoff with no named human approver / no approval reference naming the act. Fail-closed -- a business is handed on
     as proof through a human gate, or it is not handed on."""
 
 
@@ -47,8 +47,8 @@ def govern_handoff(package: Mapping, *, approver: str, approval_ref: str) -> Dic
 
       1. the successor package must VERIFY -- composing the sealed `verify_packet`, a pure check over the package's
          own bytes; a package that does not verify (a tampered or malformed successor packet) refuses the handoff;
-      2. the handoff must be approved by a NAMED human -- an `approver` and a resolvable `approval_ref` (the object
-         model's own human-gate convention, the same approver + approval reference a governed change carries); a
+      2. the handoff must be approved by a NAMED human -- an `approver` and a non-empty `approval_ref` naming the act
+         (the object model's own human-gate convention, the same approver + approval reference a governed change carries); a
          handoff with no named approver or no approval reference is refused.
 
     Only when the package verifies AND a human has approved does the handoff complete, returning a receipted result
