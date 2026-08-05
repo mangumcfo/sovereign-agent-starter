@@ -55,6 +55,9 @@ def test_bill_mandate_authorized_posts_balanced():
     assert res["invoice"]["total"] == Decimal("10000")
     p = res["posting"]
     assert p["balanced"] is True and Decimal(p["amount"]) == Decimal("10000")                                # balanced AR/revenue
+    # the posting is the canonical {lines} shape (composed from_entry -> post), AA meta lane §1 posting-shape law:
+    assert [ln["account"] for ln in p["lines"]] == ["1100-AR", "4000-Revenue"]
+    assert p["lines"][0]["debit"] == "10000" and p["lines"][1]["credit"] == "10000"
 
 
 def test_bill_mandate_barred_for_non_holder():
