@@ -34,7 +34,9 @@ from pathlib import Path
 
 import yaml
 
-GATE_REV = 9  # rev-9 (2026-07-30, D12 wired): + unhomed_forward — a forward marker must name a closing
+GATE_REV = 10  # rev-10 (2026-08-05): D12 _HOME_TOKEN also accepts the series-qualified public-ref home
+               # ("S6 Vol 7") mandated by PUBLIC REFERENCE DISCIPLINE, not only "S6-V7".
+              # rev-9 (2026-07-30, D12 wired): + unhomed_forward — a forward marker must name a closing
               # home within ~200 chars (volume id / spec / OPEN-DECISION:<owner> / named series) or KILL.
               # rev-8 (2026-07-29, s5_06 board 'gates vs bar separated'): + repeated_hinge (volume-wide
               # template-tell — a rhetorical question hinge reused >=3× ; calibrated 0-fire on published).
@@ -72,8 +74,10 @@ _FWD_MARKER = re.compile(
     r"|designed,?\s+not\s+yet\s+(?:built|running)|is designed,\s+not|\bnot yet built\b"
     r"|designed for tomorrow", re.I)
 _HOME_TOKEN = re.compile(
-    r"S\d+[-\s]?V?\d+|OPEN-DECISION\s*:\s*\w+|\b[\w/]+\.yaml\b|live-runtime cutover"
-    r"|Inter-Node|Zero-Trust|Series\s+\d", re.I)
+    r"S\d+[-\s]?V?\d+|S\d+\s+Vol\.?\s*\d+|OPEN-DECISION\s*:\s*\w+|\b[\w/]+\.yaml\b|live-runtime cutover"
+    r"|Inter-Node|Zero-Trust|Series\s+\d", re.I)  # S\d+\s+Vol\d+ = the series-qualified public-ref home
+    # format mandated by PUBLIC REFERENCE DISCIPLINE (KM 2026-08-05): reader-facing homes read "S6 Vol 7",
+    # not "S6-V7"; D12 must recognize the mandated form as a real closing home (gate_rev-10).
 
 
 def unhomed_forwards(text, window=200):
