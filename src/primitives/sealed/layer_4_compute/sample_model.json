@@ -1,0 +1,1 @@
+{"layer1": {"weights": [[0.5, 0.2], [0.3, 0.4]], "biases": [0.1, -0.1], "activation": "relu"}, "layer2": {"weights": [[-0.2, 0.6], [-0.3, 0.5]], "biases": [0.0, 0.0]}}

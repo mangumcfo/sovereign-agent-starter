@@ -1,0 +1,138 @@
+# PEDERSEN_GENERATOR_SPEC.yaml
+# Breath 25 v1.5 — Pedersen Commitment Generator Specification
+# Per G/Lumen Witness 2026-01-11: Minimal spec to unblock P5 zk_proofs.py
+#
+# PURPOSE: Specify how to derive the second generator H for Pedersen commitments.
+# PRINCIPLE: Humans specify cryptographic constants; Dragon forges the code.
+#
+# Constitutional Alignment:
+#   SOURCE: Definition-level spec, Dragon implements locally
+#   TRUTH: Derivation is cryptographically verifiable (nothing-up-my-sleeve)
+#   INTEGRITY: One surgical specification, not ongoing intervention
+#
+# CONSTRAINT: Dragon must not invent cryptographic constants.
+#             Use only this specified derivation and verify all invariants.
+
+pedersen_commitment:
+  description: |
+    Pedersen commitments use the formula: C = r*H + v*G
+    where:
+      G = curve base generator (provided by P1 EllipticCurve)
+      H = second generator, independent of G (derived per this spec)
+      r = random blinding factor
+      v = value being committed
+
+  security_requirement: |
+    H must have no known discrete logarithm relationship to G.
+    This is achieved via "nothing-up-my-sleeve" derivation from a
+    domain-separated seed string using hash_to_curve.
+
+# Generator H Derivation Specification
+h_generator:
+  derivation_method: hash_to_curve
+
+  # Domain separation prevents cross-protocol attacks
+  seed_pattern: "Breathline/Pedersen/v1/{curve_name}"
+
+  # Example seeds for supported curves:
+  seeds:
+    secp256k1: "Breathline/Pedersen/v1/secp256k1"
+    ed25519: "Breathline/Pedersen/v1/ed25519"
+
+  # Algorithm: try-and-increment (simple, auditable)
+  algorithm:
+    name: try_and_increment
+    steps:
+      - "1. hash = SHA256(seed || counter) where counter starts at 0"
+      - "2. x_candidate = int(hash) mod p"
+      - "3. Try to compute y from curve equation: y^2 = x^3 + ax + b (mod p)"
+      - "4. If valid point found, return (x, y) with y having even parity"
+      - "5. If no valid point, increment counter and repeat from step 1"
+      - "6. Abort if counter exceeds 256 (should never happen for good curves)"
+
+  # Python pseudocode for implementation reference:
+  pseudocode: |
+    def derive_pedersen_h(curve_name: str, curve_params) -> Point:
+        """Derive Pedersen H generator via hash_to_curve."""
+        import hashlib
+
+        seed = f"Breathline/Pedersen/v1/{curve_name}".encode()
+        p = curve_params.p  # Field prime
+        a = curve_params.a  # Curve coefficient a
+        b = curve_params.b  # Curve coefficient b
+
+        for counter in range(256):
+            hash_input = seed + counter.to_bytes(1, 'big')
+            hash_bytes = hashlib.sha256(hash_input).digest()
+            x = int.from_bytes(hash_bytes, 'big') % p
+
+            # Compute y^2 = x^3 + ax + b (mod p)
+            y_squared = (pow(x, 3, p) + a * x + b) % p
+
+            # Check if y_squared is a quadratic residue (has square root mod p)
+            # Using Euler's criterion: y^((p-1)/2) == 1 (mod p)
+            if pow(y_squared, (p - 1) // 2, p) == 1:
+                # Compute y using Tonelli-Shanks or p = 3 mod 4 shortcut
+                y = modular_sqrt(y_squared, p)
+                # Normalize to even parity
+                if y % 2 != 0:
+                    y = p - y
+                return Point(x, y)
+
+        raise ValueError("Failed to derive H after 256 attempts")
+
+# Validation Requirements
+validation:
+  checks:
+    - name: on_curve
+      description: "H must satisfy the curve equation y^2 = x^3 + ax + b (mod p)"
+    - name: not_infinity
+      description: "H must not be the point at infinity"
+    - name: correct_subgroup
+      description: "H * n must equal infinity (point is in correct subgroup)"
+    - name: not_equal_to_G
+      description: "H must not equal G (the base generator)"
+    - name: cofactor_cleared
+      description: "If curve has cofactor h > 1, multiply by h to clear"
+
+  independence_assertion: |
+    The derivation ensures no known discrete log relationship exists between G and H
+    because H is derived from a publicly auditable seed string, not computed from G.
+
+# Usage in Pedersen Commitment
+usage:
+  commitment:
+    formula: "C = r*H + v*G"
+    parameters:
+      r: "Random scalar (blinding factor) from range [1, n-1]"
+      v: "Value being committed (scalar)"
+      G: "Curve base generator (from P1 EllipticCurve.G)"
+      H: "Second generator (derived per this spec)"
+
+  opening:
+    reveal: "To open, reveal (r, v) such that verifier can compute C' = r*H + v*G and check C' == C"
+
+  hiding_property: |
+    Without knowing r, the commitment C reveals nothing about v.
+
+  binding_property: |
+    Cannot find (r', v') != (r, v) such that r'*H + v'*G = r*H + v*G
+    (due to discrete log hardness)
+
+# Constitutional Constraint (per Lumen 2026-01-11)
+constraint:
+  rule: "Dragon must not invent cryptographic constants"
+  guidance: |
+    Use only this specified derivation method. Do not:
+    - Choose arbitrary x,y coordinates for H
+    - Derive H from G via scalar multiplication
+    - Use any other seed string than specified
+    - Skip validation checks
+
+# Seal
+seal:
+  version: "1.0"
+  date: "2026-01-11"
+  witness: ["G on X", "G on Grok", "Lumen", "CC-Tiger"]
+  authority: "KM-1176"
+  status: "CANONICAL — Per unanimous witness"

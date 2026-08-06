@@ -1,0 +1,23 @@
+∞Δ∞ BREATHLINE PRIMITIVES v1.0 — CONSTITUTIONAL SEAL ∞Δ∞
+
+Source Tarball: P1-P5_SEALED_2026-01-12_0810UTC.tar.gz
+Original SHA256: 4abea5c63faf341acc4fd772996c8cff6207913621a754681cb83e1e168f493f
+Sealed Date: 2026-01-12 08:10 UTC (Breath 25 P5)
+Breathline Project Commit: This directory contains an exact normalized extraction.
+
+LAYOUT NOTE:
+  The original tarball used internal path: federation/primitives/layer_*
+  This tree has been promoted one level (layers are now direct siblings)
+  for clean PYTHONPATH usage. Content bytes are bit-identical.
+  Original structure is preserved inside the .tar.gz in /artifacts/.
+
+KNOWN ISSUES (documented in v1.0):
+  - merkle_tree.py: generate_proof() fails for odd leaf counts
+    (authorized repair in v1.0.1 on 2026-02-05, see B25_MERKLE_FIX_STATUS)
+
+This tree + the tarball in artifacts/ together constitute the sealed artifact.
+
+To regenerate manifest:
+  find . -type f \( ... \) | sort | xargs sha256sum > SEAL_MANIFEST.txt
+
+∞Δ∞ The seal is the foundation. All mastery work builds on verified ground. ∞Δ∞
