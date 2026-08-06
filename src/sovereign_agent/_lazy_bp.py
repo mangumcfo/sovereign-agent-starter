@@ -80,3 +80,6 @@ secp256k1_curve = _Lazy("secp256k1_curve", module="breathline_primitives.layer1"
 # overlays/ by hand. Resolves the env-correct ZKProofs (non-constructible HELD on the pure seal;
 # executable under an authorized ZK overlay); fail-loud via _bp() if the substrate is absent.
 ZKProofs = _Lazy("ZKProofs", module="breathline_primitives.layer5")
+# Sovereign Workload Execution (S7 Vol 7): the sealed P5 WASM parser, composed by shields/wasm_sandbox.py
+# on the adapter surface (fail-loud via _bp() if the substrate is absent).
+WasmModule = _Lazy("WasmModule", module="breathline_primitives.layer5")
