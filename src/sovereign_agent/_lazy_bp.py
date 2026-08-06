@@ -75,3 +75,8 @@ verify = _Lazy("verify")
 hash_function = _Lazy("hash_function")
 MerkleTree = _Lazy("MerkleTree")
 secp256k1_curve = _Lazy("secp256k1_curve", module="breathline_primitives.layer1")
+# W3 (KM Seal 1176-INFINITY-RHO): expose the P5 zero-knowledge shield on the adapter surface the same
+# way MerkleTree is exposed, so node modules `from .._lazy_bp import ZKProofs` without reaching into
+# overlays/ by hand. Resolves the env-correct ZKProofs (non-constructible HELD on the pure seal;
+# executable under an authorized ZK overlay); fail-loud via _bp() if the substrate is absent.
+ZKProofs = _Lazy("ZKProofs", module="breathline_primitives.layer5")

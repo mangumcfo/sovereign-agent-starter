@@ -54,11 +54,22 @@ from pathlib import Path
 # the label that must match what actually loaded. FAIL-LOUD (KM-1176, Seal 1176-INFINITY-RHO 2026-08-06):
 # an authorized mode whose overlay dir is MISSING RAISES, rather than silently loading the sealed original
 # under an authorized label.
+# Each capability maps opt-in mode values → (overlay dir, label). A later authorized version supersedes
+# an earlier one on the same env var (e.g. ZK v1.0.3 supersedes v1.0.2); the bare "authorized" value
+# selects the latest. Add a row when a new authorized overlay is vendored.
 _OVERLAYS = (
-    {"env": "BREATHLINE_MERKLE_MODE", "authorized": ("authorized-v1.0.1", "v1.0.1", "authorized"),
-     "dir": "v1.0.1-merkle-repair", "label": "authorized-v1.0.1"},
-    {"env": "BREATHLINE_ZK_MODE", "authorized": ("authorized-v1.0.2", "v1.0.2", "authorized"),
-     "dir": "v1.0.2-zk-repair", "label": "authorized-v1.0.2"},
+    {"env": "BREATHLINE_MERKLE_MODE", "variants": {
+        "authorized-v1.0.1": ("v1.0.1-merkle-repair", "authorized-v1.0.1 (B25 2026-02-05 Merkle repair)"),
+        "v1.0.1": ("v1.0.1-merkle-repair", "authorized-v1.0.1 (B25 2026-02-05 Merkle repair)"),
+        "authorized": ("v1.0.1-merkle-repair", "authorized-v1.0.1 (B25 2026-02-05 Merkle repair)"),
+    }},
+    {"env": "BREATHLINE_ZK_MODE", "variants": {
+        "authorized-v1.0.2": ("v1.0.2-zk-repair", "authorized-v1.0.2 (Pedersen+Schnorr; range HELD)"),
+        "v1.0.2": ("v1.0.2-zk-repair", "authorized-v1.0.2 (Pedersen+Schnorr; range HELD)"),
+        "authorized-v1.0.3": ("v1.0.3-zk-range", "authorized-v1.0.3 (Pedersen+Schnorr+Range)"),
+        "v1.0.3": ("v1.0.3-zk-range", "authorized-v1.0.3 (Pedersen+Schnorr+Range)"),
+        "authorized": ("v1.0.3-zk-range", "authorized-v1.0.3 (Pedersen+Schnorr+Range)"),  # latest
+    }},
 )
 
 
@@ -70,15 +81,17 @@ def active_overlays(root=None):
     active = []
     for ov in _OVERLAYS:
         mode = os.environ.get(ov["env"], "sealed").strip().lower()
-        if mode in ov["authorized"]:
-            d = root / "overlays" / ov["dir"]
+        variant = ov["variants"].get(mode)
+        if variant is not None:
+            dirname, label = variant
+            d = root / "overlays" / dirname
             if not d.is_dir():
                 raise RuntimeError(
                     f"BREATHLINE overlay FAIL-LOUD: {ov['env']}={mode!r} requests the "
-                    f"'{ov['label']}' authorized overlay, but {d} is MISSING. Refusing to load the "
+                    f"'{label}' authorized overlay, but {d} is MISSING. Refusing to load the "
                     f"sealed original under an authorized label — vendor the overlay directory or unset "
                     f"{ov['env']}.")
-            active.append((ov["env"], ov["label"], d))
+            active.append((ov["env"], label, d))
     return active
 
 

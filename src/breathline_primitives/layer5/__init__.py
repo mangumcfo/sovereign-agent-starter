@@ -18,7 +18,9 @@ __seal_date__ = "2026-01-12"
 _merkle_mode = os.environ.get("BREATHLINE_MERKLE_MODE", "sealed").strip().lower()
 _zk_mode = os.environ.get("BREATHLINE_ZK_MODE", "sealed").strip().lower()
 _merkle_overlay = _merkle_mode in ("authorized-v1.0.1", "v1.0.1", "authorized")
-_zk_overlay = _zk_mode in ("authorized-v1.0.2", "v1.0.2", "authorized")
+_zk_v103 = _zk_mode in ("authorized-v1.0.3", "v1.0.3", "authorized")
+_zk_v102 = _zk_mode in ("authorized-v1.0.2", "v1.0.2")
+_zk_overlay = _zk_v103 or _zk_v102
 
 # Merkle (mode-aware — the v1.0.1 overlay shadows merkle_tree.py when active)
 from merkle_tree import MerkleTree, hash_function
@@ -40,9 +42,12 @@ from homomorphic_ops import (
 from zk_proofs import ZKProofs
 from wasm_runtime import WasmModule
 
-__zk_source__ = ("authorized-v1.0.2 (B25 2026-08-06 authorized repair — Pedersen+Schnorr executable, range HELD)"
-                 if _zk_overlay
-                 else "sealed-v1.0 (pure 2026-01-12 constitutional snapshot; ZKProofs non-constructible — HELD)")
+if _zk_v103:
+    __zk_source__ = "authorized-v1.0.3 (B25 2026-08-06 — Pedersen+Schnorr+Range executable)"
+elif _zk_v102:
+    __zk_source__ = "authorized-v1.0.2 (B25 2026-08-06 — Pedersen+Schnorr executable, range HELD)"
+else:
+    __zk_source__ = "sealed-v1.0 (pure 2026-01-12 constitutional snapshot; ZKProofs non-constructible — HELD)"
 
 __all__ = [
     "MerkleTree",

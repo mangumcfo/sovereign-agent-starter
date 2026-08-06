@@ -18,6 +18,7 @@ SRC = REPO / "src"
 L1 = SRC / "primitives" / "sealed" / "layer_1_root"
 L5_SEALED = SRC / "primitives" / "sealed" / "layer_5_shields"
 ZK_OVERLAY = SRC / "overlays" / "v1.0.2-zk-repair"
+ZK_OVERLAY_V103 = SRC / "overlays" / "v1.0.3-zk-range"
 MERKLE_OVERLAY = SRC / "overlays" / "v1.0.1-merkle-repair"
 TARBALL = SRC / "artifacts" / "P1-P5_SEALED_2026-01-12_0810UTC.tar.gz"
 _SEALED_TARBALL_SHA16 = "4abea5c63faf341a"  # original Breath-25 P1-P5 seal
@@ -128,7 +129,9 @@ def test_overlay_label_matches_what_loads(monkeypatch):
     unset → the pure-seal label."""
     import breathline_primitives as bp  # noqa: PLC0415
     monkeypatch.setenv("BREATHLINE_ZK_MODE", "authorized-v1.0.2")
-    assert bp.overlay_label("BREATHLINE_ZK_MODE") == "authorized-v1.0.2"
+    assert bp.overlay_label("BREATHLINE_ZK_MODE").startswith("authorized-v1.0.2")
+    monkeypatch.setenv("BREATHLINE_ZK_MODE", "authorized-v1.0.3")
+    assert bp.overlay_label("BREATHLINE_ZK_MODE").startswith("authorized-v1.0.3")
     monkeypatch.delenv("BREATHLINE_ZK_MODE", raising=False)
     assert "sealed-v1.0" in bp.overlay_label("BREATHLINE_ZK_MODE")
 
@@ -150,3 +153,91 @@ def test_sealed_tarball_byte_exact():
     assert TARBALL.is_file()
     sha16 = hashlib.sha256(TARBALL.read_bytes()).hexdigest()[:16]
     assert sha16 == _SEALED_TARBALL_SHA16
+
+
+# ---- W1: range proof (v1.0.3) — completeness + mandatory soundness ------------------------------
+
+def _load_ZK_v103():
+    for m in ("zk_proofs", "point_ops", "finite_field", "keygen", "sign", "verify"):
+        sys.modules.pop(m, None)
+    saved = list(sys.path)
+    sys.path.insert(0, str(L1))
+    sys.path.insert(0, str(ZK_OVERLAY_V103))
+    try:
+        import zk_proofs  # noqa: PLC0415
+        return zk_proofs.ZKProofs
+    finally:
+        sys.path[:] = saved
+        for m in ("zk_proofs", "point_ops", "finite_field", "keygen", "sign", "verify"):
+            sys.modules.pop(m, None)
+
+
+def test_range_completeness_and_edges():
+    zk = _load_ZK_v103()("secp256k1")
+    for v in (0, 1, 100, 255):
+        C, r = zk.pedersen_commitment(v, 424242 + v)
+        pf = zk.range_proof(v, C, r, bits=8)
+        assert zk.verify_range_proof(C, pf) is True, f"in-range v={v} must verify"
+
+
+def test_range_out_of_range_prover_refuses():
+    zk = _load_ZK_v103()("secp256k1")
+    C, r = zk.pedersen_commitment(256, 7)
+    with pytest.raises(ValueError):  # no honest range proof exists for 256 in [0,256)
+        zk.range_proof(256, C, r, bits=8)
+
+
+def test_range_soundness_rejections():
+    import copy
+    zk = _load_ZK_v103()("secp256k1")
+    v, r = 100, 424242
+    C, _ = zk.pedersen_commitment(v, r)
+    pf = zk.range_proof(v, C, r, bits=8)
+    # wrong commitment
+    Cother, _ = zk.pedersen_commitment(101, r)
+    assert zk.verify_range_proof(Cother, pf) is False
+    # tampered bit-commitment
+    t1 = copy.deepcopy(pf); t1["bit_commitments"][0] = zk.curve.mul(2, zk.G)
+    assert zk.verify_range_proof(C, t1) is False
+    # tampered OR-proof response
+    t2 = copy.deepcopy(pf); t2["bit_proofs"][3]["s0"] = (t2["bit_proofs"][3]["s0"] + 1) % zk.n
+    assert zk.verify_range_proof(C, t2) is False
+    # wrong declared bit-width (a bits=9 proof must not verify as bits=8)
+    C9, r9 = zk.pedersen_commitment(300, 7)
+    pf9 = zk.range_proof(300, C9, 7, bits=9)
+    assert zk.verify_range_proof(C9, pf9) is True
+    assert zk.verify_range_proof(C9, pf9, bits=8) is False
+
+
+def test_range_threshold_form():
+    """v >= m proven as (v-m) in [0,2^bits) on C - m*G (the s5_38/s5_39 clears-minimum clause)."""
+    zk = _load_ZK_v103()("secp256k1")
+    v, m, r = 120, 100, 55
+    C, _ = zk.pedersen_commitment(v, r)
+    Cdiff = zk.curve.add(C, zk.curve.neg(zk.curve.mul(m, zk.G)))  # commits to (v-m) with same r
+    pf = zk.range_proof(v - m, Cdiff, r, bits=8)
+    assert zk.verify_range_proof(Cdiff, pf) is True   # 120 >= 100 clears
+    # a below-threshold value cannot honestly prove the difference is in range
+    with pytest.raises(ValueError):
+        zk.range_proof(90 - 100, zk.pedersen_commitment(90 - 100, r)[0], r, bits=8)
+
+
+# ---- W5: Paillier is PRESENT (retracts the false decrypt-defect flag) ---------------------------
+
+def test_paillier_present_roundtrip_and_homomorphic():
+    """Paillier encrypt/decrypt + additive-homomorphic works on the pure seal — the earlier
+    'decrypt fails' was a caller-side (private, public) unpack swap, not a substrate defect."""
+    import importlib
+    bp = importlib.import_module("breathline_primitives")
+    priv, pub = bp.generate_paillier_keys(bit_length=256)   # documented order: (private, public)
+    for v in (0, 1, 30, 12345):
+        assert bp.decrypt(priv, bp.encrypt(pub, v)) == v
+    csum = bp.add(pub, bp.encrypt(pub, 100), bp.encrypt(pub, 23))
+    assert bp.decrypt(priv, csum) == 123
+
+
+# ---- W3: adapter exposes ZKProofs like MerkleTree ----------------------------------------------
+
+def test_w3_lazy_bp_exposes_zkproofs():
+    from sovereign_agent import _lazy_bp  # noqa: PLC0415
+    assert hasattr(_lazy_bp, "ZKProofs")  # exposed on the adapter surface

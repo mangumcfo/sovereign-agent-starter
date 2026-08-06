@@ -1,0 +1,22 @@
+Overlay: v1.0.3-zk-range
+Created for: sas-public-genesis (in-tree P1-P5 substrate)
+Base Seal: P1-P5_SEALED_2026-01-12_0810UTC (SHA256 4abea5c6...)
+Supersedes: v1.0.2-zk-repair (adds the range proof)
+
+Files:
+  zk_proofs.py       — v1.0.2 (Pedersen+Schnorr, L1-aligned) + sound bit-decomposition range proof
+  AUTHORIZATION.txt  — provenance + authority (KM-1176 seal-touch 2026-08-06, W1)
+  PATCH_MANIFEST.txt — this file
+
+Activation:
+  BREATHLINE_ZK_MODE=authorized-v1.0.3
+
+Scope (executable after activation):
+  Pedersen commitment — PRESENT     Schnorr NIZK — PRESENT     Range proof — PRESENT (sound)
+
+Verification:
+  Pure seal (mode unset): ZKProofs non-constructible (HELD) — bytes unchanged, opt-in proven.
+  authorized-v1.0.2: Pedersen+Schnorr; range still HELD.
+  authorized-v1.0.3: + range PRESENT (completeness + soundness tested). bl-verify GREEN on all paths.
+
+Sovereign Constraint: never applied by default; operator opts in. Missing dir under this mode => FAIL-LOUD.

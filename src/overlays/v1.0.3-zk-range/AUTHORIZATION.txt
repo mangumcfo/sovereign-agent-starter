@@ -1,0 +1,33 @@
+∞Δ∞ AUTHORIZATION RECORD — B25 P5 ZK Range Proof (v1.0.3) ∞Δ∞
+
+Date of Repair: 2026-08-06
+Breath: 25 Phase 5 (Shields)
+Executor: Tiger (Sentinel / CC-Tiger)
+Authority: KM-1176 seal-touch (Seal 1176-INFINITY-RHO, W1) + G (greenlit)
+
+Supersedes: v1.0.2-zk-repair (which made ZKProofs construct + Pedersen/Schnorr execute).
+Adds: a correct, SOUND range proof — replacing range_proof's NotImplementedError.
+
+File Shadowed (overlay, sealed original NEVER mutated):
+  primitives/sealed/layer_5_shields/zk_proofs.py
+
+Construction (bit-decomposition + Schnorr-OR, Fiat-Shamir):
+  Prove value ∈ [0, 2^bits) for a Pedersen commitment C = value*G + randomness*H, no reveal:
+   - commit each bit  Ci = bi*G + ri*H, with Σ 2^i ri == randomness  (=> Σ 2^i Ci == C);
+   - per bit, a Schnorr OR-proof that Ci opens to 0 OR 1 (branches over base H: Ci, or Ci - G);
+   - verify: every bit OR-proof valid AND Σ 2^i Ci == C.
+  Built ONLY from primitives already PRESENT (Pedersen + Schnorr over the sealed L1 curve). No new L1.
+  Threshold "v ≥ m" = the range proof on the difference commitment C - m*G.
+
+Soundness (tested, mandatory): out-of-range prover REFUSES; a proof bound to a different commitment
+  rejects; a tampered bit-commitment rejects; a tampered OR-proof response rejects; a proof of the
+  wrong bit-width rejects. In-range (incl. edges 0 and 2^bits-1) accepts.
+
+API: pedersen_commitment / schnorr_sign / schnorr_verify unchanged from v1.0.2. range_proof now RETURNS
+  a proof object (was NotImplementedError); verify_range_proof(commitment, proof) checks it.
+
+Sealed-byte Integrity: primitives/sealed/ byte-exact; tarball 4abea5c6... + SEAL_MANIFEST unchanged.
+Activation (opt-in only): BREATHLINE_ZK_MODE=authorized-v1.0.3   (supersedes authorized-v1.0.2).
+Fail-loud: setup_paths() RAISES if this mode is requested but the overlay dir is missing.
+
+∞Δ∞ The seal remains pure. Evolution is explicit, authorized, and auditable. ∞Δ∞
