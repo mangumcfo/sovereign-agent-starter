@@ -49,14 +49,52 @@ import os
 import sys
 from pathlib import Path
 
+# Authorized repair overlays (opt-in ONLY; sealed originals under primitives/sealed/ are NEVER mutated).
+# Each entry: the env var that opts in, the values that count as authorized, the overlay directory, and
+# the label that must match what actually loaded. FAIL-LOUD (KM-1176, Seal 1176-INFINITY-RHO 2026-08-06):
+# an authorized mode whose overlay dir is MISSING RAISES, rather than silently loading the sealed original
+# under an authorized label.
+_OVERLAYS = (
+    {"env": "BREATHLINE_MERKLE_MODE", "authorized": ("authorized-v1.0.1", "v1.0.1", "authorized"),
+     "dir": "v1.0.1-merkle-repair", "label": "authorized-v1.0.1"},
+    {"env": "BREATHLINE_ZK_MODE", "authorized": ("authorized-v1.0.2", "v1.0.2", "authorized"),
+     "dir": "v1.0.2-zk-repair", "label": "authorized-v1.0.2"},
+)
+
+
+def active_overlays(root=None):
+    """[(env, label, dir_path)] for every overlay the operator opted into. FAIL-LOUD if an authorized
+    mode is requested but its overlay directory is missing — the label can never outrun what loaded.
+    `root` defaults to the substrate root (the dir holding overlays/ and primitives/); tests pass one."""
+    root = Path(root) if root is not None else Path(__file__).resolve().parents[1]
+    active = []
+    for ov in _OVERLAYS:
+        mode = os.environ.get(ov["env"], "sealed").strip().lower()
+        if mode in ov["authorized"]:
+            d = root / "overlays" / ov["dir"]
+            if not d.is_dir():
+                raise RuntimeError(
+                    f"BREATHLINE overlay FAIL-LOUD: {ov['env']}={mode!r} requests the "
+                    f"'{ov['label']}' authorized overlay, but {d} is MISSING. Refusing to load the "
+                    f"sealed original under an authorized label — vendor the overlay directory or unset "
+                    f"{ov['env']}.")
+            active.append((ov["env"], ov["label"], d))
+    return active
+
+
+def overlay_label(env: str) -> str:
+    """The source label for an overlay-gated component: its authorized label if active, else the pure
+    seal. Guaranteed accurate — active_overlays() fail-louds before this can mislabel."""
+    for e, label, _ in active_overlays():
+        if e == env:
+            return label
+    return "sealed-v1.0 (pure 2026-01-12 constitutional snapshot)"
+
+
 def setup_paths() -> None:
     root = Path(__file__).resolve().parents[1]
     sealed = root / "primitives" / "sealed"
-    overlay = root / "overlays" / "v1.0.1-merkle-repair"
-    mode = os.environ.get("BREATHLINE_MERKLE_MODE", "sealed-v1.0").lower()
-    paths = []
-    if mode in ("authorized-v1.0.1", "v1.0.1", "authorized") and overlay.exists():
-        paths.append(str(overlay))
+    paths = [str(d) for _, _, d in active_overlays()]  # overlays first — they shadow the sealed layer
     for layer in ["layer_1_root", "layer_2_trunk", "layer_3_comms", "layer_4_compute", "layer_5_shields"]:
         p = sealed / layer
         if p.exists():

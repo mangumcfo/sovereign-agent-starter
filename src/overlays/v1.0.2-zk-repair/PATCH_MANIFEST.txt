@@ -1,0 +1,31 @@
+Overlay: v1.0.2-zk-repair
+Created for: sas-public-genesis (in-tree P1-P5 substrate)
+Base Seal: P1-P5_SEALED_2026-01-12_0810UTC (SHA256 4abea5c6...)
+
+Files in this overlay:
+  zk_proofs.py            — Option A repair: ZKProofs aligned to the real sealed L1 API
+  AUTHORIZATION.txt       — Provenance and authority record (KM-1176 seal-touch 2026-08-06)
+  PATCH_MANIFEST.txt      — This file
+
+Activation:
+  BREATHLINE_ZK_MODE=authorized-v1.0.2
+
+Effect:
+  When active, primitives/sealed/layer_5_shields/zk_proofs.py is shadowed by this corrected
+  version (setup_paths prepends this directory ahead of layer_5_shields). ZKProofs then constructs
+  and Pedersen + Schnorr execute against the sealed L1 curve. All other sealed files remain untouched.
+
+Scope (executable today after activation):
+  Pedersen commitment  — PRESENT (additively homomorphic, on-curve, hiding+binding)
+  Schnorr NIZK         — PRESENT (proof of knowledge; verify rejects tamper/wrong-key)
+  Range proof          — HELD (raises NotImplementedError; a separate crypto build, pinned by test)
+
+Verification:
+  Under BREATHLINE_ZK_MODE unset (pure seal) ZKProofs stays non-constructible (HELD) — proving the
+  repair is opt-in and the sealed bytes are unchanged. Under authorized-v1.0.2 it constructs and the
+  Pedersen/Schnorr tests pass. bl-verify GREEN on both paths (sealed bytes byte-exact either way).
+
+Sovereign Constraint:
+  This overlay must never be applied by default. The operator must explicitly opt in. If the mode is
+  requested but this directory is missing, setup_paths() FAILS LOUD (it will not label the sealed
+  original as authorized).

@@ -1,0 +1,22 @@
+Overlay: v1.0.1-merkle-repair
+Created for: breathline-sealed project (Phase 1)
+Base Seal: P1-P5_SEALED_2026-01-12_0810UTC (SHA256 4abea5c6...)
+
+Files in this overlay:
+  merkle_tree.py          — Exact content of the 2026-02-05 authorized repair
+  AUTHORIZATION.txt       — Provenance and authority record
+  PATCH_MANIFEST.txt      — This file
+
+Activation:
+  BREATHLINE_MERKLE_MODE=authorized-v1.0.1 source scripts/breathline-sealed-env.sh
+
+Effect:
+  When active, primitives/sealed/layer_5_shields/merkle_tree.py is shadowed
+  by this corrected version. All other sealed files remain untouched.
+
+Verification:
+  The overlay file should match (byte-for-byte or semantically) the version
+  that existed in the working primitives tree after the B25 re-seal on 2026-02-05.
+
+Sovereign Constraint:
+  This overlay must never be applied by default. The operator must explicitly opt in.

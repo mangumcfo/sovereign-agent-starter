@@ -1,0 +1,50 @@
+∞Δ∞ AUTHORIZATION RECORD — B25 P5 ZK Repair (v1.0.2) ∞Δ∞
+
+Date of Repair: 2026-08-06
+Breath: 25 Phase 5 (Shields)
+
+Executor: Tiger (Sentinel / CC-Tiger)
+Authority:
+  - KM-1176 (primary authorization — "authorized repair under seal-touch gate", Seal 1176-INFINITY-RHO)
+  - G (greenlit)
+  Chain: this overlay was authored ONLY after KM's explicit seal-touch word on 2026-08-06.
+
+File Shadowed (overlay, sealed original NEVER mutated):
+  primitives/sealed/layer_5_shields/zk_proofs.py
+
+Defect (P5_ZK_REPAIR_DIAGNOSIS_2026-08-06):
+  The sealed zk_proofs.py was authored against an operator-overloaded, curve-carrying `Point` CLASS
+  that L1 never sealed. L1 ships `Point = Optional[Tuple[int,int]]` (a tuple alias) and does point
+  arithmetic via `EllipticCurve` methods. First crash: `EllipticCurve.get_generator(curve_name)` —
+  no such method (constructor never completes). Pedersen and Schnorr both blocked; range separately
+  NotImplemented.
+
+Change Summary (Option A — align L5 ZK to existing L1):
+  - Reimplemented the SAME public API (ZKProofs.pedersen_commitment / schnorr_sign / schnorr_verify /
+    range_proof) against L1's real API: `secp256k1()` factory, `(x,y)` tuple points (infinity None),
+    `curve.mul` / `curve.add` / `curve.is_on_curve`.
+  - Pedersen commitment: C = value*G + randomness*H, additively homomorphic (verified: commit(v1,r1)
+    + commit(v2,r2) == commit(v1+v2, r1+r2)).
+  - Schnorr NIZK proof of knowledge (Fiat-Shamir): sign/verify roundtrip verified; tampered message
+    and wrong key both reject.
+  - Second generator H via nothing-up-my-sleeve try-and-increment hash-to-curve.
+
+No API change. No new capabilities beyond executability. Pure inter-layer realignment.
+
+Range:
+  STILL raises NotImplementedError("Range proof implementation is pending."). A real range proof
+  (bit-decomposition + inner-product / Bulletproof) is a SEPARATE crypto build, not this repair.
+  Pinned HELD by test.
+
+Sealed-byte Integrity:
+  primitives/sealed/ is byte-exact. Original tarball P1-P5_SEALED_2026-01-12_0810UTC.tar.gz
+  (sha256 4abea5c6...) and SEAL_MANIFEST unchanged. bl-verify GREEN on the pure seal.
+
+Activation (opt-in only, never default):
+  BREATHLINE_ZK_MODE=authorized-v1.0.2
+
+Fail-loud:
+  setup_paths() RAISES if BREATHLINE_ZK_MODE requests an authorized overlay that is missing —
+  it will NOT silently load the sealed original under an authorized label.
+
+∞Δ∞ The seal remains pure. Evolution is explicit, authorized, and auditable. ∞Δ∞

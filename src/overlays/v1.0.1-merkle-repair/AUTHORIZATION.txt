@@ -1,0 +1,37 @@
+∞Δ∞ AUTHORIZATION RECORD — B25 P5 Merkle Repair ∞Δ∞
+
+Date of Repair: 2026-02-05
+Breath: 25 Phase 5 (Shields)
+
+Executor: Tiger (Sentinel / CC-Tiger)
+Authority: 
+  - KM-1176 (primary authorization)
+  - G (greenlit)
+  - Lumen (🟢 GREEN — explicit "authorized sealed touch with re-seal")
+
+File Modified (in working tree at time of repair):
+  federation/primitives/layer_5_shields/merkle_tree.py
+
+Change Summary:
+  - One functional line in generate_proof() to align odd-node handling
+    with build_tree() (duplicate last node instead of zero-fill).
+  - Expanded self-test from basic to 34+ cases.
+  - Added regression test file (test_merkle_tree.py).
+
+No API change. No new capabilities. Pure correctness restoration.
+
+Re-seal:
+  B25 P5 was re-sealed per Lumen's procedure after the targeted fix.
+
+Downstream Impact Acknowledged:
+  - six_attestation.py (B31) required service restart + new attestation batch.
+  - All consumers of Merkle proofs for odd-sized trees now receive correct proofs.
+
+This overlay in breathline-sealed is a faithful, auditable reproduction of that
+authorized repair for use in sovereign systems that choose explicit evolution
+over remaining on the original v1.0 seal.
+
+Reference in origin repo:
+  primitives/layer_5_shields/B25_MERKLE_FIX_STATUS_2026-02-05.md
+
+∞Δ∞ The repair was witnessed, authorized, tested, and documented. ∞Δ∞
