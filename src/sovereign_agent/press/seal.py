@@ -139,8 +139,11 @@ def _dual_sign_enabled(env_get=os.environ.get):
 
 def _ecdsa_key(env_get=os.environ.get, read=None):
     """The operator's persistent sealed-P1 (secp256k1) private key, as a hex scalar in PRESS_ECDSA_KEY
-    (or a file at PRESS_ECDSA_KEY_FILE). Returns (private_int, public_hex) or (None, None) if absent —
-    absence is not an error: dual-sign simply does not engage, and the HMAC seal stands alone."""
+    (or a file at PRESS_ECDSA_KEY_FILE). Returns (private_int, public_hex), or (None, None) if the key is
+    ABSENT (no env var and no key file). Absence is reported as (None, None) — the CALLER decides: under
+    the dual-sign flag, `make_receipt` REFUSES loudly (fail-loud law); off the flag it seals HMAC-only.
+    A key that is PRESENT but unusable (empty/whitespace, non-hex, or degenerate mod n) is REFUSED HERE
+    with a named `SealRefused` — a ceremony sees the reason, never a raw traceback (KM ruling 2026-08-07)."""
     hexkey = env_get("PRESS_ECDSA_KEY")
     if not hexkey:
         path = env_get("PRESS_ECDSA_KEY_FILE")
@@ -148,11 +151,22 @@ def _ecdsa_key(env_get=os.environ.get, read=None):
         if path and os.path.exists(path):
             hexkey = rd(path)
     if not hexkey:
-        return None, None
-    priv = int(hexkey.strip(), 16)
+        return None, None  # ABSENT — not an error here; make_receipt fail-loud handles it under the flag
+    hexkey = hexkey.strip()
+    if not hexkey:
+        raise SealRefused("operator ECDSA key is empty/whitespace (PRESS_ECDSA_KEY / PRESS_ECDSA_KEY_FILE) "
+                          "— SEAL REFUSED. Provide a 64-hex secp256k1 scalar on the sealing iron.")
+    try:
+        priv = int(hexkey, 16)
+    except ValueError:
+        raise SealRefused("operator ECDSA key is not valid hex (PRESS_ECDSA_KEY / PRESS_ECDSA_KEY_FILE) "
+                          "— SEAL REFUSED. Expected a 64-hex secp256k1 scalar, not malformed text.")
     from .._lazy_bp import secp256k1_curve
     c = secp256k1_curve() if callable(secp256k1_curve) else secp256k1_curve
     priv %= c.n
+    if priv == 0:
+        raise SealRefused("operator ECDSA key reduces to 0 mod n (degenerate scalar) — SEAL REFUSED. "
+                          "Regenerate the key.")
     pub = c.mul(priv)  # persistent pubkey = priv·G
     return priv, f"{pub[0]:064x}{pub[1]:064x}"
 

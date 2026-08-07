@@ -63,6 +63,24 @@ def test_sig_scheme_reported_dual_when_on(monkeypatch):
     assert S.receipt_sig_scheme(rec) == "hmac+ecdsa-secp256k1"
 
 
+def test_malformed_key_refused_by_name_not_traceback(monkeypatch):
+    # B-11 (KM 2026-08-07): a PRESENT-but-unusable key is a named SealRefused, never a raw ValueError.
+    monkeypatch.setenv("PRESS_DUAL_SIGN", "1")
+    for bad in ("not-hex-zzzz", "   ", "\n\t "):
+        monkeypatch.setenv("PRESS_ECDSA_KEY", bad)
+        with pytest.raises(S.SealRefused):
+            S.make_receipt("s8_test", "w", "a", "e1", None, _HMAC_KEY, "KM-1176")
+
+
+def test_malformed_key_file_refused_by_name(monkeypatch, tmp_path):
+    monkeypatch.setenv("PRESS_DUAL_SIGN", "1")
+    monkeypatch.delenv("PRESS_ECDSA_KEY", raising=False)
+    kf = tmp_path / "ecdsa_key"; kf.write_text("   \n")  # whitespace-only key file
+    monkeypatch.setenv("PRESS_ECDSA_KEY_FILE", str(kf))
+    with pytest.raises(S.SealRefused):
+        S.make_receipt("s8_test", "w", "a", "e1", None, _HMAC_KEY, "KM-1176")
+
+
 # ---- ON: a new receipt is dual-signed, HMAC + receipt_sha256 UNCHANGED ------------------------
 
 def test_dual_signed_receipt_carries_ecdsa(monkeypatch):
