@@ -69,29 +69,32 @@ def test_material_dispose_without_a_gate_is_denied(tmp_path):
 
 # ---- LGP Watch: render read-only, never run or optimize --------------------------------------
 
-def test_lgp_watch_renders_yield_state_read_only():
+def test_lgp_watch_renders_attributed_state_read_only():
     ck = compose_cockpit(token_set=_TOKENS)
-    yield_state = {"amm_pool": {"reserve_a": 1000, "reserve_b": 2000}, "payout_schedule": "monthly",
-                   "recirc_allocation": 0.15}
-    view = ck.lgp_watch(yield_state)
-    assert view.content["amm_pool"] == {"reserve_a": 1000, "reserve_b": 2000}
-    assert view.content["recirc_allocation"] == 0.15
+    attributed_state = {"alignment_posture": "aligned", "attributed_value": 1250,
+                        "component_scores": {"families_first": 0.92}}
+    view = ck.lgp_watch(attributed_state)
+    assert view.content["alignment_posture"] == "aligned"
+    assert view.content["attributed_value"] == 1250
 
 
 def test_lgp_watch_does_not_mutate_the_state():
     ck = compose_cockpit(token_set=_TOKENS)
-    state = {"amm_pool": {"reserve_a": 1000}}
+    state = {"component_scores": {"families_first": 0.92}}
     view = ck.lgp_watch(state)
-    view.content["amm_pool"]["reserve_a"] = 0  # mutating the rendered view
-    assert state == {"amm_pool": {"reserve_a": 1000}}  # the source economic state is untouched
+    view.content["component_scores"]["families_first"] = 0.0  # mutating the rendered view
+    assert state == {"component_scores": {"families_first": 0.92}}  # the source state is untouched
 
 
-def test_cockpit_does_not_import_a_yield_engine():
+def test_cockpit_imports_only_the_operator_layer_and_no_engine():
     # LGP Watch DISPLAYS the objective; the cockpit never runs/optimizes an engine — it imports none.
     from sovereign_agent.sovereign_ux import cockpit as ck
-    src = open(ck.__file__).read()
-    assert "amm_pool" not in src.replace("amm-pool", "")  # no import of the AMM engine (prose 'amm-pool' ok)
-    assert "payout_engine" not in src and "import" not in src.split("yield_organism")[0].split("\n")[-1]
+    import_lines = [ln for ln in open(ck.__file__).read().splitlines()
+                    if ln.strip().startswith(("from ", "import ")) and "__future__" not in ln]
+    joined = " ".join(import_lines)
+    assert "yield_organism" not in joined  # composes the alignment surface by rendering a supplied snapshot, not by import
+    assert "amm_pool" not in joined and "payout_engine" not in joined and "economic_actions" not in joined
+    assert all(mod in joined for mod in (".lens", ".tokens", ".gate_interaction"))  # composes V01/V02/V03 only
 
 
 # ---- composition boundary: composes V01/V02/V03 ----------------------------------------------

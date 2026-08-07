@@ -9,15 +9,17 @@ volumes and the sealed floors — it owns nothing, hosts nothing, and holds no a
   * **propose / dispose** an action **only through the V02 breath-gate** (`gate_interaction`) — the
     cockpit has NO direct write path; every state change is a human-gated, mandate-scoped disposition
     in the ledger-backed constitutional gate.
-  * **lgp_watch** — render the node's economic-value state (from `yield_organism`) **READ-ONLY**: it
-    DISPLAYS the objective (amm-pool state, payout schedule, recirculation allocation), and never runs
-    or optimizes the engines. Display only.
+  * **lgp_watch** — render the node's **attributed-value / alignment** state **READ-ONLY**: it
+    DISPLAYS the objective (the alignment posture and the attributed value the node's `yield_organism`
+    `alignment_scorer` surface reports), and never runs or optimizes any engine. Display only — the
+    caller supplies the read-only snapshot; the cockpit invokes no engine.
 
 Kill-targets: **composes, never owns** — no hosted control plane, no second authority, writes only
 through V02's gate, and **LGP Watch displays the objective, never optimizes it autonomously.** Books
 `playbook_loader` (the inbox) and `universal_sovereign_node` (the core) at their first home. Composes
-V01 Lens · V02 Breath-Gate · V03 apply_tokens · `yield_organism` (read-only) · Compliance & Audit
-(S5 Vol 16, via the gate) · the mandate scope (S5 Vol 28, via the Lens). **Rolls no cryptography.**
+V01 Lens · V02 Breath-Gate · V03 apply_tokens · the in-tree `yield_organism` `alignment_scorer`
+surface (read-only) · Compliance & Audit (S5 Vol 16, via the gate) · the mandate scope (S5 Vol 28,
+via the Lens). **Rolls no cryptography.**
 """
 from __future__ import annotations
 
@@ -61,15 +63,15 @@ class Cockpit:
         return dispose(self._require_ledger(), obligation_id, **kw)
 
     # ── LGP Watch: render the economic-value state READ-ONLY; never run or optimize ─────────────
-    def lgp_watch(self, yield_state: Mapping[str, Any], *, mandate: Optional[str] = None) -> View:
-        """Render a READ-ONLY snapshot of the node's economic-value state (from `yield_organism` —
-        amm-pool state, payout schedule, recirculation allocation) through the governed tokens.
+    def lgp_watch(self, attributed_state: Mapping[str, Any], *, mandate: Optional[str] = None) -> View:
+        """Render a READ-ONLY snapshot of the node's **attributed-value / alignment** state (as the
+        in-tree `yield_organism` `alignment_scorer` surface reports it) through the governed tokens.
 
-        The caller supplies the state snapshot; the cockpit **renders** it and returns a read-only
-        Lens View. It DISPLAYS the objective; it does not run the AMM, execute a payout, or optimize
-        anything — there is no path here that invokes a `yield_organism` engine.
+        The caller supplies the read-only snapshot; the cockpit **renders** it and returns a read-only
+        Lens View. It DISPLAYS the objective — the alignment posture and the attributed value — and it
+        does not run or optimize anything: there is no path here that invokes an engine.
         """
-        return apply_tokens(dict(yield_state), self.token_set, mandate=mandate)
+        return apply_tokens(dict(attributed_state), self.token_set, mandate=mandate)
 
     def _require_ledger(self):
         if self.ledger is None:
