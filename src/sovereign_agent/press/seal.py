@@ -127,6 +127,11 @@ def sign(rec, key):
 #    PRESS_DUAL_SIGN. History is never touched: old receipts carry no ecdsa fields and verify by HMAC
 #    exactly as before; new receipts additionally carry a public-verifiable ECDSA signature over the
 #    SAME canonical body. Verifying an ECDSA link needs only the public key (verify_public). ─────────
+class SealRefused(Exception):
+    """A seal was requested under conditions that would silently understate the record — refused
+    loudly rather than sealed weaker than asked (KM ruling 2026-08-07: fail-loud, not fallback)."""
+
+
 def _dual_sign_enabled(env_get=os.environ.get):
     """CR-2 first use ONLY on KM's cutover word — off by default; the press never waits on CR-2."""
     return str(env_get("PRESS_DUAL_SIGN", "")).strip().lower() in ("1", "true", "yes", "on")
@@ -210,13 +215,28 @@ def make_receipt(volume, word, artifact_sha, edition, prior_hash, key, principal
     # CR-2 dual-sign: add a public-verifiable sealed-P1 ECDSA over the SAME canonical body, ONLY when
     # the cutover flag is set AND an operator ECDSA key is present. The fields are excluded from
     # _canonical, so neither the HMAC signature nor receipt_sha256 (already computed) changes.
+    # FAIL-LOUD (KM ruling 2026-08-07): once the cutover flag is set, a MISSING operator key is a
+    # REFUSAL, not a silent HMAC-only fallback — sealing weaker than the flag asked would understate
+    # the record. (The graceful-fallback behavior is retired: PRESS_DUAL_SIGN set ⇒ a key is required.)
     if _dual_sign_enabled():
         priv, pub_hex = _ecdsa_key()
-        if priv is not None:
-            rec["sig_scheme"] = "hmac+ecdsa-secp256k1"
-            rec["ecdsa_pubkey"] = pub_hex
-            rec["ecdsa_signature"] = _ecdsa_sign(_canonical(rec), priv)
+        if priv is None:
+            raise SealRefused(
+                "PRESS_DUAL_SIGN is set but no operator ECDSA key is present "
+                "(PRESS_ECDSA_KEY or PRESS_ECDSA_KEY_FILE) — SEAL REFUSED. A dual-sign seal was "
+                "requested; sealing HMAC-only under the dual-sign flag would silently understate the "
+                "record. Provide the operator ECDSA key on the sealing iron, or unset PRESS_DUAL_SIGN "
+                "to seal HMAC-only deliberately.")
+        rec["sig_scheme"] = "hmac+ecdsa-secp256k1"
+        rec["ecdsa_pubkey"] = pub_hex
+        rec["ecdsa_signature"] = _ecdsa_sign(_canonical(rec), priv)
     return rec
+
+
+def receipt_sig_scheme(rec):
+    """The signature scheme of a receipt for console reporting — 'hmac+ecdsa-secp256k1' when a receipt
+    carries a dual-signature, else 'hmac-only'. The console prints this on EVERY seal (KM ruling)."""
+    return rec.get("sig_scheme", "hmac-only")
 
 
 def verify_chain(chain, key):

@@ -1304,9 +1304,12 @@ def cmd_seal(vol_id, word=None, verify=False, reseal=False, supersede=None):
     who, perr = sealmod.principal()
     if perr:
         fail(f"SEAL REFUSED: {perr}")
-    rec = sealmod.make_receipt(vol_id, word, vol["freeze_sha"],
-                              vol.get("stage", "unknown"), prior, key, who,
-                              supersedes=supersede if reseal else None)
+    try:
+        rec = sealmod.make_receipt(vol_id, word, vol["freeze_sha"],
+                                  vol.get("stage", "unknown"), prior, key, who,
+                                  supersedes=supersede if reseal else None)
+    except sealmod.SealRefused as e:
+        fail(f"SEAL REFUSED: {e}")  # fail-loud (KM ruling): dual-sign set + no key ⇒ refuse, never fall back
     os.makedirs(runs_root, exist_ok=True)
     with open(ledger, "a", encoding="utf-8") as f:
         f.write(json.dumps(rec, sort_keys=True) + "\n")
@@ -1328,6 +1331,7 @@ def cmd_seal(vol_id, word=None, verify=False, reseal=False, supersede=None):
               "nothing was rewritten or deleted")
     print(f"  artifact {rec['artifact_sha256'][:16]} · chained to "
           f"{rec['prior_receipt_sha256'] or '(genesis)'}")
+    print(f"  sig_scheme {sealmod.receipt_sig_scheme(rec)}")  # printed on EVERY seal (KM ruling): hmac-only vs hmac+ecdsa
     print("  the Press did not seal this; you did.")
     return 0
 

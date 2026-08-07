@@ -39,12 +39,28 @@ def test_dual_sign_off_by_default(monkeypatch):
     assert rec["signature"] and rec["receipt_sha256"]  # HMAC seal stands alone
 
 
-def test_enabled_but_no_key_does_not_engage(monkeypatch):
+def test_enabled_but_no_key_is_refused_loudly(monkeypatch):
+    # FAIL-LOUD (KM ruling 2026-08-07): the graceful HMAC-only fallback is retired — PRESS_DUAL_SIGN
+    # set with no operator key REFUSES the seal with a named reason rather than sealing weaker.
     monkeypatch.setenv("PRESS_DUAL_SIGN", "1")
     monkeypatch.delenv("PRESS_ECDSA_KEY", raising=False)
     monkeypatch.delenv("PRESS_ECDSA_KEY_FILE", raising=False)
+    with pytest.raises(S.SealRefused) as ei:
+        S.make_receipt("s8_test", "w", "a", "e1", None, _HMAC_KEY, "KM-1176")
+    assert "SEAL REFUSED" in str(ei.value) and "PRESS_ECDSA_KEY" in str(ei.value)
+
+
+def test_sig_scheme_reported_hmac_only_when_off(monkeypatch):
+    # the console prints sig_scheme on EVERY seal; an HMAC-only receipt reports 'hmac-only'
+    monkeypatch.delenv("PRESS_DUAL_SIGN", raising=False)
     rec = S.make_receipt("s8_test", "w", "a", "e1", None, _HMAC_KEY, "KM-1176")
-    assert "ecdsa_signature" not in rec  # absence of a key is not an error; HMAC alone
+    assert "sig_scheme" not in rec  # history parity: HMAC-only receipts carry no sig_scheme field
+    assert S.receipt_sig_scheme(rec) == "hmac-only"  # but the console reports it
+
+
+def test_sig_scheme_reported_dual_when_on(monkeypatch):
+    rec = _mk(monkeypatch, dual=True)
+    assert S.receipt_sig_scheme(rec) == "hmac+ecdsa-secp256k1"
 
 
 # ---- ON: a new receipt is dual-signed, HMAC + receipt_sha256 UNCHANGED ------------------------
