@@ -105,14 +105,68 @@ def read_word(prompt, opener=None):
     return word, None
 
 
+# Fields excluded from the signed payload: the receipt's own signature/id fields AND the CR-2
+# dual-sign fields (added AFTER the HMAC + receipt_sha256, so they change neither). Both the HMAC
+# and the ECDSA sign this identical canonical body — the ECDSA is an independent second signature
+# over the same payload, so HMAC-only history verifies exactly as before.
+_UNSIGNED_FIELDS = ("signature", "receipt_sha256", "sig_scheme", "ecdsa_pubkey", "ecdsa_signature")
+
+
 def _canonical(rec):
-    """Signed payload = the receipt minus its own signature fields, canonically ordered."""
-    body = {k: v for k, v in rec.items() if k not in ("signature", "receipt_sha256")}
+    """Signed payload = the receipt minus its own signature/id fields, canonically ordered."""
+    body = {k: v for k, v in rec.items() if k not in _UNSIGNED_FIELDS}
     return json.dumps(body, sort_keys=True, separators=(",", ":")).encode()
 
 
 def sign(rec, key):
     return hmac.new(key, _canonical(rec), hashlib.sha256).hexdigest()
+
+
+# ── CR-2 dual-sign (KM cutover-conditional, 2026-08-07): sealed-P1 ECDSA ALONGSIDE the HMAC chain.
+#    Gated OFF by default — the press seals on current (HMAC-only) law until KM's cutover word sets
+#    PRESS_DUAL_SIGN. History is never touched: old receipts carry no ecdsa fields and verify by HMAC
+#    exactly as before; new receipts additionally carry a public-verifiable ECDSA signature over the
+#    SAME canonical body. Verifying an ECDSA link needs only the public key (verify_public). ─────────
+def _dual_sign_enabled(env_get=os.environ.get):
+    """CR-2 first use ONLY on KM's cutover word — off by default; the press never waits on CR-2."""
+    return str(env_get("PRESS_DUAL_SIGN", "")).strip().lower() in ("1", "true", "yes", "on")
+
+
+def _ecdsa_key(env_get=os.environ.get, read=None):
+    """The operator's persistent sealed-P1 (secp256k1) private key, as a hex scalar in PRESS_ECDSA_KEY
+    (or a file at PRESS_ECDSA_KEY_FILE). Returns (private_int, public_hex) or (None, None) if absent —
+    absence is not an error: dual-sign simply does not engage, and the HMAC seal stands alone."""
+    hexkey = env_get("PRESS_ECDSA_KEY")
+    if not hexkey:
+        path = env_get("PRESS_ECDSA_KEY_FILE")
+        rd = read or (lambda p: open(p).read())
+        if path and os.path.exists(path):
+            hexkey = rd(path)
+    if not hexkey:
+        return None, None
+    priv = int(hexkey.strip(), 16)
+    from .._lazy_bp import secp256k1_curve
+    c = secp256k1_curve() if callable(secp256k1_curve) else secp256k1_curve
+    priv %= c.n
+    pub = c.mul(priv)  # persistent pubkey = priv·G
+    return priv, f"{pub[0]:064x}{pub[1]:064x}"
+
+
+def _ecdsa_sign(canonical_bytes, priv):
+    """Sign the canonical receipt body with the sealed-P1 ECDSA, returning the signature as hex."""
+    from .._lazy_bp import sign as _p1_sign
+    return _p1_sign(priv, canonical_bytes).to_hex()
+
+
+def _ecdsa_verify(canonical_bytes, sig_hex, pub_hex):
+    """Verify an ECDSA receipt signature PUBLIC-ONLY — the public key alone, no secret. Returns bool."""
+    try:
+        from .._lazy_bp import verify as _p1_verify
+        from breathline_primitives.layer1 import ECDSASignature  # sealed-P1 signature type
+        pub = (int(pub_hex[:64], 16), int(pub_hex[64:128], 16))
+        return bool(_p1_verify(pub, canonical_bytes, ECDSASignature.from_hex(sig_hex)))
+    except Exception:
+        return False
 
 
 def load_chain(ledger_path):
@@ -153,6 +207,15 @@ def make_receipt(volume, word, artifact_sha, edition, prior_hash, key, principal
                        "as history: the record is corrected by appending, never by rewriting.")
     rec["signature"] = sign(rec, key)
     rec["receipt_sha256"] = hashlib.sha256(_canonical(rec)).hexdigest()[:16]
+    # CR-2 dual-sign: add a public-verifiable sealed-P1 ECDSA over the SAME canonical body, ONLY when
+    # the cutover flag is set AND an operator ECDSA key is present. The fields are excluded from
+    # _canonical, so neither the HMAC signature nor receipt_sha256 (already computed) changes.
+    if _dual_sign_enabled():
+        priv, pub_hex = _ecdsa_key()
+        if priv is not None:
+            rec["sig_scheme"] = "hmac+ecdsa-secp256k1"
+            rec["ecdsa_pubkey"] = pub_hex
+            rec["ecdsa_signature"] = _ecdsa_sign(_canonical(rec), priv)
     return rec
 
 
@@ -170,6 +233,35 @@ def verify_chain(chain, key):
                          "content altered after sealing, or signed with a different key")
         prior = rec.get("receipt_sha256")
     return fails
+
+
+def verify_public(chain):
+    """PUBLIC-ONLY verification of the chain (CR-2) — no HMAC secret required.
+
+    Verifies the prior-hash linkage for every receipt, and the sealed-P1 ECDSA signature for every
+    receipt that carries one (`ecdsa_signature`), using only its embedded public key. Returns a dict:
+      {failures: [...], public_verified: n, hmac_only: n}
+    An HMAC-only (pre-cutover) receipt is NOT a failure — its linkage is checked and it is counted as
+    `hmac_only` (publicly unverifiable by design; verify it with the key via verify_chain). A receipt
+    that carries an ECDSA signature which does not verify against its own public key IS a failure.
+    """
+    failures, public_verified, hmac_only = [], 0, 0
+    prior = None
+    for i, rec in enumerate(chain):
+        if rec.get("prior_receipt_sha256") != prior:
+            failures.append(f"receipt {i} ({rec.get('volume')}): chain break — "
+                            f"prior {rec.get('prior_receipt_sha256')!r}, expected {prior!r}")
+        sig_hex, pub_hex = rec.get("ecdsa_signature"), rec.get("ecdsa_pubkey")
+        if sig_hex and pub_hex:
+            if _ecdsa_verify(_canonical(rec), sig_hex, pub_hex):
+                public_verified += 1
+            else:
+                failures.append(f"receipt {i} ({rec.get('volume')}): ECDSA signature invalid — "
+                                "content altered after sealing, or signed with a different key")
+        else:
+            hmac_only += 1
+        prior = rec.get("receipt_sha256")
+    return {"failures": failures, "public_verified": public_verified, "hmac_only": hmac_only}
 
 
 def latest_for(chain, volume):
