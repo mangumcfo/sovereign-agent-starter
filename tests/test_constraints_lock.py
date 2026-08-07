@@ -16,17 +16,28 @@ from pathlib import Path
 
 CONSTRAINTS = Path(__file__).resolve().parents[1] / "constraints.txt"
 
-_PIN = re.compile(r"^\s*([A-Za-z0-9._-]+)\s*==\s*([A-Za-z0-9._-]+)\s*$")
+# A pin line: `name==version`, optionally ending in a ` \` line-continuation when the
+# pin carries pip `--hash=` artifact bindings (CR-6 hash-lock, adopted 2026-08-07).
+_PIN = re.compile(r"^\s*([A-Za-z0-9._-]+)\s*==\s*([A-Za-z0-9._-]+)\s*(?:\\\s*)?$")
+# A hash-lock continuation line: `--hash=sha256:<64 hex>`, optionally ` \`-continued.
+# These are legitimate CR-6 artifact bindings, not junk — skipped, not parsed as pins.
+_HASH = re.compile(r"^\s*--hash=sha256:[0-9a-fA-F]{64}\s*(?:\\\s*)?$")
 
 
 def _pins():
-    """Parse exact (==) pins from constraints.txt, ignoring comments and blanks."""
+    """Parse exact (==) pins from constraints.txt, ignoring comments, blanks, and CR-6
+    `--hash=` artifact-binding continuation lines. Semantics are UNCHANGED — every pin is
+    still a name==version, still asserted == the installed version below; the only new thing
+    tolerated is pip's hash-lock format (` \\` continuations + `--hash=` lines)."""
     out = {}
     for line in CONSTRAINTS.read_text(encoding="utf-8").splitlines():
         if line.lstrip().startswith("#") or not line.strip():
             continue
+        if _HASH.match(line):          # CR-6 hash-lock continuation — legitimate, not a pin
+            continue
         m = _PIN.match(line)
-        assert m, f"constraints.txt line is not an exact == pin: {line!r}"
+        assert m, (f"constraints.txt line is neither a name==version pin nor a "
+                   f"--hash=sha256 continuation: {line!r}")
         out[m.group(1)] = m.group(2)
     return out
 
