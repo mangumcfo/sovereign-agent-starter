@@ -43,10 +43,32 @@ class DiscourseRefused(Exception):
 DISCOURSE_BREACH_FIELDS = frozenset({
     "engagement_engine", "recommendation_engine", "ranking_engine", "engagement_score", "attention_score",
     "virality_engine", "outrage_optimizer", "engagement_optimizer", "addiction_loop",
-    "discourse_authority", "platform_authority", "second_authority",
+    "discourse_authority", "platform_authority", "second_authority", "reach_authority", "audience_owner",
+    "moderation_authority", "content_authority",
     "ownership_transfer", "platform_ownership", "rent_audience",
     "held_value", "custody", "seal_key", "press_key", "sealing_key",
 })
+
+# Fence-breadth (S13 Wave A · KM/GB): root-token probes. Any field NAME containing one of these roots is an
+# attention-capture attempt, refused even under a novel variant name (engagement_ranker, virality_score,
+# recommendation_feed, attention_farm, doomscroll_loop, rage_bait_score, watch_time_optimizer, …). This
+# broadens the explicit set above by substring root, so a synthetic in-node engine cannot evade the fence by
+# renaming its field. Additive — it only ever refuses MORE, never less (the sealed V01 claim holds, stronger).
+ATTENTION_CAPTURE_ROOTS = frozenset({
+    "engagement", "virality", "viral_", "recommendation", "recommender", "outrage", "addiction", "addictive",
+    "clickbait", "doomscroll", "attention_farm", "attention_capture", "dark_pattern", "rage_bait", "ragebait",
+    "hook_loop", "infinite_scroll", "watch_time", "time_on_platform", "algo_feed", "algofeed", "attention_score",
+})
+
+__all__ += ["ATTENTION_CAPTURE_ROOTS"]
+
+
+def _is_attention_capture(name: str) -> bool:
+    kl = str(name).lower()
+    return (kl in ("engagement_engine", "recommendation_engine", "ranking_engine", "engagement_score",
+                   "attention_score", "virality_engine", "outrage_optimizer", "engagement_optimizer",
+                   "addiction_loop")
+            or any(r in kl for r in ATTENTION_CAPTURE_ROOTS))
 
 
 def _dfence(mapping: Optional[Mapping[str, Any]], where: str) -> None:
@@ -56,18 +78,18 @@ def _dfence(mapping: Optional[Mapping[str, Any]], where: str) -> None:
             raise DiscourseRefused(
                 f"a sovereign-discourse act must carry no press/seal key field ('{k}') — a voice is the "
                 f"author's own, never the press seal key")
-        if kl in ("engagement_engine", "recommendation_engine", "ranking_engine", "engagement_score",
-                  "attention_score", "virality_engine", "outrage_optimizer", "engagement_optimizer",
-                  "addiction_loop"):
+        if _is_attention_capture(kl):
             raise DiscourseRefused(
                 f"discovery must carry no attention-capture engine field ('{k}') — content is meaning-ranked "
                 f"by the AUTHOR'S OWN declared rule, never an in-node engagement / recommendation / virality "
-                f"engine that optimizes for outrage or addiction (the kill-target of the attention economy)")
+                f"engine that optimizes for outrage or addiction (the kill-target of the attention economy); "
+                f"the broadened fence refuses any field carrying an attention-capture root, under any name")
         if kl in DISCOURSE_BREACH_FIELDS:
             raise DiscourseRefused(
                 f"a sovereign-discourse act must carry no second-authority / ownership-transfer / custody "
                 f"field ('{k}') — the platform carries the artifact, never the ownership; the voice is the "
-                f"author's own, and no second discourse authority stands over it (money-path OFF)")
+                f"author's own, and no second discourse / reach / moderation authority stands over it (money-"
+                f"path OFF)")
 
 
 # --- Voice as sovereign node output (Ch 2) -----------------------------------------------------------------

@@ -111,6 +111,16 @@ def test_the_fence_refuses_second_authority_ownership_transfer_and_seal_key(tmp_
     assert {"second_authority", "ownership_transfer", "held_value"} <= DISCOURSE_BREACH_FIELDS
 
 
+def test_broadened_attention_capture_fence_refuses_novel_variant_names():
+    # S13 Wave A fence-breadth: a synthetic in-node engine cannot evade the fence by renaming its field.
+    from sovereign_agent.discourse.sovereign_voice import ATTENTION_CAPTURE_ROOTS
+    for bad in ("engagement_ranker", "virality_score", "recommendation_feed", "attention_farming",
+                "doomscroll_loop", "rage_bait_score", "watch_time_optimizer", "algo_feed_ranker"):
+        with pytest.raises(DiscourseRefused):
+            meaning_rank([{"id": "a", "meaning": 0.5, bad: 1}], meaning_key="meaning")
+    assert {"engagement", "virality", "recommendation", "doomscroll"} <= ATTENTION_CAPTURE_ROOTS
+
+
 def test_composes_the_sealed_governed_record_surface_only():
     import sovereign_agent.discourse.sovereign_voice as m
     src = pathlib.Path(m.__file__).read_text()
