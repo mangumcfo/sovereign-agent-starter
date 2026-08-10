@@ -58,17 +58,29 @@ ATTENTION_CAPTURE_ROOTS = frozenset({
     "engagement", "virality", "viral_", "recommendation", "recommender", "outrage", "addiction", "addictive",
     "clickbait", "doomscroll", "attention_farm", "attention_capture", "dark_pattern", "rage_bait", "ragebait",
     "hook_loop", "infinite_scroll", "watch_time", "time_on_platform", "algo_feed", "algofeed", "attention_score",
+    "feed_optimizer", "feed_ranker", "feed_engine", "feed_algorithm", "growth_hack", "vanity_metric",
+    "follower_farm", "amplification",
 })
+
+# Compound-root patch (S13 V04 · KM/GB): a synthetic engine can hide behind a compound name like `feed_optimizer`,
+# `feed_ranker`, `feed_boost`, `growth_engine`, `vanity_optimizer`. Refuse any field where a CARRIER root (feed /
+# growth / vanity / follower / audience) co-occurs with an OPTIMIZE root (optim / rank / engine / algo / boost /
+# amplif / maximiz / farm) — the feed_* family and its kin, under any token.
+_CARRIER_ROOTS = ("feed", "growth", "vanity", "follower", "audience", "attention")
+_OPTIMIZE_ROOTS = ("optim", "rank", "engine", "algo", "boost", "amplif", "maximiz", "farm", "hack")
 
 __all__ += ["ATTENTION_CAPTURE_ROOTS"]
 
 
 def _is_attention_capture(name: str) -> bool:
     kl = str(name).lower()
-    return (kl in ("engagement_engine", "recommendation_engine", "ranking_engine", "engagement_score",
-                   "attention_score", "virality_engine", "outrage_optimizer", "engagement_optimizer",
-                   "addiction_loop")
-            or any(r in kl for r in ATTENTION_CAPTURE_ROOTS))
+    if kl in ("engagement_engine", "recommendation_engine", "ranking_engine", "engagement_score",
+              "attention_score", "virality_engine", "outrage_optimizer", "engagement_optimizer", "addiction_loop"):
+        return True
+    if any(r in kl for r in ATTENTION_CAPTURE_ROOTS):
+        return True
+    # compound: a carrier root co-occurring with an optimize root (feed_optimizer, growth_engine, vanity_ranker…)
+    return any(c in kl for c in _CARRIER_ROOTS) and any(o in kl for o in _OPTIMIZE_ROOTS)
 
 
 def _dfence(mapping: Optional[Mapping[str, Any]], where: str) -> None:

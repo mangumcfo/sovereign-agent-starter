@@ -121,6 +121,18 @@ def test_broadened_attention_capture_fence_refuses_novel_variant_names():
     assert {"engagement", "virality", "recommendation", "doomscroll"} <= ATTENTION_CAPTURE_ROOTS
 
 
+def test_compound_root_fence_refuses_the_feed_optimizer_family():
+    # S13 V04 compound-root patch: a carrier root (feed/growth/vanity/follower) + an optimize root, under any token.
+    for bad in ("feed_optimizer", "feed_ranker", "feed_boost", "growth_engine", "vanity_ranker",
+                "follower_farm", "audience_maximizer", "feed_algorithm"):
+        with pytest.raises(DiscourseRefused):
+            meaning_rank([{"id": "a", "meaning": 0.5, bad: 1}], meaning_key="meaning")
+    # legitimate carrier-only fields (no optimize root) are NOT compound-caught
+    ok = meaning_rank([{"id": "a", "meaning": 0.7}, {"id": "b", "meaning": 0.9, "audience_note": "x"}],
+                      meaning_key="meaning")
+    assert [it["id"] for it in ok] == ["b", "a"]
+
+
 def test_composes_the_sealed_governed_record_surface_only():
     import sovereign_agent.discourse.sovereign_voice as m
     src = pathlib.Path(m.__file__).read_text()
