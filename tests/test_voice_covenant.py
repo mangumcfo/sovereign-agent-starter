@@ -19,6 +19,7 @@ import pathlib
 import pytest
 
 from sovereign_agent.objects.registry import ObjectRegistry
+from sovereign_agent.compliance.human_approval_gate import HumanApprovalGate
 from sovereign_agent.discourse.sovereign_voice import publish_voice
 from sovereign_agent.discourse.voice_covenant import (
     assemble_voice_covenant, VoiceCovenant, verify_covenant_element,
@@ -65,6 +66,10 @@ def test_verify_covenant_element_dispatches_by_kind(tmp_path):
     assert verify_covenant_element({"records": recs}, "asset", AUTHOR) is True
     reach_el = {"receipt": recs[0]["receipt"], "platforms": ["alpha", "beta"], "content_ref": recs[0]["content_ref"]}
     assert verify_covenant_element(reach_el, "reach", AUTHOR) is True   # V2: carried, ownership retained
+    gov_el = {"statement_class": "high_impact_claim", "work_ref": "stmt-1", "gate": HumanApprovalGate(),
+              "at": AT, "author_name": NAME, "source_ref": "s", "registry": reg,
+              "approver": "km-1176", "approval_ref": "b:1"}
+    assert verify_covenant_element(gov_el, "governance", AUTHOR) is True  # V3: load+fork constitution + human gate
     with pytest.raises(DiscourseRefused):                              # an invented element kind is refused
         verify_covenant_element({"records": recs}, "royalty_engine", AUTHOR)
 

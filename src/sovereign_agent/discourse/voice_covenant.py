@@ -31,7 +31,9 @@ from .sovereign_voice import (                                                  
     verify_voice, DiscourseRefused, DISCOURSE_BREACH_FIELDS, _is_attention_capture as _is_attn,
 )
 from .advanced_reach import multi_platform_reach                                        # S13 V2 (sealed)
-from .voice_governance import reputation_from_receipts                                  # S13 V3 (sealed)
+from .voice_governance import (                                                         # S13 V3 (sealed)
+    reputation_from_receipts, load_voice_constitution, fork_voice_constitution, govern_expression,
+)
 from .sustainable_voice import (                                                        # S13 V4 (sealed)
     assemble_voice_system, voice_as_asset, SUSTAINABLE_BREACH_FIELDS,
 )
@@ -44,7 +46,7 @@ COVENANT_BREACH_FIELDS = SUSTAINABLE_BREACH_FIELDS | frozenset({
     "voice_dynasty", "media_dynasty", "discourse_trust", "voice_custodian", "covenant_authority", "legacy_broker",
 })
 
-_COVENANT_KINDS = ("voice", "reach", "reputation", "system", "asset")
+_COVENANT_KINDS = ("voice", "reach", "governance", "reputation", "system", "asset")
 
 
 def _cfence(mapping: Optional[Mapping[str, Any]]) -> None:
@@ -129,6 +131,17 @@ def verify_covenant_element(element: Mapping[str, Any], kind: str, author: str, 
     if k == "reach":
         reach = multi_platform_reach(element["receipt"], element["platforms"], element["content_ref"])
         return bool(reach) and all(s.ownership_retained for s in reach)      # V2: carried, ownership retained
+    if k == "governance":
+        # V3 living governance: the author's own constitution (loaded or given), forked as a living revision
+        # (Ch 2 versioning), gates the consequential expression through the sealed human gate.
+        cls = str(element["statement_class"])
+        con = element.get("constitution") or load_voice_constitution(author, gated_classes=[cls])  # V3
+        con = fork_voice_constitution(con, str(element.get("revision", "rev-1")), add_gated=[cls])  # V3 versioning
+        decision = govern_expression(con, cls, author, element["work_ref"], gate=element["gate"],   # V3 human gate
+                                     at=element["at"], author_name=element["author_name"],
+                                     source_ref=element["source_ref"], registry=element["registry"],
+                                     approver=element.get("approver"), approval_ref=element.get("approval_ref"))
+        return decision.get("mandate") == author
     if k == "reputation":
         return reputation_from_receipts(author, element["records"]).intact   # V3
     if k == "system":
