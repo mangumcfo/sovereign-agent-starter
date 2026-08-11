@@ -182,8 +182,12 @@ def run_onboard(keystore_dir: Optional[str], *, prompter: Callable[[OnboardTurn]
     principal = name
     if uat and str(principal).strip() == "KM-1176":
         raise OnboardError("a UAT onboard must not use the sovereign principal KM-1176")
+    # The fifth turn is recorded ON the signed record (AA P1-F1): append its marker and fold the WHOLE 5-turn
+    # sequence into the signed body, so the node's signature attests turns 1–5, not just 1–4.
+    turns.append({"turn": 5, "kind": "receipt", "disposition": "receipt_emitted"})
     body = _receipt_body(node_id, name, nodekey.fingerprint, gated_acts, first_act, first_gate,
                          uat, principal, at)
+    body["turns"] = turns                                                            # the 5-turn sequence is INSIDE the signed payload
     payload = json.dumps(body, sort_keys=True).encode("utf-8")
     signature = sign_node_act(keystore_dir, node_id, payload)                        # self-attested with the node's own key
     verify_instructions = (
@@ -196,8 +200,8 @@ def run_onboard(keystore_dir: Optional[str], *, prompter: Callable[[OnboardTurn]
         f"  assert k.fingerprint == {json.dumps(nodekey.fingerprint)}\n"
         f"  assert verify_node_act(k.public_hex, payload, {json.dumps(signature)}) is True\n"
         "Your identity is your key's fingerprint. If the two asserts pass, the receipt is genuinely yours.")
-    row = dict(body, signature=signature, signed_payload=payload.hex(), turns=turns, writes=writes,
-               receipt_kind="onboard")
+    row = dict(body, signature=signature, signed_payload=payload.hex(), writes=writes,
+               receipt_kind="onboard")                                              # body already carries the 5 turns
     receipt_path = _append_local_receipt(keystore_dir, row)                          # local log, NEVER the seal ledger
     _wrote(5, "onboard_receipt")
     return OnboardReceipt(node_id=node_id, node_name=name, fingerprint=nodekey.fingerprint,

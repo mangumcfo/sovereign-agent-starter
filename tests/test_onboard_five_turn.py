@@ -68,6 +68,18 @@ def test_five_turns_in_order_and_every_write_traced(tmp_path):
     assert r.first_gate["status"] == "approved" and r.first_gate.get("real") is True   # sealed gate, real disposition
 
 
+def test_fifth_turn_is_on_the_signed_record(tmp_path):
+    # AA P1-F1: the receipt (turn 5) itself is folded into the SIGNED payload, so the node's signature
+    # attests all five turns, not just 1–4. Verification still passes; a tampered turn breaks it.
+    ks = str(tmp_path / "ks")
+    disp = {"accept": True, "name": "node-a", "edit_set": ["send_value"], "gate": "approved"}
+    r = run_onboard(ks, prompter=_scripted(disp, keystore_dir=ks), at=AT, uat=True)
+    body = json.loads(bytes.fromhex(r.signed_payload))
+    assert [t["turn"] for t in body["turns"]] == [1, 2, 3, 4, 5]        # the fifth turn is on the signed record
+    assert any(t["turn"] == 5 and t["kind"] == "receipt" for t in body["turns"])
+    assert len(r.turns) == 5 and verify_onboard_receipt(r, ks) is True  # signature covers the 5-turn sequence
+
+
 def test_receipt_verifies_offline_without_the_ai(tmp_path):
     ks = str(tmp_path / "ks")
     disp = {"accept": True, "name": "node-a", "edit_set": list(DEFAULT_GATED_ACTS), "gate": "deny"}
