@@ -1,11 +1,10 @@
 # Reading path — Series 0–4 (book ≠ module · S0–1 teach · S2–4 spec‑bearing / callable)
 
 > **These are books you read.** **Book ≠ module** — reading a book runs nothing; the executable node is the code
-> in this repository (`github.com/mangumcfo/sovereign-agent-starter`). But the *series* are **not** all teach‑only:
-> Series 0–1 are teaching, while **Series 2–4 have real callable paths in the starter** — each volume's runtime
-> classification (**RUN / RUN‑partial / teach**) is in the deposited **`S2_S4_CALLABLE_MAP`**, per KM's tier
-> ruling (no blanket flattening to teach‑only). To *run* the node, see `RUN_THE_NODE.md`. Nothing here is a
-> security, a token, a yield product, or an investment offering.
+> in this repository (`github.com/mangumcfo/sovereign-agent-starter`). The series are **not** all teach‑only:
+> **Series 0–1 teach**, while **Series 2–4 have real callable code in the node** — each volume's classification
+> (**RUN** or **RUN‑partial**) and its module path are shown below. To *run* the node, see `RUN_THE_NODE.md`.
+> Nothing here is a security, a token, a yield product, or an investment offering.
 
 The foundational arc, in reading order. Each series is named by its full title (Series‑N full‑name law).
 
@@ -18,14 +17,14 @@ The executive on‑ramp: why sovereignty, and the vocabulary. Read for the *idea
 Twelve role‑based playbooks (CFO/finance, executives, leading agents, supply chain, HR, compliance, sales,
 manufacturing, multi‑agent, scaling, M&A diligence, agentic enterprise). Practical *how‑to‑think*, not runtime.
 
-## Series 2 — Building the Agentic Harness · *the book teaches; the code runs — V1 RUN, V2–V5 RUN‑partial (CALLABLE_MAP)*
+## Series 2 — Building the Agentic Harness · *the book teaches; the code runs — V1 RUN, V2–V5 RUN‑partial*
 Not teaching‑only: every volume has a callable path on the starter. Vol 1 Sovereign Inference & Memory **(RUN —
 `inference/primitives.py`, Merkle memory)** · Vol 2 The Primacy Cockpit **(RUN‑partial — `node_api/`)** · Vol 3
 Governed Dev Loop & Self‑Building Harness **(RUN‑partial — `playbook_loader`/`role_binder`)** · Vol 4 Federation &
 Partner Device Gateway **(RUN‑partial — `node_api/routes/relay.py`)** · Vol 5 Yield Organism & Generational
 Prosperity **(RUN‑partial — `economy/`, `estate/`)**.
 
-## Series 3 — Programmable Sovereign ERP · *the book teaches; the code runs — V1–V2 RUN, V3–V4 RUN‑partial (CALLABLE_MAP)*
+## Series 3 — Programmable Sovereign ERP · *the book teaches; the code runs — V1–V2 RUN, V3–V4 RUN‑partial*
 Not teaching‑only: the programmable‑ERP design the running stack implements. Vol 1 Immutable Core **(RUN —
 `objects/registry.py` hash‑chained object model)** · Vol 2 Programmable Governance Skin **(RUN —
 `compliance/human_approval_gate.py`)** · Vol 3 Helix — The Book Writes the Backend **(RUN‑partial — co‑extrusion
