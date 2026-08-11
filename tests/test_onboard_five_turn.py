@@ -109,6 +109,23 @@ def test_uat_receipt_is_flagged_local_and_never_in_a_seal_ledger(tmp_path):
                                            keystore_dir=ks, node_id="node2"), at=AT, uat=True, node_id="node2")
 
 
+def test_no_silent_key_mint_on_any_fresh_path():
+    # A2 (Phase 3): no fresh entry path mints a key without the turn-1 accept. The only generate_node_key on a
+    # human path is inside run_onboard, AFTER the accept. cli_create_node routes the fresh path to the onboard;
+    # the core __main__ demo refuses + points at the onboard rather than minting.
+    import sovereign_agent.core as core
+    import sovereign_agent.universal_sovereign_node as usn
+    core_src = pathlib.Path(core.__file__).read_text()
+    usn_src = pathlib.Path(usn.__file__).read_text()
+    # the __main__ demo must not mint silently
+    main_block = core_src.split('if __name__ == "__main__":', 1)[1]
+    assert "generate_node_key" not in main_block, "core __main__ must not silently mint a key"
+    assert "cli_onboard" in main_block or "onboard" in main_block, "core __main__ should point at the onboard"
+    # cli_create_node's fresh path routes to the human onboard (no silent mint)
+    cli_block = usn_src.split("def cli_create_node", 1)[1].split("\ndef ", 1)[0]
+    assert "cli_onboard" in cli_block and "generate_node_key" not in cli_block
+
+
 def test_onboard_flow_imports_no_network():
     # OFFLINE: the onboard module pulls in no socket/requests/urllib/http client — turns 1–5 need no cloud.
     # Check for real network CODE (imports/calls), not the descriptive prose ("no telemetry") in the docstring.

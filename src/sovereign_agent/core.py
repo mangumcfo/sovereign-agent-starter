@@ -356,13 +356,17 @@ class SovereignAgent:
 
 # Quick demo
 if __name__ == "__main__":
-    # Explicit onboarding (Phase 0): mint the durable self-held key once if absent, then boot load-only.
+    # A2 (Phase 3): NO silent key mint on any fresh path. This demo LOADS the durable key and, if there is none,
+    # refuses and points at the human onboard (which mints only after the turn-1 accept) — it never mints here.
     import os as _os
-    from datetime import datetime as _dt, timezone as _tz
     _ksd = _os.environ.get("NODE_KEYSTORE_DIR")
     if not has_node_key(_ksd, "LGP-Prototype"):
-        generate_node_key(_ksd, "LGP-Prototype", at=_dt.now(_tz.utc).isoformat())
-    agent = SovereignAgent("LGP-Prototype", keystore_dir=_ksd)
+        print("No durable self-held key for 'LGP-Prototype'. This demo will NOT mint one silently.\n"
+              "Onboard first (a key is written only after you accept at turn 1):\n"
+              "  python3 -c \"from sovereign_agent.onboarding.onboard import cli_onboard; "
+              "cli_onboard(node_id='LGP-Prototype')\"")
+        raise SystemExit(1)
+    agent = SovereignAgent("LGP-Prototype", keystore_dir=_ksd)   # load-only; fail-loud if absent
     result = agent.act("Develop antifragile multi-generational wealth strategy")
     print(result)
     print("Current Memory Root:", agent.get_memory_root())
