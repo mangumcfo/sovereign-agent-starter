@@ -55,7 +55,7 @@ python -m sovereign_agent.press seal <vol> --word "<the word>"   # the human sea
 sealed. The two human gates ahead are the **AA board** (the binding reader/parity judgement)
 and the **KM seal** (`cmd_seal → read_word`, a word typed at a keyboard — the same law as §1).
 
-**The cycle gate order (`gate_rev`, stamped on every cycle receipt — S5 ran rev-9):**
+**The cycle gate order (`gate_rev`, stamped on every cycle receipt — Full Production ERP (S5) ran rev-9):**
 
 1. **adversary L0** — deterministic, no model: weasel lexicon · ungated present-tense
    accomplishment (a runs-today claim must be backed by the card's `runs_today`) · full-name
@@ -82,7 +82,7 @@ A cycle PASS requires all four in order; a FAIL never advances (nothing settles,
 board-package step (`board_stage1.continuity_check_assembled`) scans D12 over the **whole
 rendered interior** — receipts and Cast-&-Canon apparatus included — so a fully-homed volume
 reads **0 unhomed forwards end to end**, not merely per card. Any unhomed marker STOPs the
-package. (Guardrail added 2026-08-01; the S5 board packages pass it at 0.)
+package. (Guardrail added 2026-08-01; the Full Production ERP (S5) board packages pass it at 0.)
 
 **The receipt label is itself D12-clean.** A chapter with designed-toward HOLDs renders
 "**Designed-toward — named closing home.** Closes in `<home>`." — the closing homes are named

@@ -1,6 +1,6 @@
 # Engine Code-Quality Bar (M2) — sovereign-agent-starter
 
-*One page. The engine's analog to the S2 Visual Standard: "built right" made explicit. This writes down the
+*One page. The engine's analog to the Building the Agentic Harness (S2) Visual Standard: "built right" made explicit. This writes down the
 bar this engine **already meets** — it is not a wall of new rules. owner ratifies changes. (audit 2026-06-16)*
 
 ## Structural (Constitution §5)
