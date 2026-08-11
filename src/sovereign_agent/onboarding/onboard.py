@@ -145,7 +145,9 @@ def run_onboard(keystore_dir: Optional[str], *, prompter: Callable[[OnboardTurn]
 
     # ---- TURN 2 · Name this node ----
     name = str(prompter(OnboardTurn(2, "Name this node", "name",
-                                    "Give this node a human-facing name.")) or node_id).strip() or node_id
+                                    "Give THIS node (this machine) a short label — e.g. 'Dragon', 'home-laptop', "
+                                    "'ada-desktop'. It is a public label, NOT a password and NOT your legal name. "
+                                    "You can leave it blank to use the default.")) or node_id).strip() or node_id
     if uat and name == "KM-1176":
         raise OnboardError("a UAT onboard must not use the sovereign principal KM-1176")
     turns.append({"turn": 2, "kind": "name", "disposition": name})
@@ -153,8 +155,8 @@ def run_onboard(keystore_dir: Optional[str], *, prompter: Callable[[OnboardTurn]
 
     # ---- TURN 3 · Which acts require your hand? (default-deny minimal set; the human edits) ----
     t3 = OnboardTurn(3, "Which acts require your hand?", "edit_set",
-                     "These acts will ALWAYS require your explicit approval (default-deny minimal set). "
-                     "Edit as you wish.", payload=list(DEFAULT_GATED_ACTS))
+                     "These acts will ALWAYS require your explicit approval (a safe default-deny minimal set). "
+                     "Keep them as-is (recommended), or replace them with your own list.", payload=list(DEFAULT_GATED_ACTS))
     edited = prompter(t3)
     gated_acts: Tuple[str, ...] = tuple(edited) if edited else DEFAULT_GATED_ACTS
     turns.append({"turn": 3, "kind": "edit_set", "disposition": list(gated_acts)})
@@ -224,13 +226,15 @@ def _cli_prompter(turn: "OnboardTurn"):
     if turn.kind == "accept":
         return input("> ").strip().lower() in ("y", "yes", "accept", "i accept")
     if turn.kind == "name":
-        return input("Node name > ").strip()
+        return input("Node name (e.g. Dragon) — or press Enter for the default > ").strip()
     if turn.kind == "edit_set":
         print("  default (always gated): " + ", ".join(turn.payload))
-        raw = input("Keep these, or type a comma-separated set to REPLACE them > ").strip()
-        return [a.strip() for a in raw.split(",") if a.strip()] if raw else list(turn.payload)
+        raw = input("Press Enter to KEEP these, or type a comma-separated list to REPLACE them > ").strip()
+        chosen = [a.strip() for a in raw.split(",") if a.strip()] if raw else list(turn.payload)
+        print("  → kept: " + ", ".join(chosen))
+        return chosen
     if turn.kind == "gate":
-        return input("approve / deny > ").strip().lower()
+        return input("Type 'approve' or 'deny' > ").strip().lower()
     return None
 
 
