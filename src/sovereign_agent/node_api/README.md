@@ -75,7 +75,7 @@ pytest tests/test_node_api.py -v
 
 17 tests in the minimal-viable suite. Track A2 will extend with behavioural
 parity tests (Python-direct call vs HTTP roundtrip producing identical
-receipts for each Series 2 demo script).
+receipts for each Building the Agentic Harness (Series 2) demo script).
 
 ## Auth (minimal viable)
 
@@ -115,7 +115,7 @@ No silent corruption. No bare 500s with stack traces.
 ## What's next
 
 - **Track A2:** per-demo HTTP smoke verification (Python-direct vs HTTP
-  roundtrip → identical receipts for all 10 Series 2 demos)
+  roundtrip → identical receipts for all 10 Building the Agentic Harness (Series 2) demos)
 - **Track A3:** Atrium `api.js` MODE flip → live; `atrium-standalone.html`
   rebuild; surface-by-surface verification
 - **Track A2/A3 follow-ups:** real handlers for sections B / D / E / F
