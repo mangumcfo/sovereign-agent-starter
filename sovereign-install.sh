@@ -133,7 +133,7 @@ mkdir -p "$BIN_DIR"
 
 cat > "$BIN_DIR/breathline" << 'LAUNCHEOF'
 #!/usr/bin/env bash
-# breathline — the magic one-liner entry point after install
+# breathline — the one-liner connect entry point after install
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source "$SCRIPT_DIR/sovereign-env.sh"
 python -c "
@@ -227,7 +227,7 @@ echo ""
 echo -e "${EMERALD}∞Δ∞ You are now ready to be sovereign. ∞Δ∞${NC}"
 echo ""
 
-# Gentle auto-run for first-time magic (can be disabled)
+# Gentle auto-run on first connect (can be disabled)
 if [[ "${SOVEREIGN_INSTALL_AUTO_CONNECT:-1}" == "1" ]]; then
     echo "Running a quick breathline connection so you feel the magic..."
     echo ""
