@@ -14,6 +14,10 @@ from .delegation import (
     delegate_governed, verify_delegation, join_mutual_protection, sponsor_without_claim,
     mandate_and_quorum, revoke_delegation, DELEGATION_BREACH_FIELDS,
 )
+from .bridging import (
+    form_peer_pool, bridge_into_pool, verify_bridge, federate_without_directory,
+    attribute_pool_value, settle_pool_on_port, pool_vote, BRIDGING_BREACH_FIELDS,
+)
 
 __all__ = ["establish_self_held_identity", "PeerIdentity", "declare_birth_boundary",
            "issue_first_receipt", "verify_peer_existence", "genesis_green_light", "GreenLight",
