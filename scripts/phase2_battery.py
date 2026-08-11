@@ -147,8 +147,10 @@ def run(KSD):
     live = verify_recognition(rec, A, B)
     refusal = refuse_recognition(KSD, "peer-A", "peer-B", at=AT, registry=rr, reason="phase2")
     dead = verify_recognition(rec, A, B, revocations=[refusal])
-    c.snapshot = {"peer_A": {"peer_id": A.peer_id, "fingerprint": A.fingerprint, "public_hex": A.public_hex[:32] + "..."},
-                  "peer_B": {"peer_id": B.peer_id, "fingerprint": B.fingerprint, "public_hex": B.public_hex[:32] + "..."},
+    # OBL-P2-H1: carry the FULL public_hex so a reader can verify both peer identities from the pack alone
+    # (recompute node_fingerprint(public_hex) == fingerprint). No truncation.
+    c.snapshot = {"peer_A": {"peer_id": A.peer_id, "fingerprint": A.fingerprint, "public_hex": A.public_hex},
+                  "peer_B": {"peer_id": B.peer_id, "fingerprint": B.fingerprint, "public_hex": B.public_hex},
                   "recognition": _safe(rec), "refusal": _safe(refusal), "verify_live": live, "verify_dead": dead}
     c.check("verify LIVE first == True", live is True, str(live))
     c.check("after refuse verify DEAD == False", dead is False, str(dead))
@@ -266,8 +268,10 @@ def main():
     signature = sign_node_act(KSD, "node", att_payload)
     nk = load_node_key(KSD, "node")
     attestation = {**att_body, "signed_payload": att_payload.hex(), "signature": signature,
-                   "signer_fingerprint": nk.fingerprint,
-                   "verify": "load_node_key(ksd,'node') + verify_node_act(pub, bytes.fromhex(signed_payload), signature)"}
+                   "signer_fingerprint": nk.fingerprint, "signer_public_hex": nk.public_hex,
+                   "verify": "verify_node_act(attestation.signer_public_hex, bytes.fromhex(signed_payload), "
+                             "signature) is True — the pack carries the pubkey; no keystore needed. (Also: "
+                             "node_fingerprint(signer_public_hex) == signer_fingerprint.)"}
 
     core = {"manifest": {"version": "phase2-battery/v1", "kernel": KERNEL, "case_count": len(cases),
                          "note": "self-verifies: recompute merkle root over sha256(canon(receipt)) leaves; "
