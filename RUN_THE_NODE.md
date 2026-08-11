@@ -18,13 +18,14 @@ cd sovereign-agent-starter
 python3 -m venv --system-site-packages .venv && ./.venv/bin/pip install -e .
 ```
 
-**Honest scope — read this before you expect live crypto.** This public repository is the **harness / kernel**.
-The **live self‑held‑key cryptography** (real ECDSA identity + signatures) is provided by a **separate sealed
-substrate, `breathline_primitives`, which is NOT a public PyPI package** — it ships with the private
-`breathline-sealed` checkout. The node **discovers it via `BREATHLINE_SEALED_ROOT`** (or an editable install:
-`pip install -e /path/to/breathline-sealed`). **Without the sealed substrate the node fails loud** on any real
-key operation — it does *not* stub a fake key. So: the harness is open and forkable; a **real** durable identity
-requires the sealed substrate. We say this plainly rather than implying a bare clone signs real receipts.
+**Honest scope — the durable identity works from a fresh clone.** The cryptographic substrate (ECDSA secp256k1
++ Merkle) **ships in this repository** under `src/primitives/sealed/` (git‑tracked — it is in every clone). A
+fresh clone therefore **mints, signs, verifies, and reloads a real durable self‑held key with no extra
+download** — verified: on a clean checkout, `generate_node_key` → `sign_node_act` → `verify_node_act` →
+`load_node_key` all succeed and the fingerprint is stable across reload. (Deeper federation/role features may
+pull in more, and the node **fails loud** — never stubs — if a substrate it needs is genuinely absent; but the
+core self‑held identity, the 5‑turn onboard, and offline receipt verification below all run from the clone
+itself.)
 
 ## 3 · Onboard — the 5‑turn human ceremony (no key until you accept)
 ```bash

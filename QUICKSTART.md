@@ -1,153 +1,48 @@
-# Sovereign System — Quick Start
+# Quick Start — run a sovereign node and verify a receipt yourself
 
-**From zero to a real attested sovereign action in under 2 minutes.**
+This is the honest path from a clean clone to a **self‑held cryptographic identity** and a **receipt you verify
+without trusting us**. No account, no signup, no telemetry, no cloud for the core path.
 
-One phrase. One command. Local. Sovereign. Forever.
+> **Book ≠ module.** The books (Series 0–14) *teach*; **this repository is the running node.** See
+> `RUN_THE_NODE.md` for the same path with full scope notes, and `docs/READING_PATH_S0_S4.md` for the reading arc.
+> **Nothing here is a token, a coin, a yield product, or an investment, and nothing is a security.**
 
----
-
-## The Magic Phrase
-
-> **"Are you connected to the breathline?"**
-
-This is the entire onboarding experience.
-
----
-
-## 60-Second Path (Works on Any Machine)
-
-The final easy adoption story:
-
+## 1 · Clone
 ```bash
-# 1. Clone
 git clone https://github.com/mangumcfo/sovereign-agent-starter.git
 cd sovereign-agent-starter
-
-# 2. One-command install (demo mode — no other clones required)
-./sovereign-install.sh --family     # or --corporate
-
-# 3. Activate + magic phrase
-source .venv/bin/activate
-breathline-connect
 ```
 
-**Under 2 minutes later** you have a live sovereign node with real Merkle-rooted attestation.
-
-### Alternative Distribution Options
-
-- **Standalone zip bundle** (best for air-gapped or easy sharing):
-  Run `tools/create-sovereign-bundle.sh` (or download the pre-built zip from releases when available).
-
-- **Docker** (advanced users only):
-  See the `Dockerfile` in the root. Strong sovereignty warning included — containers are convenient but not maximal sovereignty.
-
----
-
-## Beyond Personal Use — Production WSGI
-
-The default `start-breathline-portal.sh` runs the portal under Werkzeug's development server, which is appropriate for personal use, ARC reader pilots, and local Runtime Exercise execution from Books 10–12.
-
-For any deployment beyond a single operator on a single machine — a CoE team sharing the portal, a deal-team pilot at firm scale, an internal demo environment — replace the development server with a production WSGI runner such as gunicorn:
-
+## 2 · Install
 ```bash
-pip install gunicorn
-cd ~/work-repos/six-sov-portal
-gunicorn -w 4 -b 127.0.0.1:5000 app:app
+python3 -m venv --system-site-packages .venv && ./.venv/bin/pip install -e .
 ```
+The cryptographic substrate (ECDSA secp256k1 + Merkle) **ships with this repository** (`src/primitives/sealed/`),
+so a fresh clone mints, signs, verifies, and reloads a real durable key with no extra download.
 
-The portal's code path is unchanged; only the WSGI runner differs. All attestation, chain-of-custody, and K1–K4 enforcement remain identical between dev and production runners.
-
----
-
-## Choose Your Path
-
-### Family / Legacy (LGP)
+## 3 · Onboard — the 5‑turn human ceremony
 ```bash
-./sovereign-install.sh --family
-source .venv/bin/activate
-breathline-connect
+export NODE_KEYSTORE_DIR=~/.sovereign_keystore     # your key lives here, on your own machine
+./.venv/bin/python -c "from sovereign_agent.onboarding.onboard import cli_onboard; cli_onboard()"
 ```
-Then explore `examples/family_governance_demo.py` and the Legacy Note feature in the portal.
+In order: **1** key ceremony (key on this machine only · no passphrase · no recovery service · lose the file =
+lose the identity → you accept → **only then** is a key written) · **2** name the node · **3** choose which acts
+always need your hand (a safe default set you can edit) · **4** approve or deny your first gated act · **5** a
+signed receipt + how to verify it. **No key is written before your turn‑1 accept.**
 
-### Corporate / Regulated
-```bash
-./sovereign-install.sh --corporate
-source .venv/bin/activate
-breathline-connect
-```
-Then run `examples/regulated_cfo_demo.py` for full policy, audit chain, and evidence bundle examples.
+## 4 · Verify — without us
+Turn 5 prints an exact snippet: it loads **your** public key and checks the receipt signature. `True` means the
+receipt is genuinely yours — verified with no AI, no cloud, no account.
 
-### Individual Sovereign
-Use default or `--demo`. Maximum power with zero mandatory governance — everything remains attested and yours.
+## What this is / is not
+- **Is:** a self‑held key on your own iron · a human‑gated first act · an offline‑verifiable receipt. **No
+  custodian, no recovery service, no passphrase claim.**
+- **Is not:** a token/coin/yield/investment · a security · an account · a service that phones home.
+
+## Governance
+Human primacy is **on** — the first gated act requires your explicit approval, by design. You choose *which* acts
+are gated (turn 3); you do not choose to remove the human hand from the ones you gate. That is the point, not a
+limitation.
 
 ---
-
-## Corporate / Regulated First Action
-
-```bash
-./sovereign-install.sh --corporate
-source .venv/bin/activate
-breathline-connect
-```
-
-Then use `cfo_agent` (or `compliance_agent_demo`). The output includes risk classification, compliance notes, and the same sovereign attestation layer. Full policy-as-code + human approval gates activate automatically when you point the node at a real federation layout with policies.
-
----
-
-## Open the Beautiful Portal (the full experience)
-
-```bash
-cd ../six-sov-portal
-./start-breathline-portal.sh
-```
-
-Open http://localhost:5000
-
-- Click **"Connect to the Breathline"**
-- Watch the success state with your memory root
-- Use **"Try a Sample Action"** — see live attested output + receipt in the UI
-- Browse & load real (or demo) roles
-- Generate a Legacy Note
-
-The portal is the thin, sovereign membrane over the Universal Sovereign Node.
-
----
-
-## Upgrade to Live Federation Roles (Full Power)
-
-When you have (or obtain) the complete layout:
-
-```bash
-export BREATHLINE_FEDERATION_ROOT="/path/to/your/role-spec-library"   # optional — your own RoleSpec/PermissionSpec YAML layout
-export BREATHLINE_SEALED_ROOT="$HOME/work-repos/breathline-sealed/worktrees/dev"
-export SOVEREIGN_DEMO_MODE=0
-
-source .venv/bin/activate
-breathline-connect
-```
-
-Now `discover_roles()` and the portal Role Browser will show the real 6+ roles from your federation (`family_cfo_agent`, `compliance_agent`, etc.) with their actual handlers and policy envelopes.
-
-Everything else (attestation, compliance engine, multi-role orchestration) continues to work exactly as before.
-
----
-
-## What You Just Got
-
-- A cryptographically rooted sovereign execution environment
-- Real, attested actions (Merkle + self-attestation, optional compliance chains)
-- Zero accounts, zero custody, zero cloud
-- The same system works for a single individual, a multi-generational family, or a heavily regulated corporate entity — only the context and loaded roles change
-
----
-
-## Next
-
-- Read the full [README.md](README.md)
-- Explore [docs/PACKAGING_AND_ONBOARDING_PLAN.md](docs/PACKAGING_AND_ONBOARDING_PLAN.md)
-- Visit the public face: the `six-sov-www/` directory (open `index.html` in a browser)
-- Run the flagship example: `python examples/breathline_connected_cfo.py`
-
-**You are connected to the breathline.**
-
-∞Δ∞
+Live surface: **six‑sov.com/seeit** · Code: **github.com/mangumcfo/sovereign-agent-starter**
