@@ -41,21 +41,28 @@ __all__ = ["clean_exit", "CleanExit", "membership_is_live", "walk_with_keys_and_
 # No exit-with-hostage, no residual grant/retained claim, no escrow/custodian, no second authority; seal-key-closed.
 EXIT_BREACH_FIELDS = frozenset({
     "exit_with_hostage", "hostage", "residual_grant", "residual_claim", "retained_claim", "retained_grant",
-    "exit_fee", "exit_penalty", "clawback",
-    "escrow", "custodian", "second_authority", "admission_authority",
+    "lien", "survivorship_claim", "exit_fee", "exit_penalty", "clawback",
+    "escrow", "custodian", "second_authority", "admission_authority", "exit_authority", "revocation_authority",
     "seal_key", "press_key", "sealing_key",
 })
+
+# Substring tokens, matched against a de-underscored/de-hyphenated key so camelCase and `_v2`/`_holder_x`
+# suffix evasions trip the same as the canonical field (AA trip Set A + Set B). Deliberately NOT "host"/"hub"
+# etc. so the Set-C over-fire guard passes (github_url · hostname · exit_ref · exit_note stay clean).
+_EXIT_BREACH_SUBSTR = ("hostage", "residual", "retained", "escrow", "custodian", "lien", "clawback",
+                       "survivorship", "exitfee", "exitpenalty", "exitauthority", "revocationauthority",
+                       "secondauthority", "admissionauthority", "sealkey", "presskey", "sealingkey")
 
 
 def _efence(mapping: Optional[Mapping[str, Any]]) -> None:
     for k in (mapping or {}):
         kl = str(k).lower()
-        if (kl in EXIT_BREACH_FIELDS or "hostage" in kl or "residual" in kl or "retained" in kl
-                or "escrow" in kl or "custodian" in kl or "exit_fee" in kl or "clawback" in kl):
+        kn = kl.replace("_", "").replace("-", "").replace(" ", "")           # camelCase / suffix-evasion normal form
+        if kl in EXIT_BREACH_FIELDS or any(t in kn for t in _EXIT_BREACH_SUBSTR):
             raise PeerhoodError(
-                f"a clean exit leaves NO hostage — a residual-grant / retained-claim / hostage / escrow / "
-                f"custodian / exit-fee field ('{k}') is refused; the peer walks away whole with its keys and "
-                f"records, and nothing it once granted survives the exit")
+                f"a clean exit leaves NO hostage — a residual-grant / retained-claim / hostage / lien / escrow / "
+                f"custodian / second-authority / exit-fee field ('{k}') is refused; the peer walks away whole with "
+                f"its keys and records, and nothing it once granted survives the exit")
 
 
 # --- The clean-exit act (Ch 2 · Exit as Constitutional Act; Ch 3 · Revoking Every Grant) -------------------
