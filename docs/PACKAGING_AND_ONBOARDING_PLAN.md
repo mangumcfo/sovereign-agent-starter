@@ -1,5 +1,5 @@
 # Sovereign System — Packaging & Onboarding Plan
-**Mission:** Make the entire system ("Anyone Can Do It") — from a fresh machine to a running, attested sovereign action in under 2 minutes while preserving full power, local sovereignty, and the "Are you connected to the breathline?" magic for both family/legacy and corporate/regulated users.
+**Mission:** Make the node harness straightforward to install and honestly run — from a fresh machine to a real attested, human-gated action with an offline-verifiable receipt — for both family/legacy and corporate/regulated users. No time-to-value or capability overclaims; human primacy is on by design.
 
 **Date:** 2026 (current state from live exploration)
 **Status:** Authoritative plan for this mission. All changes must align with these principles.
@@ -106,8 +106,8 @@ git clone https://github.com/mangumcfo/sovereign-agent-starter.git
 cd sovereign-agent-starter
 ./sovereign-install.sh --family     # or --corporate, --demo, --full
 source .venv/bin/activate
-breathline-connect                  # or the magic phrase
-# <2 minutes later: real attested action in the portal or via quick sample
+breathline-connect                  # connect the node
+# then: a real attested, human-gated action with a receipt you verify yourself
 ```
 
 **What the script does:**
@@ -146,7 +146,7 @@ Create fresh directory `../six-sov-www/` (zero Python deps, pure static).
 **Contents:**
 - `index.html` — beautiful, fast, sovereign aesthetic (exact same Tailwind CDN + Space Grotesk + emerald palette as the portal for visual continuity).
   - Sticky nav with SIX logo + "SOVEREIGN INFERENCE EXCHANGE"
-  - Hero: massive "Are you connected to the breathline?" + sub "One phrase. Under two minutes. Your sovereign node, locally, forever."
+  - Hero: "Are you connected to the breathline?" + sub "Your own self-held node, on your own machine — a receipt you verify yourself."
   - Primary CTAs (huge, obvious):
     - "Run the 60-second Installer" (links to raw GitHub install.sh or copy-paste block)
     - "Launch the Portal (after install)"
@@ -161,7 +161,7 @@ Create fresh directory `../six-sov-www/` (zero Python deps, pure static).
 - `serve.sh` or `serve.py` (tiny) for local preview.
 - Optional: `quickstart/` subdir with the markdown rendered or copied snippets.
 
-The site is the new "front door" that removes all mystery and points straight at the installer + the magic phrase.
+The site is the front door that points at the install path and the honest onboard.
 
 ---
 
@@ -170,12 +170,12 @@ The site is the new "front door" that removes all mystery and points straight at
 ### 6.1 QUICKSTART.md (New, at starter root + referenced by www)
 Exact, copy-paste, timed paths:
 
-**Family / Legacy (under 2 min)**
+**Family / Legacy**
 1. Clone + `./sovereign-install.sh --family`
 2. `source .venv/bin/activate && breathline-connect`
 3. (Portal or python) → "Try a Sample Action" (uses family_cfo_demo) → see beautiful generational output + USN receipt.
 
-**Corporate / Regulated (under 2 min)**
+**Corporate / Regulated**
 1. Same installer with `--corporate`
 2. Same phrase
 3. Sample action uses corporate_cfo_demo → full risk scoring + compliance_block + prev_receipt_hash chain in the receipt.
@@ -226,7 +226,7 @@ All changes must keep the existing full-federation experience identical for user
   1. Clone the starter.
   2. Run the installer.
   3. Execute the breathline phrase.
-  4. See a real, attested action + receipt in the portal or CLI — all in <2 minutes.
+  4. See a real, attested, human-gated action + a receipt you verify yourself.
 - `pip install -e ".[portal]"` succeeds cleanly from any checkout.
 - Demo roles always produce output even with zero other clones.
 - Full federation users see zero behavior change (or improvement via env vars).

@@ -19,7 +19,7 @@ python3 -m venv --system-site-packages .venv && ./.venv/bin/pip install -e .
 ```
 
 **Honest scope — the durable identity works from a fresh clone.** The cryptographic substrate (ECDSA secp256k1
-+ Merkle) **ships in this repository** under `src/primitives/sealed/` (git‑tracked — it is in every clone). A
++ Merkle) **ships in this repository** under `src/breathline_primitives/` (git‑tracked, in every clone; the keystore imports it as `breathline_primitives.layer1`). A
 fresh clone therefore **mints, signs, verifies, and reloads a real durable self‑held key with no extra
 download** — verified: on a clean checkout, `generate_node_key` → `sign_node_act` → `verify_node_act` →
 `load_node_key` all succeed and the fingerprint is stable across reload. (Deeper federation/role features may

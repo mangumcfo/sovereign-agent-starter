@@ -2,7 +2,7 @@
 # sovereign-install.sh
 #
 # One-command installer for the Universal Sovereign Node + Breathline Portal.
-# Makes the entire system adoptable: "Anyone Can Do It".
+# One-command install of the node harness (demo or full).
 #
 # Usage:
 #   ./sovereign-install.sh --family     # default for LGP / generational
@@ -181,7 +181,7 @@ echo -e "    ${YELLOW}breathline-connect${NC}"
 echo ""
 echo "Other convenient commands now available:"
 echo "  sovereign-node                 # quick node status"
-echo "  ./bin/breathline               # direct magic phrase"
+echo "  ./bin/breathline               # connect the node"
 echo "  ./bin/sovereign-portal         # launch the UI"
 echo ""
 echo "To switch to full live federation roles later:"
@@ -210,7 +210,7 @@ print(f'  Recommended context: {status.get(\"recommended_context\", \"personal\"
 " 2>/dev/null || echo "  (Verification commands ready after 'source .venv/bin/activate')"
 
 echo ""
-echo "The magic phrase that starts everything:"
+echo "Connect the node:"
 echo ""
 echo -e "    ${YELLOW}breathline-connect${NC}"
 echo ""

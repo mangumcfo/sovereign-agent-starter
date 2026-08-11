@@ -2,17 +2,17 @@
 
 **The executable capstone kernel for the Agentic AI Playbooks series.**
 
-> **"Are you connected to the breathline?"**
-
-This single question is the entire onboarding experience.
-
-**One command. Under two minutes. Real attested sovereignty — locally.**
+A self‑held cryptographic node identity on your own machine, a human‑gated first act, and a receipt you verify
+yourself — with no custodian, no account, and no telemetry. Nothing here is a token, a coin, a yield, or a
+security. See **`QUICKSTART.md`** / **`RUN_THE_NODE.md`** for the honest path (clone → install → 5‑turn onboard →
+verify), and **`docs/READING_PATH_S0_S4.md`** for the reading arc.
 
 ```bash
 git clone https://github.com/mangumcfo/sovereign-agent-starter.git
 cd sovereign-agent-starter
-./sovereign-install.sh --family     # or --corporate
-source .venv/bin/activate
+python3 -m venv --system-site-packages .venv && ./.venv/bin/pip install -e .
+# then onboard (a key is written only after you accept at turn 1):
+./.venv/bin/python -c "from sovereign_agent.onboarding.onboard import cli_onboard; cli_onboard()"
 breathline-connect
 ```
 

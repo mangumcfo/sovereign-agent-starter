@@ -17,7 +17,7 @@ cd sovereign-agent-starter
 ```bash
 python3 -m venv --system-site-packages .venv && ./.venv/bin/pip install -e .
 ```
-The cryptographic substrate (ECDSA secp256k1 + Merkle) **ships with this repository** (`src/primitives/sealed/`),
+The cryptographic substrate (ECDSA secp256k1 + Merkle) **ships with this repository** (`src/breathline_primitives/`, which the keystore imports as `breathline_primitives.layer1`),
 so a fresh clone mints, signs, verifies, and reloads a real durable key with no extra download.
 
 ## 3 · Onboard — the 5‑turn human ceremony
