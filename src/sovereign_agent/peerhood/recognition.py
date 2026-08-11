@@ -90,9 +90,17 @@ def mutual_recognition(keystore_dir: Optional[str], peer_a: str, peer_b: str, *,
             "sig_b": sign_node_act(keystore_dir, peer_b, h), "peers": [peer_a, peer_b], "third_party": None}
 
 
-def verify_recognition(recognition: Mapping[str, Any], id_a: PeerIdentity, id_b: PeerIdentity) -> bool:
+def verify_recognition(recognition: Mapping[str, Any], id_a: PeerIdentity, id_b: PeerIdentity, *,
+                       revocations: Sequence[Mapping[str, Any]] = ()) -> bool:
     """Verify a mutual recognition PUBLIC-ONLY — both peers' signatures check against their OWN public keys, with
-    no third party. True only when BOTH sides verify: recognition is bilateral, held by both, owned by both."""
+    no third party. True only when BOTH sides verify: recognition is bilateral, held by both, owned by both.
+    **A revocation KILLS a live recognition:** if any refusal in `revocations` names these two peers (in either
+    order), the recognition no longer verifies — a peer's signed refusal (`refuse_recognition`) actually ends the
+    relationship, it is not a dead letter."""
+    pair = {id_a.peer_id, id_b.peer_id}
+    for r in revocations:
+        if {str(r.get("by", "")), str(r.get("of", ""))} == pair:
+            return False                                                 # a signed refusal kills the live recognition
     h = str((recognition.get("recognition") or {}).get("version_hash", "")).encode("utf-8")
     return (verify_node_act(id_a.public_hex, h, str(recognition.get("sig_a", "")))
             and verify_node_act(id_b.public_hex, h, str(recognition.get("sig_b", ""))))
@@ -156,4 +164,5 @@ def refuse_recognition(keystore_dir: Optional[str], peer_id: str, other: str, *,
                           {"refuse": str(other), "residual_claim": None, "reason": str(reason)},
                           author=peer_id, source_ref=source_ref, at=at, mandate=peer_id, kind="ratify")
     sig = sign_node_act(keystore_dir, peer_id, str(rev["version_hash"]).encode("utf-8"))
-    return {"refusal": rev, "signature": sig, "residual_claim": None, "hostage_free": True}
+    return {"refusal": rev, "signature": sig, "residual_claim": None, "hostage_free": True,
+            "by": str(peer_id), "of": str(other)}

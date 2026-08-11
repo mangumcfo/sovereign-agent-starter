@@ -86,6 +86,20 @@ def test_revoke_delegation_is_first_class_no_residual_claim(tmp_path):
         revoke_delegation(str(tmp_path / "empty"), "ghost", "d:1", at=AT, registry=reg)
 
 
+def test_revocation_kills_a_live_delegation(tmp_path):
+    # AA bar: a signed revocation must actually END a live delegation — not a dead letter.
+    ks = str(tmp_path / "ks"); reg = _reg(tmp_path)
+    ident = establish_self_held_identity(ks, "peer-a", at=AT, registry=reg)
+    d = delegate_governed(ks, "peer-a", "agent-b", "sign_x", expires_at=EXP, at=AT, registry=reg,
+                          approver="km-1176", approval_ref="b:1")
+    assert verify_delegation(d, ident) is True                                    # live: verifies
+    dele_id = d["delegation"]["object_id"]
+    rev = revoke_delegation(ks, "peer-a", dele_id, at=AT, registry=reg)
+    assert verify_delegation(d, ident, revocations=[rev]) is False                 # revocation KILLS the live delegation
+    other = revoke_delegation(ks, "peer-a", "delegation:peer-a:someone-else", at=AT, registry=reg)
+    assert verify_delegation(d, ident, revocations=[other]) is True                # an unrelated revocation does not
+
+
 def test_the_fence_refuses_leverage_insurer_and_scored_credit(tmp_path):
     ks = str(tmp_path / "ks"); reg = _reg(tmp_path)
     establish_self_held_identity(ks, "peer-a", at=AT, registry=reg)

@@ -82,10 +82,18 @@ def delegate_governed(keystore_dir: Optional[str], peer_id: str, delegate_to: st
     return {"delegation": dele, "signature": sig, "time_bound": True, "revocable": True, "peer_id": peer_id}
 
 
-def verify_delegation(delegation: Mapping[str, Any], identity: PeerIdentity) -> bool:
+def verify_delegation(delegation: Mapping[str, Any], identity: PeerIdentity, *,
+                      revocations: Sequence[Mapping[str, Any]] = ()) -> bool:
     """Verify a delegation PUBLIC-ONLY — its signature checks against the delegating peer's OWN public key. The
-    recipient (or anyone) confirms the delegation is genuinely the peer's, from a receipt they hold."""
-    h = str((delegation.get("delegation") or {}).get("version_hash", "")).encode("utf-8")
+    recipient (or anyone) confirms the delegation is genuinely the peer's, from a receipt they hold. **A
+    revocation KILLS a live delegation:** if any revocation in `revocations` revokes this delegation's object id,
+    it no longer verifies — `revoke_delegation` actually ends the grant, returning the capability to the peer."""
+    obj = delegation.get("delegation") or {}
+    dele_id = str(obj.get("object_id", ""))
+    for r in revocations:
+        if dele_id and str(r.get("revokes", "")) == dele_id:
+            return False                                                 # a signed revocation kills the live delegation
+    h = str(obj.get("version_hash", "")).encode("utf-8")
     return verify_node_act(identity.public_hex, h, str(delegation.get("signature", "")))
 
 
@@ -165,4 +173,5 @@ def revoke_delegation(keystore_dir: Optional[str], peer_id: str, delegation_ref:
                           {"revokes": str(delegation_ref), "residual_claim": None, "first_class": True},
                           author=peer_id, source_ref=source_ref, at=at, mandate=peer_id, kind="ratify")
     sig = sign_node_act(keystore_dir, peer_id, str(rev["version_hash"]).encode("utf-8"))
-    return {"revocation": rev, "signature": sig, "residual_claim": None, "returned_to_peer": True}
+    return {"revocation": rev, "signature": sig, "residual_claim": None, "returned_to_peer": True,
+            "revokes": str(delegation_ref), "by": str(peer_id)}

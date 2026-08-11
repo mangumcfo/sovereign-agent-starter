@@ -82,6 +82,20 @@ def test_refusal_is_first_class_and_leaves_no_residual_claim(tmp_path):
         refuse_recognition(str(tmp_path / "empty"), "ghost", "peer-b", at=AT, registry=reg)
 
 
+def test_refusal_kills_a_live_recognition(tmp_path):
+    # AA bar: a signed refusal must actually END a live recognition — not a dead letter.
+    ks = str(tmp_path / "ks"); reg = _reg(tmp_path)
+    a = establish_self_held_identity(ks, "peer-a", at=AT, registry=reg)
+    b = establish_self_held_identity(ks, "peer-b", at=AT, registry=reg)
+    rec = mutual_recognition(ks, "peer-a", "peer-b", at=AT, registry=reg)
+    assert verify_recognition(rec, a, b) is True                                  # live: verifies
+    ref = refuse_recognition(ks, "peer-a", "peer-b", at=AT, registry=reg)
+    assert verify_recognition(rec, a, b, revocations=[ref]) is False               # refusal KILLS the live recognition
+    # a refusal naming other peers does not kill this recognition
+    other = refuse_recognition(ks, "peer-a", "peer-c", at=AT, registry=reg)
+    assert verify_recognition(rec, a, b, revocations=[other]) is True
+
+
 def test_the_fence_refuses_registry_directory_and_scored_authority(tmp_path):
     ks = str(tmp_path / "ks"); reg = _reg(tmp_path)
     establish_self_held_identity(ks, "peer-a", at=AT, registry=reg)
