@@ -12,6 +12,7 @@ git clone https://github.com/mangumcfo/sovereign-agent-starter.git
 cd sovereign-agent-starter
 python3 -m venv --system-site-packages .venv && ./.venv/bin/pip install -e .
 # then onboard (a key is written only after you accept at turn 1):
+export NODE_KEYSTORE_DIR=~/.sovereign_keystore   # your key lives here, on your own machine
 ./.venv/bin/python -c "from sovereign_agent.onboarding.onboard import cli_onboard; cli_onboard()"
 breathline-connect
 ```
