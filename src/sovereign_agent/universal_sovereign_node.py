@@ -360,15 +360,18 @@ def cli_create_node() -> None:
     print("\n∞Δ∞ Sovereign Node (sovereign-node)")
 
     ctx = _auto_detect_context()
-    # Explicit onboarding (Phase 0): mint the durable self-held key once if absent, then boot load-only.
     import os as _os
-    from datetime import datetime as _dt, timezone as _tz
-    from .keystore.node_keystore import has_node_key as _hnk, generate_node_key as _gnk
+    from .keystore.node_keystore import has_node_key as _hnk
     _ksd = _os.environ.get('NODE_KEYSTORE_DIR')
     _nid = 'UniversalSovereignNode'
+    # FRESH PATH (Phase 1): no silent mint. If there is no durable key yet, run the human 5-turn onboard —
+    # no key is written until the human accepts at turn 1. Only an already-onboarded node boots straight.
     if not _hnk(_ksd, _nid):
-        _gnk(_ksd, _nid, at=_dt.now(_tz.utc).isoformat())
-    node = UniversalSovereignNode(context_type=ctx, keystore_dir=_ksd)
+        from .onboarding.onboard import cli_onboard, OnboardOutcome
+        result = cli_onboard(_ksd, node_id=_nid)
+        if isinstance(result, OnboardOutcome):        # declined at turn 1 → nothing written, nothing booted
+            return
+    node = UniversalSovereignNode(context_type=ctx, keystore_dir=_ksd)   # boot load-only on the durable key
 
     print(f"Context: {ctx}  |  Mode: {'DEMO' if is_demo_mode() else 'FULL'}")
     print(f"Memory root: {node.get_memory_root()[:32]}...")
