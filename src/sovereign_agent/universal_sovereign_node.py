@@ -96,15 +96,15 @@ class UniversalSovereignNode(SovereignAgent):
     def __init__(self, name: str = "UniversalSovereignNode", context_type: str = "personal",
                  playbooks_root: Optional[Path] = None, memory_path: Optional[Path] = None,
                  auto_bootstrap: bool = True, *, keystore_dir: Optional[str] = None,
-                 node_id: Optional[str] = None, provision_if_absent: bool = False,
-                 at: Optional[str] = None):
+                 node_id: Optional[str] = None):
         """
         auto_bootstrap=True (default) attempts pure-Python activation of breathline_primitives
         on instantiation. Set False if you have already activated via shell or manual call.
 
         D1 boot identity (Phase 0): the node boots on its DURABLE self-held key (keystore_dir / NODE_KEYSTORE_DIR,
-        keyed by node_id or name) — absent key FAILS LOUD, no ephemeral per-boot key; provision_if_absent=True
-        mints once (explicit onboarding). See SovereignAgent.__init__.
+        keyed by node_id or name) — boot only LOADS it and FAILS LOUD if absent (no ephemeral/mint fallback in
+        the boot path). Onboarding (keystore.generate_node_key) is a separate explicit act. See
+        SovereignAgent.__init__.
         """
         if auto_bootstrap:
             try:
@@ -116,8 +116,7 @@ class UniversalSovereignNode(SovereignAgent):
                 # observable when diagnosing (audit 2026-06-13d #26) without noising normal runs.
                 logger.debug("auto_bootstrap of breathline_primitives skipped: %s", e)
 
-        super().__init__(name, memory_path, keystore_dir=keystore_dir, node_id=node_id,
-                         provision_if_absent=provision_if_absent, at=at)
+        super().__init__(name, memory_path, keystore_dir=keystore_dir, node_id=node_id)
         
         self.context_adapter = ContextAdapter(context_type)
 
@@ -343,7 +342,7 @@ class UniversalSovereignNode(SovereignAgent):
 
 # Convenience factory
 def create_universal_sovereign_node(name: str = "USN", context: str = "personal") -> UniversalSovereignNode:
-    return UniversalSovereignNode(name=name, context_type=context, provision_if_absent=True)
+    return UniversalSovereignNode(name=name, context_type=context)  # load-only: boot fails loud if not onboarded
 
 
 def cli_create_node() -> None:
@@ -361,7 +360,15 @@ def cli_create_node() -> None:
     print("\n∞Δ∞ Sovereign Node (sovereign-node)")
 
     ctx = _auto_detect_context()
-    node = UniversalSovereignNode(context_type=ctx, provision_if_absent=True)
+    # Explicit onboarding (Phase 0): mint the durable self-held key once if absent, then boot load-only.
+    import os as _os
+    from datetime import datetime as _dt, timezone as _tz
+    from .keystore.node_keystore import has_node_key as _hnk, generate_node_key as _gnk
+    _ksd = _os.environ.get('NODE_KEYSTORE_DIR')
+    _nid = 'UniversalSovereignNode'
+    if not _hnk(_ksd, _nid):
+        _gnk(_ksd, _nid, at=_dt.now(_tz.utc).isoformat())
+    node = UniversalSovereignNode(context_type=ctx, keystore_dir=_ksd)
 
     print(f"Context: {ctx}  |  Mode: {'DEMO' if is_demo_mode() else 'FULL'}")
     print(f"Memory root: {node.get_memory_root()[:32]}...")

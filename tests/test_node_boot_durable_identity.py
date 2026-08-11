@@ -27,29 +27,35 @@ from sovereign_agent.keystore.node_keystore import (
 def test_boot_persists_a_durable_key(tmp_path):
     ks = str(tmp_path / "ks")
     assert has_node_key(ks, "node-a") is False
-    agent = SovereignAgent("node-a", keystore_dir=ks, provision_if_absent=True)   # onboard once
+    generate_node_key(ks, "node-a", at="2026-08-11T00:00:00Z")                    # explicit onboarding
     assert has_node_key(ks, "node-a") is True                                     # written to disk
     assert pathlib.Path(ks, "node-a.nodekey.json").exists()
+    agent = SovereignAgent("node-a", keystore_dir=ks)                             # boot LOADS it (load-only)
     assert agent.fingerprint and agent.identity.private_key                       # a real self-held key
 
 
 def test_same_fingerprint_across_process_restart(tmp_path):
     ks = str(tmp_path / "ks")
-    first = SovereignAgent("node-a", keystore_dir=ks, provision_if_absent=True).fingerprint
-    # a fresh boot (simulating a process restart) LOADS the same durable key — no new keypair
-    second = SovereignAgent("node-a", keystore_dir=ks).fingerprint                # default: load-only
-    third = SovereignAgent("node-a", keystore_dir=ks, provision_if_absent=True).fingerprint  # provision is a no-op now
-    assert first == second == third                                              # stable identity across restarts
+    generate_node_key(ks, "node-a", at="2026-08-11T00:00:00Z")                    # onboard once
+    # each boot LOADS the same durable key — no new keypair, so the fingerprint is stable across restarts
+    first = SovereignAgent("node-a", keystore_dir=ks).fingerprint
+    second = SovereignAgent("node-a", keystore_dir=ks).fingerprint
+    third = SovereignAgent("node-a", keystore_dir=ks).fingerprint
+    assert first == second == third
 
 
 def test_boot_refuses_an_absent_key(tmp_path):
     ks = str(tmp_path / "empty")                                                  # no key provisioned
     with pytest.raises(KeystoreError):
-        SovereignAgent("ghost", keystore_dir=ks)                                  # default boot = load-only, fail-loud
+        SovereignAgent("ghost", keystore_dir=ks)                                  # boot = load-only, fail-loud
     # and it stays refused for the node runtime too (UniversalSovereignNode inherits the same boot)
-    from sovereign_agent.universal_sovereign_node import UniversalSovereignNode
+    from sovereign_agent.universal_sovereign_node import UniversalSovereignNode, create_universal_sovereign_node
     with pytest.raises(KeystoreError):
         UniversalSovereignNode(name="ghost", keystore_dir=ks)
+    # AA's exact RED-baseline repro path (the factory) now FAILS LOUD instead of minting an ephemeral key:
+    # NODE_KEYSTORE_DIR points at the hermetic dir (no 'uat-node' key), so the factory boot refuses.
+    with pytest.raises(KeystoreError):
+        create_universal_sovereign_node("uat-node")
 
 
 def test_boot_refuses_a_tampered_key(tmp_path):

@@ -211,19 +211,18 @@ class SovereignAgent:
     """
 
     def __init__(self, name: str, memory_path: Optional[Path] = None, auto_bootstrap: bool = True,
-                 *, keystore_dir: Optional[str] = None, node_id: Optional[str] = None,
-                 provision_if_absent: bool = False, at: Optional[str] = None):
+                 *, keystore_dir: Optional[str] = None, node_id: Optional[str] = None):
         """
         auto_bootstrap=True (default) attempts pure-Python activation of breathline_primitives.
         Set to False if already activated via shell or explicit call.
 
         D1 boot identity (Phase 0, KM 2026-08-11): the node's identity is its DURABLE self-held key from the
-        keystore (`keystore_dir` or the NODE_KEYSTORE_DIR env), keyed by `node_id` (default = name). Boot LOADS
-        it; if the key is ABSENT it FAILS LOUD — there is no ephemeral per-boot key. `provision_if_absent=True`
-        (explicit onboarding only) mints the durable key ONCE if none exists, then loads it; the default (False)
-        refuses an absent key so a node can never start without a durable self-held identity. The same key yields
-        the same fingerprint across every process restart. No passphrase is claimed (file-custody on the
-        operator's own iron); no telemetry.
+        keystore (`keystore_dir` or the NODE_KEYSTORE_DIR env), keyed by `node_id` (default = name). Boot only
+        LOADS the key; if it is ABSENT it FAILS LOUD — there is NO ephemeral per-boot key and NO mint-on-missing
+        fallback in the boot path, so a node can never start without a durable self-held identity. Onboarding
+        (minting the key with `keystore.generate_node_key`) is a SEPARATE, explicit act done before boot. The
+        same key yields the same fingerprint across every process restart. No passphrase is claimed (file-custody
+        on the operator's own iron); no telemetry.
         """
         if auto_bootstrap:
             try:
@@ -236,10 +235,7 @@ class SovereignAgent:
         self.curve = secp256k1_curve()
         self._keystore_dir = keystore_dir
         self._node_id = str(node_id or name)
-        if provision_if_absent and not has_node_key(keystore_dir, self._node_id):
-            from datetime import datetime as _dt, timezone as _tz
-            generate_node_key(keystore_dir, self._node_id, at=(at or _dt.now(_tz.utc).isoformat()))
-        # Load the DURABLE self-held key — fail-loud if absent (no ephemeral boot key) or tampered.
+        # Load the DURABLE self-held key — fail-loud if absent (no ephemeral/mint fallback) or tampered.
         self.identity = load_node_keypair(keystore_dir, self._node_id)
         self.fingerprint = self.identity.fingerprint
 
@@ -360,7 +356,13 @@ class SovereignAgent:
 
 # Quick demo
 if __name__ == "__main__":
-    agent = SovereignAgent("LGP-Prototype", provision_if_absent=True)
+    # Explicit onboarding (Phase 0): mint the durable self-held key once if absent, then boot load-only.
+    import os as _os
+    from datetime import datetime as _dt, timezone as _tz
+    _ksd = _os.environ.get("NODE_KEYSTORE_DIR")
+    if not has_node_key(_ksd, "LGP-Prototype"):
+        generate_node_key(_ksd, "LGP-Prototype", at=_dt.now(_tz.utc).isoformat())
+    agent = SovereignAgent("LGP-Prototype", keystore_dir=_ksd)
     result = agent.act("Develop antifragile multi-generational wealth strategy")
     print(result)
     print("Current Memory Root:", agent.get_memory_root())
