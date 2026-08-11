@@ -1,77 +1,120 @@
-"""Clean-exit invariants — co-extrusion for s5_37 (The Clean Exit, escape arc 4/4, the terminal / LGP culmination).
+# -*- coding: utf-8 -*-
+"""Proof-first tests for peerhood.clean_exit (S14 Vol 5, CAPSTONE:
+The Clean-Exit Covenant).
 
-Pure/structural: composes the sealed floors — the migration primitive (merkle provenance) and the sealed self-verifying
-audit package. Proves a carve-out separates a subset of a consolidated group value-conserving (the carved-out unit plus
-the remaining business conserve the whole; an entity not in the group is refused), that a diligence package anchors the
-carved-out ledger to a provenance root and self-verifies (and a tampered package does not), and that a clean exit is
-fail-closed (clean only if the carve-out conserves AND the package verifies)."""
-from decimal import Decimal
+Kill-targets pinned (the AA HARD BAR from the V04 finding):
+- composes the whole sealed Sovereign Peerhood stack V01-V04 + S12 quorum + D1 ONLY; invents no mechanism;
+- clean_exit is an EXECUTABLE severance act (not prose-only "reversible") — signed with the peer's OWN key;
+- SEVER-KILLS-LIVE end-to-end: after clean_exit, the prior recognition, delegation, and pool membership verify
+  DEAD (verify_recognition / verify_delegation with the exit's severances → False; membership_is_live → False);
+- the peer walks with its keys + records (walk_with_keys_and_records), no residual claim;
+- pool/federation severance harms no remaining member (sever_pool_link);
+- the generational exit path works under the sealed family quorum (generational_exit_epoch, S12);
+- exit_green_light is the series' FINAL weakest-party test — ON only when every grant is severed, keys are under
+  sole control, and no claim was retained; a grant left live → OFF (a hostage remains);
+- KILL-TARGET: an exit-with-hostage / residual-grant / retained-claim / escrow / custodian field is refused
+  (EXIT_BREACH_FIELDS).
+"""
+import pathlib
+
 import pytest
-from sovereign_agent.deal.clean_exit import (
-    carve_out, diligence_package, assert_clean_exit, CleanExitError,
+
+from sovereign_agent.objects.registry import ObjectRegistry
+from sovereign_agent.compliance.human_approval_gate import HumanApprovalGate
+from sovereign_agent.peerhood.genesis import establish_self_held_identity, PeerhoodError
+from sovereign_agent.peerhood.recognition import mutual_recognition, verify_recognition
+from sovereign_agent.peerhood.delegation import delegate_governed, verify_delegation
+from sovereign_agent.peerhood.bridging import form_peer_pool
+from sovereign_agent.peerhood.clean_exit import (
+    clean_exit, CleanExit, membership_is_live, walk_with_keys_and_records,
+    sever_pool_link, generational_exit_epoch, exit_green_light, ExitLight, EXIT_BREACH_FIELDS,
 )
 
-from _substrate import substrate_available  # noqa: E402  (F-1 GUARD, KM 2026-08-05 — merkle provenance needs the substrate)
-pytestmark = pytest.mark.skipif(not substrate_available(),
-    reason="breathline_primitives (sealed crypto substrate) absent — honest skip, not a broken clone")
-
-# A consolidated group: three entities, each a small ledger (signed).
-GROUP = {
-    "EntA": {"1000-Cash": "4000", "3000-Equity": "-4000"},
-    "EntB": {"1000-Cash": "1500", "2000-AP": "-500", "3000-Equity": "-1000"},
-    "EntC": {"1000-Cash": "800", "3000-Equity": "-800"},
-}
-EVID = ["hash:aa11", "hash:bb22"]
+AT, EXP = "2026-08-11T18:00:00Z", "2026-12-31T00:00:00Z"
 
 
-def test_carve_out_conserves_and_partitions():
-    co = carve_out(GROUP, ["EntB"])
-    assert co["conserves"] is True
-    assert set(co["carved"]) == {"EntB"} and set(co["remaining"]) == {"EntA", "EntC"}
-    assert co["carved_total"] + co["remaining_total"] == co["group_total"]
+def _reg(tmp_path):
+    return ObjectRegistry(str(tmp_path / "node"))
 
 
-def test_carve_out_refuses_unknown_entity():
-    with pytest.raises(CleanExitError):
-        carve_out(GROUP, ["EntZ"])                                            # not in the group
+def _peer_with_grants(tmp_path):
+    ks = str(tmp_path / "ks"); reg = _reg(tmp_path)
+    a = establish_self_held_identity(ks, "peer-a", at=AT, registry=reg)
+    b = establish_self_held_identity(ks, "peer-b", at=AT, registry=reg)
+    rec = mutual_recognition(ks, "peer-a", "peer-b", at=AT, registry=reg)
+    dele = delegate_governed(ks, "peer-a", "agent-b", "cap", expires_at=EXP, at=AT, registry=reg,
+                             approver="km-1176", approval_ref="b:1")
+    pool, mem = form_peer_pool(ks, "pool-1", ["peer-a", "peer-b"], "peer-a")
+    return ks, reg, a, b, rec, dele, mem
 
 
-def test_diligence_package_verifies_and_anchors():
-    co = carve_out(GROUP, ["EntB"])
-    dp = diligence_package("DEAL-1", co["carved"], EVID, "20260805T000000Z")
-    assert dp["verified"] is True and dp["ledger_root"]
-    assert dp["audit_package"]["domains"] == ["financials"]
+def test_clean_exit_severs_every_grant_and_kills_live(tmp_path):
+    ks, reg, a, b, rec, dele, mem = _peer_with_grants(tmp_path)
+    # the grants are LIVE before the exit
+    assert verify_recognition(rec, a, b) is True
+    assert verify_delegation(dele, a) is True
+    ex = clean_exit(ks, "peer-a", recognitions=[rec], delegations=[dele], memberships=[mem], at=AT, registry=reg)
+    assert isinstance(ex, CleanExit) and ex.grants_severed == 3 and ex.grants_total == 3 and ex.no_residual is True
+    # SEVER-KILLS-LIVE end-to-end: after the exit, every grant verifies DEAD
+    assert verify_recognition(rec, a, b, revocations=ex.severances) is False          # recognition dead
+    assert verify_delegation(dele, a, revocations=ex.severances) is False             # delegation dead
+    assert membership_is_live(mem, ex) is False                                       # membership dead
+    with pytest.raises(PeerhoodError):                                                # a peer with no key cannot exit
+        clean_exit(str(tmp_path / "empty"), "ghost", recognitions=[], at=AT, registry=reg)
 
 
-def test_tampered_diligence_package_does_not_verify():
-    from sovereign_agent.compliance.audit_package import verify_audit_package
-    co = carve_out(GROUP, ["EntB"])
-    dp = diligence_package("DEAL-2", co["carved"], EVID, "20260805T000000Z")
-    pkg = dp["audit_package"]
-    pkg["reports"][0]["evidence_refs"].append("hash:forged")                  # tamper after the hash was fixed
-    assert verify_audit_package(pkg) is False                                 # content hash no longer matches
+def test_walk_with_keys_and_records(tmp_path):
+    ks = str(tmp_path / "ks"); reg = _reg(tmp_path)
+    establish_self_held_identity(ks, "peer-a", at=AT, registry=reg)
+    w = walk_with_keys_and_records(ks, "peer-a", records=[{"r": 1}, {"r": 2}])
+    assert w["keys_held"] is True and w["nothing_left_behind"] is True and w["records_carried"] == 2
+    with pytest.raises(PeerhoodError):
+        walk_with_keys_and_records(str(tmp_path / "empty"), "ghost")
 
 
-def test_assert_clean_exit_clean():
-    art = assert_clean_exit("DEAL-3", GROUP, ["EntB"], EVID, "20260805T000000Z")
-    assert art["clean"] is True and art["carve_out"]["conserves"] and art["diligence"]["verified"]
+def test_sever_pool_link_harms_no_remaining_member(tmp_path):
+    ks = str(tmp_path / "ks"); reg = _reg(tmp_path)
+    establish_self_held_identity(ks, "peer-a", at=AT, registry=reg)
+    s = sever_pool_link(ks, "peer-a", "pool-1", at=AT, registry=reg)
+    assert s["harms_remaining_members"] is False and s["signature"] and s["pool"] == "pool-1"
+    with pytest.raises(PeerhoodError):
+        sever_pool_link(str(tmp_path / "empty"), "ghost", "pool-1", at=AT, registry=reg)
 
 
-def test_assert_clean_exit_refuses_unknown_entity():
-    with pytest.raises(CleanExitError):
-        assert_clean_exit("DEAL-4", GROUP, ["EntZ"], EVID, "20260805T000000Z")
+def test_generational_exit_under_family_quorum(tmp_path):
+    ks = str(tmp_path / "ks"); reg = _reg(tmp_path)
+    a = establish_self_held_identity(ks, "peer-a", at=AT, registry=reg)
+    kin = establish_self_held_identity(ks, "peer-kin", at=AT, registry=reg)
+    g = generational_exit_epoch(a, [kin.fingerprint], epoch=1, quorum=2)
+    assert g["heir_can_exit"] is True and g["external_custodian"] is None
+    assert a.fingerprint in g["epoch"].keyholders                                     # the peer's OWN fingerprint
+    with pytest.raises(PeerhoodError):
+        generational_exit_epoch(a, [kin.fingerprint], extra={"custodian": "acme"})
 
 
-def test_ledger_root_order_independent():
-    r1 = diligence_package("D-a", carve_out(GROUP, ["EntA", "EntB"])["carved"], EVID, "20260805T000000Z")["ledger_root"]
-    r2 = diligence_package("D-b", carve_out(GROUP, ["EntB", "EntA"])["carved"], EVID, "20260805T000000Z")["ledger_root"]
-    assert r1 == r2 and r1                                                    # provenance depends on the SET, not order
+def test_exit_green_light_is_the_final_weakest_party_test(tmp_path):
+    ks, reg, a, b, rec, dele, mem = _peer_with_grants(tmp_path)
+    ex = clean_exit(ks, "peer-a", recognitions=[rec], delegations=[dele], memberships=[mem], at=AT, registry=reg)
+    gl = exit_green_light(ks, "peer-a", ex)
+    assert isinstance(gl, ExitLight) and gl.on is True and "no hostage" in gl.reason  # clean exit, light on
+    # a hostage remains → the light is OFF
+    incomplete = CleanExit(peer_id="peer-a", severances=(), grants_severed=2, grants_total=3, no_residual=True)
+    assert exit_green_light(ks, "peer-a", incomplete).on is False
+    assert exit_green_light(ks, "peer-a", ex, external_claim={"lien": "acme"}).on is False
 
 
-def test_gaps_disclosed_but_package_still_verifies():
-    co = carve_out(GROUP, ["EntB"])
-    dr = {"financials": {"ready": False, "gaps": ["open intercompany balance"]}}
-    dp = diligence_package("DEAL-5", co["carved"], EVID, "20260805T000000Z", domain_readiness=dr)
-    assert dp["verified"] is True                                            # an honest package verifies even with gaps
-    assert dp["audit_package"]["ready"] is False                             # ... and discloses it is not fully ready
-    assert dp["audit_package"]["reports"][0]["gaps"] == ["open intercompany balance"]
+def test_the_fence_refuses_hostage_residual_grant_and_escrow(tmp_path):
+    ks = str(tmp_path / "ks"); reg = _reg(tmp_path)
+    establish_self_held_identity(ks, "peer-a", at=AT, registry=reg)
+    for bad in ("exit_with_hostage", "residual_grant", "retained_claim", "escrow", "custodian", "exit_fee"):
+        with pytest.raises(PeerhoodError):
+            clean_exit(ks, "peer-a", recognitions=[], at=AT, registry=reg, extra={bad: "acme"})
+    assert {"exit_with_hostage", "residual_grant", "retained_claim", "escrow"} <= EXIT_BREACH_FIELDS
+
+
+def test_composes_the_whole_sealed_s14_stack_plus_s12():
+    import importlib
+    m = importlib.import_module("sovereign_agent.peerhood.clean_exit")                 # the module, not the fn
+    src = pathlib.Path(m.__file__).read_text()
+    for sealed in ("genesis", "recognition", "delegation", "keystore", "estate.generational_transfer"):
+        assert sealed in src                                                          # composes V01-V04 + D1 + S12

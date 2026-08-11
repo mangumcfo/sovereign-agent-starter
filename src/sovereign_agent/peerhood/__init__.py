@@ -18,6 +18,10 @@ from .bridging import (
     form_peer_pool, bridge_into_pool, verify_bridge, federate_without_directory,
     attribute_pool_value, settle_pool_on_port, pool_vote, BRIDGING_BREACH_FIELDS,
 )
+from .clean_exit import (
+    clean_exit, CleanExit, membership_is_live, walk_with_keys_and_records,
+    sever_pool_link, generational_exit_epoch, exit_green_light, ExitLight, EXIT_BREACH_FIELDS,
+)
 
 __all__ = ["establish_self_held_identity", "PeerIdentity", "declare_birth_boundary",
            "issue_first_receipt", "verify_peer_existence", "genesis_green_light", "GreenLight",
