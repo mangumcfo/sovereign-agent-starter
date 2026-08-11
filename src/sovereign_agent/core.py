@@ -19,10 +19,14 @@ from typing import Any, Dict, List, Optional
 # Lazy crypto surface (audit 2026-06-13 CRIT-2): import sovereign_agent must not hard-fail when the
 # sealed substrate is absent. Names resolve on first USE; call sites are unchanged.
 from ._lazy_bp import (
-    generate_keypair,
     sign,
     hash_function,
     secp256k1_curve,
+)
+# D1 (Phase 0 boot, KM 2026-08-11): node identity is the DURABLE self-held key, never an ephemeral per-boot
+# keypair. Boot LOADS the key and fails loud if it is absent — a node cannot start on an ephemeral/absent key.
+from .keystore.node_keystore import (
+    load_node_keypair, generate_node_key, has_node_key, KeystoreError,
 )
 from .ndjson import read_ndjson  # the ONE tolerant ndjson reader (Universalize Wave §1)
 from .merkle_accumulator import MerkleAccumulator  # incremental frontier root (Engine 95+ HIGH #1)
@@ -206,10 +210,20 @@ class SovereignAgent:
     Robust Sovereign Agent for Lasting Generational Prosperity.
     """
 
-    def __init__(self, name: str, memory_path: Optional[Path] = None, auto_bootstrap: bool = True):
+    def __init__(self, name: str, memory_path: Optional[Path] = None, auto_bootstrap: bool = True,
+                 *, keystore_dir: Optional[str] = None, node_id: Optional[str] = None,
+                 provision_if_absent: bool = False, at: Optional[str] = None):
         """
         auto_bootstrap=True (default) attempts pure-Python activation of breathline_primitives.
         Set to False if already activated via shell or explicit call.
+
+        D1 boot identity (Phase 0, KM 2026-08-11): the node's identity is its DURABLE self-held key from the
+        keystore (`keystore_dir` or the NODE_KEYSTORE_DIR env), keyed by `node_id` (default = name). Boot LOADS
+        it; if the key is ABSENT it FAILS LOUD — there is no ephemeral per-boot key. `provision_if_absent=True`
+        (explicit onboarding only) mints the durable key ONCE if none exists, then loads it; the default (False)
+        refuses an absent key so a node can never start without a durable self-held identity. The same key yields
+        the same fingerprint across every process restart. No passphrase is claimed (file-custody on the
+        operator's own iron); no telemetry.
         """
         if auto_bootstrap:
             try:
@@ -220,7 +234,14 @@ class SovereignAgent:
 
         self.name = name
         self.curve = secp256k1_curve()
-        self.identity = generate_keypair(self.curve)
+        self._keystore_dir = keystore_dir
+        self._node_id = str(node_id or name)
+        if provision_if_absent and not has_node_key(keystore_dir, self._node_id):
+            from datetime import datetime as _dt, timezone as _tz
+            generate_node_key(keystore_dir, self._node_id, at=(at or _dt.now(_tz.utc).isoformat()))
+        # Load the DURABLE self-held key — fail-loud if absent (no ephemeral boot key) or tampered.
+        self.identity = load_node_keypair(keystore_dir, self._node_id)
+        self.fingerprint = self.identity.fingerprint
 
         if memory_path is None:
             memory_path = Path(f"./memory/{name}_memory.json")
@@ -339,7 +360,7 @@ class SovereignAgent:
 
 # Quick demo
 if __name__ == "__main__":
-    agent = SovereignAgent("LGP-Prototype")
+    agent = SovereignAgent("LGP-Prototype", provision_if_absent=True)
     result = agent.act("Develop antifragile multi-generational wealth strategy")
     print(result)
     print("Current Memory Root:", agent.get_memory_root())

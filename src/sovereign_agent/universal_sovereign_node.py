@@ -93,12 +93,18 @@ class UniversalSovereignNode(SovereignAgent):
     wrapped with Merkle + USN self-attestation on every load and execution.
     """
 
-    def __init__(self, name: str = "UniversalSovereignNode", context_type: str = "personal", 
+    def __init__(self, name: str = "UniversalSovereignNode", context_type: str = "personal",
                  playbooks_root: Optional[Path] = None, memory_path: Optional[Path] = None,
-                 auto_bootstrap: bool = True):
+                 auto_bootstrap: bool = True, *, keystore_dir: Optional[str] = None,
+                 node_id: Optional[str] = None, provision_if_absent: bool = False,
+                 at: Optional[str] = None):
         """
         auto_bootstrap=True (default) attempts pure-Python activation of breathline_primitives
         on instantiation. Set False if you have already activated via shell or manual call.
+
+        D1 boot identity (Phase 0): the node boots on its DURABLE self-held key (keystore_dir / NODE_KEYSTORE_DIR,
+        keyed by node_id or name) — absent key FAILS LOUD, no ephemeral per-boot key; provision_if_absent=True
+        mints once (explicit onboarding). See SovereignAgent.__init__.
         """
         if auto_bootstrap:
             try:
@@ -110,7 +116,8 @@ class UniversalSovereignNode(SovereignAgent):
                 # observable when diagnosing (audit 2026-06-13d #26) without noising normal runs.
                 logger.debug("auto_bootstrap of breathline_primitives skipped: %s", e)
 
-        super().__init__(name, memory_path)
+        super().__init__(name, memory_path, keystore_dir=keystore_dir, node_id=node_id,
+                         provision_if_absent=provision_if_absent, at=at)
         
         self.context_adapter = ContextAdapter(context_type)
 
@@ -336,7 +343,7 @@ class UniversalSovereignNode(SovereignAgent):
 
 # Convenience factory
 def create_universal_sovereign_node(name: str = "USN", context: str = "personal") -> UniversalSovereignNode:
-    return UniversalSovereignNode(name=name, context_type=context)
+    return UniversalSovereignNode(name=name, context_type=context, provision_if_absent=True)
 
 
 def cli_create_node() -> None:
@@ -354,7 +361,7 @@ def cli_create_node() -> None:
     print("\n∞Δ∞ Sovereign Node (sovereign-node)")
 
     ctx = _auto_detect_context()
-    node = UniversalSovereignNode(context_type=ctx)
+    node = UniversalSovereignNode(context_type=ctx, provision_if_absent=True)
 
     print(f"Context: {ctx}  |  Mode: {'DEMO' if is_demo_mode() else 'FULL'}")
     print(f"Memory root: {node.get_memory_root()[:32]}...")

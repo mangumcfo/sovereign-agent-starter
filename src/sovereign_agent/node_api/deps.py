@@ -23,12 +23,19 @@ _APPROVAL_GATE: Optional[HumanApprovalGate] = None
 
 
 def get_node() -> UniversalSovereignNode:
-    """Return the process-wide singleton node, instantiating on first call."""
+    """Return the process-wide singleton node, instantiating on first call.
+
+    D1 boot identity (Phase 0): the API serves ONE node with ONE DURABLE self-held key. It onboards that key
+    once (provision_if_absent=True) into the keystore dir (NODE_KEYSTORE_DIR env, keyed by the node name), then
+    boots on it — so the node's fingerprint is stable across process/reboot and the API never runs on an
+    ephemeral identity. No passphrase is claimed (file-custody on the operator's iron); no telemetry."""
     global _NODE
     if _NODE is None:
         context = os.environ.get("BREATHLINE_NODE_CONTEXT", "personal")
         name = os.environ.get("BREATHLINE_NODE_NAME", "UniversalSovereignNode")
-        _NODE = UniversalSovereignNode(name=name, context_type=context)
+        keystore_dir = os.environ.get("NODE_KEYSTORE_DIR")  # None → keystore resolver requires the env
+        _NODE = UniversalSovereignNode(name=name, context_type=context,
+                                       keystore_dir=keystore_dir, provision_if_absent=True)
     return _NODE
 
 

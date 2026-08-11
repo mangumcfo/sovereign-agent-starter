@@ -25,8 +25,8 @@ import tempfile
 from dataclasses import dataclass
 from typing import Any, Mapping, Optional
 
-__all__ = ["NodeKey", "generate_node_key", "load_node_key", "has_node_key",
-           "sign_node_act", "verify_node_act", "node_fingerprint",
+__all__ = ["NodeKey", "NodeKeypair", "generate_node_key", "load_node_key", "load_node_keypair",
+           "has_node_key", "sign_node_act", "verify_node_act", "node_fingerprint",
            "KEYSTORE_BREACH_FIELDS", "KeystoreError"]
 
 SIG_SCHEME = "ecdsa-secp256k1"
@@ -201,6 +201,33 @@ def load_node_key(keystore_dir: Optional[str], node_id: str) -> NodeKey:
         created = str(json.load(f).get("created_at", ""))
     return NodeKey(node_id=str(node_id), public_hex=pub_hex, fingerprint=node_fingerprint(pub_hex),
                    created_at=created)
+
+
+@dataclass(frozen=True)
+class NodeKeypair:
+    """The node's OWN signing key, loaded into ITS OWN process to sign ITS OWN acts — self-custody, not export.
+    Carries the private scalar (`private_key`) in-process only; it is never sent off the iron, to a custodian, or
+    to any second party. This is the boot identity a `SovereignAgent`/`UniversalSovereignNode` signs with; the
+    durable at-rest home stays the 0600 keystore file. `.fingerprint` is the same stable identity across every
+    process restart (it is a function of the public key on disk)."""
+    node_id: str
+    private_key: int
+    public_key: tuple            # (x, y)
+    public_hex: str
+    fingerprint: str
+    sig_scheme: str = SIG_SCHEME
+
+
+def load_node_keypair(keystore_dir: Optional[str], node_id: str) -> NodeKeypair:
+    """Load the node's OWN durable signing keypair from the keystore, for in-process self-signing at boot.
+    Fail-loud if the key is ABSENT (never invents or stubs one — the node cannot boot on an ephemeral key) or
+    TAMPERED (the private scalar must derive the stored public key). The returned fingerprint is identical across
+    process restarts. This is the node signing with its own key; the private scalar never leaves this process for
+    a custodian/escrow/KMS."""
+    priv, pub_hex = _read_priv(keystore_dir, node_id)                                   # fail-loud absent/tamper
+    pub = (int(pub_hex[:64], 16), int(pub_hex[64:128], 16))
+    return NodeKeypair(node_id=str(node_id), private_key=priv, public_key=pub, public_hex=pub_hex,
+                       fingerprint=node_fingerprint(pub_hex))
 
 
 def sign_node_act(keystore_dir: Optional[str], node_id: str, payload: bytes, *,

@@ -14,8 +14,9 @@ pytestmark = pytest.mark.skipif(not substrate_available(),
 
 
 
-def test_basic_action_and_attestation():
-    agent = SovereignAgent("TestAgent-LGP")
+def test_basic_action_and_attestation(tmp_path):
+    # D1 boot (Phase 0): a node needs a DURABLE self-held key — onboard one for this test (provision_if_absent).
+    agent = SovereignAgent("TestAgent-LGP", keystore_dir=str(tmp_path), provision_if_absent=True)
 
     # LGP-flavored task that should score well on the Governor
     task = "Develop antifragile multi-generational family capital allocation strategy"
