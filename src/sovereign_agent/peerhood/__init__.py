@@ -6,6 +6,19 @@ from .genesis import (
     genesis_recovery_epoch, GENESIS_BREACH_FIELDS, PeerhoodError,
 )
 
+from .recognition import (
+    directory_free_discovery, mutual_recognition, verify_recognition,
+    scoped_visibility, recognition_as_receipt, refuse_recognition, RECOGNITION_BREACH_FIELDS,
+)
+from .delegation import (
+    delegate_governed, verify_delegation, join_mutual_protection, sponsor_without_claim,
+    mandate_and_quorum, revoke_delegation, DELEGATION_BREACH_FIELDS,
+)
+
 __all__ = ["establish_self_held_identity", "PeerIdentity", "declare_birth_boundary",
            "issue_first_receipt", "verify_peer_existence", "genesis_green_light", "GreenLight",
-           "genesis_recovery_epoch", "GENESIS_BREACH_FIELDS", "PeerhoodError"]
+           "genesis_recovery_epoch", "GENESIS_BREACH_FIELDS", "PeerhoodError",
+           "directory_free_discovery", "mutual_recognition", "verify_recognition", "scoped_visibility",
+           "recognition_as_receipt", "refuse_recognition", "RECOGNITION_BREACH_FIELDS",
+           "delegate_governed", "verify_delegation", "join_mutual_protection", "sponsor_without_claim",
+           "mandate_and_quorum", "revoke_delegation", "DELEGATION_BREACH_FIELDS"]
