@@ -5,8 +5,7 @@
 > Series 0–1 are teaching, while **Series 2–4 have real callable paths in the starter** — each volume's runtime
 > classification (**RUN / RUN‑partial / teach**) is in the deposited **`S2_S4_CALLABLE_MAP`**, per KM's tier
 > ruling (no blanket flattening to teach‑only). To *run* the node, see `RUN_THE_NODE.md`. Nothing here is a
-> security, a token, a yield product, or an investment offering. *(GB aligns the narrative language to the
-> callable map.)*
+> security, a token, a yield product, or an investment offering.
 
 The foundational arc, in reading order. Each series is named by its full title (Series‑N full‑name law).
 
