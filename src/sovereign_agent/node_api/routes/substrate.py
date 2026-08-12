@@ -35,6 +35,10 @@ from ...objects.registry import ObjectRegistry
 from ...objects.scope import SharingRule
 from ...storage.sovereign_store import store_datum, retrieve_datum, StorageError
 from ...port.crossing import open_crossing, sanction_crossing, CrossingError
+from ...onboarding.onboard import run_onboard, verify_onboard_receipt, OnboardReceipt
+from ...peerhood.recognition import refuse_recognition
+from ...peerhood.clean_exit import clean_exit
+from ...keystore.node_keystore import has_node_key
 
 
 bp = Blueprint("substrate", __name__, url_prefix="/api/v1")
@@ -389,3 +393,152 @@ def port_sanction(crossing_id: str):
         receipt.pop(k, None)
     receipt["note"] = "Sanctioned crossing receipt — the Port records THAT it happened, never the value."
     return jsonify(receipt)
+
+
+# ============================================================================
+# A1 — the 5-turn onboard CEREMONY, drivable over HTTP (sandbox / UAT), no kernel import in the console
+# ============================================================================
+
+@bp.post("/onboard/ceremony")
+@require_principal
+def onboard_ceremony():
+    """onboard.ceremony — run the real 5-turn `run_onboard` in an ISOLATED sandbox keystore (uat=True), driven by
+    body dispositions, so a console can prove the two A1 properties WITHOUT importing the kernel and WITHOUT
+    touching the node's durable boot key:
+      * `disposition: "decline"` → declines at turn 1 → **NO key written, 0 files** (OnboardOutcome).
+      * `disposition: "accept"`  → mints a sandbox key, runs turns 2–5, returns the signed receipt AND the result
+        of `verify_onboard_receipt` (server-side, real — never a simulation).
+    The node's DURABLE identity is provisioned once via the CLI (`keystore.generate_node_key`); the API boots
+    load-only. This route is the ceremony demonstration, not the durable-key act. No private key is ever returned."""
+    import tempfile  # noqa: PLC0415
+    body = request.get_json(silent=True) or {}
+    disposition = str(body.get("disposition", "accept")).strip().lower()
+    accept = disposition.startswith("a")
+    name = str(body.get("name", "ceremony-node"))
+    gated = body.get("gated_acts")
+    first_gate = "approved" if str(body.get("first_gate", "approve")).lower().startswith("a") else "denied"
+
+    def _prompter(turn):
+        if turn.kind == "accept":
+            return accept
+        if turn.kind == "name":
+            return name
+        if turn.kind == "edit_set":
+            return list(gated) if gated else turn.payload
+        if turn.kind == "gate":
+            return first_gate
+        return None
+
+    with tempfile.TemporaryDirectory() as sandbox:
+        try:
+            result = run_onboard(sandbox, prompter=_prompter, at=_now(), node_id="ceremony-node", uat=True)
+        except Exception as exc:  # noqa: BLE001
+            return jsonify(kernel_exception(str(exc))), 500
+        if not isinstance(result, OnboardReceipt):
+            # declined at turn 1 — prove 0 files were written
+            files = []
+            for base, _dirs, fs in os.walk(sandbox):
+                files += fs
+            return jsonify({
+                "status": result.status,
+                "key_written": result.key_written,
+                "files_written": len(files),
+                "message": result.message,
+                "note": "Declining costs nothing and leaves nothing behind (sandbox ceremony, uat).",
+            })
+        verified = bool(verify_onboard_receipt(result, sandbox))
+        return jsonify({
+            "status": "onboarded",
+            "node_name": result.node_name,
+            "fingerprint": result.fingerprint,
+            "gated_acts": list(result.gated_acts),
+            "first_gate": {"status": result.first_gate.get("status"), "approver": result.first_gate.get("approver")},
+            "signature": result.signature,
+            "verified": verified,
+            "verify_instructions": result.verify_instructions,
+            "note": "Sandbox UAT ceremony: the receipt verified offline against the sandbox key (no private key "
+                    "returned). Your DURABLE node identity is provisioned once via the CLI; the API boots load-only.",
+        }), 201
+
+
+# ============================================================================
+# A4 — peers: MINIMAL PRESENT (single-node-safe verbs only). mutual_recognition / messaging stay OUT (two-node).
+# ============================================================================
+
+def _node_peer_id() -> str:
+    return os.environ.get("BREATHLINE_NODE_NAME", "UniversalSovereignNode")
+
+
+def _keystore_dir() -> str | None:
+    return os.environ.get("NODE_KEYSTORE_DIR")
+
+
+@bp.post("/peers/refuse")
+@require_principal
+@require_owner
+def peers_refuse():
+    """peers.refuse — wrap refuse_recognition: THIS node refuses (or revokes) recognition of a NAMED other, a
+    first-class signed act that leaves NO residual claim. Single-node-safe: it needs only this node's OWN key and
+    the other's name (no second node, no pretend mutual recognition). Owner-gated (a constitutional refusal)."""
+    body = request.get_json(silent=True) or {}
+    other = body.get("other")
+    if not other:
+        return jsonify(build_error(
+            code="REFUSE_MISSING_OTHER", what="No `other` to refuse.",
+            why="refuse_recognition names the peer this node refuses.",
+            next_step='POST {"other": "<peer-name>", "reason": "..."}.',
+        )), 400
+    peer_id = _node_peer_id()
+    ks = _keystore_dir()
+    if not has_node_key(ks, peer_id):
+        return jsonify(build_error(
+            code="NODE_KEY_ABSENT", what="This node has no durable self-held key.",
+            why="A refusal must be signed by the node's OWN key; provision it via the CLI onboard.",
+            next_step="Run keystore.generate_node_key for this node, then retry.",
+        )), 409
+    try:
+        ref = refuse_recognition(ks, peer_id, str(other), at=_now(), registry=_reg(),
+                                 reason=str(body.get("reason", "")))
+    except Exception as exc:  # noqa: BLE001
+        return jsonify(kernel_exception(str(exc))), 500
+    return jsonify({
+        "refused": str(other),
+        "residual_claim": ref.get("residual_claim"),   # None — no hostage
+        "hostage_free": ref.get("hostage_free"),
+        "signature": ref.get("signature"),
+        "note": "This node refused a named peer with its own key — no residual claim, no leverage. "
+                "mutual_recognition (a two-node act) is OUT of the single-process API; see examples/p2p_messaging.",
+    }), 201
+
+
+@bp.post("/peers/clean_exit")
+@require_principal
+@require_owner
+def peers_clean_exit():
+    """peers.clean_exit — wrap clean_exit: THIS node severs its OWN grants (the recognitions / delegations /
+    memberships it passes in), an executable act signed with its own key, walking with no residual claim.
+    Single-node-safe (it acts only on this node's own records). Owner-gated."""
+    body = request.get_json(silent=True) or {}
+    peer_id = _node_peer_id()
+    ks = _keystore_dir()
+    if not has_node_key(ks, peer_id):
+        return jsonify(build_error(
+            code="NODE_KEY_ABSENT", what="This node has no durable self-held key.",
+            why="A clean exit must be signed by the node's OWN key.",
+            next_step="Provision the node key via the CLI onboard, then retry.",
+        )), 409
+    try:
+        ex = clean_exit(ks, peer_id,
+                        recognitions=list(body.get("recognitions", [])),
+                        delegations=list(body.get("delegations", [])),
+                        memberships=list(body.get("memberships", [])),
+                        at=_now(), registry=_reg())
+    except Exception as exc:  # noqa: BLE001
+        return jsonify(kernel_exception(str(exc))), 500
+    return jsonify({
+        "peer_id": ex.peer_id,
+        "grants_severed": ex.grants_severed,
+        "grants_total": ex.grants_total,
+        "no_residual": ex.no_residual,
+        "note": "This node severed its own grants and walks with no residual claim (single-node act).",
+    }), 201

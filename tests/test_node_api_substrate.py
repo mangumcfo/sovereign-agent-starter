@@ -147,3 +147,42 @@ def test_pending_port_gate_surfaces_boundary(owner_client):
     pend = owner_client.get("/api/v1/breath_gate/pending").get_json()
     port_items = [it for it in pend["pending"] if it["provenance"].get("source") == "http:port.crossing"]
     assert port_items and port_items[0]["provenance"]["boundary"] == "external:example.com"
+
+
+# ── A1 · the 5-turn ceremony is drivable over HTTP: decline → 0 files, accept → receipt verifies ───────────
+def test_onboard_ceremony_decline_leaves_zero_files(owner_client):
+    r = owner_client.post("/api/v1/onboard/ceremony", json={"disposition": "decline"})
+    assert r.status_code == 200
+    b = r.get_json()
+    assert b["status"] == "declined" and b["key_written"] is False and b["files_written"] == 0
+
+
+def test_onboard_ceremony_accept_receipt_verifies_no_key_leak(owner_client):
+    r = owner_client.post("/api/v1/onboard/ceremony",
+                          json={"disposition": "accept", "name": "sandbox-node", "first_gate": "approve"})
+    assert r.status_code == 201
+    b = r.get_json()
+    assert b["status"] == "onboarded" and b["verified"] is True and b["fingerprint"]
+    assert b["first_gate"]["status"] == "approved"
+    blob = str(b).lower()
+    assert "private_key" not in blob and "secret" not in blob  # only public verification material
+
+
+# ── A4 · peers MINIMAL PRESENT: this node refuses with no residual; clean_exit of its own grants ───────────
+def test_peers_refuse_leaves_no_residual(owner_client):
+    r = owner_client.post("/api/v1/peers/refuse", json={"other": "peer-x", "reason": "stepping back"})
+    assert r.status_code == 201
+    b = r.get_json()
+    assert b["refused"] == "peer-x" and b["residual_claim"] is None
+    assert b["hostage_free"] is True and b["signature"]
+
+
+def test_peers_refuse_requires_other(owner_client):
+    assert owner_client.post("/api/v1/peers/refuse", json={}).status_code == 400
+
+
+def test_peers_clean_exit_this_node_walks_clean(owner_client):
+    r = owner_client.post("/api/v1/peers/clean_exit", json={})
+    assert r.status_code == 201
+    b = r.get_json()
+    assert b["no_residual"] is True and b["grants_severed"] == b["grants_total"]
