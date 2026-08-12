@@ -51,6 +51,14 @@ _PROCESS_NOTE = ("Process-local gate store: this item lives in THIS API process'
 _REG: ObjectRegistry | None = None
 _DATUM: Dict[str, dict] = {}     # object_id -> governed datum object (metadata only; NEVER the raw bytes)
 _CROSSING: Dict[str, dict] = {}  # crossing object_id -> {crossing, gate_req_id, boundary_mandate}
+# provenance side-map (NOT on the sealed ApprovalRequest dataclass): req_id -> {source, boundary}. Lets the
+# breath-gate inbox serializer tell an HTTP-raised gate from a kernel-raised one, and surface a Port boundary.
+_GATE_META: Dict[str, dict] = {}
+
+
+def gate_meta() -> Dict[str, dict]:
+    """Provenance for gates this process raised over HTTP (read by the /breath_gate/pending serializer)."""
+    return dict(_GATE_META)
 
 
 def _reg() -> ObjectRegistry:
@@ -64,10 +72,11 @@ def _reg() -> ObjectRegistry:
 
 def reset_substrate() -> None:
     """Drop the process-local substrate singletons (tests)."""
-    global _REG, _DATUM, _CROSSING
+    global _REG, _DATUM, _CROSSING, _GATE_META
     _REG = None
     _DATUM = {}
     _CROSSING = {}
+    _GATE_META = {}
 
 
 def _now() -> str:
@@ -99,6 +108,14 @@ def onboard_run():
     durable self-held key. The disposition is the operator's, at the existing gate routes."""
     body = request.get_json(silent=True) or {}
     action_class = body.get("action_class") or (DEFAULT_GATED_ACTS[0] if DEFAULT_GATED_ACTS else "send_value")
+    # fail-loud: only a real gated-act class may be proposed — never an invented action class
+    if action_class not in DEFAULT_GATED_ACTS:
+        return jsonify(build_error(
+            code="UNKNOWN_ACTION_CLASS",
+            what=f"action_class '{action_class}' is not a gated act.",
+            why="onboard.run only enqueues one of the node's declared gated acts (DEFAULT_GATED_ACTS).",
+            next_step=f"Use one of: {', '.join(DEFAULT_GATED_ACTS)}.",
+        )), 400
     principal = current_principal()
     req = ApprovalRequest(
         action_class=str(action_class),
@@ -110,6 +127,7 @@ def onboard_run():
     )
     gate = get_approval_gate()
     req_id = gate.request_approval(req)
+    _GATE_META[req_id] = {"source": "http:onboard.run", "boundary": None, "action_class": req.action_class}
     return jsonify({
         "status": "pending_gate",
         "req_id": req_id,
@@ -283,27 +301,39 @@ def port_open():
     except Exception:  # noqa: BLE001 — node status optional for id; fall back to principal
         pass
     node_id = node_id or principal
+    boundary_mandate = str(body.get("boundary_mandate", f"external:{target}"))
     try:
+        # source_ref is a COLON-symbolic ref (no path separator) so R22-3 never reads a dotted hostname
+        # (example.com / api.example.test) as an unresolvable file path — it accepts symbolic refs as-is.
         crossing = open_crossing(_reg(), node_id, str(target), dict(instruction),
                                  mandate=principal, author=principal,
-                                 source_ref=f"crossing://{node_id}/{target}", at=_now())
+                                 source_ref=f"crossing:{node_id}:{target}", at=_now())
     except CrossingError as exc:
         return jsonify(build_error(
             code="CROSSING_REFUSED", what=str(exc), why="open_crossing refused.",
             next_step="Provide a non-empty target and instruction.",
         )), 400
+    except ValueError as exc:
+        # fail-loud structured refusal — never a generic 500 (e.g. a provenance/validation rule)
+        return jsonify(build_error(
+            code="CROSSING_INVALID", what=str(exc),
+            why="The crossing could not be registered as a governed object.",
+            next_step="Check the target/instruction; the target may be a plain hostname.",
+        )), 400
     except Exception as exc:  # noqa: BLE001
         return jsonify(kernel_exception(str(exc))), 500
-    # surface a pending sanction in the same breath-gate inbox
+    # surface a pending sanction in the same breath-gate inbox, carrying the boundary in the rationale
     gate = get_approval_gate()
     req = ApprovalRequest(action_class="boundary_crossing", role_id="port", principal_id=principal,
                           risk_level="high",
-                          rationale=f"Port crossing to '{target}' awaiting the operator's sanction.",
+                          rationale=f"Port crossing to '{target}' (boundary {boundary_mandate}) "
+                                    f"awaiting the operator's sanction.",
                           required_approvers=[principal])
     gate_req_id = gate.request_approval(req)
+    _GATE_META[gate_req_id] = {"source": "http:port.crossing", "boundary": boundary_mandate,
+                               "crossing_id": crossing["object_id"]}
     _CROSSING[crossing["object_id"]] = {
-        "crossing": crossing, "gate_req_id": gate_req_id,
-        "boundary_mandate": str(body.get("boundary_mandate", f"external:{target}")),
+        "crossing": crossing, "gate_req_id": gate_req_id, "boundary_mandate": boundary_mandate,
     }
     return jsonify({
         "status": "pending_sanction",
@@ -353,6 +383,7 @@ def port_sanction(crossing_id: str):
     get_approval_gate().record_disposition(entry["gate_req_id"], status="approved", approver=approver,
                                            reason="Port crossing sanctioned by the owner.")
     _CROSSING.pop(crossing_id, None)
+    _GATE_META.pop(entry["gate_req_id"], None)
     # defense-in-depth: the kernel receipt already carries no value; assert the money-path fence at the surface
     for k in ("value", "amount", "funds", "balance", "held"):
         receipt.pop(k, None)

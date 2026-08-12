@@ -117,3 +117,33 @@ def test_port_crossing_refuses_empty_target_or_instruction(owner_client):
                              json={"instruction": {"x": 1}}).status_code == 400
     assert owner_client.post("/api/v1/port/crossing",
                              json={"target": "relay", "instruction": {}}).status_code == 400
+
+
+# ── AA fix 1 · a dotted hostname target must not trip R22-3 (→ 201, not KERNEL_EXCEPTION) ──────────────────
+@pytest.mark.parametrize("host", ["example.com", "api.example.test"])
+def test_port_crossing_accepts_dotted_hostname(owner_client, host):
+    r = owner_client.post("/api/v1/port/crossing",
+                          json={"target": host, "instruction": {"send": "ref://m1"}})
+    assert r.status_code == 201, r.get_json()
+    assert r.get_json()["status"] == "pending_sanction"
+
+
+# ── AA fix 2 · action_class validation + provenance stamp ─────────────────────────────────────────────────
+def test_onboard_run_rejects_unknown_action_class(owner_client):
+    r = owner_client.post("/api/v1/onboard/run", json={"action_class": "not_a_gated_act"})
+    assert r.status_code == 400 and r.get_json()["code"] == "UNKNOWN_ACTION_CLASS"
+
+
+def test_onboard_run_stamps_http_provenance(owner_client):
+    owner_client.post("/api/v1/onboard/run", json={})
+    pend = owner_client.get("/api/v1/breath_gate/pending").get_json()
+    assert pend["pending"][0]["provenance"]["source"] == "http:onboard.run"
+
+
+# ── AA fix 3 · a pending Port gate surfaces its boundary in /breath_gate/pending ──────────────────────────
+def test_pending_port_gate_surfaces_boundary(owner_client):
+    owner_client.post("/api/v1/port/crossing",
+                      json={"target": "example.com", "instruction": {"send": "ref://m1"}})
+    pend = owner_client.get("/api/v1/breath_gate/pending").get_json()
+    port_items = [it for it in pend["pending"] if it["provenance"].get("source") == "http:port.crossing"]
+    assert port_items and port_items[0]["provenance"]["boundary"] == "external:example.com"

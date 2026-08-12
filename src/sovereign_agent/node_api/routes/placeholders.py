@@ -196,13 +196,21 @@ def breath_gate_pending():
     """breath_gate.pending — pending human-approval requests (session-scoped store)."""
     gate = get_approval_gate()
     pending = gate.get_pending()
-    items = [{"req_id": rid, "request": req, "status": "pending"} for rid, req in pending.items()]
+    # provenance enrichment (audit 2026-08-12): distinguish an HTTP-raised gate from a kernel-raised one, and
+    # surface a Port crossing's boundary — read from the substrate side-map, never the sealed ApprovalRequest.
+    from .substrate import gate_meta  # noqa: PLC0415 — late import, avoids a blueprint import cycle
+    meta = gate_meta()
+    items = []
+    for rid, req in pending.items():
+        m = meta.get(rid)
+        provenance = {k: v for k, v in m.items() if v is not None} if m else {"source": "kernel"}
+        items.append({"req_id": rid, "request": req, "status": "pending", "provenance": provenance})
     return jsonify({
         "pending": items,
         "count": len(items),
-        "note": "Session-scoped breath-gate store. Empty until a "
-                "corporate_regulated action triggers requires_approval. The "
-                "empty state is the honest truth, not a stub.",
+        "note": "Session-scoped breath-gate store. Empty until a gated action is proposed (in-process or via "
+                "POST /api/v1/onboard/run · /api/v1/port/crossing). Each item carries `provenance.source` "
+                "(kernel | http:onboard.run | http:port.crossing) and, for a Port crossing, `provenance.boundary`.",
     })
 
 
