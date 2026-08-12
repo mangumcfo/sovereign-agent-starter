@@ -7,6 +7,16 @@ holding a root key.
 > Book ≠ module: the books teach; this repository **is** the running node. Nothing here is a token, a coin, a
 > yield, or a security, and no return is promised. Governance is opt-in and always the human's.
 
+## In one breath (the elevator)
+
+- **IS:** a self-held key on your own machine · a human gate over actions · offline-verifiable receipts · a
+  governed Port for anything external.
+- **IS NOT** an agent framework (there is no hosted brain or tool-router here) and **not a custodian** (we hold no
+  key, no funds, no data for you).
+- **The loop — key → gate → act → receipt → exit:** you mint your own key, gate the acts you choose, every act
+  emits a receipt anyone verifies offline, and you can always refuse a peer or cleanly exit with your keys.
+- **External reach is Port-only:** deny-by-default, named-human sanction, a receipt — never the value; money-path off.
+
 ---
 
 ## What this IS / IS NOT — read this first
