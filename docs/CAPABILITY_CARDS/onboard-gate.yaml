@@ -1,0 +1,27 @@
+# Capability card — Five-turn human onboard + gated acts
+# Machine-readable twin of onboard-gate.md. Source of truth: PRESENT/callable sealed floors only.
+id: onboard-gate
+name: "Five-turn human onboard + gated acts"
+sealed_home: "Sovereign Peerhood (Series 14) V01 genesis + the onboard ceremony; gate = Full Production ERP (Series 5) V16 HumanApprovalGate"
+callable_path: "sovereign_agent.onboarding.onboard"
+verbs:
+    - "run_onboard"
+    - "cli_onboard"
+    - "verify_onboard_receipt"
+    - "DEFAULT_GATED_ACTS"
+inputs: "keystore_dir, a prompter callback (AI proposes / human disposes), at"
+outputs: "OnboardReceipt (signed over turns 1-5) · verify_onboard_receipt -> bool"
+gate_required: "Y"
+receipt_shape: "OnboardReceipt{node_id, name, fingerprint, gated_acts, first_act, first_gate, signature}; no key written before the turn-1 accept"
+kill_targets:
+    - "no key until the human accepts at turn 1"
+    - "AI proposes, human disposes — default-deny on gated acts"
+    - "no telemetry / no phone-home / no default peers / no account"
+anti_patterns:
+    - "auto-accepting the key ceremony on the human's behalf"
+    - "removing the human hand from an act the operator chose to gate"
+    - "shipping a default peer list or a home-server URL"
+app_patterns:
+    - "run a first-boot ceremony where your user accepts their own key"
+    - "let the user pick which of your app's actions always need their hand"
+    - "hand the user a signed receipt they can verify without your app"

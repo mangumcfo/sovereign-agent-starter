@@ -1,0 +1,29 @@
+# Capability card — Governed object model + mandate scope
+# Machine-readable twin of object-model.md. Source of truth: PRESENT/callable sealed floors only.
+id: object-model
+name: "Governed object model + mandate scope"
+sealed_home: "Full Production ERP (Series 5) V05 object registry; Zero-Trust Sovereignty (Series 7) V05 declared scope"
+callable_path: "sovereign_agent.objects.registry.ObjectRegistry; sovereign_agent.objects.scope.SharingRule, check_access"
+verbs:
+    - "ObjectRegistry.append"
+    - "ObjectRegistry.versions"
+    - "ObjectRegistry.current"
+    - "ObjectRegistry.population_root"
+    - "SharingRule"
+    - "check_access"
+inputs: "root_dir; obj_id, payload, author, source_ref, at, mandate; SharingRule(obj_id, to_mandate, scope)"
+outputs: "an append-only version {object_id, version_hash, seq, mandate, payload} · population_root hex"
+gate_required: "N"
+receipt_shape: "each object is an authored, hash-chained version under exactly one mandate; state is derived by replay; cross-mandate access needs a declared SharingRule or is refused (deny-by-default)"
+kill_targets:
+    - "an object belongs to exactly one mandate — a second registration refuses"
+    - "no cross-mandate access without a declared rule (no standing trust)"
+    - "state is replayed from the record, never asserted by a current-value row"
+anti_patterns:
+    - "mutating an object in place instead of appending a version"
+    - "reading across mandates with no declared SharingRule"
+    - "trusting a 'current value' field over a replay of the chain"
+app_patterns:
+    - "model your app's business objects as governed, auditable versions"
+    - "derive one integrity root over a whole population for a proof"
+    - "grant exactly one other party exactly one scope on one object"

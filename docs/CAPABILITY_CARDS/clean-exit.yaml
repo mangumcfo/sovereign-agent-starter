@@ -1,0 +1,28 @@
+# Capability card — Clean exit — sever grants, walk with keys
+# Machine-readable twin of clean-exit.md. Source of truth: PRESENT/callable sealed floors only.
+id: clean-exit
+name: "Clean exit — sever grants, walk with keys"
+sealed_home: "Sovereign Peerhood (Series 14) V05 — The Clean-Exit Covenant"
+callable_path: "sovereign_agent.peerhood.clean_exit"
+verbs:
+    - "clean_exit"
+    - "exit_green_light"
+    - "walk_with_keys_and_records"
+    - "membership_is_live"
+    - "sever_pool_link"
+inputs: "keystore_dir, peer id, its recognitions / delegations / memberships, at, registry"
+outputs: "CleanExit{grants_severed, grants_total, no_residual, severances} · ExitLight{on, reason}"
+gate_required: "N"
+receipt_shape: "CleanExit (executable severance signed with the peer's own key; sever-kills-live — prior grants verify DEAD); exit_green_light -> ON only when every grant severed, keys sole-held, no claim retained"
+kill_targets:
+    - "exit is EXECUTABLE, not prose-reversible — severance kills the live grant"
+    - "no exit-with-hostage / residual-grant / escrow / custodian (refused)"
+    - "the peer walks with its keys + records, no retained claim"
+anti_patterns:
+    - "'deactivation' that a central party can undo"
+    - "holding a user's records or keys after they leave"
+    - "an exit that leaves a grant live somewhere"
+app_patterns:
+    - "give every user a one-act, verifiable way to leave with their data"
+    - "prove to a leaving user that no grant survives their exit"
+    - "run a generational hand-off under a family quorum"

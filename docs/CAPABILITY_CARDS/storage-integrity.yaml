@@ -1,0 +1,25 @@
+# Capability card — Sovereign datum storage (owner-scoped, Merkle-bound)
+# Machine-readable twin of storage-integrity.md. Source of truth: PRESENT/callable sealed floors only.
+id: storage-integrity
+name: "Sovereign datum storage (owner-scoped, Merkle-bound)"
+sealed_home: "Zero-Trust Sovereignty (Series 7) V03 — Sovereign Data Storage Model"
+callable_path: "sovereign_agent.storage.sovereign_store"
+verbs:
+    - "store_datum"
+    - "retrieve_datum"
+inputs: "registry, owner, content chunks, visibility ('private'|'shared'), mandate; a SharingRule + presented chunks (to retrieve cross-mandate)"
+outputs: "a governed datum {object_id, version_hash, payload{visibility, root}} · retrieve -> {retrieved, integrity:'verified'}"
+gate_required: "N"
+receipt_shape: "datum carries a Merkle root over its own bytes; retrieval is deny-by-default, scoped, integrity-checked — altered bytes or an undeclared access are refused"
+kill_targets:
+    - "no central store owns or vouches for the data — the owner does"
+    - "no silent public bucket — absence of a rule is a refusal"
+    - "no altered data served — integrity checked from the datum's own bytes"
+anti_patterns:
+    - "uploading user data to a bucket a central service controls"
+    - "serving bytes without checking them against the stored root"
+    - "widening access without the owner declaring a SharingRule"
+app_patterns:
+    - "store user files as owner-scoped, integrity-bound objects"
+    - "share a file with exactly one party via a governed rule"
+    - "detect at-rest tampering on every read"

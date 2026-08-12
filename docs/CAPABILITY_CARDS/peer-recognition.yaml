@@ -1,0 +1,28 @@
+# Capability card — Recognize / refuse a peer (no registry)
+# Machine-readable twin of peer-recognition.md. Source of truth: PRESENT/callable sealed floors only.
+id: peer-recognition
+name: "Recognize / refuse a peer (no registry)"
+sealed_home: "Sovereign Peerhood (Series 14) V02 — Recognition Without a Registry"
+callable_path: "sovereign_agent.peerhood.recognition"
+verbs:
+    - "mutual_recognition"
+    - "verify_recognition"
+    - "refuse_recognition"
+    - "scoped_visibility"
+    - "recognition_as_receipt"
+inputs: "keystore_dir, two peer ids, at, registry"
+outputs: "a signed recognition receipt · refuse -> {residual_claim:None, hostage_free:True, signature}"
+gate_required: "N"
+receipt_shape: "recognition receipt {parties, signature} verifiable public-only by both parties and no one else; refuse -> hostage-free signed act"
+kill_targets:
+    - "no central registry / directory / name-service / scored-authority (refused)"
+    - "refusing a peer leaves NO residual claim (hostage-free)"
+    - "recognition verifies for the two parties only, never a third"
+anti_patterns:
+    - "a central directory that lists or ranks peers"
+    - "a reputation score used as authority"
+    - "a refusal that leaves a lingering claim on the refused peer"
+app_patterns:
+    - "let two users establish a mutual, verifiable relationship with no server"
+    - "show a peer's scoped, self-declared profile (not a central lookup)"
+    - "let a user cleanly refuse another with no residue"

@@ -1,0 +1,26 @@
+# Capability card — Offline receipt / signature verification
+# Machine-readable twin of receipt-verify.md. Source of truth: PRESENT/callable sealed floors only.
+id: receipt-verify
+name: "Offline receipt / signature verification"
+sealed_home: "D1 keystore + Sovereign Peerhood (Series 14) — verification is pure"
+callable_path: "sovereign_agent.keystore.node_keystore.verify_node_act; sovereign_agent.onboarding.onboard.verify_onboard_receipt; sovereign_agent.peerhood.recognition.verify_recognition"
+verbs:
+    - "verify_node_act"
+    - "verify_onboard_receipt"
+    - "verify_recognition"
+inputs: "a receipt/packet + the relevant public key or identity"
+outputs: "bool (True = genuine, verified from bytes alone)"
+gate_required: "N"
+receipt_shape: "bool — computed from the receipt's own bytes and a public key; no AI, no cloud, no account"
+kill_targets:
+    - "verification is the holder's, never 'verified by us'"
+    - "no network, no central authority in the check"
+    - "public-only — the verifier never needs a private key"
+anti_patterns:
+    - "'trust our server said it's valid' instead of verifying bytes"
+    - "requiring an account or API call to verify"
+    - "verifying with anything other than the stated public key"
+app_patterns:
+    - "let a recipient confirm a receipt is genuine on their own machine"
+    - "gate a workflow on a real signature check, not a claim"
+    - "audit a chain of receipts after the fact, offline"

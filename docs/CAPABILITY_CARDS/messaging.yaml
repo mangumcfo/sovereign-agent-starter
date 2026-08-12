@@ -1,0 +1,26 @@
+# Capability card — Receipted inter-node messaging (no hub)
+# Machine-readable twin of messaging.md. Source of truth: PRESENT/callable sealed floors only.
+id: messaging
+name: "Receipted inter-node messaging (no hub)"
+sealed_home: "Inter-Node Sovereignty (Series 6) V01 — Receipted Inter-Node Messaging"
+callable_path: "sovereign_agent.messaging.inter_node"
+verbs:
+    - "send_message"
+    - "carry_to_peer"
+    - "receive_from_peer"
+inputs: "registry, message_id, body, mandate, author, source_ref, at; a delivered packet (to receive)"
+outputs: "a governed message object (a receipt on send) · receive -> {received, message_root, validated_by:'self'}"
+gate_required: "N"
+receipt_shape: "message object {object_id, version_hash, author, source_ref}; a self-verifying packet each peer validates over its own bytes; wrong stated root or tamper -> refused"
+kill_targets:
+    - "no broker / hub / relay takes custody of the message"
+    - "no central validator — each node validates for itself"
+    - "fail-closed: a packet that fails its checks or root is refused"
+anti_patterns:
+    - "routing all messages through a server that can read/alter them"
+    - "trusting a central service's 'valid' instead of validating bytes"
+    - "accepting a packet whose root you did not check"
+app_patterns:
+    - "exchange signed, provenance-carrying messages between two nodes"
+    - "verify a received message offline before acting on it"
+    - "build a chat/notification client where the server can't forge messages"
