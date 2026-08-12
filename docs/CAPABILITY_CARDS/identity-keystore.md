@@ -1,7 +1,7 @@
-# Self-held node identity (D1 keystore)
+# Self-held node identity (keystore)
 
 - **id:** `identity-keystore`
-- **sealed home:** D1 keystore — Sovereign Peerhood (Series 14) substrate
+- **sealed home:** Zero-Trust Sovereignty (Series 7) V1 — composes Generational Transfer (Series 12) V1-V2 as floors only; never D1-as-volume (GB ratified 2026-08-11)
 - **callable path:** `sovereign_agent.keystore.node_keystore`
 - **gate required:** **N**
 

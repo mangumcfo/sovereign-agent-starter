@@ -6,9 +6,9 @@ is no card for a designed-toward or unglued capability. `sealed_home` is series-
 
 | card | capability | gate | home |
 |---|---|:---:|---|
-| `identity-keystore` | self-held node identity (mint/sign/verify/reload) | N | D1 keystore — Sovereign Peerhood (Series 14) substrate |
-| `onboard-gate` | 5-turn human onboard + gated acts | **Y** | Sovereign Peerhood (Series 14) V01 + Full Production ERP (Series 5) V16 gate |
-| `receipt-verify` | offline receipt / signature verification | N | D1 keystore + Sovereign Peerhood (Series 14) |
+| `identity-keystore` | self-held node identity (mint/sign/verify/reload) | N | Zero-Trust Sovereignty (Series 7) V1 (+ Generational Transfer (Series 12) V1–V2 compose-floors; never D1-as-volume) |
+| `onboard-gate` | 5-turn human onboard + gated acts | **Y** | Inter-Node Sovereignty (Series 6) V6 + Full Production ERP (Series 5) V16 gate |
+| `receipt-verify` | offline receipt / signature verification | N | Full Production ERP (Series 5) V26 |
 | `peer-recognition` | recognize / refuse a peer (no registry) | N | Sovereign Peerhood (Series 14) V02 |
 | `clean-exit` | sever grants, walk with keys | N | Sovereign Peerhood (Series 14) V05 |
 | `messaging` | receipted inter-node messaging (no hub) | N | Inter-Node Sovereignty (Series 6) V01 |

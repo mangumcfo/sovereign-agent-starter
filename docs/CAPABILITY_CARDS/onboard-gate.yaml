@@ -2,7 +2,7 @@
 # Machine-readable twin of onboard-gate.md. Source of truth: PRESENT/callable sealed floors only.
 id: onboard-gate
 name: "Five-turn human onboard + gated acts"
-sealed_home: "Sovereign Peerhood (Series 14) V01 genesis + the onboard ceremony; gate = Full Production ERP (Series 5) V16 HumanApprovalGate"
+sealed_home: "Inter-Node Sovereignty (Series 6) V6 + Full Production ERP (Series 5) V16 gate — composes the sealed gate; no new admission authority (GB ratified 2026-08-11)"
 callable_path: "sovereign_agent.onboarding.onboard"
 verbs:
     - "run_onboard"

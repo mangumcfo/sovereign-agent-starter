@@ -1,7 +1,7 @@
 # Five-turn human onboard + gated acts
 
 - **id:** `onboard-gate`
-- **sealed home:** Sovereign Peerhood (Series 14) V01 genesis + the onboard ceremony; gate = Full Production ERP (Series 5) V16 HumanApprovalGate
+- **sealed home:** Inter-Node Sovereignty (Series 6) V6 + Full Production ERP (Series 5) V16 gate — composes the sealed gate; no new admission authority (GB ratified 2026-08-11)
 - **callable path:** `sovereign_agent.onboarding.onboard`
 - **gate required:** **Y**
 

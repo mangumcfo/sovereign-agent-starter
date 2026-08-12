@@ -1,7 +1,7 @@
 # Offline receipt / signature verification
 
 - **id:** `receipt-verify`
-- **sealed home:** D1 keystore + Sovereign Peerhood (Series 14) — verification is pure
+- **sealed home:** Full Production ERP (Series 5) V26 — pure offline validate; no registry, no network (GB ratified 2026-08-11)
 - **callable path:** `sovereign_agent.keystore.node_keystore.verify_node_act; sovereign_agent.onboarding.onboard.verify_onboard_receipt; sovereign_agent.peerhood.recognition.verify_recognition`
 - **gate required:** **N**
 

@@ -4,8 +4,8 @@ For an AI-app builder. You do **not** need to read the book shelf. In one page y
 the five-minute mental model, and how your app attaches by **proposing, gating, and verifying** — without ever
 holding a root key.
 
-> Author attach a running node; this repo **is** the node. Nothing here is a token, a coin, a yield, or a
-> security, and no return is promised. Governance is opt-in and always the human's.
+> Book ≠ module: the books teach; this repository **is** the running node. Nothing here is a token, a coin, a
+> yield, or a security, and no return is promised. Governance is opt-in and always the human's.
 
 ---
 
