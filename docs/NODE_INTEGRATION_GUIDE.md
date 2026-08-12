@@ -7,6 +7,22 @@ holding a root key.
 > Book ≠ module: the books teach; this repository **is** the running node. Nothing here is a token, a coin, a
 > yield, or a security, and no return is promised. Governance is opt-in and always the human's.
 
+## Start here — the discovery path
+
+Read in this order; stop as soon as you have what you need.
+
+1. **Elevator** (below) — what the node is and is not, in one breath.
+2. **Intent map** — `docs/INTENT_MAP.md`: how Human ↔ App ↔ Port ↔ Node ↔ Peer/Exit fit together, a card per edge.
+3. **Cards** — `docs/CAPABILITY_CARDS/`: the nine curated primitives (callable path, verbs, gate, receipt, kill-targets).
+4. **Patterns** — `docs/PATTERNS.md`: ten builder recipes composing the cards; copy the matching example in `examples/`.
+5. **CALLABLE_MAP (the import oracle)** — `docs/CALLABLE_MAP.md`: the full inventory of importable/run paths, generated
+   from real imports. Reach here when a card doesn't cover what you need — everything listed imports on a fresh clone.
+6. **ERP for builders** (if you're building ERP-shaped) — `docs/ERP_FOR_BUILDERS.md`: the whole Full Production ERP (S5) reduced to four primitives.
+7. **The shelf** (appeal only) — the books (Series 0–14) teach the depth behind a path; you never need them to build.
+
+New to how the pieces interoperate? `docs/COMPOSITION.md` is the one-page contract (apps propose · node receipts ·
+human gates material acts · Port-only external · no custody).
+
 ## In one breath (the elevator)
 
 - **IS:** a self-held key on your own machine · a human gate over actions · offline-verifiable receipts · a
