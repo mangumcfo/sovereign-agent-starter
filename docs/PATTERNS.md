@@ -1,8 +1,10 @@
 # Builder Patterns v0 — recipes over the sovereign node
 
-Ten patterns for building an app on the node. Each composes **only the nine capability cards**
-(`docs/CAPABILITY_CARDS/`) — a real, callable surface, nothing designed-toward. Each pattern names its intent,
-the cards it uses, the steps, the kill-targets it must hold, and the anti-patterns that break it.
+Ten patterns for building an app on the node, plus one addendum. Patterns 1–10 compose **only the nine capability
+cards** (`docs/CAPABILITY_CARDS/`) — a real, callable surface, nothing designed-toward. The **addendum (11)**
+additionally reaches one sealed path from `docs/CALLABLE_MAP.md` (Sovereign Livelihood value attribution),
+labelled as such. Each pattern names its intent, the cards it uses, the steps, the kill-targets it must hold, and
+the anti-patterns that break it.
 
 **Standing invariants across every pattern:** the Port is the only blessed path to anything external · the
 money-path is off (the node moves and holds no value) · a human gate cannot be removed from an act the operator
@@ -141,6 +143,30 @@ no residual claim.
 **Anti-patterns:** a central directory that ranks peers · using a reputation score as a permission · a "block"
 that leaves a lingering claim.
 **Exit & non-hostage:** `refuse_recognition` and `clean_exit` both end the relationship with no residue.
+
+---
+
+## Addendum · 11 · Investor-owned surplus capacity → offer → gated offtake → receipted attribution
+**Intent:** an owner of surplus capacity (equipment, storage, compute time they own) offers it, a taker draws it
+down under a human gate, external offtake crosses the Port, and the value earned is recorded as the owner's **own
+receipt**. This is offer-and-attribution — **not** a distributed-compute engine and **not** a value custodian.
+**Reaches beyond the nine cards:** composes `port-crossing` + `object-model` + `receipt-verify` cards **plus** the
+sealed **Sovereign Livelihood (Series 10)** value-attribution path from `docs/CALLABLE_MAP.md`
+(`sovereign_agent.economy.income` · `sovereign_agent.economy.pool` — `attribute_income`, `pool_settlement`;
+money-path OFF via `MONEY_PATH_BREACH_FIELDS`).
+**Steps:** (1) model the surplus capacity and the offer as governed objects under the owner's mandate
+(`object-model`); (2) a taker's drawdown of a gated offtake is default-deny until a named human approves; (3) any
+external offtake — a buyer, a rail, a market — is a **Port crossing** (declared boundary + named human + receipt);
+(4) the earned value is recorded as the owner's **own attribution receipt** (`attribute_income`); shared pools
+**settle only via the Port** (`pool_settlement`), never in-node.
+**Kill-targets:** **no distributed-compute / no remote-execution claim** — this offers capacity and attributes
+value, it does not run workloads · **money-path OFF** — the node holds and moves no value; attribution is a receipt
+of who-is-owed, settlement is Port-only · Port-only external offtake · no custodian of the capacity or the value.
+**Anti-patterns:** describing this as a compute marketplace or a job runner · the node holding funds or netting
+balances · settling value inside the node · advertising the attribution as a token, a yield, or an investment
+(it is none — nothing here is a security).
+**Exit & non-hostage:** the owner withdraws the offer freely and walks with their records; a taker refuses or
+cleanly exits; no residual claim on either side.
 
 ---
 

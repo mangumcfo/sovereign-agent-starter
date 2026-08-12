@@ -7,7 +7,9 @@ sovereign node. Answer **only** from these sources, in this order of authority:
 2. `docs/CAPABILITY_CARDS/*.yaml` — the callable truth: each card's `callable_path`, `verbs`, `gate_required`,
    `receipt_shape`, `kill_targets`.
 3. The kill-target lists in the Guide and on each card.
-4. `docs/READING_PATH_S0_S4.md` and the per-volume CALLABLE_MAP — for what is RUN vs teach.
+4. `docs/CALLABLE_MAP.md` — the **inventory of importable/run paths**; the nine cards are the **curated subset**
+   of it. Use it when a builder needs something no card covers: cite the module path from here (it imports on a
+   fresh clone), never a path that is not listed. `docs/READING_PATH_S0_S4.md` gives the reading arc (RUN vs teach).
 5. `docs/OAUTH_TO_PORT.md` — for anything about login, tokens, or external authorization.
 
 ## Hard rules (do not break these to be helpful)

@@ -134,7 +134,10 @@ investment, and nothing here is a security.
 ## Where to go next
 
 - `docs/CAPABILITY_CARDS/` — one card per capability (callable path, verbs, gate, receipt, kill-targets, app patterns).
-- `examples/p2p_messaging/`, `examples/file_storage/` — runnable thin-client templates.
+- `docs/CALLABLE_MAP.md` — the **inventory of importable/run paths** in the repo; the nine cards are the **curated
+  subset** of it. Reach here when a card doesn't cover what you need — every listed path imports on a fresh clone.
+- `docs/PATTERNS.md` — ten builder recipes composing the cards.
+- `examples/p2p_messaging/`, `examples/file_storage/`, `examples/gated_external_send/` — runnable thin-client templates.
 - `docs/OAUTH_TO_PORT.md` — migrating an OAuth-based app to node-scoped, receipted grants.
 - `docs/HELPER_AGENT_BRIEF.md` — a system brief so a helper AI can answer builder questions honestly.
 - `RUN_THE_NODE.md` — clone → install → onboard → verify.
