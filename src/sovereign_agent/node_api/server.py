@@ -44,6 +44,7 @@ from .routes import hopper as hopper_routes
 from .routes import feedback as feedback_routes
 from .routes import relay as relay_routes
 from .routes import scout as scout_routes
+from .routes import substrate as substrate_routes
 
 
 def create_app() -> Flask:
@@ -95,6 +96,7 @@ def create_app() -> Flask:
     app.register_blueprint(feedback_routes.bp)
     app.register_blueprint(relay_routes.bp)
     app.register_blueprint(scout_routes.bp)
+    app.register_blueprint(substrate_routes.bp)
     app.register_blueprint(placeholder_routes.bp)
 
     # --- Serve the Atrium cockpit SAME-ORIGIN (the operator 2026-06-19) ---------------
