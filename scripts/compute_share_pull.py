@@ -66,7 +66,19 @@ def _gpu_free_mib():
         return None
 
 
-def _one_pull(a, reg, node_pub, rpub, grant, models) -> int:
+def _load_grant(path):
+    """Reload the grant on every poll. Absent/unreadable → (None, None, None): no recognized key, no rule →
+    deny-by-default on the next job. This is the operator's LIVE revocation: delete the file, jobs refuse; restore
+    it, jobs admit again — the daemon never falls over either way."""
+    try:
+        g = json.load(open(path, encoding="utf-8"))
+        return g["grant"], g["requester_public_hex"], g.get("models")
+    except (FileNotFoundError, OSError, ValueError, KeyError, TypeError):
+        return None, None, None
+
+
+def _one_pull(a, reg, node_pub) -> int:
+    grant, rpub, models = _load_grant(a.grant_file)     # RELOADED each poll (KM 2026-08-13)
     with socket.create_connection((a.beard_host, a.beard_port), timeout=60) as s:
         _send(s, {"kind": "pull"})
         reply = _recv(s) or {}
@@ -77,6 +89,14 @@ def _one_pull(a, reg, node_pub, rpub, grant, models) -> int:
         now = datetime.datetime.now(datetime.timezone.utc).isoformat()
         for env in jobs:
             jid = env.get("job_id")
+            if grant is None or not rpub:
+                # no grant loaded → cannot authenticate a requester, no rule to admit under → deny-by-default,
+                # unreceipted (an unauthenticated node cannot be made to spend a governed object)
+                results.append({"job_id": jid, "outcome": "refused", "node_public_hex": node_pub,
+                                "reason": "job refused: no grant loaded on this node (grant file absent/unreadable) "
+                                          "— deny-by-default until the operator restores/re-issues the grant"})
+                print(f"  refused {jid} · no grant loaded (deny-by-default)")
+                continue
             if a.min_gpu_free_mib > 0:
                 free = _gpu_free_mib()
                 if free is None or free < a.min_gpu_free_mib:
@@ -113,17 +133,18 @@ def main(argv=None) -> int:
         print("✗ --model-url must be loopback — the GPU never faces the network."); return 2
     ks = os.environ.get("NODE_KEYSTORE_DIR")
     node_pub = load_node_key(ks, a.node).public_hex
-    g = json.load(open(a.grant_file, encoding="utf-8"))
-    grant, rpub, models = g["grant"], g["requester_public_hex"], g.get("models")
     reg = ObjectRegistry(a.registry)
+    _g0, _r0, _m0 = _load_grant(a.grant_file)
     print(f"∞Δ∞ compute-share puller — Dragon {a.node} fp {load_node_key(ks, a.node).fingerprint} dials "
           f"Beard {a.beard_host}:{a.beard_port} OUTBOUND · model {a.model_url} (loopback) · no inbound bind here")
+    print(f"  grant file {a.grant_file}: {'loaded' if _g0 else 'ABSENT/UNREADABLE — jobs deny-by-default until restored'} "
+          f"(RELOADED every poll — delete the file to revoke live)")
     if a.once:
-        n = _one_pull(a, reg, node_pub, rpub, grant, models)
+        n = _one_pull(a, reg, node_pub)
         print(f"  pulled/processed {n} job(s)"); return 0
     while True:
         try:
-            _one_pull(a, reg, node_pub, rpub, grant, models)
+            _one_pull(a, reg, node_pub)          # grant is reloaded inside, every cycle
         except OSError as e:
             print(f"  (beard unreachable: {type(e).__name__} — will retry)")
         time.sleep(a.poll_seconds)

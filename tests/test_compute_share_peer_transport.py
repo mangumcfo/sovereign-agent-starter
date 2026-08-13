@@ -144,6 +144,26 @@ def test_t3_over_units_refused_receipted_and_returned(rig):
                for e in reg2.entries())                           # post-signature refusal IS receipted (T3)
 
 
+def test_grant_reload_delete_mid_run_refuses_next_job(rig):
+    # cycle 1: grant present -> admit/complete
+    _enqueue(rig, "reload-ok")
+    t = _serve_once(rig, _free_port_for(rig)); lport = rig["_lport"]
+    out = _pull(rig, lport); assert "admit→complete reload-ok" in out.stdout, out.stdout + out.stderr
+    t.join(timeout=10)
+    assert _done(rig, "reload-ok")["outcome"] == "complete"
+    # revoke live: delete the grant file
+    os.remove(rig["gfile"])
+    # cycle 2: same daemon path, grant gone -> next job refused, deny-by-default (daemon does not crash)
+    _enqueue(rig, "reload-after-revoke")
+    t = _serve_once(rig, _free_port_for(rig)); lport = rig["_lport"]
+    out2 = _pull(rig, lport)
+    assert out2.returncode == 0, out2.stdout + out2.stderr          # pull stayed up (no crash)
+    assert "no grant loaded" in out2.stdout, out2.stdout
+    t.join(timeout=10)
+    d = _done(rig, "reload-after-revoke")
+    assert d["outcome"] == "refused" and "no grant loaded" in d["reason"]
+
+
 # helper: pick a port and stash it on rig so serve+pull agree
 def _free_port_for(rig):
     p = _free_port(); rig["_lport"] = p; return p
