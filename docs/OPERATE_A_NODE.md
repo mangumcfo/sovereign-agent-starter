@@ -15,9 +15,9 @@ python3 -m venv --system-site-packages .venv && ./.venv/bin/pip install -e .
 
 # every boot: durable keystore + owner + loopback serve (provisions the key ONCE; never re-mints)
 export NODE_KEYSTORE_DIR=~/.sovereign_keystore          # your key lives here, on this iron
-export BREATHLINE_NODE_NAME=UniversalSovereignNode      # this node's stable id (key = <name>.nodekey.json)
-export BREATHLINE_NODE_LOOPBACK_OWNER=<your-principal>  # owner of the owner-gated routes
-./.venv/bin/python scripts/sovereign_node_up.sh         # binds 127.0.0.1:8421 only
+export BREATHLINE_NODE_NAME=UniversalSovereignNode      # this node's stable id (key = NODENAME.nodekey.json)
+export BREATHLINE_NODE_LOOPBACK_OWNER=owner             # your principal id — any label; do NOT use angle brackets
+bash scripts/sovereign_node_up.sh                       # binds 127.0.0.1:8421 only
 ```
 
 - **Durable, not ephemeral:** the key is written once to `$NODE_KEYSTORE_DIR/<name>.nodekey.json` (0600). On every
@@ -30,7 +30,7 @@ export BREATHLINE_NODE_LOOPBACK_OWNER=<your-principal>  # owner of the owner-gat
 
 Node Home (the console) points at *this* node only:
 ```bash
-export BREATHLINE_ATRIUM_UI_DIR=<console-dist>   # then open http://127.0.0.1:8421/atrium/
+export BREATHLINE_ATRIUM_UI_DIR=/path/to/console-dist   # then open http://127.0.0.1:8421/atrium/
 ```
 
 ## Smoke (operator parity list)
@@ -41,6 +41,20 @@ BREATHLINE_NODE_API_PORT=8421 scripts/node_smoke.sh
 Checks: node status · onboard **decline → 0 files** · onboard accept → **receipt verifies** · gate **propose →
 pending → approve** (`real:true`) · Port **open → sanction** (value-free receipt) · Files **store → verify** ·
 Peers **refuse** (`residual_claim=None`) · **no private key** in any response.
+
+## D6 durability report (one command → pasteable deposit)
+
+Proves identity is stable across a restart, keystore digest unchanged, loopback-only, and the smoke passes
+**after** a restart — all in one block you paste back as the deposit. **Use plain values, never angle brackets**
+(a `<` is a shell redirect and will error).
+
+```bash
+export NODE_KEYSTORE_DIR=~/.sovereign_keystore
+export BREATHLINE_NODE_NAME=UniversalSovereignNode
+export BREATHLINE_NODE_LOOPBACK_OWNER=owner    # your principal id (plain text, no < >)
+export PYTHONPATH=src                          # only if you did not `pip install -e .`
+bash scripts/node_d6_report.sh                 # prints the whole deposit; paste it verbatim
+```
 
 ## Operator posture — status · propose · gate, under your key, no silent exec
 
