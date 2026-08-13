@@ -51,9 +51,9 @@ def main():
     npub, rpub, nfp = node.public_hex, req.public_hex, node.fingerprint
     dg0 = _digest(ks, NODE)  # before-run digest, captured once the durable key exists
 
-    def submit(env, deleg, now="2026-08-13T06:00:00+00:00", url=MODEL_URL, caller=cs._loopback_model_call, revs=()):
+    def submit(env, deleg, now="2026-08-13T06:00:00+00:00", url=MODEL_URL, caller=cs._loopback_model_call, revs=(), models=None):
         return cs.submit_job(reg, NODE, env, recognized_public_hex=rpub, node_public_hex=npub,
-                             delegation=deleg, now=now, model_url=url, model_caller=caller, revocations=revs)
+                             delegation=deleg, now=now, model_url=url, model_caller=caller, revocations=revs, models=models)
 
     print("∞Δ∞ COMPUTE-SHARE WRAPPER REPORT — USN-only · integrity-only ·", cs.LABEL)
     print(f"node fp BEFORE: {nfp}  · keystore digest BEFORE: {_digest(ks, NODE)[:32]}…")
@@ -116,6 +116,8 @@ def main():
                   "docker run --privileged x", "crossing:bypass"]:
         print(f"  {shape[:28]:30s}->", refuse(lambda s=shape: submit(sig_env(ks, job_id="e", prompt=s), grant)))
     print("  unknown key {shell:..} ->", refuse(lambda: submit(sig_env(ks, job_id="uk", extra={"shell": "y"}), grant)))
+    print("  model allowlist: offered=['tiny'] · job names 'evil-model' ->",
+          refuse(lambda: submit(sig_env(ks, job_id="ml", model="evil-model"), grant, models=["tiny"])))
 
     print("\n== RECEIPT FENCE (KM 2026-08-13) · post-signature refuse is receipted; pre-sig garbage is not ==")
     regR = ObjectRegistry(os.path.join(os.environ["SHARE_REG_ROOT"], "regR"))

@@ -154,6 +154,7 @@ def submit_job(reg, node_id: str, envelope: Mapping[str, Any], *, recognized_pub
                node_public_hex: str, delegation: Optional[Mapping[str, Any]], now: str,
                model_url: str = "http://127.0.0.1:11434/api/generate",
                model_caller: Callable[[str, Mapping[str, Any]], str] = _loopback_model_call,
+               models: Optional[Sequence[str]] = None,
                revocations: Sequence[Mapping[str, Any]] = ()) -> dict:
     """Run one job through the governed path. Returns the complete receipt on success; raises ShareRefusal /
     ComputeError (the terminal answer) otherwise. NO non-USN fallback exists — a refusal is returned as-is."""
@@ -197,6 +198,11 @@ def submit_job(reg, node_id: str, envelope: Mapping[str, Any], *, recognized_pub
         if isinstance(v, str) and _ESCAPE.search(v):
             _refuse_receipted(f"job refused: field {k!r} contains an escape shape (shell/path/keystore/container/"
                               f"Port bypass) — the job stays inside the allowlisted inference API, it cannot reach the machine")
+
+    # --- model allowlist: the offer names EXACTLY which models it will run; anything else is refused ---
+    if models is not None and model not in set(models):
+        _refuse_receipted(f"job refused: model {model!r} is not in this node's offered models {sorted(set(models))} "
+                          f"— a node runs only the models it has pulled and offered, nothing wider")
 
     # --- W2/W4/W1: build the SharingRule ONLY if a live time-bound delegation authorizes it; else no rule. ---
     node_identity = PeerIdentity(peer_id=node_id, public_hex=node_public_hex, fingerprint="", evidence_hash="")

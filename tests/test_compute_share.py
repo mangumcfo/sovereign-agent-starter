@@ -233,6 +233,31 @@ def test_pre_signature_garbage_is_unreceipted(env):
     assert len(cs.receipts(env["reg"], NODE)) == before  # nothing spent on unauthenticated garbage
 
 
+# ── model allowlist (KM Dragon offer 2026-08-13) — a job may name only an offered model ──
+def test_model_allowlist_enforced(env):
+    cs.open_offer(env["reg"], NODE, 10, at="2026-08-13T00:30:00+00:00")
+    g = _grant(env, expires_at="2026-08-13T23:00:00+00:00")
+    # a model NOT in the offered set → refused (post-signature → receipted)
+    ev = _signed_envelope(env["ks"], job_id="ml1", prompt="hi")  # model defaults to "tiny"
+    with pytest.raises(cs.ShareRefusal, match="not in this node's offered models"):
+        _submit(env, ev, g, models=["qwen3-coder:30b", "llama3.1:8b"])
+    assert any(r["payload"]["job_id"] == "ml1" and r["payload"]["outcome"] == "refused"
+               for r in cs.receipts(env["reg"], NODE))
+    # a model IN the set → proceeds to complete
+    ev2 = {"job_id": "ml2", "model": "llama3.1:8b", "prompt": "hi", "units": 1, "requester_mandate": REQ}
+    ev2["sig"] = sign_node_act(env["ks"], REQ, cs._canonical(ev2))
+    ok = _submit(env, ev2, g, models=["qwen3-coder:30b", "llama3.1:8b"])
+    assert ok["outcome"] == "complete"
+
+
+def test_model_allowlist_none_is_unrestricted(env):
+    # back-compat: models=None (default) allows any escape-clean model name
+    cs.open_offer(env["reg"], NODE, 10, at="2026-08-13T00:30:00+00:00")
+    g = _grant(env, expires_at="2026-08-13T23:00:00+00:00")
+    ok = _submit(env, _signed_envelope(env["ks"], job_id="anyml"), g)  # models not passed
+    assert ok["outcome"] == "complete"
+
+
 # ── W10 · integrity-only labels; no channel-secrecy claim anywhere ──
 def test_w10_labels_clean():
     src = (_ROOT / "scripts" / "compute_share.py").read_text().lower()
