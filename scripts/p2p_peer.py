@@ -75,22 +75,32 @@ def role_b(keystore_dir, home, name, host, port):
     srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     srv.bind((host, port)); srv.listen(1)
     print(f"[B {name}] fp={idB.fingerprint} DECLARED listener {host}:{port}", flush=True)
-    conn, _ = srv.accept()
-    hello = _recv(conn); a_public_hex = hello["a_public_hex"]         # A's identity, out-of-band
-    _send(conn, {"b_public_hex": idB.public_hex, "b_fingerprint": idB.fingerprint})
-    while True:
+    while True:  # survive across A sessions (a disconnect ends a session, not the listener) until SIGKILL'd
+        conn, peer = srv.accept()
+        print(f"[B {name}] session from {peer[0]}:{peer[1]}", flush=True)
         try:
-            req = _recv(conn)
-        except ConnectionError:
-            break
-        op = req.get("op")
-        if op == "cosign_recognition":
-            _send(conn, {"sig_b": sign_node_act(ks, name, req["obj_hash"].encode())})   # only the sig crosses
-        elif op == "verify_message":
-            ok = verify_node_act(a_public_hex, req["hash"].encode(), req["sig"])          # vs HANDSHAKE public_hex
-            _send(conn, {"verified": bool(ok), "checked_against": "handshake a_public_hex"})
-        else:
-            break
+            hello = _recv(conn); a_public_hex = hello["a_public_hex"]     # A's identity, out-of-band
+            _send(conn, {"b_public_hex": idB.public_hex, "b_fingerprint": idB.fingerprint})
+            while True:
+                try:
+                    req = _recv(conn)
+                except ConnectionError:
+                    break
+                op = req.get("op")
+                if op == "cosign_recognition":
+                    _send(conn, {"sig_b": sign_node_act(ks, name, req["obj_hash"].encode())})   # only the sig crosses
+                elif op == "verify_message":
+                    ok = verify_node_act(a_public_hex, req["hash"].encode(), req["sig"])          # vs HANDSHAKE public_hex
+                    _send(conn, {"verified": bool(ok), "checked_against": "handshake a_public_hex"})
+                else:
+                    break
+        except Exception:  # noqa: BLE001 — one bad session never takes the listener down
+            pass
+        finally:
+            try:
+                conn.close()
+            except Exception:
+                pass
 
 
 def role_a(keystore_dir, home, name, peer_host, peer_port, kill_wait):
