@@ -69,7 +69,15 @@ fi
 KEYM=$(_mtime "$KEYFILE"); NOTEM=$(_mtime "$NOTE")
 echo "  key  $KEYFILE mtime: $KEYM  perms: $(_perms "$KEYFILE")"
 if [ -n "${NOTEM:-}" ] && [ -n "${KEYM:-}" ] && [ "$NOTEM" -le "$KEYM" ]; then
-  echo "  ✓ recovery note existed before the key was minted"; else echo "  ⚠ note mtime not before key mtime — confirm you read the recovery note first"; fi
+  echo "  ✓ recovery note mtime is before the key mtime"; else echo "  ⚠ note mtime not before key mtime — confirm you read the recovery note first"; fi
+# AA Beard R2 §3.1: key mtime reflects the file's CURRENT write — a keystore MOVE updates it, so this ✓ is an
+# mtime proxy, not proof you read the note (and never proof of the original mint time). The reading is the operator's.
+echo "  note: key mtime reflects the file's current write; a move/copy updates it — the ✓ is a proxy, not proof of reading."
+# web-root footgun guard (AA Beard R2 §4)
+case "$NODE_KEYSTORE_DIR" in
+  /var/www/*|*/public_html/*|/usr/share/nginx/*|/srv/www/*|*/htdocs/*)
+    echo "  ⚠⚠ NODE_KEYSTORE_DIR is inside a WEB-SERVED directory — move HOME/keystore outside any web root." ;;
+esac
 
 echo "== boot 1 =="; PID=$(_start); echo "  pid $PID"; _dump_if_down
 echo "  sockets (loopback only):"; { ss -ltnp 2>/dev/null | grep ":$PORT" || lsof -iTCP:"$PORT" -sTCP:LISTEN 2>/dev/null || echo "(ss/lsof unavailable)"; } | sed 's/^/    /'

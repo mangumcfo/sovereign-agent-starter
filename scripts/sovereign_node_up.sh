@@ -19,6 +19,14 @@ export BREATHLINE_NODE_NAME="${BREATHLINE_NODE_NAME:-UniversalSovereignNode}"
 HOST="${BREATHLINE_NODE_API_HOST:-127.0.0.1}"
 PORT="${BREATHLINE_NODE_API_PORT:-8421}"
 
+# Footgun guard (AA Beard R2 §4): a durable key inside a web-served dir can be served to the internet, and if the
+# default $HOME/.sovereign_keystore lands there, an omitted override silently MINTS a NEW identity in the web root.
+case "$NODE_KEYSTORE_DIR" in
+  /var/www/*|*/public_html/*|/usr/share/nginx/*|/srv/www/*|*/htdocs/*)
+    echo "⚠⚠ WARNING: NODE_KEYSTORE_DIR ($NODE_KEYSTORE_DIR) is inside a WEB-SERVED directory."
+    echo "   A private key here can be exposed to the internet. Set HOME (or NODE_KEYSTORE_DIR) OUTSIDE any web root"
+    echo "   — e.g. export HOME=/root/node-home — so the SAFE path is the default, not a flag you must remember." ;;
+esac
 mkdir -p "$NODE_KEYSTORE_DIR"; chmod 700 "$NODE_KEYSTORE_DIR" 2>/dev/null || true
 
 # Provision the DURABLE key once (load-only if present). Boot never mints a new identity.
