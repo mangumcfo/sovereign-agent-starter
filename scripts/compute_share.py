@@ -157,16 +157,7 @@ def submit_job(reg, node_id: str, envelope: Mapping[str, Any], *, recognized_pub
                revocations: Sequence[Mapping[str, Any]] = ()) -> dict:
     """Run one job through the governed path. Returns the complete receipt on success; raises ShareRefusal /
     ComputeError (the terminal answer) otherwise. NO non-USN fallback exists — a refusal is returned as-is."""
-    # --- W8: allowlist the envelope BEFORE anything touches identity or the model ---
-    unknown = set(envelope) - _ALLOWED_JOB_KEYS
-    if unknown:
-        raise ShareRefusal(f"job refused: keys {sorted(unknown)} are outside the inference allowlist "
-                           f"{sorted(_MODEL_KEYS)} — a job may not carry shell, path, keystore, or container directives")
-    for k, v in envelope.items():
-        if isinstance(v, str) and _ESCAPE.search(v):
-            raise ShareRefusal(f"job refused: field {k!r} contains an escape shape (shell/path/keystore/container/"
-                               f"Port bypass) — the job stays inside the allowlisted inference API, it cannot reach the machine")
-
+    # --- structural well-formedness (PRE-signature — malformed/garbage stays UNRECEIPTED, the spam fence) ---
     job_id = str(envelope.get("job_id", "")).strip()
     model = str(envelope.get("model", "")).strip()
     req_mandate = str(envelope.get("requester_mandate", "")).strip()
@@ -176,7 +167,8 @@ def submit_job(reg, node_id: str, envelope: Mapping[str, Any], *, recognized_pub
 
     # --- W3: admission is KEY-scoped. Verify the requester's signature over the envelope against the
     #         mandate's RECOGNIZED public_hex (from the peer book) — never an envelope-supplied key,
-    #         never a token/secret/IP. A different key, or no signature, refuses. ---
+    #         never a token/secret/IP. A different key, or no signature, refuses — and PRE-signature refusals
+    #         write NO receipt (an unauthenticated sender cannot force the node to spend a governed object). ---
     sig = str(envelope.get("sig", "")).strip()
     if not sig:
         raise ShareRefusal("job refused: admission is key-scoped — a signature over the job by the requester's "
@@ -186,20 +178,37 @@ def submit_job(reg, node_id: str, envelope: Mapping[str, Any], *, recognized_pub
     if not verify_node_act(recognized_public_hex, _canonical(envelope), sig):
         raise ShareRefusal("job refused: the job signature does not verify against this requester's recognized "
                            "public_hex — a payload signed by a different key is not this requester")
+    # >>> the requester is now AUTHENTICATED — every refusal from here leaves a governed receipt (KM 2026-08-13) <<<
+    completer_fp = load_node_key(_ks_of(), node_id).fingerprint
 
-    # --- W2/W4: build the SharingRule ONLY if a live time-bound delegation authorizes it; else no rule. ---
+    def _refuse_receipted(reason: str):
+        """A post-signature refusal (escape / over-sub / policy / no-offer): receipt it, then raise. The
+        authenticated requester's attempt is on the record; only pre-signature garbage stays unreceipted."""
+        _append_receipt(reg, node_id, job_id, model=model, units=units, outcome="refused",
+                        completer_fp=completer_fp, at=now, reason=reason)
+        raise ShareRefusal(reason)
+
+    # --- W8: allowlist + escape fences (POST-signature → RECEIPTED) ---
+    unknown = set(envelope) - _ALLOWED_JOB_KEYS
+    if unknown:
+        _refuse_receipted(f"job refused: keys {sorted(unknown)} are outside the inference allowlist "
+                          f"{sorted(_MODEL_KEYS)} — a job may not carry shell, path, keystore, or container directives")
+    for k, v in envelope.items():
+        if isinstance(v, str) and _ESCAPE.search(v):
+            _refuse_receipted(f"job refused: field {k!r} contains an escape shape (shell/path/keystore/container/"
+                              f"Port bypass) — the job stays inside the allowlisted inference API, it cannot reach the machine")
+
+    # --- W2/W4/W1: build the SharingRule ONLY if a live time-bound delegation authorizes it; else no rule. ---
     node_identity = PeerIdentity(peer_id=node_id, public_hex=node_public_hex, fingerprint="", evidence_hash="")
     offer = latest_offer(reg, node_id)
     if not (offer and offer.get("version_hash") and offer.get("object_id")):
-        raise ShareRefusal("job refused: no governed capacity offer exists to admit against (W1)")
+        _refuse_receipted("job refused: no governed capacity offer exists to admit against (W1)")
     offer_id = offer["object_id"]
     rules = []
     if _grant_live(delegation, node_identity, revocations, now=now, requester_mandate=req_mandate, offer_id=offer_id):
         # admit_job authorizes the crossing with want="write" (running a job IS a write to the offer);
         # the declared SharingRule must therefore grant "write" — the exact scope, nothing wider.
         rules = [SharingRule(offer_id, req_mandate, "write")]
-
-    completer_fp = load_node_key(_ks_of(), node_id).fingerprint
 
     # --- W5/W1: admit deny-by-default, fail-closed, IN ORDER (offer real · not over-subscribed · rule · named) ---
     try:

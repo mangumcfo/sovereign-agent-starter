@@ -194,6 +194,45 @@ def test_w9_no_backend_endpoint_in_source():
     assert non_loopback == [], f"a non-loopback backend URL is present: {non_loopback}"
 
 
+# ── receipt-on-post-signature-refuse (KM punch-list 2026-08-13) ──
+def test_post_signature_refuse_is_receipted(env):
+    """After the signature verifies, escape / over-sub / policy refusals SHOULD leave a receipt."""
+    cs.open_offer(env["reg"], NODE, 5, at="2026-08-13T00:30:00+00:00")
+    g = _grant(env, expires_at="2026-08-13T23:00:00+00:00")
+    # escape (authenticated) → refused WITH a receipt
+    with pytest.raises(cs.ShareRefusal, match="escape shape"):
+        _submit(env, _signed_envelope(env["ks"], job_id="esc1", prompt="run; rm -rf /"), g)
+    r = [x for x in cs.receipts(env["reg"], NODE) if x["payload"]["job_id"] == "esc1"]
+    assert len(r) == 1 and r[0]["payload"]["outcome"] == "refused" and "escape shape" in r[0]["payload"]["reason"]
+    # over-subscription (authenticated) → refused WITH a receipt
+    with pytest.raises(cs.ShareRefusal, match="over-subscription|exceeds"):
+        _submit(env, _signed_envelope(env["ks"], job_id="big", units=99), g)
+    assert any(x["payload"]["job_id"] == "big" and x["payload"]["outcome"] == "refused"
+               for x in cs.receipts(env["reg"], NODE))
+    # deny-by-default / policy (authenticated, no grant) → refused WITH a receipt
+    with pytest.raises(cs.ShareRefusal):
+        _submit(env, _signed_envelope(env["ks"], job_id="pol"), delegation=None)
+    assert any(x["payload"]["job_id"] == "pol" and x["payload"]["outcome"] == "refused"
+               for x in cs.receipts(env["reg"], NODE))
+
+
+def test_pre_signature_garbage_is_unreceipted(env):
+    """The spam fence: a refusal BEFORE the signature verifies writes NO receipt — an unauthenticated
+    sender cannot force the node to spend a governed object."""
+    cs.open_offer(env["reg"], NODE, 5, at="2026-08-13T00:30:00+00:00")
+    g = _grant(env, expires_at="2026-08-13T23:00:00+00:00")
+    before = len(cs.receipts(env["reg"], NODE))
+    # bad signature (wrong key) — even with an escape payload, refused pre-signature → no receipt
+    bad = _signed_envelope(env["ks"], job_id="spam", prompt="run; rm -rf /", signer=NODE)
+    with pytest.raises(cs.ShareRefusal, match="does not verify"):
+        _submit(env, bad, g)
+    # no signature at all → refused pre-signature → no receipt
+    nosig = {"job_id": "spam2", "model": "tiny", "prompt": "hi", "units": 2, "requester_mandate": REQ}
+    with pytest.raises(cs.ShareRefusal, match="key-scoped"):
+        _submit(env, nosig, g)
+    assert len(cs.receipts(env["reg"], NODE)) == before  # nothing spent on unauthenticated garbage
+
+
 # ── W10 · integrity-only labels; no channel-secrecy claim anywhere ──
 def test_w10_labels_clean():
     src = (_ROOT / "scripts" / "compute_share.py").read_text().lower()

@@ -117,6 +117,29 @@ def main():
         print(f"  {shape[:28]:30s}->", refuse(lambda s=shape: submit(sig_env(ks, job_id="e", prompt=s), grant)))
     print("  unknown key {shell:..} ->", refuse(lambda: submit(sig_env(ks, job_id="uk", extra={"shell": "y"}), grant)))
 
+    print("\n== RECEIPT FENCE (KM 2026-08-13) · post-signature refuse is receipted; pre-sig garbage is not ==")
+    regR = ObjectRegistry(os.path.join(os.environ["SHARE_REG_ROOT"], "regR"))
+    oR = cs.open_offer(regR, NODE, 5, at="2026-08-13T00:30:00+00:00")
+    gR = delegate_governed(ks, NODE, REQ, f"compute:{oR['object_id']}", expires_at="2026-08-13T23:00:00+00:00",
+                           at="2026-08-13T01:00:00+00:00", registry=regR, approver="KM-1176", approval_ref="kmR")
+
+    def subR(env, **kw):
+        return cs.submit_job(regR, NODE, env, recognized_public_hex=rpub, node_public_hex=npub,
+                             delegation=gR, now="2026-08-13T06:00:00+00:00", model_url=MODEL_URL,
+                             model_caller=cs._loopback_model_call, **kw)
+    n0 = len(cs.receipts(regR, NODE))
+    refuse(lambda: subR(sig_env(ks, job_id="R-escape", prompt="cat /etc/passwd")))         # authed escape
+    refuse(lambda: subR(sig_env(ks, job_id="R-oversub", units=99)))                        # authed over-sub
+    n1 = len(cs.receipts(regR, NODE))
+    # pre-signature garbage: wrong-key escape + no-sig — must add NO receipt
+    refuse(lambda: subR(sig_env(ks, job_id="R-spam", prompt="rm -rf /", signer=NODE)))
+    refuse(lambda: subR({"job_id": "R-spam2", "model": "t", "prompt": "x", "units": 1, "requester_mandate": REQ}))
+    n2 = len(cs.receipts(regR, NODE))
+    ref_jobs = [(r["payload"]["job_id"], r["payload"]["outcome"], r["payload"]["reason"][:34])
+                for r in cs.receipts(regR, NODE) if r["payload"]["outcome"] == "refused"]
+    print(f"  post-signature refuses receipted: {n1 - n0}  (R-escape, R-oversub)  -> {ref_jobs}")
+    print(f"  pre-signature garbage receipts added: {n2 - n1}  (R-spam wrong-key · R-spam2 no-sig — spam fence: 0)")
+
     print("\n== W9 · a refusal is the terminal answer — no non-USN fallback ==")
     src = (ROOT / "scripts" / "compute_share.py").read_text()
     import re
