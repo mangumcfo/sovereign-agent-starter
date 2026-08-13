@@ -65,6 +65,7 @@ def main(argv=None) -> int:
     p.add_argument("--at", default="", help="ISO timestamp (default: now)")
     p.add_argument("--min-gpu-free-mib", type=int, default=0,
                    help="refuse to publish if GPU free < this (Vast.ai fence; 0 disables the check)")
+    p.add_argument("--emit-grant", default="", help="path to write the grant JSON (default: <registry>/../grant_<peer>.json)")
     a = p.parse_args(argv)
 
     ks = os.environ.get("NODE_KEYSTORE_DIR")
@@ -94,6 +95,16 @@ def main(argv=None) -> int:
                               expires_at=expires, at=at, registry=reg,
                               approver=a.approver, approval_ref=a.approval_ref)
     fp = load_node_key(ks, a.node).fingerprint
+
+    # persist the grant (public material — the delegation object + this node's signature over it) so the
+    # declared admit listener can load it without re-minting. No private key is written.
+    grant_file = a.emit_grant or os.path.join(os.path.dirname(os.path.abspath(a.registry)),
+                                              f"grant_{a.requester_name}.json")
+    os.makedirs(os.path.dirname(grant_file), exist_ok=True)
+    with open(grant_file, "w", encoding="utf-8") as fh:
+        __import__("json").dump({"grant": grant, "requester_public_hex": a.requester_public_hex,
+                                 "models": a.models, "node": a.node}, fh, sort_keys=True)
+    os.chmod(grant_file, 0o600)
     print("∞Δ∞ COMPUTE-SHARE OFFER PUBLISHED — governed, receipted, integrity-verified — observable in transit")
     print(f"  node        : {a.node}  fp={fp}")
     print(f"  offer id    : {offer['object_id']}  version_hash={offer['version_hash']}")
@@ -104,6 +115,7 @@ def main(argv=None) -> int:
     print(f"  delegation  : {grant['delegation']['object_id']}  time_bound={grant['time_bound']} revocable={grant['revocable']}")
     print("  bind the requester_public_hex into your peer book:  scripts/peer_book.py add --label "
           f"{a.requester_name!r} --public-hex {a.requester_public_hex}")
+    print(f"  grant file  : {grant_file}   (load it in the admit listener: scripts/compute_share_serve.py)")
     print("  pass --models to submit_job so the model allowlist is enforced on every job.")
     return 0
 
