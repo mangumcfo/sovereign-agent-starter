@@ -82,7 +82,12 @@ def served_fp(port):
 
 def main():
     print(f"∞Δ∞ P2P HARNESS — {NOW()} — host {os.uname().nodename} — rig: SAME-IRON two-HOME (protocol rows; P8=cross-iron)")
-    print(f"git HEAD: {subprocess.check_output(['git','-C',REPO,'rev-parse','--short','HEAD']).decode().strip()}")
+    try:  # don't die outside a checkout (same pattern as the D6 wrapper)
+        head = subprocess.check_output(["git", "-C", REPO, "rev-parse", "--short", "HEAD"],
+                                       stderr=subprocess.DEVNULL).decode().strip()
+    except Exception:
+        head = "(not a git checkout)"
+    print(f"git HEAD: {head}")
     for h in (HOME_A, HOME_B):
         os.makedirs(os.path.join(h, "ks"), exist_ok=True)
     ksA, ksB = os.path.join(HOME_A, "ks"), os.path.join(HOME_B, "ks")
@@ -148,6 +153,9 @@ def main():
     print(f"  prior recognition now verifies: {dead}  (must be False — sever-kills-live)")
 
     # ── P5 · THE KILL TEST — SIGKILL B mid-flow; survivor A must not synthesize B's half ──
+    # NOTE (cross-iron upgrade): this same-iron row proves KEY SEPARATION — A's keystore cryptographically cannot
+    # sign as B. The CROSS-IRON run must go further: A asks the LIVE node-B process to complete a two-party act,
+    # then B is SIGKILL'd mid-request, and A must degrade honestly against a real dead peer (not a hand-built dict).
     print("\n== P5 · ⛔ KILL TEST ==")
     print(f"  killing B pid {procB.pid} at {NOW()} …")
     os.kill(procB.pid, signal.SIGKILL); procB.wait(timeout=5)
@@ -161,10 +169,13 @@ def main():
     rec_incomplete = {"recognition": msg, "sig_a": sig_a}   # no real sig_b from the dead peer
     print(f"  survivor verify of incomplete act: {verify_recognition(rec_incomplete, idA, idB)}  (False = honest degrade, no fabricated receipt)")
 
-    # ── P6 · no third party ──
+    # ── P6 · no third party — read the field (not a literal), and prove both sigs verify ONLY under A/B keys ──
     print("\n== P6 · no third party holds anything ==")
-    print(f"  every signature is by A or B (2 keystores, 2 keys); third_party in recognition: {None}")
-    print("  no hub / broker / relay-of-record / escrow in any path (harness holds no third key)")
+    tp = rec.get("third_party")                                   # a REAL read of the recognition's field
+    both_ab = verify_node_act(idA.public_hex, h, sig_a) and verify_node_act(idB.public_hex, h, sig_b)
+    print(f"  recognition.get('third_party') (read from the object): {tp!r}")
+    print(f"  both signatures verify under A's and B's OWN public keys (no third key present): {both_ab}")
+    print("  no hub / broker / relay-of-record / escrow in any path (harness holds only ksA and ksB)")
 
     # ── P7 · Port crossing between nodes — named-human sanction, value-free receipt ──
     print("\n== P7 · Port crossing still gates (named human · value-free receipt) ==")
