@@ -29,8 +29,16 @@ def node_get():
     """node.get — identity envelope."""
     node = get_node()
     status = node.get_status()
+    # Real self-held identity for Node Home's "Current identity" (audit 2026-08-12): the 16-hex fingerprint the
+    # receipts use + the 128-hex public key (x‖y). Additive — sourced from the durable keypair, never the private
+    # scalar; clients that need SEC1 uncompressed may prefix "04". Falls back cleanly if identity is unavailable.
+    identity = getattr(node, "identity", None)
+    fingerprint = getattr(identity, "fingerprint", None) or getattr(node, "fingerprint", None)
+    public_hex = getattr(identity, "public_hex", None)
     return jsonify({
         "node_id": status.get("identity_public", "unknown"),
+        "fingerprint": fingerprint,          # 16-hex, stable across restart — the real identity
+        "public_hex": public_hex,            # 128-hex x‖y (public key only; no private material)
         "name": status.get("name"),
         "context": status.get("context"),
         "tier": _infer_tier(status.get("context", "personal")),

@@ -186,3 +186,11 @@ def test_peers_clean_exit_this_node_walks_clean(owner_client):
     assert r.status_code == 201
     b = r.get_json()
     assert b["no_residual"] is True and b["grants_severed"] == b["grants_total"]
+
+
+# ── /node exposes the REAL self-held identity (16-hex fingerprint + 128-hex public_hex), no private material ─
+def test_node_get_exposes_real_fingerprint_and_public_hex(owner_client):
+    b = owner_client.get("/api/v1/node").get_json()
+    assert b["fingerprint"] and len(b["fingerprint"]) == 16
+    assert b["public_hex"] and len(b["public_hex"]) == 128
+    assert "private_key" not in str(b).lower() and "private" not in str(b).lower()
