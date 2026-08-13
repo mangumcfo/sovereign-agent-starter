@@ -41,6 +41,10 @@ esac
 _start()  { nohup python3 -m sovereign_agent.node_api.server --host "$HOST" --port "$PORT" >/tmp/d6_node.log 2>&1 &
             echo $!; for _ in $(seq 1 30); do curl -s "http://$HOST:$PORT/api/v1/manifest" >/dev/null 2>&1 && return; sleep 0.5; done; }
 _served_fp() { curl -s "http://$HOST:$PORT/api/v1/node" | sed -n 's/.*"fingerprint": *"\([^"]*\)".*/\1/p'; }
+_dump_if_down() { if ! curl -s "http://$HOST:$PORT/api/v1/manifest" >/dev/null 2>&1; then
+    echo "  ✗ node did NOT bind on $HOST:$PORT — boot failed. Last lines of /tmp/d6_node.log:"
+    tail -15 /tmp/d6_node.log 2>/dev/null | sed 's/^/    /'
+    echo "    (a ModuleNotFoundError: flask means deps aren't installed — run: pip install -e .)"; fi }
 
 echo "∞Δ∞ D6 NODE DURABILITY + SMOKE — $(date -u +%FT%TZ) — host $(hostname)"
 echo "== git =="; echo "HEAD: $(git rev-parse --short HEAD)"; echo "baseline: $BASELINE"
@@ -64,14 +68,14 @@ echo "  key  $KEYFILE mtime: $KEYM  perms: $(_perms "$KEYFILE")"
 if [ -n "${NOTEM:-}" ] && [ -n "${KEYM:-}" ] && [ "$NOTEM" -le "$KEYM" ]; then
   echo "  ✓ recovery note existed before the key was minted"; else echo "  ⚠ note mtime not before key mtime — confirm you read the recovery note first"; fi
 
-echo "== boot 1 =="; PID=$(_start); echo "  pid $PID"
-echo "  sockets (loopback only):"; ss -ltnp 2>/dev/null | grep ":$PORT" | sed 's/^/    /' || lsof -iTCP:"$PORT" -sTCP:LISTEN 2>/dev/null | sed 's/^/    /'
+echo "== boot 1 =="; PID=$(_start); echo "  pid $PID"; _dump_if_down
+echo "  sockets (loopback only):"; { ss -ltnp 2>/dev/null | grep ":$PORT" || lsof -iTCP:"$PORT" -sTCP:LISTEN 2>/dev/null || echo "(ss/lsof unavailable)"; } | sed 's/^/    /'
 F1=$(_fp); D1=$(_digest); SF1=$(_served_fp)
 echo "  key fingerprint : $F1"; echo "  keystore digest : $D1"; echo "  /node served fp : $SF1"
 echo "== ceremony (sandbox accept — must NOT change the durable key) =="
 curl -s -X POST "http://$HOST:$PORT/api/v1/onboard/ceremony" -H 'Content-Type: application/json' -d '{"disposition":"accept","name":"d6"}' | grep -o '"verified": *true' | sed 's/^/  /' || echo "  (ceremony skipped)"
 
-echo "== restart (kill -9 → same recipe) =="; kill -9 "$PID" 2>/dev/null; sleep 1; PID=$(_start); echo "  pid $PID"
+echo "== restart (kill -9 → same recipe) =="; kill -9 "$PID" 2>/dev/null; sleep 1; PID=$(_start); echo "  pid $PID"; _dump_if_down
 F2=$(_fp); D2=$(_digest); SF2=$(_served_fp)
 echo "  key fingerprint : $F2"; echo "  keystore digest : $D2"; echo "  /node served fp : $SF2"
 # require NON-EMPTY values — two empty fingerprints are a FAILURE, not a match
