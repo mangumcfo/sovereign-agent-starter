@@ -12,6 +12,16 @@ HOST=127.0.0.1; PORT="${PORT:-8461}"; B="http://$HOST:$PORT/api/v1"
 j(){ curl -s -H 'Content-Type: application/json' "$@"; }
 pyf(){ python3 -c "import sys,json;print(json.load(sys.stdin).get('$1',''))"; }
 _dg(){ sha256sum "$KS/UniversalSovereignNode.nodekey.json" 2>/dev/null | cut -d' ' -f1; }
+# H7 listener enumeration with fallbacks — an empty block must NEVER be a silent pass (AA note).
+_listeners(){
+  local out hx
+  out=$(ss -ltnp 2>/dev/null | grep ":$PORT") && { echo "$out" | sed 's/^/  /'; return; }
+  out=$(netstat -ltnp 2>/dev/null | grep ":$PORT") && { echo "$out" | sed 's/^/  /'; return; }
+  hx=$(printf ':%04X' "$PORT")
+  out=$(grep -i "$hx" /proc/net/tcp /proc/net/tcp6 2>/dev/null) && {
+    echo "  (ss/netstat missing — /proc/net/tcp, local-port hex $hx):"; echo "$out" | awk '{print "    "$2" st="$4}'; return; }
+  echo "  (NO ss / netstat / proc data — could not enumerate — this is NOT a pass)"
+}
 
 echo "∞Δ∞ PEER HTTP SURFACE REPORT — $(date -u +%FT%TZ) — host $(hostname)"
 echo "git HEAD: $(git rev-parse --short HEAD 2>/dev/null || echo '(not a checkout)')"
@@ -24,10 +34,10 @@ print(load_node_keypair(ks,nid).fingerprint)
 PY
 )
 DG0=$(_dg); echo "fp before: $FP0   digest before: ${DG0:0:32}…"
-echo "== H7 · sockets BEFORE boot =="; ss -ltnp 2>/dev/null | grep ":$PORT" || echo "  (nothing on :$PORT)"
+echo "== H7 · sockets BEFORE boot =="; _listeners
 nohup python3 -m sovereign_agent.node_api.server --host $HOST --port $PORT >/tmp/peer_node.log 2>&1 &
 SV=$!; for _ in $(seq 1 40); do curl -s "$B/manifest" >/dev/null 2>&1 && break; sleep 0.5; done
-echo "== H7 · sockets AFTER boot (only the node's own declared bind) =="; ss -ltnp 2>/dev/null | grep ":$PORT" | sed 's/^/  /'
+echo "== H7 · sockets AFTER boot (only the node's own declared bind) =="; _listeners
 
 PEERPUB=$(python3 -c "print('ab'*64)")
 echo "== H1 · /peers/recognize returns a HALF (states what's missing + who supplies it) =="
@@ -59,7 +69,7 @@ echo "== H6 · no private material in any response (incl. errors) =="
 if { echo "$REC$MSG"; j "$B/node"; j -X POST "$B/peers/recognize" -d '{}'; } | grep -iqE 'private_key|secret_key|"d":[0-9]'; then
   echo "  ✗ LEAK DETECTED"; else echo "  ✓ clean — no private key in any body"; fi
 
-echo "== H7 · sockets AFTER (no new listener beyond the node's bind) =="; ss -ltnp 2>/dev/null | grep ":$PORT" | sed 's/^/  /'
+echo "== H7 · sockets AFTER (no new listener beyond the node's bind) =="; _listeners
 kill "$SV" 2>/dev/null
 FP1=$(python3 -c "import os;from sovereign_agent.keystore.node_keystore import load_node_keypair;print(load_node_keypair(os.environ['NODE_KEYSTORE_DIR'],os.environ['BREATHLINE_NODE_NAME']).fingerprint)")
 DG1=$(_dg)
