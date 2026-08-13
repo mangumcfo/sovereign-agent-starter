@@ -48,7 +48,10 @@ _dump_if_down() { if ! curl -s "http://$HOST:$PORT/api/v1/manifest" >/dev/null 2
 
 echo "∞Δ∞ D6 NODE DURABILITY + SMOKE — $(date -u +%FT%TZ) — host $(hostname)"
 echo "== git =="; echo "HEAD: $(git rev-parse --short HEAD)"; echo "baseline: $BASELINE"
-git diff --stat "$BASELINE"..HEAD 2>/dev/null | tail -20 || echo "(baseline not resolvable — set D6_BASELINE)"
+_diff=$(git diff --stat "$BASELINE"..HEAD 2>/dev/null)
+if [ -n "$_diff" ]; then echo "$_diff" | tail -20
+elif git rev-parse --verify -q "$BASELINE" >/dev/null 2>&1; then echo "  (no diff vs $BASELINE — tree matches pin)"
+else echo "  (baseline '$BASELINE' not resolvable — set D6_BASELINE)"; fi
 
 echo "== recovery-note mtime (must exist BEFORE the key) =="
 echo "  note $NOTE mtime: $(_mtime "$NOTE")  ($(date -u -d @"$(_mtime "$NOTE")" +%FT%TZ 2>/dev/null || echo n/a))"
