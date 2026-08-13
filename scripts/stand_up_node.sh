@@ -130,7 +130,7 @@ else nocheck "could not read a fingerprint from the keystore"; cat /tmp/standup_
 
 # ── 4 · port free (three-state) ───────────────────────────────────────────────
 echo "== 4 · port $PORT before boot =="
-if _listeners; then absent "something is ALREADY listening on :$PORT (stop it, or set BREATHLINE_NODE_API_PORT)"
+if _listeners; then echo "  ✗ port :$PORT is OCCUPIED — a listener is already bound (stop it, or set BREATHLINE_NODE_API_PORT)"; FAIL=1
 else case $? in
   1) ok "port :$PORT is free" ;;
   2) nocheck "no ss / netstat / /proc — cannot confirm :$PORT is free" ;;

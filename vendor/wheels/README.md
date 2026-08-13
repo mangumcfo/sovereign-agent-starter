@@ -12,7 +12,7 @@ Populate this directory ONCE on a networked machine:
 Then carry the repo (with this directory filled) to the cold machine and install with no index:
 
     python3 -m venv .venv && . .venv/bin/activate
-    pip install --no-index --find-links vendor/wheels -e . -c constraints.txt
+    pip install --no-index --find-links vendor/wheels -e .
 
 `scripts/stand_up_node.sh --offline` does exactly this automatically when wheels are present.
 
