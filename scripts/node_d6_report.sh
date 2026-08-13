@@ -29,7 +29,15 @@ print(load_node_keypair("$NODE_KEYSTORE_DIR", "$BREATHLINE_NODE_NAME").fingerpri
 PY
 }
 _digest() { sha256sum "$KEYFILE" 2>/dev/null | cut -d' ' -f1; }
-_mtime()  { stat -c %Y "$1" 2>/dev/null || stat -f %m "$1" 2>/dev/null; }
+_mtime()  { stat -c %Y "$1" 2>/dev/null || stat -f %m "$1" 2>/dev/null || true; }
+_perms()  { stat -c %A "$1" 2>/dev/null || stat -f %Sp "$1" 2>/dev/null || true; }
+
+# HOME sanity: a poisoned $HOME (e.g. a literal placeholder path) makes ~ unwritable and breaks everything.
+case "${HOME:-}" in
+  /path/*|""|"/path/to/"*) echo "✗ \$HOME is '$HOME' — that is a placeholder, not a real directory."
+                           echo "  fix: export HOME=/home/$(id -un)   (or a real dedicated dir you mkdir first), then re-run."; exit 1;;
+esac
+[ -d "$HOME" ] || { echo "✗ \$HOME '$HOME' does not exist — export HOME=/home/$(id -un) and re-run."; exit 1; }
 _start()  { nohup python3 -m sovereign_agent.node_api.server --host "$HOST" --port "$PORT" >/tmp/d6_node.log 2>&1 &
             echo $!; for _ in $(seq 1 30); do curl -s "http://$HOST:$PORT/api/v1/manifest" >/dev/null 2>&1 && return; sleep 0.5; done; }
 _served_fp() { curl -s "http://$HOST:$PORT/api/v1/node" | sed -n 's/.*"fingerprint": *"\([^"]*\)".*/\1/p'; }
@@ -41,16 +49,18 @@ git diff --stat "$BASELINE"..HEAD 2>/dev/null | tail -20 || echo "(baseline not 
 echo "== recovery-note mtime (must exist BEFORE the key) =="
 echo "  note $NOTE mtime: $(_mtime "$NOTE")  ($(date -u -d @"$(_mtime "$NOTE")" +%FT%TZ 2>/dev/null || echo n/a))"
 
-mkdir -p "$NODE_KEYSTORE_DIR"; chmod 700 "$NODE_KEYSTORE_DIR" 2>/dev/null || true
+mkdir -p "$NODE_KEYSTORE_DIR" || { echo "✗ cannot create keystore dir '$NODE_KEYSTORE_DIR' — check \$HOME and permissions."; exit 1; }
+chmod 700 "$NODE_KEYSTORE_DIR" 2>/dev/null || true
 if [ ! -f "$KEYFILE" ]; then
-  python3 - <<PY
+  python3 - <<PY || { echo "✗ FAIL: could not provision the durable key (see error above)."; exit 1; }
 import datetime
 from sovereign_agent.keystore.node_keystore import generate_node_key
 generate_node_key("$NODE_KEYSTORE_DIR","$BREATHLINE_NODE_NAME",at=datetime.datetime.now(datetime.timezone.utc).isoformat())
 PY
 fi
+[ -f "$KEYFILE" ] || { echo "✗ FAIL: durable key file was not created at $KEYFILE"; exit 1; }
 KEYM=$(_mtime "$KEYFILE"); NOTEM=$(_mtime "$NOTE")
-echo "  key  $KEYFILE mtime: $KEYM  perms: $(stat -c %A "$KEYFILE" 2>/dev/null || stat -f %Sp "$KEYFILE")"
+echo "  key  $KEYFILE mtime: $KEYM  perms: $(_perms "$KEYFILE")"
 if [ -n "${NOTEM:-}" ] && [ -n "${KEYM:-}" ] && [ "$NOTEM" -le "$KEYM" ]; then
   echo "  ✓ recovery note existed before the key was minted"; else echo "  ⚠ note mtime not before key mtime — confirm you read the recovery note first"; fi
 
@@ -64,9 +74,10 @@ curl -s -X POST "http://$HOST:$PORT/api/v1/onboard/ceremony" -H 'Content-Type: a
 echo "== restart (kill -9 → same recipe) =="; kill -9 "$PID" 2>/dev/null; sleep 1; PID=$(_start); echo "  pid $PID"
 F2=$(_fp); D2=$(_digest); SF2=$(_served_fp)
 echo "  key fingerprint : $F2"; echo "  keystore digest : $D2"; echo "  /node served fp : $SF2"
-[ "$F1" = "$F2" ] && echo "  ✓ FINGERPRINT STABLE across restart" || echo "  ✗ fingerprint changed ($F1 → $F2)"
-[ "$D1" = "$D2" ] && echo "  ✓ KEYSTORE DIGEST unchanged across restart" || echo "  ✗ digest changed"
-[ "$SF1" = "$F1" ] && [ "$SF2" = "$F2" ] && echo "  ✓ /node served fingerprint == on-disk identity" || echo "  ⚠ served fp differs from on-disk"
+# require NON-EMPTY values — two empty fingerprints are a FAILURE, not a match
+if [ -n "$F1" ] && [ "$F1" = "$F2" ]; then echo "  ✓ FINGERPRINT STABLE across restart"; else echo "  ✗ FINGERPRINT NOT STABLE (or absent): '$F1' → '$F2'"; fi
+if [ -n "$D1" ] && [ "$D1" = "$D2" ]; then echo "  ✓ KEYSTORE DIGEST unchanged across restart"; else echo "  ✗ KEYSTORE DIGEST changed or absent"; fi
+if [ -n "$F1" ] && [ "$SF1" = "$F1" ] && [ "$SF2" = "$F2" ]; then echo "  ✓ /node served fingerprint == on-disk identity"; else echo "  ⚠ served fp differs from on-disk (or node not up)"; fi
 
 echo "== smoke AFTER restart =="; BREATHLINE_NODE_API_PORT="$PORT" bash scripts/node_smoke.sh 2>&1 | sed 's/^/  /'
 kill -9 "$PID" 2>/dev/null
