@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""compute_share_client.py — Beard's one-command compute-share client.
+"""compute_share_client.py — DEV TCP HARNESS client (not the federation path).
+
+⚠ Pairs with compute_share_serve.py (the dev harness) and requires Dragon reachable inbound. For the
+operator-burden-free product path (no router forward / SSH on the NAT iron), use compute_share_outbox.py enqueue
+on Beard + compute_share_pull.py on Dragon.
+
+Beard's one-command compute-share client.
 
 Loads Beard's OWN key, signs a job envelope, sends it to Dragon's declared admit listener over TCP, and prints
 the outcome (admit/refuse), the model result head, the receipt, and an offline verify of that receipt against

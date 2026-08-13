@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
-"""compute_share_serve.py — Dragon's DECLARED compute-admit listener (the network admit surface).
+"""compute_share_serve.py — DEV TCP HARNESS (not the federation path).
+
+⚠ This direct-inbound listener requires Dragon to be reachable (router forward / tunnel) — it is a DEV/TEST
+harness, NOT the operator-burden-free product path. The USN peer-messaging transport that needs NO inbound on the
+NAT iron is scripts/compute_share_outbox.py (Beard listens) + scripts/compute_share_pull.py (Dragon dials out).
+Keep using this only for same-iron / already-reachable testing.
+
+Dragon's DECLARED compute-admit listener (the network admit surface).
 
 Closes the transport GAP: it accepts a SIGNED job envelope over a declared TCP socket and runs it through the
 GREEN wrapper's `submit_job` locally — which calls the LOOPBACK model server. Only signed job envelopes and
