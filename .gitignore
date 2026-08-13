@@ -41,3 +41,7 @@ venv/
 memory/*
 !memory/.gitkeep
 artifacts/
+
+# Offline install cache — binaries carried in the release tarball, not git (P0-2)
+vendor/wheels/*.whl
+vendor/wheels/*.tar.gz
