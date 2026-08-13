@@ -194,3 +194,54 @@ def test_node_get_exposes_real_fingerprint_and_public_hex(owner_client):
     assert b["fingerprint"] and len(b["fingerprint"]) == 16
     assert b["public_hex"] and len(b["public_hex"]) == 128
     assert "private_key" not in str(b).lower() and "private" not in str(b).lower()
+
+
+# ── peer verbs over HTTP: PRESENT single-node-honest (recognize half · sign · verify), no private key ──────
+def test_peers_recognize_returns_my_half_no_private_key(owner_client):
+    r = owner_client.post("/api/v1/peers/recognize",
+                          json={"peer_public_hex": "ab" * 64, "peer_name": "beard"})
+    assert r.status_code == 201
+    b = r.get_json()
+    assert b["obj_hash"] and b["my_half_sig"] and len(b["my_public_hex"]) == 128
+    assert "this node's half only" in b["note"].lower()
+    blob = str(b).lower()
+    assert "private_key" not in blob and "private" not in blob  # only public material + signature
+
+
+def test_peers_message_sign_then_verify_roundtrip_and_tamper(owner_client):
+    s = owner_client.post("/api/v1/peers/message", json={"text": "hello, peer"})
+    assert s.status_code == 201
+    m = s.get_json()
+    assert m["hash"] and m["sig"] and len(m["my_public_hex"]) == 128 and "private" not in str(m).lower()
+    ok = owner_client.post("/api/v1/peers/verify/message",
+                           json={"hash": m["hash"], "sig": m["sig"], "sender_public_hex": m["my_public_hex"]})
+    assert ok.get_json()["verified"] is True
+    bad = owner_client.post("/api/v1/peers/verify/message",
+                            json={"hash": m["hash"][:-2] + "00", "sig": m["sig"], "sender_public_hex": m["my_public_hex"]})
+    assert bad.get_json()["verified"] is False
+
+
+def test_peers_verify_recognition_bilateral(owner_client, tmp_path):
+    import datetime
+    from sovereign_agent.keystore.node_keystore import generate_node_key, load_node_keypair, sign_node_act
+    # A = the node's durable key (via /peers/recognize) ; B = a second provisioned key on this iron (test only)
+    half = owner_client.post("/api/v1/peers/recognize",
+                             json={"peer_public_hex": "cd" * 64, "peer_name": "peerB"}).get_json()
+    ks = str(tmp_path / "keystore")
+    generate_node_key(ks, "peerB", at=datetime.datetime.now(datetime.timezone.utc).isoformat())
+    b_kp = load_node_keypair(ks, "peerB")
+    sig_b = sign_node_act(ks, "peerB", half["obj_hash"].encode())
+    rec = {"recognition": half["recognition_object"], "sig_a": half["my_half_sig"], "sig_b": sig_b}
+    v = owner_client.post("/api/v1/peers/verify/recognition",
+                          json={"recognition": rec, "a_public_hex": half["my_public_hex"],
+                                "b_public_hex": b_kp.public_hex})
+    assert v.get_json()["verified"] is True
+    # a wrong b_public_hex must NOT verify
+    bad = owner_client.post("/api/v1/peers/verify/recognition",
+                            json={"recognition": rec, "a_public_hex": half["my_public_hex"],
+                                  "b_public_hex": "ff" * 64})
+    assert bad.get_json()["verified"] is False
+
+
+def test_peers_recognize_missing_peer_is_400(owner_client):
+    assert owner_client.post("/api/v1/peers/recognize", json={}).status_code == 400

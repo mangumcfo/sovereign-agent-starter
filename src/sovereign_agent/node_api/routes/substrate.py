@@ -36,9 +36,11 @@ from ...objects.scope import SharingRule
 from ...storage.sovereign_store import store_datum, retrieve_datum, StorageError
 from ...port.crossing import open_crossing, sanction_crossing, CrossingError
 from ...onboarding.onboard import run_onboard, verify_onboard_receipt, OnboardReceipt
-from ...peerhood.recognition import refuse_recognition
+from ...peerhood.recognition import refuse_recognition, verify_recognition
 from ...peerhood.clean_exit import clean_exit
-from ...keystore.node_keystore import has_node_key
+from ...peerhood.genesis import PeerIdentity
+from ...messaging.inter_node import send_message
+from ...keystore.node_keystore import has_node_key, sign_node_act, verify_node_act, load_node_keypair
 
 
 bp = Blueprint("substrate", __name__, url_prefix="/api/v1")
@@ -542,3 +544,123 @@ def peers_clean_exit():
         "no_residual": ex.no_residual,
         "note": "This node severed its own grants and walks with no residual claim (single-node act).",
     }), 201
+
+
+# ============================================================================
+# Peer verbs over HTTP — PRESENT only what a single node can honestly do LOCALLY.
+# Two-node completion (exchanging halves over a wire) still needs the peer process / a declared transport
+# (scripts/p2p_peer.py) — there is NO single-process "mutual recognition" here, and no hub. No private key is ever
+# returned (only public_hex + signatures); no third-party signer.
+# ============================================================================
+
+def _node_keypair():
+    """Return (keypair, node_id, keystore_dir) for THIS node's durable key, or (None, node_id, ks) if absent."""
+    peer_id = _node_peer_id(); ks = _keystore_dir()
+    if not has_node_key(ks, peer_id):
+        return None, peer_id, ks
+    return load_node_keypair(ks, peer_id), peer_id, ks
+
+
+@bp.post("/peers/recognize")
+@require_principal
+@require_owner
+def peers_recognize():
+    """peers.recognize — produce THIS node's signed recognition HALF of a named peer. The node authors a
+    recognition object and signs it with ITS OWN key (owner-gated). It does NOT fabricate the peer's half —
+    mutual recognition completes only when the peer signs the same object hash with its own key, which requires
+    the peer's process or a declared transport (scripts/p2p_peer.py), never a single-process mutual. Returns the
+    object + this node's signature + this node's public_hex — no private key."""
+    kp, peer_id, ks = _node_keypair()
+    if kp is None:
+        return jsonify(build_error(code="NODE_KEY_ABSENT", what="This node has no durable self-held key.",
+                                   why="A recognition half must be signed by the node's OWN key.",
+                                   next_step="Provision the node key via the CLI onboard.")), 409
+    body = request.get_json(silent=True) or {}
+    peer_public_hex = body.get("peer_public_hex")
+    peer_name = str(body.get("peer_name", "peer"))
+    if not peer_public_hex:
+        return jsonify(build_error(code="RECOGNIZE_MISSING_PEER", what="No `peer_public_hex` for the peer being recognized.",
+                                   why="Recognition is bilateral; you name the peer by its public key.",
+                                   next_step='POST {"peer_public_hex":"<128-hex>","peer_name":"<label>"}.')), 400
+    try:
+        msg = send_message(_reg(), f"recognition:{peer_id}:{peer_name}",
+                           {"recognize": [peer_id, peer_name], "bilateral": True},
+                           mandate=peer_id, author=peer_id, source_ref=f"rec:{peer_id}:{peer_name}", at=_now())
+        obj_hash = str(msg["version_hash"])
+        my_sig = sign_node_act(ks, peer_id, obj_hash.encode())
+    except Exception as exc:  # noqa: BLE001
+        return jsonify(kernel_exception(str(exc))), 500
+    return jsonify({
+        "recognition_object": msg, "obj_hash": obj_hash,
+        "my_half_sig": my_sig, "my_public_hex": kp.public_hex,
+        "note": "This is THIS node's half only. Mutual recognition completes when the PEER signs the same "
+                "obj_hash with its own key (its process / a declared transport — scripts/p2p_peer.py). No "
+                "single-process mutual, no hub, no third-party signer.",
+    }), 201
+
+
+@bp.post("/peers/message")
+@require_principal
+@require_owner
+def peers_message_sign():
+    """peers.message — author a governed message and sign it with THIS node's own key (owner-gated), so a peer can
+    verify it against this node's public_hex out-of-band. No private key returned."""
+    kp, peer_id, ks = _node_keypair()
+    if kp is None:
+        return jsonify(build_error(code="NODE_KEY_ABSENT", what="This node has no durable self-held key.",
+                                   why="A signed message must be signed by the node's OWN key.",
+                                   next_step="Provision the node key via the CLI onboard.")), 409
+    body = request.get_json(silent=True) or {}
+    payload = body.get("body") if isinstance(body.get("body"), dict) else (
+        {"text": str(body["text"])} if body.get("text") else None)
+    if not payload:
+        return jsonify(build_error(code="MESSAGE_MISSING_BODY", what="No `text` or `body` to sign.",
+                                   why="send_message authors a provenance-carrying object; it needs a body.",
+                                   next_step='POST {"text":"..."} or {"body":{...}}.')), 400
+    try:
+        msg = send_message(_reg(), f"msg:{peer_id}:{_now()}", payload,
+                           mandate=peer_id, author=peer_id, source_ref=f"msg:{peer_id}", at=_now())
+        mh = str(msg["version_hash"]); sig = sign_node_act(ks, peer_id, mh.encode())
+    except Exception as exc:  # noqa: BLE001
+        return jsonify(kernel_exception(str(exc))), 500
+    return jsonify({"message_object": msg, "hash": mh, "sig": sig, "my_public_hex": kp.public_hex,
+                    "note": "The receiver verifies this vs my public_hex (out-of-band), not a copy in the payload."}), 201
+
+
+@bp.post("/peers/verify/recognition")
+@require_principal
+def peers_verify_recognition():
+    """peers.verify.recognition — verify a bilateral recognition PUBLIC-ONLY: both signatures against both
+    public_hexes, no key, no network. Optional `revocations` (a signed refusal naming the pair) kills a live
+    recognition. Pure function — any principal may call it."""
+    body = request.get_json(silent=True) or {}
+    rec = body.get("recognition"); a_ph = body.get("a_public_hex"); b_ph = body.get("b_public_hex")
+    if not (isinstance(rec, dict) and a_ph and b_ph):
+        return jsonify(build_error(code="VERIFY_REC_MISSING", what="Need `recognition`, `a_public_hex`, `b_public_hex`.",
+                                   why="Recognition verifies public-only against both parties' keys.",
+                                   next_step='POST {"recognition":{...},"a_public_hex":"...","b_public_hex":"..."}.')), 400
+    idA = PeerIdentity(peer_id=str(body.get("a_name", "a")), public_hex=str(a_ph), fingerprint="", evidence_hash="")
+    idB = PeerIdentity(peer_id=str(body.get("b_name", "b")), public_hex=str(b_ph), fingerprint="", evidence_hash="")
+    try:
+        ok = verify_recognition(rec, idA, idB, revocations=list(body.get("revocations", [])))
+    except Exception as exc:  # noqa: BLE001
+        return jsonify(kernel_exception(str(exc))), 500
+    return jsonify({"verified": bool(ok), "checked": "both signatures vs both public_hexes (public-only, offline)"})
+
+
+@bp.post("/peers/verify/message")
+@require_principal
+def peers_verify_message():
+    """peers.verify.message — verify a signed message against the SENDER's public_hex (supplied out-of-band, never
+    trusted from a copy inside the message). Pure — any principal may call it."""
+    body = request.get_json(silent=True) or {}
+    h = body.get("hash"); sig = body.get("sig"); sph = body.get("sender_public_hex")
+    if not (h and sig and sph):
+        return jsonify(build_error(code="VERIFY_MSG_MISSING", what="Need `hash`, `sig`, `sender_public_hex`.",
+                                   why="A message verifies against the sender's own public key.",
+                                   next_step='POST {"hash":"...","sig":"...","sender_public_hex":"..."}.')), 400
+    try:
+        ok = verify_node_act(str(sph), str(h).encode(), str(sig))
+    except Exception as exc:  # noqa: BLE001
+        return jsonify(kernel_exception(str(exc))), 500
+    return jsonify({"verified": bool(ok), "checked_against": "sender_public_hex (out-of-band)"})
