@@ -12,15 +12,34 @@ HOST=127.0.0.1; PORT="${PORT:-8461}"; B="http://$HOST:$PORT/api/v1"
 j(){ curl -s -H 'Content-Type: application/json' "$@"; }
 pyf(){ python3 -c "import sys,json;print(json.load(sys.stdin).get('$1',''))"; }
 _dg(){ sha256sum "$KS/UniversalSovereignNode.nodekey.json" 2>/dev/null | cut -d' ' -f1; }
-# H7 listener enumeration with fallbacks — an empty block must NEVER be a silent pass (AA note).
+# H7 listener enumeration with fallbacks (AA 5ede8a8 carry).
+# THREE distinct outcomes — never share a line between "nothing listening" and "cannot look":
+#   • a method enumerated AND matched      -> print the lines
+#   • a method enumerated, no match        -> "none listening on :$PORT"   (a real answer)
+#   • no method available at all           -> "could not enumerate — NOT a pass"
+# Bug fixed: test OUTPUT LENGTH, not grep's exit — grep exits 2 on a missing /proc/net/tcp6
+# even when /proc/net/tcp matched, and `&&` would discard the correct out.
 _listeners(){
   local out hx
-  out=$(ss -ltnp 2>/dev/null | grep ":$PORT") && { echo "$out" | sed 's/^/  /'; return; }
-  out=$(netstat -ltnp 2>/dev/null | grep ":$PORT") && { echo "$out" | sed 's/^/  /'; return; }
-  hx=$(printf ':%04X' "$PORT")
-  out=$(grep -i "$hx" /proc/net/tcp /proc/net/tcp6 2>/dev/null) && {
-    echo "  (ss/netstat missing — /proc/net/tcp, local-port hex $hx):"; echo "$out" | awk '{print "    "$2" st="$4}'; return; }
-  echo "  (NO ss / netstat / proc data — could not enumerate — this is NOT a pass)"
+  if command -v ss >/dev/null 2>&1; then
+    out=$(ss -ltnp 2>/dev/null | grep ":$PORT")
+    [ -n "$out" ] && { echo "$out" | sed 's/^/  /'; return; }
+    echo "  (ss: none listening on :$PORT)"; return
+  fi
+  if command -v netstat >/dev/null 2>&1; then
+    out=$(netstat -ltnp 2>/dev/null | grep ":$PORT")
+    [ -n "$out" ] && { echo "$out" | sed 's/^/  /'; return; }
+    echo "  (netstat: none listening on :$PORT)"; return
+  fi
+  if [ -r /proc/net/tcp ] || [ -r /proc/net/tcp6 ]; then
+    hx=$(printf ':%04X' "$PORT")
+    out=$(grep -ih "$hx" /proc/net/tcp /proc/net/tcp6 2>/dev/null)   # -h: no filename prefix -> fields align
+    [ -n "$out" ] && {                                               # awk may be absent on the fallback's target hosts too
+      echo "  (ss/netstat missing — /proc/net/tcp, local-port hex $hx):"
+      while read -r _sl laddr _raddr st _rest; do echo "    $laddr st=$st"; done <<<"$out"; return; }
+    echo "  (/proc/net/tcp enumerated — none listening on :$PORT, local-port hex $hx)"; return
+  fi
+  echo "  (NO ss / netstat / /proc data — could not enumerate — this is NOT a pass)"
 }
 
 echo "∞Δ∞ PEER HTTP SURFACE REPORT — $(date -u +%FT%TZ) — host $(hostname)"
