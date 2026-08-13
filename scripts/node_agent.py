@@ -63,11 +63,16 @@ def _grant():
         except Exception:  # noqa: BLE001
             grants.append({"file": os.path.basename(f), "note": "unreadable"})
     units = None
-    reg = os.path.join(SHARE_DIR, "registry", "objects.ndjson")
-    if os.path.exists(reg):
-        caps = [json.loads(l) for l in open(reg, encoding="utf-8") if l.strip() and '"capacity' in l]
-        if caps:
-            units = caps[-1].get("payload", {}).get("units")
+    reg_dir = os.path.join(SHARE_DIR, "registry")
+    if os.path.exists(os.path.join(reg_dir, "objects.ndjson")):
+        try:
+            from sovereign_agent.objects.registry import ObjectRegistry   # the ONE chain gateway (§1)
+            cur = ObjectRegistry(reg_dir).current()
+            cap = next((v for k, v in cur.items() if k.startswith("capacity:")), None)
+            if cap:
+                units = (cap.get("payload") or {}).get("units")
+        except Exception:  # noqa: BLE001
+            pass
     return {"grants": grants, "offered_units_remaining": units}
 
 
@@ -85,7 +90,7 @@ def _peers():
     pb = os.environ.get("SOVEREIGN_PEER_BOOK", os.path.expanduser("~/.sovereign_peer_book.jsonl"))
     if not os.path.exists(pb):
         return {"count": 0}
-    rows = [json.loads(l) for l in open(pb, encoding="utf-8") if l.strip()]
+    rows = [json.loads(raw) for raw in open(pb, encoding="utf-8") if raw.strip()]  # local .jsonl (peer_book idiom)
     return {"count": len(rows), "labels": [r.get("label") for r in rows]}
 
 
