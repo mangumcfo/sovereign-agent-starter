@@ -302,6 +302,43 @@ def cmd_ask(a) -> int:
     return 0
 
 
+def cmd_chat(a) -> int:
+    """Interactive REPL — same fact-inject + loopback + propose-only pipeline as `ask`, multi-turn. Type 'exit'
+    or Ctrl-D to leave. Loopback-only (refuses a non-loopback --model-url); model-down fails loud per turn."""
+    _loopback(a.model_url)
+    model = a.model or _pick_largest_model(a.model_url)
+    if not model:
+        print("✗ no --model given and could not auto-detect a local model — pass --model (e.g. --model qwen3:32b)"); return 2
+    print(f"∞Δ∞ Sovereign Agent v0 · chat (model {model} · loopback mind · propose-only)")
+    print("   The node reads its state and ADVISES; it executes nothing. Type 'exit' or Ctrl-D to leave.\n")
+    print(_facts_text(gather(a.model_url)))
+    history = []
+    while True:
+        try:
+            line = input("\nyou> ").strip()
+        except EOFError:
+            print(); break
+        if not line:
+            continue
+        if line.lower() in ("exit", "quit", ":q"):
+            break
+        ctx = gather(a.model_url)                                   # fresh facts every turn
+        tpl = _templates_text(_action_templates())
+        convo = "\n".join(f"{r}: {t}" for r, t in history[-6:])
+        prompt = (f"{SYSTEM}\n\nNODE CONTEXT (read-only tools, injected every turn):\n{json.dumps(ctx)}\n\n"
+                  f"EXACT ACTION TEMPLATES (quote a RUN line VERBATIM if you propose renew/revoke):\n{tpl}\n\n"
+                  f"CONVERSATION SO FAR:\n{convo}\n\nOPERATOR (KM-1176): {line}\n\n"
+                  f"Answer concisely; propose (never execute) any consequential act.")
+        try:
+            ans = (_complete(a.model_url, model, prompt) or "").strip()
+        except urllib.error.URLError:
+            print("node> ✗ loopback model not answering — start it (e.g. `ollama serve`), then continue."); continue
+        print(f"\nnode> {ans if ans else '(model returned nothing — try `status`/`propose`, or a stronger --model)'}")
+        history.append(("operator", line)); history.append(("node", ans))
+    print("\n(chat ended; the node executed nothing. Consequential change stays behind KM's keyboard.)")
+    return 0
+
+
 def main(argv=None) -> int:
     p = argparse.ArgumentParser(description="Sovereign Agent v0 — node-local mind, read-first + propose-only.")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -312,6 +349,10 @@ def main(argv=None) -> int:
     q.add_argument("--model", default=None, help="local model tag; default = largest installed that fits (5090: 32B-70B)")
     q.add_argument("--model-url", default=MODEL_URL_DEFAULT)
     q.set_defaults(fn=cmd_ask)
+    c = sub.add_parser("chat", help="interactive REPL (multi-turn ask; loopback-only; propose-only)")
+    c.add_argument("--model", default=None, help="local model tag; default = largest installed that fits (5090: 32B-70B)")
+    c.add_argument("--model-url", default=MODEL_URL_DEFAULT)
+    c.set_defaults(fn=cmd_chat)
     a = p.parse_args(argv)
     return a.fn(a)
 
