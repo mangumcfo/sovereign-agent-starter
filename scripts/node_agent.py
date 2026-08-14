@@ -22,10 +22,19 @@ import os
 import pathlib
 import re
 import subprocess
+import sys
 import urllib.error
 import urllib.request
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
+
+# Self-bootstrap so a terminal-only operator can run `python3 scripts/node_agent.py …` bare — no PYTHONPATH,
+# no env setup. (This is a script under scripts/, not a node_api route, so adding to sys.path is allowed.)
+_SRC = ROOT / "src"
+if _SRC.is_dir() and str(_SRC) not in sys.path:
+    sys.path.insert(0, str(_SRC))
+os.environ.setdefault("BREATHLINE_SEALED_ROOT", str(ROOT))
+os.environ.setdefault("NODE_KEYSTORE_DIR", os.path.expanduser("~/.sovereign_keystore"))
 
 MODEL_URL_DEFAULT = "http://127.0.0.1:11434/api/generate"
 SHARE_DIR = os.environ.get("SHARE_ROOT", os.path.expanduser("~/.sovereign_share"))
@@ -197,6 +206,21 @@ def cmd_status(a) -> int:
     return 0
 
 
+def _facts_text(ctx: dict) -> str:
+    """Deterministic substance from the read tools — always printable, no model needed."""
+    g = ctx["grant"]; gp = ctx["gpu"]; t = ctx["transport"]
+    lines = []
+    if g["grants"]:
+        for gr in g["grants"]:
+            lines.append(f"  grant {gr.get('file')} → {gr.get('to')} · models {gr.get('models')} · expires {gr.get('expires')}")
+    else:
+        lines.append("  grants: none present")
+    lines.append(f"  units offered (latest capacity): {g['offered_units_remaining']}")
+    lines.append(f"  gpu: {gp['free_mib']} MiB free · {gp['util_pct']}% util" if gp.get("state") == "ok" else f"  gpu: {gp.get('note')}")
+    lines.append(f"  puller: {'running' if t['puller_running'] else 'stopped'} · model-loopback: {'up' if t['model_loopback_up'] else 'down'}")
+    return "\n".join(lines)
+
+
 def cmd_propose(a) -> int:
     """Deterministic, model-free: print the EXACT copy-paste-ready renew/revoke for every present grant."""
     t = _action_templates()
@@ -220,12 +244,17 @@ def cmd_ask(a) -> int:
         print(f"✗ loopback model not answering at {a.model_url} — start it (e.g. `ollama serve`), then ask again.")
         return 3
     print("∞Δ∞ Sovereign Agent v0 · local answer (loopback mind · propose-only)\n")
-    print(ans.strip())
-    props = re.findall(r"PROPOSE:.*?(?=\n\s*\n|\Z)", ans, re.S)
-    if props:
-        print("\n— PROPOSED ACTS (NOT executed — KM's keyboard / gate authorizes) —")
-        for p in props:
-            print("  " + p.strip().replace("\n", "\n  "))
+    ans = (ans or "").strip()
+    refused = (not ans) or bool(re.search(r"can'?t (fulfill|help|do|assist)|cannot (fulfill|help|assist)|i'?m sorry|as an ai", ans, re.I))
+    print(ans if ans else "(the local model returned nothing)")
+    # Terminal-only operator ALWAYS gets substance from read tools, even if the model refused/was empty (KM 2026-08-13).
+    print("\n— NODE FACTS (read tools; always shown) —")
+    print(_facts_text(ctx))
+    print("\n— EXACT PROPOSALS (copy-paste; nothing executed — `node_agent.py propose` is the source of truth) —")
+    print(_templates_text(_action_templates()))
+    if refused:
+        print("\n(note: the local model gave no useful answer — the FACTS + PROPOSALS above come straight from the read tools; "
+              "try a stronger local model, e.g. --model gemma2:27b.)")
     print("\n(agent v0 read state and advised; it executed nothing. Consequential change stays behind KM.)")
     return 0
 
