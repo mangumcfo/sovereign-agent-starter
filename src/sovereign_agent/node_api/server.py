@@ -35,6 +35,7 @@ from .routes import node as node_routes
 from .routes import obligations as obligations_routes
 from .routes import placeholders as placeholder_routes
 from .routes import chat as chat_routes
+from .routes import status as status_routes
 from .routes import coherence as coherence_routes
 from .routes import proposals as proposals_routes
 from .routes import book_artifacts as book_artifacts_routes
@@ -100,6 +101,7 @@ def create_app() -> Flask:
     app.register_blueprint(substrate_routes.bp)
     app.register_blueprint(placeholder_routes.bp)
     app.register_blueprint(chat_routes.bp)
+    app.register_blueprint(status_routes.bp)
 
     # --- Serve the Atrium cockpit SAME-ORIGIN (the operator 2026-06-19) ---------------
     # The cockpit's api.js fetches this node's /api/v1/… . Serving the static UI FROM the node makes the

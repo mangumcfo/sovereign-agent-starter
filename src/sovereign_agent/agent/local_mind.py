@@ -101,10 +101,32 @@ def _puller_running():
         return False
 
 
+def _peers():
+    pb = os.environ.get("SOVEREIGN_PEER_BOOK", os.path.expanduser("~/.sovereign_peer_book.jsonl"))
+    if not os.path.exists(pb):
+        return {"count": 0, "labels": []}
+    rows = [json.loads(raw) for raw in open(pb, encoding="utf-8") if raw.strip()]   # local .jsonl (peer_book idiom)
+    return {"count": len(rows), "labels": [r.get("label") for r in rows]}
+
+
+def _model_up() -> bool:
+    base = re.sub(r"(/v1/.*|/api/.*)$", "", CHAT_URL_DEFAULT)   # e.g. http://127.0.0.1:11434
+    for path in ("/api/tags", "/v1/models"):                   # Ollama, then OpenAI-compat (vLLM)
+        try:
+            urllib.request.urlopen(base + path, timeout=3); return True   # noqa: S310 (loopback)
+        except Exception:  # noqa: BLE001
+            continue
+    return False
+
+
 def facts() -> dict:
+    """THE canonical status document — the single source the CLI (node_agent status), the API (GET /api/v1/status),
+    and the console chat panel all read. No divergent fact sources."""
     g = _grants()
-    return {"node_fp": _node_fp(), "gpu": _gpu(), "grants": g["grants"], "units_offered": g["units"],
-            "puller_running": _puller_running()}
+    return {"node_fp": _node_fp(), "gpu": _gpu(), "peers": _peers(),
+            "grants": g["grants"], "units_offered": g["units"],
+            "puller_running": _puller_running(), "model_up": _model_up(),
+            "source": "sovereign_agent.agent.local_mind.facts"}
 
 
 def pick_model(tags_url: str = "http://127.0.0.1:11434/api/tags"):

@@ -189,20 +189,20 @@ def _complete(model_url: str, model: str, prompt: str) -> str:
 
 
 def cmd_status(a) -> int:
-    _loopback(getattr(a, "model_url", MODEL_URL_DEFAULT))     # M1: refuse a non-loopback session before any probe
-    ctx = gather(getattr(a, "model_url", MODEL_URL_DEFAULT))
-    print("∞Δ∞ Sovereign Agent v0 · node status (read-only) · integrity-only, observable in transit")
-    n = ctx["node"]
-    print(f"  node        : {'fp ' + n['fingerprint'] if n.get('have_key') else n.get('note')}")
-    g = ctx["grant"]
-    print(f"  grant(s)    : {len(g['grants'])} · units offered (latest capacity): {g['offered_units_remaining']}")
-    for gr in g["grants"]:
-        print(f"                - {gr.get('file')} → {gr.get('to')} · models {gr.get('models')} · expires {gr.get('expires')}")
-    gp = ctx["gpu"]
-    print(f"  gpu         : {gp['free_mib']} MiB free · {gp['util_pct']}% util" if gp.get("state") == "ok" else f"  gpu         : {gp.get('note')} [{gp.get('state')}]")
-    print(f"  peers       : {ctx['peers']['count']} known {ctx['peers'].get('labels', [])}")
-    t = ctx["transport"]
-    print(f"  transport   : model-loopback {'UP' if t['model_loopback_up'] else 'down'} · puller {'running' if t['puller_running'] else 'stopped'}")
+    # CH3 convergence: render the ONE canonical document — sovereign_agent.agent.local_mind.facts() — the exact
+    # same source GET /api/v1/status and the console chat panel read. No divergent fact sources.
+    from sovereign_agent.agent import local_mind
+    f = local_mind.facts()
+    print("∞Δ∞ Sovereign Agent v0 · node status (read-only · source: local_mind.facts == GET /api/v1/status)")
+    print(f"  node       : {'fp ' + f['node_fp'] if f['node_fp'] else 'no durable key'}")
+    gp = f["gpu"]
+    print(f"  gpu        : {gp['free_mib']}/{gp['total_mib']} MiB free · {gp['util_pct']}% util"
+          if gp.get("state") == "ok" else f"  gpu        : {gp.get('note')} [{gp.get('state')}]")
+    print(f"  peers      : {f['peers']['count']} {f['peers']['labels']}")
+    print(f"  grants     : {len(f['grants'])} · units offered: {f['units_offered']}")
+    for gr in f["grants"]:
+        print(f"               - {gr['file']} → {gr['peer']} · models {gr['models']} · expires {gr['expires']}")
+    print(f"  puller     : {'running' if f['puller_running'] else 'stopped'} · model: {'up' if f['model_up'] else 'down'}")
     return 0
 
 
