@@ -28,8 +28,13 @@ import importlib.util
 import os
 import pathlib
 import subprocess
+import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
+# Self-bootstrap src/ onto sys.path so the operator can copy-paste the offer/renew command as-is (the
+# renew_run the node surfaces sets only NODE_KEYSTORE_DIR — no PYTHONPATH). Mirrors node_agent.py.
+if str(ROOT / "src") not in sys.path:
+    sys.path.insert(0, str(ROOT / "src"))
 _spec = importlib.util.spec_from_file_location("compute_share", ROOT / "scripts" / "compute_share.py")
 cs = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(cs)
