@@ -89,6 +89,62 @@ def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+# ── durable disposition receipts (WP3.5 — pre-condition for WP4) ─────────────────────────────────────────
+# A disposed act — a Port sanction, or a breath-gate approve/deny — is a constitutional human act. The
+# session breath-gate store (HumanApprovalGate._pending) is IN-MEMORY BY DESIGN and empties on restart, so
+# after a restart `/audit/cylinders` + `/inference/receipts` read count 0 (AA's WP3 D7 flag). WP3.5 writes the
+# disposition itself to the ONE durable pattern the node already keeps: the append-only, hash-chained
+# ObjectRegistry (`_reg()` — the same store `open_crossing` persists a crossing to). This is a small
+# persistence PATH (one `reg.append` per disposition), NOT a new product surface: the read is projected onto
+# the EXISTING `/inference/receipts` route. No value is written (money-path OFF) — the receipt records THAT a
+# disposition happened, its approver, and its root/hash, never a value. Not a second authority: the same
+# owner-gated routes still dispose; this only makes the record outlive the process.
+_RECEIPT_KIND = "disposition"
+
+
+def persist_disposition_receipt(subject: str, payload: dict, *, approver: str, mandate: str) -> dict:
+    """Durably record one disposed act (Port sanction / gate approve / gate deny) to the on-disk object
+    registry so it SURVIVES a process restart and stays listable + re-derivable (the version_hash is
+    hash-chained; re-replay recomputes it byte-identical). `subject` is a symbolic id
+    (e.g. 'port_sanction:crossing:…' or 'gate:approval_6:denied'); the object id is 'receipt:<subject>'.
+    Returns the persisted version (carrying object_id + version_hash). Composition only — reuses `_reg()`,
+    no new store, no sealed-primitive edit."""
+    oid = f"receipt:{subject}"
+    return _reg().append(
+        oid, dict(payload),
+        author=str(approver or "owner"),
+        source_ref=oid,                       # symbolic ref (colon, no path separator) — R22-3 accepts as-is
+        at=_now(), mandate=str(mandate or approver or "owner"),
+        kind=_RECEIPT_KIND, approver=str(approver or "owner"),
+        approval_ref=str(payload.get("approval_ref") or subject),
+    )
+
+
+def durable_receipts() -> list[dict]:
+    """Project the persisted disposition receipts from the durable registry into the `/inference/receipts`
+    shape. THESE are the acts that survive a restart (the in-memory compliance trail does not). Ordered
+    oldest→newest by registry append order. Never raises to the caller — a corrupt chain is surfaced by the
+    route as a note, not a 500."""
+    out = []
+    for e in _reg().entries():
+        if e.get("kind") != _RECEIPT_KIND:
+            continue
+        payload = e.get("payload") or {}
+        out.append({
+            "action_class": payload.get("action_class"),
+            "risk_level": payload.get("risk_level"),
+            "receipt_hash": e.get("version_hash"),
+            "prev_receipt_hash": e.get("prev_hash"),
+            "timestamp": e.get("at"),
+            "compliance_block": payload,
+            "object_id": e.get("object_id"),
+            "disposition": payload.get("disposition"),
+            "approver": e.get("approver"),
+            "durable": True,
+        })
+    return out
+
+
 def _as_chunks(body) -> list[bytes] | None:
     """Accept {chunks: [str|str]} or {content: str}; return a list of bytes, or None if empty/absent."""
     if isinstance(body.get("chunks"), list) and body["chunks"]:
@@ -394,6 +450,22 @@ def port_sanction(crossing_id: str):
     for k in ("value", "amount", "funds", "balance", "held"):
         receipt.pop(k, None)
     receipt["note"] = "Sanctioned crossing receipt — the Port records THAT it happened, never the value."
+    # WP3.5 — persist the disposed act to the durable registry so the sanction OUTLIVES a node restart
+    # (the in-memory breath-gate store does not). Records THAT the crossing was sanctioned + its root +
+    # the named human, never a value. Persistence is the point of WP3.5 — never claim `durable` falsely.
+    try:
+        pv = persist_disposition_receipt(
+            f"port_sanction:{crossing_id}",
+            {"action_class": "boundary_crossing", "risk_level": "high", "disposition": "sanctioned",
+             "crossing_root": receipt.get("crossing_root"), "boundary": receipt.get("boundary"),
+             "approval_ref": approval_ref},
+            approver=approver, mandate=boundary_mandate)
+        receipt["receipt_object_id"] = pv["object_id"]
+        receipt["receipt_version_hash"] = pv["version_hash"]
+        receipt["durable"] = True
+    except Exception as exc:  # noqa: BLE001 — fail-loud: the sanction still holds, but say the record isn't durable
+        receipt["durable"] = False
+        receipt["durable_error"] = str(exc)
     return jsonify(receipt)
 
 

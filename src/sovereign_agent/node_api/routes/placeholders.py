@@ -214,6 +214,27 @@ def breath_gate_pending():
     })
 
 
+def _persist_gate_disposition(result: dict, gate_id: str, status: str, reason: str) -> None:
+    """WP3.5 — after a REAL breath-gate disposition, write it to the durable object registry so the disposed
+    act OUTLIVES a process restart (the in-memory HumanApprovalGate does not). Composition: the same
+    `persist_disposition_receipt` the Port sanction uses (one `reg.append`). Mutates `result` with the
+    receipt object_id + version_hash; never claims `durable` falsely (fail-loud on a persistence error)."""
+    try:
+        from .substrate import persist_disposition_receipt  # noqa: PLC0415 — late import, avoids a cycle
+        who = current_principal()
+        pv = persist_disposition_receipt(
+            f"gate:{gate_id}:{status}",
+            {"action_class": "breath_gate", "disposition": status, "gate_id": gate_id,
+             "reason": reason, "approval_ref": f"breath_gate {gate_id} {status}"},
+            approver=who, mandate=who)
+        result["receipt_object_id"] = pv["object_id"]
+        result["receipt_version_hash"] = pv["version_hash"]
+        result["durable"] = True
+    except Exception as exc:  # noqa: BLE001 — the disposition still holds; only the durable record failed
+        result["durable"] = False
+        result["durable_error"] = str(exc)
+
+
 @bp.post("/breath_gate/<gate_id>/approve")
 @require_principal
 @require_owner
@@ -236,6 +257,7 @@ def breath_gate_approve(gate_id: str):
             why="The id is not in the pending-approvals store.",
             next_step="GET /api/v1/breath_gate/pending to list pending gates.",
         )), 404
+    _persist_gate_disposition(result, gate_id, "approved", "")
     return jsonify(result)
 
 
@@ -257,6 +279,7 @@ def breath_gate_deny(gate_id: str):
             why="The id is not in the pending-approvals store.",
             next_step="GET /api/v1/breath_gate/pending to list pending gates.",
         )), 404
+    _persist_gate_disposition(result, gate_id, "denied", body.get("reason", ""))
     return jsonify(result)
 
 
@@ -321,7 +344,29 @@ def inference_receipts():
         "timestamp": getattr(r, "timestamp", None),
         "compliance_block": getattr(r, "compliance_block", {}),
     } for r in trail]
-    return jsonify({"receipts": receipts, "count": len(receipts)})
+    # WP3.5 — also project the DURABLE disposition receipts (Port sanction / gate approve|deny) persisted to
+    # the object registry. THESE survive a node restart; the `trail` above is the in-memory compliance trail
+    # and reads empty after a restart. Composition on the EXISTING route — not a new surface.
+    durable_note = None
+    try:
+        from .substrate import durable_receipts  # noqa: PLC0415 — late import, avoids a blueprint cycle
+        persisted = durable_receipts()
+    except Exception as exc:  # noqa: BLE001 — degrade loudly in a note, never 500 the read
+        persisted = []
+        durable_note = f"durable receipts unavailable (chain read failed): {exc}"
+    merged = persisted + receipts
+    resp = {
+        "receipts": merged,
+        "count": len(merged),
+        "durable_count": len(persisted),
+        "session_count": len(receipts),
+        "note": ("`durable_count` receipts are persisted to the append-only object registry and SURVIVE a "
+                 "node restart (each carries a hash-chained `receipt_hash`); `session_count` is the "
+                 "in-memory compliance trail (empty after a restart)."),
+    }
+    if durable_note:
+        resp["durable_note"] = durable_note
+    return jsonify(resp)
 
 
 # ============================================================================
