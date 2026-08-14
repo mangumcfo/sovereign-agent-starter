@@ -11,7 +11,7 @@ HumanApprovalGate / grant / mandate. Compose-only: no new admission logic, no cl
   status              read-first tools only (node · grant/units · GPU · peers · transport) — no model call
   ask --prompt "…"    gather that context → loopback model → local answer + any PROPOSE block → exit 0
 
-good > perfect: this is v0, a thin working mind. Spiral-improve. Integrity-only; never claims private/confidential.
+good > perfect: this is v0, a thin working mind. Spiral-improve. Integrity-only — no channel-secrecy claims.
 """
 from __future__ import annotations
 
@@ -38,7 +38,7 @@ change units/capacity, start/stop a service, send anything over a Port), you MUS
   RUN: <the exact command KM would run>
   GATE: <the human gate/approval or keyboard act that authorizes it>
 Consequential state stays behind KM's keyboard. Be concise, practical, income/ops-useful. Integrity-only —
-never claim anything is private or confidential. If you are unsure, say so and propose a read-only check."""
+claim no channel secrecy. If you are unsure, say so and propose a read-only check."""
 
 
 # ── read-first tools (all read-only; no mutation anywhere in this file) ──────────
@@ -76,14 +76,25 @@ def _grant():
     return {"grants": grants, "offered_units_remaining": units}
 
 
+def _loopback(url: str) -> str:
+    """M1: the mind is loopback by structure. Refuse a non-loopback URL — do not even probe it."""
+    host = re.sub(r"^https?://", "", url).split("/")[0].split(":")[0]
+    if host not in ("127.0.0.1", "localhost", "::1"):
+        raise SystemExit(f"refused: the mind is loopback-only (got host {host!r}) — no cloud brain, not even to probe")
+    return url
+
+
 def _gpu():
+    import shutil
+    if not shutil.which("nvidia-smi"):        # three-state: absent
+        return {"state": "no-check", "note": "nvidia-smi not installed — GPU not checkable on this iron"}
     try:
         out = subprocess.check_output(["nvidia-smi", "--query-gpu=memory.free,utilization.gpu",
                                        "--format=csv,noheader,nounits"], text=True, timeout=8)
         free, util = (x.strip() for x in out.strip().splitlines()[0].split(","))
-        return {"free_mib": int(free), "util_pct": int(util)}
-    except Exception:  # noqa: BLE001
-        return {"note": "no GPU / nvidia-smi unavailable"}
+        return {"state": "ok", "free_mib": int(free), "util_pct": int(util)}   # found
+    except Exception as e:  # noqa: BLE001
+        return {"state": "error", "note": f"nvidia-smi present but failed ({type(e).__name__})"}   # could-not-read
 
 
 def _peers():
@@ -129,6 +140,7 @@ def _complete(model_url: str, model: str, prompt: str) -> str:
 
 
 def cmd_status(a) -> int:
+    _loopback(getattr(a, "model_url", MODEL_URL_DEFAULT))     # M1: refuse a non-loopback session before any probe
     ctx = gather(getattr(a, "model_url", MODEL_URL_DEFAULT))
     print("∞Δ∞ Sovereign Agent v0 · node status (read-only) · integrity-only, observable in transit")
     n = ctx["node"]
@@ -138,7 +150,7 @@ def cmd_status(a) -> int:
     for gr in g["grants"]:
         print(f"                - {gr.get('file')} → {gr.get('to')} · models {gr.get('models')} · expires {gr.get('expires')}")
     gp = ctx["gpu"]
-    print(f"  gpu         : {gp['free_mib']} MiB free · {gp['util_pct']}% util" if "free_mib" in gp else f"  gpu         : {gp.get('note')}")
+    print(f"  gpu         : {gp['free_mib']} MiB free · {gp['util_pct']}% util" if gp.get("state") == "ok" else f"  gpu         : {gp.get('note')} [{gp.get('state')}]")
     print(f"  peers       : {ctx['peers']['count']} known {ctx['peers'].get('labels', [])}")
     t = ctx["transport"]
     print(f"  transport   : model-loopback {'UP' if t['model_loopback_up'] else 'down'} · puller {'running' if t['puller_running'] else 'stopped'}")
@@ -146,6 +158,7 @@ def cmd_status(a) -> int:
 
 
 def cmd_ask(a) -> int:
+    _loopback(a.model_url)                                    # M1: refuse a non-loopback session before any probe
     ctx = gather(a.model_url)
     prompt = (f"{SYSTEM}\n\nNODE CONTEXT (read-only tools):\n{json.dumps(ctx, indent=2)}\n\n"
               f"OPERATOR (KM-1176) ASKS:\n{a.prompt}\n\nAnswer concisely. Propose (do not execute) any consequential act.")
