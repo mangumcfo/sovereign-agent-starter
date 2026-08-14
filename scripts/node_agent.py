@@ -127,6 +127,46 @@ def gather(model_url=MODEL_URL_DEFAULT) -> dict:
             "transport": _transport(model_url)}
 
 
+# ── exact, node-filled action templates (v0.1) — copy-paste-ready RUN text, still nothing executes ──
+def _action_templates() -> dict:
+    """Build the EXACT renew/revoke command for each present grant, filled from the node's own state so a proposal
+    is copy-paste-ready — never a model-invented flag. Read-only: reads grant JSON + registry, prints, runs nothing."""
+    node = os.environ.get("BREATHLINE_NODE_NAME", "UniversalSovereignNode")
+    reg = os.path.join(SHARE_DIR, "registry")
+    units = _grant().get("offered_units_remaining") or "100"
+    ks = os.environ.get("NODE_KEYSTORE_DIR", "~/.sovereign_keystore")
+    tpls = []
+    for f in sorted(glob.glob(os.path.join(SHARE_DIR, "grant_*.json"))):
+        try:
+            g = json.load(open(f, encoding="utf-8"))
+        except Exception:  # noqa: BLE001
+            continue
+        d = (g.get("grant", {}).get("delegation", {}) or {}).get("payload", {})
+        to = d.get("delegate_to", "<peer>")
+        rpub = g.get("requester_public_hex", "<PEER_PUBLIC_HEX>")
+        models = " ".join(g.get("models") or ["<model>"])
+        renew = (f"NODE_KEYSTORE_DIR={ks} python3 scripts/compute_share_offer.py --node {node} --units {units} "
+                 f"--renew-days 7 --approver KM-1176 --approval-ref km-renew-{to.lower()} "
+                 f"--requester-name {to} --requester-public-hex {rpub} --models {models} "
+                 f"--registry {reg} --emit-grant {f} --min-gpu-free-mib 20000")
+        tpls.append({"peer": to, "expires": d.get("expires_at"), "grant_file": f,
+                     "renew_run": renew, "revoke_run": f"rm {f}",
+                     "revoke_effect": "standing puller reloads each poll → denies the next job within ~5s (live revoke)"})
+    return {"node": node, "grants": tpls}
+
+
+def _templates_text(t: dict) -> str:
+    if not t["grants"]:
+        return "  (no grant files present — nothing to renew/revoke; use compute_share_offer.py to issue a first offer)"
+    out = []
+    for g in t["grants"]:
+        out.append(f"  peer {g['peer']} (expires {g['expires']}):")
+        out.append(f"    RENEW 7d — RUN: {g['renew_run']}")
+        out.append(f"    REVOKE  — RUN: {g['revoke_run']}   ({g['revoke_effect']})")
+        out.append("    GATE: KM keyboard (issue/renew/revoke is a human act)")
+    return "\n".join(out)
+
+
 # ── loopback model call (same fence as compute_share: 127.0.0.1 only) ───────────
 def _complete(model_url: str, model: str, prompt: str) -> str:
     host = re.sub(r"^https?://", "", model_url).split("/")[0].split(":")[0]
@@ -157,11 +197,23 @@ def cmd_status(a) -> int:
     return 0
 
 
+def cmd_propose(a) -> int:
+    """Deterministic, model-free: print the EXACT copy-paste-ready renew/revoke for every present grant."""
+    t = _action_templates()
+    print("∞Δ∞ Sovereign Agent v0 · EXACT proposals (nothing executed — KM's keyboard authorizes)\n")
+    print(_templates_text(t))
+    print("\n(read-only: the agent printed exact command text; it ran nothing. Consequential change stays behind KM.)")
+    return 0
+
+
 def cmd_ask(a) -> int:
     _loopback(a.model_url)                                    # M1: refuse a non-loopback session before any probe
     ctx = gather(a.model_url)
+    tpl = _templates_text(_action_templates())
     prompt = (f"{SYSTEM}\n\nNODE CONTEXT (read-only tools):\n{json.dumps(ctx, indent=2)}\n\n"
-              f"OPERATOR (KM-1176) ASKS:\n{a.prompt}\n\nAnswer concisely. Propose (do not execute) any consequential act.")
+              f"EXACT ACTION TEMPLATES — if you propose a renew or revoke, COPY the RUN line VERBATIM from here; "
+              f"never invent flags:\n{tpl}\n\nOPERATOR (KM-1176) ASKS:\n{a.prompt}\n\n"
+              f"Answer concisely. Propose (do not execute) any consequential act, quoting the exact RUN line above.")
     try:
         ans = _complete(a.model_url, a.model, prompt)
     except urllib.error.URLError:
@@ -182,6 +234,7 @@ def main(argv=None) -> int:
     p = argparse.ArgumentParser(description="Sovereign Agent v0 — node-local mind, read-first + propose-only.")
     sub = p.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("status"); s.add_argument("--model-url", default=MODEL_URL_DEFAULT); s.set_defaults(fn=cmd_status)
+    pr = sub.add_parser("propose"); pr.set_defaults(fn=cmd_propose)   # deterministic exact renew/revoke, no model
     q = sub.add_parser("ask")
     q.add_argument("--prompt", required=True)
     q.add_argument("--model", default="llama3.2:1b")
