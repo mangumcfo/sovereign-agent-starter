@@ -141,7 +141,7 @@ def main():
     T=tip()
     rows=harvest()
     present=[r for r in rows if r["present"]]
-    out={"meta":{"kit":"BCK","pinned_tip":PINNED_TIP,"observed_tip":observed_tip(),"home":"sovereign-agent-starter","generated_by":"bck/compose_graph_generator.py (harvest-only)",
+    out={"meta":{"kit":"BCK","pinned_tip":PINNED_TIP,"home":"sovereign-agent-starter","generated_by":"bck/compose_graph_generator.py (harvest-only)",
                  "rule":"PRESENT iff a test references the route; no hand-authored rows; sealed homes only (platform maps = ADR appendix)",
                  "counts":{"routes":len(rows),"present_with_tests":len(present),"owner_gated":sum(1 for r in rows if r['owner_gate']=='require_owner')}},
          "capabilities":rows}
@@ -155,7 +155,7 @@ def ci_check():
     import yaml, io
     committed=open(os.path.join(os.path.dirname(__file__),"compose_graph.yaml")).read()
     rows=harvest(); T=tip()
-    fresh={"meta":{"kit":"BCK","pinned_tip":PINNED_TIP,"observed_tip":observed_tip(),"home":"sovereign-agent-starter","generated_by":"bck/compose_graph_generator.py (harvest-only)",
+    fresh={"meta":{"kit":"BCK","pinned_tip":PINNED_TIP,"home":"sovereign-agent-starter","generated_by":"bck/compose_graph_generator.py (harvest-only)",
                  "rule":"PRESENT iff a test references the route; no hand-authored rows; sealed homes only (platform maps = ADR appendix)",
                  "counts":{"routes":len(rows),"present_with_tests":sum(1 for r in rows if r['present']),"owner_gated":sum(1 for r in rows if r['owner_gate']=='require_owner')}},
            "capabilities":rows}
