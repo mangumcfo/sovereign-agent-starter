@@ -1,0 +1,895 @@
+meta:
+  kit: BCK
+  pinned_tip: 710a40f
+  home: sovereign-agent-starter
+  generated_by: bck/compose_graph_generator.py (harvest-only)
+  rule: PRESENT iff a test references the route; no hand-authored rows; sealed homes only (platform maps = ADR appendix)
+  counts:
+    routes: 78
+    present_with_tests: 61
+    owner_gated: 19
+capabilities:
+- capability: POST /api/v1/recompile
+  route_file: src/sovereign_agent/node_api/routes/book_artifacts.py
+  handler: recompile
+  verbs: []
+  owner_gate: require_owner
+  fences: []
+  test_files:
+  - tests/test_node_api_proposals.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: GET /api/v1/book_artifacts
+  route_file: src/sovereign_agent/node_api/routes/book_artifacts.py
+  handler: book_artifacts
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files: []
+  series_home: UNMAPPED — ADR review
+  present: false
+- capability: GET /api/v1/book_pdf
+  route_file: src/sovereign_agent/node_api/routes/book_artifacts.py
+  handler: book_pdf
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files: []
+  series_home: UNMAPPED — ADR review
+  present: false
+- capability: GET /api/v1/book_epub
+  route_file: src/sovereign_agent/node_api/routes/book_artifacts.py
+  handler: book_epub
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files: []
+  series_home: UNMAPPED — ADR review
+  present: false
+- capability: GET /api/v1/book_cover
+  route_file: src/sovereign_agent/node_api/routes/book_artifacts.py
+  handler: book_cover
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files: []
+  series_home: UNMAPPED — ADR review
+  present: false
+- capability: GET /api/v1/book_kdp
+  route_file: src/sovereign_agent/node_api/routes/book_artifacts.py
+  handler: book_kdp
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files: []
+  series_home: UNMAPPED — ADR review
+  present: false
+- capability: GET /api/v1/coherence
+  route_file: src/sovereign_agent/node_api/routes/coherence.py
+  handler: coherence
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_atrium_surfaces.py
+  - tests/test_helix_distribution.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: GET /api/v1/coherence/distribution
+  route_file: src/sovereign_agent/node_api/routes/coherence.py
+  handler: coherence_distribution
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_atrium_surfaces.py
+  - tests/test_helix_distribution.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: GET /api/v1/coherence/rollup
+  route_file: src/sovereign_agent/node_api/routes/coherence.py
+  handler: coherence_rollup
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files: []
+  series_home: UNMAPPED — ADR review
+  present: false
+- capability: GET /api/v1/dialogue
+  route_file: src/sovereign_agent/node_api/routes/dialogue.py
+  handler: dialogue
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files: []
+  series_home: UNMAPPED — ADR review
+  present: false
+- capability: GET /api/v1/crypto_assurance
+  route_file: src/sovereign_agent/node_api/routes/dialogue.py
+  handler: crypto_assurance
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files: []
+  series_home: UNMAPPED — ADR review
+  present: false
+- capability: POST /api/v1/feedback
+  route_file: src/sovereign_agent/node_api/routes/feedback.py
+  handler: feedback_intake
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api_feedback.py
+  - tests/test_node_api_security.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: GET /api/v1/awaiting_owner
+  route_file: src/sovereign_agent/node_api/routes/feedback.py
+  handler: awaiting_owner
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api_feedback.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: GET /api/v1/review_brief
+  route_file: src/sovereign_agent/node_api/routes/feedback.py
+  handler: review_brief
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files: []
+  series_home: UNMAPPED — ADR review
+  present: false
+- capability: GET /api/v1/doc
+  route_file: src/sovereign_agent/node_api/routes/feedback.py
+  handler: doc
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api_feedback.py
+  - tests/test_shields_confidentiality.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: GET /api/v1/pdf
+  route_file: src/sovereign_agent/node_api/routes/feedback.py
+  handler: pdf
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files: []
+  series_home: UNMAPPED — ADR review
+  present: false
+- capability: GET /api/v1/handshakes
+  route_file: src/sovereign_agent/node_api/routes/feedback.py
+  handler: handshakes
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api_feedback.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: POST /api/v1/feedback/<obligation_id>/disposition
+  route_file: src/sovereign_agent/node_api/routes/feedback.py
+  handler: feedback_disposition
+  verbs: []
+  owner_gate: require_owner
+  fences:
+  - owner-disposes
+  test_files:
+  - tests/test_node_api_feedback.py
+  - tests/test_node_api_security.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: GET /api/v1/hopper
+  route_file: src/sovereign_agent/node_api/routes/hopper.py
+  handler: hopper_list
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api_hopper.py
+  - tests/test_obligation_ledger.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: POST /api/v1/hopper/packet
+  route_file: src/sovereign_agent/node_api/routes/hopper.py
+  handler: hopper_to_packet
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api_hopper.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: GET /api/v1/node
+  route_file: src/sovereign_agent/node_api/routes/node.py
+  handler: node_get
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_atrium_surfaces.py
+  - tests/test_collaboration_shared_work.py
+  - tests/test_helix_distribution.py
+  - tests/test_messaging_inter_node.py
+  - tests/test_node_api.py
+  - tests/test_node_api_feedback.py
+  - tests/test_node_api_substrate.py
+  - tests/test_resilience.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: GET /api/v1/node/health
+  route_file: src/sovereign_agent/node_api/routes/node.py
+  handler: node_health
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: GET /api/v1/node/ladder
+  route_file: src/sovereign_agent/node_api/routes/node.py
+  handler: node_ladder
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: GET /api/v1/obligations
+  route_file: src/sovereign_agent/node_api/routes/obligations.py
+  handler: obligations_list
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_ledger_verify_incremental.py
+  - tests/test_node_api_hopper.py
+  - tests/test_node_api_obligations.py
+  - tests/test_node_api_proposals.py
+  - tests/test_obligation_ledger_governed.py
+  - tests/test_scout_propose_only.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: GET /api/v1/obligations/log
+  route_file: src/sovereign_agent/node_api/routes/obligations.py
+  handler: obligations_log
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files: []
+  series_home: UNMAPPED — ADR review
+  present: false
+- capability: POST /api/v1/obligations
+  route_file: src/sovereign_agent/node_api/routes/obligations.py
+  handler: obligations_open
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_ledger_verify_incremental.py
+  - tests/test_node_api_hopper.py
+  - tests/test_node_api_obligations.py
+  - tests/test_node_api_proposals.py
+  - tests/test_obligation_ledger_governed.py
+  - tests/test_scout_propose_only.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: POST /api/v1/obligations/<obligation_id>/approve
+  route_file: src/sovereign_agent/node_api/routes/obligations.py
+  handler: obligations_approve
+  verbs: []
+  owner_gate: require_owner
+  fences: []
+  test_files:
+  - tests/test_ledger_verify_incremental.py
+  - tests/test_node_api_hopper.py
+  - tests/test_node_api_obligations.py
+  - tests/test_node_api_proposals.py
+  - tests/test_obligation_ledger_governed.py
+  - tests/test_scout_propose_only.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: POST /api/v1/obligations/<obligation_id>/close
+  route_file: src/sovereign_agent/node_api/routes/obligations.py
+  handler: obligations_close
+  verbs: []
+  owner_gate: require_owner
+  fences: []
+  test_files:
+  - tests/test_ledger_verify_incremental.py
+  - tests/test_node_api_hopper.py
+  - tests/test_node_api_obligations.py
+  - tests/test_node_api_proposals.py
+  - tests/test_obligation_ledger_governed.py
+  - tests/test_scout_propose_only.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: GET /api/v1/manifest
+  route_file: src/sovereign_agent/node_api/routes/placeholders.py
+  handler: manifest_get
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: GET /api/v1/specs
+  route_file: src/sovereign_agent/node_api/routes/placeholders.py
+  handler: specs_list
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api.py
+  - tests/test_object_spec.py
+  - tests/test_yield_alignment_scorer.py
+  - tests/test_yield_compounding.py
+  - tests/test_yield_economic_export.py
+  - tests/test_yield_engine_wiring.py
+  - tests/test_yield_value_flow.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: GET /api/v1/specs/<spec_id>
+  route_file: src/sovereign_agent/node_api/routes/placeholders.py
+  handler: specs_get
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api.py
+  - tests/test_object_spec.py
+  - tests/test_yield_alignment_scorer.py
+  - tests/test_yield_compounding.py
+  - tests/test_yield_economic_export.py
+  - tests/test_yield_engine_wiring.py
+  - tests/test_yield_value_flow.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: POST /api/v1/specs/validate
+  route_file: src/sovereign_agent/node_api/routes/placeholders.py
+  handler: specs_validate
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: GET /api/v1/invocations/<invocation_id>
+  route_file: src/sovereign_agent/node_api/routes/placeholders.py
+  handler: invocations_get
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files: []
+  series_home: UNMAPPED — ADR review
+  present: false
+- capability: GET /api/v1/breath_gate/pending
+  route_file: src/sovereign_agent/node_api/routes/placeholders.py
+  handler: breath_gate_pending
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api.py
+  - tests/test_node_api_durable_receipts.py
+  - tests/test_node_api_substrate.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: POST /api/v1/breath_gate/<gate_id>/approve
+  route_file: src/sovereign_agent/node_api/routes/placeholders.py
+  handler: breath_gate_approve
+  verbs:
+  - record_disposition
+  owner_gate: require_owner
+  fences: []
+  test_files:
+  - tests/test_node_api.py
+  - tests/test_node_api_durable_receipts.py
+  - tests/test_node_api_substrate.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: POST /api/v1/breath_gate/<gate_id>/deny
+  route_file: src/sovereign_agent/node_api/routes/placeholders.py
+  handler: breath_gate_deny
+  verbs:
+  - record_disposition
+  owner_gate: require_owner
+  fences:
+  - real-disposition-no-simulate
+  test_files:
+  - tests/test_node_api.py
+  - tests/test_node_api_durable_receipts.py
+  - tests/test_node_api_substrate.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: GET /api/v1/audit/cylinders
+  route_file: src/sovereign_agent/node_api/routes/placeholders.py
+  handler: audit_cylinders_list
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api.py
+  - tests/test_node_api_durable_receipts.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: GET /api/v1/audit/cylinders/<int:seq>
+  route_file: src/sovereign_agent/node_api/routes/placeholders.py
+  handler: audit_cylinders_get
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api.py
+  - tests/test_node_api_durable_receipts.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: GET /api/v1/inference/receipts
+  route_file: src/sovereign_agent/node_api/routes/placeholders.py
+  handler: inference_receipts
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api.py
+  - tests/test_node_api_durable_receipts.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: GET /api/v1/audit/evidence-bundle
+  route_file: src/sovereign_agent/node_api/routes/placeholders.py
+  handler: audit_evidence_bundle
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: GET /api/v1/invariants/status
+  route_file: src/sovereign_agent/node_api/routes/placeholders.py
+  handler: invariants_status
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: GET /api/v1/federation/peers
+  route_file: src/sovereign_agent/node_api/routes/placeholders.py
+  handler: federation_peers
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: GET /api/v1/federation/shards
+  route_file: src/sovereign_agent/node_api/routes/placeholders.py
+  handler: federation_shards
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: GET /api/v1/federation/propagation
+  route_file: src/sovereign_agent/node_api/routes/placeholders.py
+  handler: federation_propagation
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: GET /api/v1/proposals
+  route_file: src/sovereign_agent/node_api/routes/proposals.py
+  handler: proposals_list
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api_proposals.py
+  - tests/test_node_api_security.py
+  - tests/test_scout_propose_only.py
+  series_home: Full Production ERP (Series 5) V26
+  present: true
+- capability: POST /api/v1/proposals
+  route_file: src/sovereign_agent/node_api/routes/proposals.py
+  handler: proposals_create
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api_proposals.py
+  - tests/test_node_api_security.py
+  - tests/test_scout_propose_only.py
+  series_home: Full Production ERP (Series 5) V26
+  present: true
+- capability: POST /api/v1/produce
+  route_file: src/sovereign_agent/node_api/routes/proposals.py
+  handler: produce
+  verbs: []
+  owner_gate: require_owner
+  fences: []
+  test_files:
+  - tests/test_node_api_proposals.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: GET /api/v1/processing
+  route_file: src/sovereign_agent/node_api/routes/proposals.py
+  handler: processing
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files: []
+  series_home: UNMAPPED — ADR review
+  present: false
+- capability: POST /api/v1/proposals/<proposal_id>/apply
+  route_file: src/sovereign_agent/node_api/routes/proposals.py
+  handler: proposals_apply
+  verbs: []
+  owner_gate: require_owner
+  fences:
+  - owner-disposes
+  test_files:
+  - tests/test_node_api_proposals.py
+  - tests/test_node_api_security.py
+  - tests/test_scout_propose_only.py
+  series_home: Full Production ERP (Series 5) V26
+  present: true
+- capability: POST /api/v1/proposals/<proposal_id>/dismiss
+  route_file: src/sovereign_agent/node_api/routes/proposals.py
+  handler: proposals_dismiss
+  verbs: []
+  owner_gate: require_owner
+  fences: []
+  test_files:
+  - tests/test_node_api_proposals.py
+  - tests/test_node_api_security.py
+  - tests/test_scout_propose_only.py
+  series_home: Full Production ERP (Series 5) V26
+  present: true
+- capability: POST /api/v1/proposals/<proposal_id>/decide
+  route_file: src/sovereign_agent/node_api/routes/proposals.py
+  handler: proposals_decide
+  verbs: []
+  owner_gate: require_owner
+  fences:
+  - owner-disposes
+  test_files:
+  - tests/test_node_api_proposals.py
+  - tests/test_node_api_security.py
+  - tests/test_scout_propose_only.py
+  series_home: Full Production ERP (Series 5) V26
+  present: true
+- capability: GET /api/v1/seeit
+  route_file: src/sovereign_agent/node_api/routes/proposals.py
+  handler: seeit
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files: []
+  series_home: UNMAPPED — ADR review
+  present: false
+- capability: GET /api/v1/export/packet
+  route_file: src/sovereign_agent/node_api/routes/proposals.py
+  handler: export_packet_route
+  verbs: []
+  owner_gate: require_owner
+  fences:
+  - owner-disposes
+  test_files: []
+  series_home: UNMAPPED — ADR review
+  present: false
+- capability: GET /api/v1/actions
+  route_file: src/sovereign_agent/node_api/routes/proposals.py
+  handler: actions_route
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api_demo_parity.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: POST /api/v1/relay
+  route_file: src/sovereign_agent/node_api/routes/relay.py
+  handler: relay_create
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_jsonstore.py
+  - tests/test_node_api_relay.py
+  series_home: Inter-Node Sovereignty (Series 6) V7 (adapter surface)
+  present: true
+- capability: GET /api/v1/relays
+  route_file: src/sovereign_agent/node_api/routes/relay.py
+  handler: relays_list
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_jsonstore.py
+  - tests/test_node_api_relay.py
+  series_home: Inter-Node Sovereignty (Series 6) V7 (adapter surface)
+  present: true
+- capability: POST /api/v1/relay/<relay_id>/relay
+  route_file: src/sovereign_agent/node_api/routes/relay.py
+  handler: relay_send
+  verbs: []
+  owner_gate: require_owner
+  fences: []
+  test_files:
+  - tests/test_jsonstore.py
+  - tests/test_node_api_relay.py
+  series_home: Inter-Node Sovereignty (Series 6) V7 (adapter surface)
+  present: true
+- capability: POST /api/v1/relay/<relay_id>/dismiss
+  route_file: src/sovereign_agent/node_api/routes/relay.py
+  handler: relay_dismiss
+  verbs: []
+  owner_gate: require_owner
+  fences: []
+  test_files:
+  - tests/test_jsonstore.py
+  - tests/test_node_api_relay.py
+  series_home: Inter-Node Sovereignty (Series 6) V7 (adapter surface)
+  present: true
+- capability: GET /api/v1/roles
+  route_file: src/sovereign_agent/node_api/routes/roles.py
+  handler: roles_list
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api.py
+  - tests/test_node_api_demo_parity.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: GET /api/v1/roles/<role_id>
+  route_file: src/sovereign_agent/node_api/routes/roles.py
+  handler: roles_get
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api.py
+  - tests/test_node_api_demo_parity.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: POST /api/v1/roles/<role_id>/invoke
+  route_file: src/sovereign_agent/node_api/routes/roles.py
+  handler: roles_invoke
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api.py
+  - tests/test_node_api_demo_parity.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: POST /api/v1/scout/run
+  route_file: src/sovereign_agent/node_api/routes/scout.py
+  handler: scout_run
+  verbs: []
+  owner_gate: require_owner
+  fences: []
+  test_files: []
+  series_home: UNMAPPED — ADR review
+  present: false
+- capability: GET /api/v1/series
+  route_file: src/sovereign_agent/node_api/routes/series.py
+  handler: series_list
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api_series.py
+  series_home: UNMAPPED — ADR review
+  present: true
+- capability: GET /api/v1/book_docs
+  route_file: src/sovereign_agent/node_api/routes/series.py
+  handler: book_docs
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files: []
+  series_home: UNMAPPED — ADR review
+  present: false
+- capability: POST /api/v1/onboard/run
+  route_file: src/sovereign_agent/node_api/routes/substrate.py
+  handler: onboard_run
+  verbs:
+  - record_disposition
+  - request_approval
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api_durable_receipts.py
+  - tests/test_node_api_substrate.py
+  series_home: Inter-Node Sovereignty (Series 6) V6 + Full Production ERP (Series 5) V16
+  present: true
+- capability: GET /api/v1/onboard/status
+  route_file: src/sovereign_agent/node_api/routes/substrate.py
+  handler: onboard_status
+  verbs:
+  - record_disposition
+  - retrieve_datum
+  - store_datum
+  owner_gate: require_principal
+  fences:
+  - deny-by-default
+  test_files:
+  - tests/test_node_api_substrate.py
+  series_home: Inter-Node Sovereignty (Series 6) V6 + Full Production ERP (Series 5) V16
+  present: true
+- capability: POST /api/v1/storage/datum
+  route_file: src/sovereign_agent/node_api/routes/substrate.py
+  handler: storage_store
+  verbs:
+  - store_datum
+  owner_gate: require_principal
+  fences:
+  - deny-by-default
+  test_files:
+  - tests/test_node_api_durable_receipts.py
+  - tests/test_node_api_substrate.py
+  series_home: Zero-Trust Sovereignty (Series 7) V3
+  present: true
+- capability: GET /api/v1/storage/datum/<path:datum_id>
+  route_file: src/sovereign_agent/node_api/routes/substrate.py
+  handler: storage_get
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api_durable_receipts.py
+  - tests/test_node_api_substrate.py
+  series_home: Zero-Trust Sovereignty (Series 7) V3
+  present: true
+- capability: POST /api/v1/storage/datum/<path:datum_id>/verify
+  route_file: src/sovereign_agent/node_api/routes/substrate.py
+  handler: storage_verify
+  verbs:
+  - open_crossing
+  - retrieve_datum
+  owner_gate: require_principal
+  fences:
+  - deny-by-default
+  test_files:
+  - tests/test_node_api_durable_receipts.py
+  - tests/test_node_api_substrate.py
+  series_home: Zero-Trust Sovereignty (Series 7) V3
+  present: true
+- capability: POST /api/v1/port/crossing
+  route_file: src/sovereign_agent/node_api/routes/substrate.py
+  handler: port_open
+  verbs:
+  - open_crossing
+  - request_approval
+  - sanction_crossing
+  owner_gate: require_principal
+  fences:
+  - deny-by-default
+  test_files:
+  - tests/test_node_api_durable_receipts.py
+  - tests/test_node_api_substrate.py
+  series_home: Inter-Node Sovereignty (Series 6) V7
+  present: true
+- capability: POST /api/v1/port/crossing/<path:crossing_id>/sanction
+  route_file: src/sovereign_agent/node_api/routes/substrate.py
+  handler: port_sanction
+  verbs:
+  - record_disposition
+  - sanction_crossing
+  owner_gate: require_owner
+  fences:
+  - deny-by-default
+  - money_path-OFF
+  - receipt-value-stripped
+  test_files:
+  - tests/test_node_api_durable_receipts.py
+  - tests/test_node_api_substrate.py
+  series_home: Inter-Node Sovereignty (Series 6) V7
+  present: true
+- capability: POST /api/v1/onboard/ceremony
+  route_file: src/sovereign_agent/node_api/routes/substrate.py
+  handler: onboard_ceremony
+  verbs:
+  - mutual_recognition
+  - run_onboard
+  owner_gate: require_principal
+  fences:
+  - RECOGNITION_BREACH_FIELDS
+  - deny-by-default
+  - real-disposition-no-simulate
+  test_files:
+  - tests/test_node_api_substrate.py
+  series_home: Inter-Node Sovereignty (Series 6) V6 + Full Production ERP (Series 5) V16
+  present: true
+- capability: POST /api/v1/peers/refuse
+  route_file: src/sovereign_agent/node_api/routes/substrate.py
+  handler: peers_refuse
+  verbs:
+  - mutual_recognition
+  - refuse_recognition
+  owner_gate: require_owner
+  fences:
+  - RECOGNITION_BREACH_FIELDS
+  - deny-by-default
+  test_files:
+  - tests/test_node_api_substrate.py
+  series_home: Sovereign Peerhood (Series 14) V2
+  present: true
+- capability: POST /api/v1/peers/clean_exit
+  route_file: src/sovereign_agent/node_api/routes/substrate.py
+  handler: peers_clean_exit
+  verbs:
+  - clean_exit
+  owner_gate: require_owner
+  fences:
+  - EXIT_BREACH_FIELDS
+  - deny-by-default
+  test_files:
+  - tests/test_node_api_substrate.py
+  series_home: Sovereign Peerhood (Series 14) V5
+  present: true
+- capability: POST /api/v1/peers/recognize
+  route_file: src/sovereign_agent/node_api/routes/substrate.py
+  handler: peers_recognize
+  verbs:
+  - send_message
+  owner_gate: require_owner
+  fences: []
+  test_files:
+  - tests/test_node_api_substrate.py
+  series_home: Sovereign Peerhood (Series 14) V2
+  present: true
+- capability: POST /api/v1/peers/message
+  route_file: src/sovereign_agent/node_api/routes/substrate.py
+  handler: peers_message_sign
+  verbs:
+  - send_message
+  owner_gate: require_owner
+  fences: []
+  test_files:
+  - tests/test_node_api_substrate.py
+  series_home: Inter-Node Sovereignty (Series 6) V1
+  present: true
+- capability: POST /api/v1/peers/verify/recognition
+  route_file: src/sovereign_agent/node_api/routes/substrate.py
+  handler: peers_verify_recognition
+  verbs:
+  - verify_recognition
+  owner_gate: require_principal
+  fences:
+  - RECOGNITION_BREACH_FIELDS
+  - deny-by-default
+  test_files:
+  - tests/test_node_api_substrate.py
+  series_home: Full Production ERP (Series 5) V26
+  present: true
+- capability: POST /api/v1/peers/verify/message
+  route_file: src/sovereign_agent/node_api/routes/substrate.py
+  handler: peers_verify_message
+  verbs: []
+  owner_gate: require_principal
+  fences: []
+  test_files:
+  - tests/test_node_api_substrate.py
+  series_home: Full Production ERP (Series 5) V26
+  present: true
