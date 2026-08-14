@@ -230,15 +230,25 @@ def cmd_propose(a) -> int:
     return 0
 
 
+def _gpu_total_mib():
+    try:
+        out = subprocess.check_output(["nvidia-smi", "--query-gpu=memory.total", "--format=csv,noheader,nounits"],
+                                      text=True, timeout=8)
+        return int(out.strip().splitlines()[0])
+    except Exception:  # noqa: BLE001
+        return None
+
+
 def _pick_largest_model(model_url: str):
     """Default mind = the LARGEST installed local tag that fits the card (5090: target 32B-70B, never the 1B).
-    Reads Ollama /api/tags (loopback), ranks by parameter size then file size, drops tags that won't fit GPU-free."""
+    Budget on the card's TOTAL VRAM, not free — Ollama swaps models in/out, so only one is resident at a time
+    (a model still loaded from a prior call must not shrink the pick). Ranks by parameter size then file size."""
     tags_url = re.sub(r"/api/.*$", "/api/tags", model_url)
     try:
         data = json.loads(urllib.request.urlopen(tags_url, timeout=5).read().decode())
     except Exception:  # noqa: BLE001
         return None
-    free = _gpu().get("free_mib")            # MiB, or None if uncheckable
+    total = _gpu_total_mib()                  # MiB the card can devote to ONE resident model
     cands = []
     for m in data.get("models", []):
         name = m.get("name")
@@ -248,13 +258,13 @@ def _pick_largest_model(model_url: str):
         pm = re.search(r"([\d.]+)\s*B", pstr, re.I)
         params_b = float(pm.group(1)) if pm else 0.0
         size_mib = (m.get("size", 0) or 0) / 1048576
-        if free and size_mib > free * 0.95:  # would not fit in free VRAM
+        if total and size_mib > total * 0.92:  # won't fit even alone on this card
             continue
         cands.append((params_b, size_mib, name))
     if not cands:
         return None
     cands.sort(reverse=True)                 # largest params, then largest file
-    big = [c for c in cands if c[0] >= 3.0]  # prefer >=3B — never fall to a 1B if anything bigger fits
+    big = [c for c in cands if c[0] >= 3.0]  # prefer >=3B — never fall to a 1B if anything bigger fits on the card
     return (big or cands)[0][2]
 
 
