@@ -28,6 +28,10 @@ from typing import Dict, Mapping, Sequence
 
 from ..objects.registry import ObjectRegistry  # noqa: F401  (type reference for the composed registry)
 from .._lazy_bp import MerkleTree  # sealed P5 shield substrate via the runtime boundary (fail-loud if absent)
+# Confidentiality shield (S7 V02): the sealed P5 Paillier PUBLIC-key + homomorphic add, composed the same
+# way as MerkleTree. NOTE: `decrypt` is deliberately NOT imported here — the node never decrypts (no custody,
+# no node decrypt path). Only the public key and the homomorphic `add` (verify/combine without reveal).
+from .._lazy_bp import PaillierPublicKey, add
 
 
 class ShieldError(ValueError):
@@ -42,12 +46,22 @@ def _merkle_root(chunks: Sequence[bytes]) -> bytes:
 
 
 def declare_shield(reg, resource_id: str, kind: str, chunks: Sequence[bytes], *, mandate: str, author: str,
-                   source_ref: str, at: str) -> Dict[str, object]:
+                   source_ref: str, at: str, public_n: int | None = None,
+                   encrypted_total: int | None = None) -> Dict[str, object]:
     """Declare a protective shield over a resource as a governed object under the owner's OWN mandate -- composing the
     sealed object registry (`reg.append` kind=ratify). For `kind='integrity'` it composes the sealed P5 `MerkleTree`,
     storing the Merkle root over the resource's canonical `chunks`, so the shield is a tamper-evident layer verifiable
-    from the resource's own bytes. An empty `resource_id`, `kind`, or (for the integrity kind) empty `chunks` is refused.
-    Returns the governed shield object (its payload carries `kind` and, for integrity, the `root`)."""
+    from the resource's own bytes.
+
+    For `kind='confidentiality'` (S7 V02) it binds the owner's Paillier PUBLIC key -- the modulus `public_n` -- so the
+    shield can later verify/combine presented ciphertexts against that binding WITHOUT revealing them and WITHOUT any
+    decryption: no private key is ever stored (no custody, no node decrypt). An empty `public_n` is refused (deny-by-
+    default, no unbound confidentiality). Optionally the owner declares `encrypted_total` -- their encrypted sum -- which
+    clearing checks equals the homomorphic sum of the presented ciphertexts ("verified or combined without being
+    revealed", literally). Only PUBLIC material (the modulus, an optional ciphertext total) is stored.
+
+    An empty `resource_id`, `kind`, (for integrity) empty `chunks`, or (for confidentiality) empty `public_n` is refused.
+    Returns the governed shield object (its payload carries `kind` and, per kind, the `root` or the `public_n`)."""
     if not resource_id:
         raise ShieldError("a shield needs the resource id it protects")
     if not kind:
@@ -57,15 +71,30 @@ def declare_shield(reg, resource_id: str, kind: str, chunks: Sequence[bytes], *,
         if not chunks:
             raise ShieldError("an integrity shield needs the resource chunks to root over (no empty attestation)")
         payload["root"] = _merkle_root(chunks).hex()
+    elif kind == "confidentiality":
+        if not public_n:
+            raise ShieldError("a confidentiality shield needs the owner's Paillier public key (modulus n) to bind -- "
+                              "an empty key is refused (deny-by-default, no unbound confidentiality)")
+        payload["public_n"] = int(public_n)   # PUBLIC modulus only -- NEVER a private key (no custody)
+        if encrypted_total is not None:
+            payload["encrypted_total"] = int(encrypted_total)  # PUBLIC ciphertext -- the owner's declared encrypted sum
     return reg.append(f"shield:{resource_id}:{kind}", payload, author=author, source_ref=source_ref,
                       at=at, mandate=mandate, kind="ratify")
 
 
-def pass_shield_stack(shields: Sequence[Mapping], payload_chunks: Sequence[bytes]) -> Dict[str, object]:
+def pass_shield_stack(shields: Sequence[Mapping], payload_chunks: Sequence[bytes], *,
+                      ciphertexts: Sequence[int] | None = None) -> Dict[str, object]:
     """Clear a request against a resource's declared shields -- DENY-BY-DEFAULT, fail-closed, defense-in-depth: EVERY
     shield in `shields` must pass, in order. An `integrity` shield passes only when the Merkle root of `payload_chunks`
-    (recomputed via the sealed P5 `MerkleTree`) equals the shield's declared `root`; a tampered payload is refused. A
-    shield of an unknown kind refuses the stack. An empty stack refuses too -- an unshielded resource is not implicitly
+    (recomputed via the sealed P5 `MerkleTree`) equals the shield's declared `root`; a tampered payload is refused.
+
+    A `confidentiality` shield (S7 V02) passes only when the presented `ciphertexts` verify against the shield's bound
+    Paillier PUBLIC key WITHOUT being revealed: each ciphertext must be well-formed under the declared modulus, and -- if
+    the owner declared an `encrypted_total` -- their homomorphic sum (composed via the sealed P5 `add`) must equal that
+    declared total. NO decryption happens: the node holds no private key and never learns a value (verify/combine
+    without reveal). Ciphertexts under a different key, or an altered set, fail the homomorphic check and are refused.
+
+    A shield of an unknown kind refuses the stack. An empty stack refuses too -- an unshielded resource is not implicitly
     open (deny-by-default). Returns the pass receipt (the count of layers cleared) only when every layer passes."""
     if not shields:
         raise ShieldError("no declared shield to clear -- an unshielded resource is not implicitly open (deny-by-default)")
@@ -81,6 +110,32 @@ def pass_shield_stack(shields: Sequence[Mapping], payload_chunks: Sequence[bytes
             if _merkle_root(payload_chunks).hex() != declared:
                 raise ShieldError("shield refused: integrity layer failed -- payload Merkle root does not match the "
                                   "declared shield (tamper detected)")
+            cleared.append(kind)
+        elif kind == "confidentiality":
+            public_n = (s["payload"] or {}).get("public_n")
+            if not public_n:
+                raise ShieldError("confidentiality shield refused: no bound public key to verify against")
+            if not ciphertexts:
+                raise ShieldError("confidentiality shield refused: no presented ciphertexts to verify/combine "
+                                  "(deny-by-default -- nothing clears that presents nothing)")
+            pub = PaillierPublicKey(int(public_n))   # PUBLIC key only -- reconstruct the binding; no private key exists
+            # (1) each presented ciphertext must be well-formed under the DECLARED modulus (bound to this key)
+            for c in ciphertexts:
+                ci = int(c)
+                if not (0 < ci < pub.nsquare):
+                    raise ShieldError("confidentiality shield refused: a presented ciphertext is not well-formed under "
+                                      "the bound modulus (wrong key or malformed) -- no reveal, deny-by-default")
+            # (2) if the owner declared an encrypted total, VERIFY it equals the homomorphic SUM of the presented
+            #     ciphertexts, composed via the sealed P5 `add` -- combined without being revealed, NO decrypt.
+            declared_total = (s["payload"] or {}).get("encrypted_total")
+            if declared_total is not None:
+                combined = int(ciphertexts[0])
+                for c in ciphertexts[1:]:
+                    combined = add(pub, combined, int(c))
+                if combined != int(declared_total):
+                    raise ShieldError("confidentiality shield refused: the homomorphic sum of the presented ciphertexts "
+                                      "does not equal the declared encrypted total (wrong key or altered set) -- "
+                                      "verified without reveal, deny-by-default")
             cleared.append(kind)
         else:
             raise ShieldError(f"shield refused: unknown shield kind {kind!r} -- deny-by-default, an unrecognized "

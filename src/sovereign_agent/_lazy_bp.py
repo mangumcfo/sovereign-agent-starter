@@ -83,3 +83,15 @@ ZKProofs = _Lazy("ZKProofs", module="breathline_primitives.layer5")
 # Sovereign Workload Execution (S7 Vol 7): the sealed P5 WASM parser, composed by shields/wasm_sandbox.py
 # on the adapter surface (fail-loud via _bp() if the substrate is absent).
 WasmModule = _Lazy("WasmModule", module="breathline_primitives.layer5")
+# Confidentiality shield (S7 Vol 2, KM Seal 1176-INFINITY-RHO · Option A): expose the sealed P5 Paillier
+# names on the adapter surface so shields/protective.py composes the confidentiality layer the SAME way it
+# composes Merkle — verify/combine ciphertexts against a bound PUBLIC key WITHOUT revealing them. NO node
+# decrypt path: the kernel never calls decrypt; `decrypt` is reachable here only owner-side (e.g. a test's
+# round-trip). Additive-lazy — an unused export resolves on first use, so it cannot break `import
+# sovereign_agent`; fail-loud via _bp() if the substrate is absent.
+PaillierPublicKey = _Lazy("PaillierPublicKey", module="breathline_primitives.layer5")
+PaillierPrivateKey = _Lazy("PaillierPrivateKey", module="breathline_primitives.layer5")
+encrypt = _Lazy("encrypt", module="breathline_primitives.layer5")
+decrypt = _Lazy("decrypt", module="breathline_primitives.layer5")
+add = _Lazy("add", module="breathline_primitives.layer5")
+generate_paillier_keys = _Lazy("generate_paillier_keys", module="breathline_primitives.layer5")
