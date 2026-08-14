@@ -29,7 +29,7 @@ SRC  = os.path.join(ROOT, "src", "sovereign_agent")
 ROUTES_DIR = os.path.join(SRC, "node_api", "routes")
 TESTS_DIR  = os.path.join(ROOT, "tests")
 
-PINNED_TIP = "710a40f"   # KM GO pin — the post-shield kernel the graph is harvested against; a CONSTANT, not HEAD
+PINNED_TIP = "c2706ce"   # KM re-pin (BCK phase-1 close) — the shipped kit tip; graph harvested from the tree at this lineage
 
 def observed_tip():
     try: return subprocess.check_output(["git","-C",ROOT,"rev-parse","--short","HEAD"],text=True).strip()

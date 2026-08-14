@@ -1,7 +1,7 @@
 meta:
   kit: BCK
-  pinned_tip: 710a40f
-  observed_tip: bad6b14
+  pinned_tip: c2706ce
+  observed_tip: c2706ce
   home: sovereign-agent-starter
   generated_by: bck/compose_graph_generator.py (harvest-only)
   rule: PRESENT iff a test references the route; no hand-authored rows; sealed homes only (platform maps = ADR appendix)
