@@ -28,6 +28,9 @@ Pinned kernel tip: **`710a40f`** (post-confidentiality-shield). Every artifact p
 4. **Run the fence-verifier** against your own node and record the SCOPE block:
    `python3 bck/fence_verifier.py --node-url http://127.0.0.1:8421 --tip $(git rev-parse --short HEAD) --store <SUBSTRATE_STORAGE_ROOT>/objects.ndjson`
    For the GET-only boundary probe, also pass `--web-url <your operator web> --access-log <node log>`.
+   **Usage gotchas** (AA notes): `--node-url` takes the **bare host** — the tool appends `/api/v1` itself, so
+   passing `.../api/v1` double-prefixes and 404s everything. The F10 posting fixture takes **positional** args:
+   `python3 bck/fixtures/posting_surface.py <node-url> <port>`.
 5. **Dispose at the keyboard.** The kit drafts; **you** run every consequential act (store, gate approve/deny,
    Port sanction). The verifier itself holds no credential and its mutating probes exist to be refused.
 

@@ -27,9 +27,21 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 import urllib.error
 import urllib.request
+
+# werkzeug (and other servers) may ANSI-color the request method in the access log, so a line reads
+# `"\x1b[35m\x1b[1mPOST\x1b[0m ...` — the quote is followed by an escape byte, not `P`. Strip color before
+# matching so the GET-only boundary probe (F2) does not go blind under a common log format (RED-1).
+_ANSI = re.compile(r"\x1b\[[0-9;]*m")
+_NON_GET_METHODS = ('"POST', '"PUT', '"DELETE', '"PATCH')
+
+
+def _line_is_non_get(line: str) -> bool:
+    clean = _ANSI.sub("", line)
+    return any(m in clean for m in _NON_GET_METHODS)
 
 API = "/api/v1"
 PASS, FAIL, NOT_DRIVEN = "PASS", "FAIL", "NOT-DRIVEN"
@@ -130,7 +142,7 @@ def probe_f2_get_only(web_url, access_log):
     except Exception as e:  # noqa: BLE001
         return NOT_DRIVEN, f"access log unreadable after drive: {e}"
     window = lines[before:]
-    non_get = [ln for ln in window if any(m in ln for m in ('"POST', '"PUT', '"DELETE', '"PATCH'))]
+    non_get = [_ANSI.sub("", ln) for ln in window if _line_is_non_get(ln)]  # RED-1: ANSI-strip before matching
     if non_get:
         return FAIL, f"surface drive produced {len(non_get)} non-GET line(s) to the node: {non_get[:3]}"
     return PASS, f"drove web panels {driven}; {len(window)} new node log line(s), 0 non-GET"
