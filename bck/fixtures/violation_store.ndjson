@@ -1,0 +1,2 @@
+{"object_id":"receipt:seeded:F1-violation","kind":"receipt","payload":{"disposition":"sanctioned","crossing_root":"seeded","value":42},"version_hash":"deadbeefdeadbeef"}
+{"object_id":"datum:seeded:F5-leak","kind":"ratify","payload":{"root":"abc123","private_key":"BEGIN PRIVATE KEY seeded leak — must be caught"},"version_hash":"cafef00dcafef00d"}

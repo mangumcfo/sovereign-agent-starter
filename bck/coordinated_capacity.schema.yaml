@@ -1,0 +1,47 @@
+# BCK — Composition contract SCHEMA (contracts-as-data · one domain: coordinated capacity)
+#
+# A composition contract describes how a builder wires EXISTING sovereign-node routes into ONE coordinated
+# capability, and it is honest by construction: a step claims PRESENT only by citing passing test IDs (H5,
+# the co-extrusion discipline applied to composition). No test → the step is not PRESENT.
+#
+# This schema is data, not code. The instance (coordinated_capacity.instance.yaml) fills it. The fence-
+# verifier (bck/fence_verifier.py) checks the runtime observables; this contract checks the composition wiring.
+# Neither is a certification — both are floors with published scope.
+
+schema_version: 0.1.0
+kit: BCK
+pinned_tip: 710a40f            # post-confidentiality-shield kernel (printed in every artifact)
+
+# ── the shape of a contract ──────────────────────────────────────────────────────────────────────────────
+contract:
+  id: str                      # stable slug, e.g. "coordinated-capacity"
+  title: str
+  domain: str                  # ONE domain per contract (ADR H7); coordinated capacity is first
+  charter: str                 # must restate the builder charter (propose/draft-only · owner disposes · own node)
+  fences: [str]                # the invariants every step must hold (value-free · no-custody · owner-gated · deny-by-default · GET-only-surface)
+  ground_truth:                # the LIVED template this contract is modeled on (not invented) — WP3 drill receipts
+    source: str                # where the receipts came from (the WP3 lived drill)
+    crossing_root: str         # a real value-free Port receipt root
+    datum: str                 # a real no-custody storage datum id
+    datum_root: str            # its integrity root
+  steps: [step]                # the ordered composition
+
+# ── the shape of ONE step ────────────────────────────────────────────────────────────────────────────────
+step:
+  n: int
+  name: str
+  route: str                   # the EXISTING node route composed (METHOD /api/v1/...), from compose_graph.yaml
+  owner_gate: str              # require_owner | require_principal (as harvested in the graph)
+  fences: [str]                # which fences this step must hold
+  present: bool                # TRUE only if test_ids below are non-empty AND cite passing tests
+  test_ids: [str]              # passing test node IDs that prove this step (path::function) — H5 gate
+  receipt: str                 # what durable receipt/root this step leaves (re-derivable across restart)
+
+# ── the PRESENT rule, stated as data (a linter can enforce it) ───────────────────────────────────────────
+rules:
+  present_requires_tests: "a step with present:true MUST carry >=1 test_ids, and each must be a real passing test"
+  no_hand_waved_present: "present:true with empty test_ids is a contract defect (reject, do not render PRESENT)"
+  value_free: "no step may introduce value/amount/funds/balance/held into any receipt (money-path OFF)"
+  no_custody: "storage steps keep the integrity root, never the bytes"
+  owner_disposes: "every consequential act is the owner's keyboard; the kit proposes/drafts only"
+  one_domain: "one domain per contract; platform<->series maps stay in the ADR appendix, never here"

@@ -1,0 +1,107 @@
+# BCK — Composition contract INSTANCE · coordinated capacity (one domain, ADR H7)
+#
+# Wires EXISTING sovereign-node routes into ONE coordinated-capacity slice: an owner offers a bounded unit of
+# node capacity to a peer, the reach is gated + sanctioned value-free, and every step leaves a durable,
+# re-derivable receipt. Modeled on the LIVED WP3 drill receipts (ground_truth) — not invented. Each PRESENT
+# step cites passing test IDs (H5). This is a floor with scope, never a certification.
+#
+# Verify PRESENT rows on your own rig:
+#   cd sas-public-genesis && python3 -m pytest <every test_id below> -q     # all must pass
+# Verify the runtime fences:
+#   python3 bck/fence_verifier.py --node-url http://127.0.0.1:8421 --tip <tip> --store <objects.ndjson>
+
+schema_ref: bck/coordinated_capacity.schema.yaml
+kit: BCK
+pinned_tip: 710a40f
+observed_tip: 708f926          # HEAD when this instance was authored (Tiger phase 2-3); kernel surface == 710a40f
+
+contract:
+  id: coordinated-capacity
+  title: Coordinated capacity — offer a bounded unit of node capacity to a peer, gated, sanctioned, receipted
+  domain: coordinated-capacity
+  charter: >
+    PROPOSE / DRAFT ONLY · KM/owner disposes · own node only · no auto-sanction · no hosted tools.
+    The kit drafts the composition; the owner runs every consequential act at the keyboard.
+  fences:
+    - value-free (money-path OFF — a capacity receipt records THAT capacity crossed, never a price)
+    - no-custody (storage keeps the integrity root, never the bytes)
+    - owner-gated (the reach outside is a named-human sanction, deny-by-default)
+    - deny-by-default (unknown kinds / empty inputs refuse)
+    - GET-only surface (the operator web reads/drafts; it never POSTs the node)
+  ground_truth:
+    source: WP3 cockpit drills, lived on Dragon by KM (AA GREEN 2026-08-14) — the template, not a claim
+    crossing_root: 905f895fd12cec1a1a0c04a5bfaa532767b9638fe8b77e66cf58aad52beb9c0c
+    datum: datum:owner:5019beff58c5
+    datum_root: 5019beff58c5501cb7b924ca8eb8a3190038fb87362c9527420e994f2b6cec55
+
+  steps:
+    - n: 1
+      name: Offer a bounded capacity unit (owner-authored grant, no value)
+      route: "compute_share_offer (sealed verb; CLI, composed — not an HTTP route)"
+      owner_gate: owner-authored
+      fences: [value-free, owner-gated]
+      present: true
+      test_ids:
+        - tests/test_compute_share_peer_transport.py::test_t1_t4_delivery_and_receipt_verify
+        - tests/test_compute_share_peer_transport.py::test_t3_over_units_refused_receipted_and_returned
+      receipt: a signed grant of N units (over-units refused + receipted; no price field)
+
+    - n: 2
+      name: Raise the coordination gate (the reach awaits the owner's sanction)
+      route: POST /api/v1/onboard/run
+      owner_gate: require_principal
+      fences: [deny-by-default, owner-gated]
+      present: true
+      test_ids:
+        - tests/test_node_api_substrate.py::test_onboard_run_enqueues_a_pending_gate_the_operator_can_approve
+        - tests/test_node_api_substrate.py::test_onboard_run_gate_can_be_denied
+      receipt: a pending breath-gate the owner approves OR denies (both are real dispositions)
+
+    - n: 3
+      name: Owner sanctions the boundary crossing — value-free receipt
+      route: POST /api/v1/port/crossing + POST /api/v1/port/crossing/<id>/sanction
+      owner_gate: require_owner
+      fences: [value-free, owner-gated, deny-by-default]
+      present: true
+      test_ids:
+        - tests/test_node_api_substrate.py::test_port_crossing_surfaces_gate_then_sanctions_value_free
+      receipt: crossing_root (a governed-object hash; NO value field) — cf. ground_truth.crossing_root
+
+    - n: 4
+      name: The disposition + crossing survive a node restart (durable coordination record)
+      route: GET /api/v1/inference/receipts (durable_count)
+      owner_gate: require_principal
+      fences: [no-custody]
+      present: true
+      test_ids:
+        - tests/test_node_api_durable_receipts.py::test_port_sanction_receipt_survives_restart
+        - tests/test_node_api_durable_receipts.py::test_gate_deny_and_approve_receipts_survive_restart
+      receipt: durable disposition receipts, re-derivable after restart (WP3.5)
+
+    - n: 5
+      name: Bind the capacity record as a no-custody datum (root, never bytes)
+      route: POST /api/v1/storage/datum + POST /api/v1/storage/datum/<id>/verify
+      owner_gate: require_principal
+      fences: [no-custody, deny-by-default]
+      present: true
+      test_ids:
+        - tests/test_node_api_substrate.py::test_storage_store_get_verify_and_tamper_refusal
+        - tests/test_node_api_durable_receipts.py::test_stored_datum_get_and_verify_survive_restart
+      receipt: a datum integrity root that re-verifies against re-presented content, across restarts — cf. ground_truth.datum_root
+
+    - n: 6
+      name: Peer pulls the offered capacity over the wire (receipted, wrong-key dies unreceipted)
+      route: "compute_share_pull (sealed verb; CLI, composed — not an HTTP route)"
+      owner_gate: owner-authored
+      fences: [value-free, deny-by-default]
+      present: true
+      test_ids:
+        - tests/test_compute_share_peer_transport.py::test_t2_wrong_key_dies_unreceipted
+      receipt: a delivery receipt on the right key; a wrong-key pull dies unreceipted (no silent success)
+
+# ── what this contract is NOT ────────────────────────────────────────────────────────────────────────────
+non_goals:
+  - a hosted/shared capacity broker (no landlord — each node offers its own; the peer pulls its own)
+  - any value/price/settlement (money-path OFF)
+  - auto-sanction (every crossing is the owner's keyboard)
+  - a platform<->series map (those stay in ADR-0001 Appendix A until they pass the four-layer check)
