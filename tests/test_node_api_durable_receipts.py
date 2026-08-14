@@ -112,6 +112,35 @@ def test_gate_deny_and_approve_receipts_survive_restart(tmp_path, monkeypatch):
     assert all(g["receipt_hash"] for g in gate_receipts.values())
 
 
+def test_stored_datum_get_and_verify_survive_restart(tmp_path, monkeypatch):
+    """WP4 — a stored datum must remain readable AND verifiable after a node restart. The in-memory `_DATUM`
+    cache empties on restart; the durable fallback rebuilds the datum from the persisted registry object."""
+    storage_root = tmp_path / "substrate_storage"
+    keystore_dir = tmp_path / "keystore"
+    c = _build_client(storage_root, keystore_dir, monkeypatch, provision=True)
+
+    r = c.post("/api/v1/storage/datum",
+               json={"content": "QR-STANDUP-0001", "visibility": "private", "mandate": "quadroof-ops"}).get_json()
+    did = r["object_id"]
+    assert c.get(f"/api/v1/storage/datum/{did}").status_code == 200
+
+    # ── RESTART ── new in-memory singletons, SAME on-disk registry
+    c2 = _build_client(storage_root, keystore_dir, monkeypatch, provision=False)
+    g = c2.get(f"/api/v1/storage/datum/{did}")
+    assert g.status_code == 200, "datum GET must survive restart (durable fallback)"
+    body = g.get_json()
+    assert body["object_id"] == did and body["mandate"] == "quadroof-ops" and body["root"] == r["root"]
+    # verify (integrity retrieval) also survives — own-mandate access (the quadroof-ops operator), original
+    # content → verified. (Own-mandate = whole access; a cross-mandate read would need a declared SharingRule.)
+    v = c2.post(f"/api/v1/storage/datum/{did}/verify",
+                json={"content": "QR-STANDUP-0001", "mandate": "quadroof-ops"})
+    assert v.status_code == 200 and v.get_json().get("integrity") == "verified"
+    # tamper still refused after restart (integrity unchanged)
+    bad = c2.post(f"/api/v1/storage/datum/{did}/verify",
+                  json={"content": "TAMPERED", "mandate": "quadroof-ops"})
+    assert bad.status_code == 403
+
+
 def test_durable_receipt_is_recomputable_from_the_registry_alone(tmp_path, monkeypatch):
     """The persisted receipt's version_hash re-derives byte-identical from the bare object list — an outsider
     can recompute it with no live process (the S5-05-E2-1 promise the registry already keeps)."""

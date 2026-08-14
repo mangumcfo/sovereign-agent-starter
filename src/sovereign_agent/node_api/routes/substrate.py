@@ -145,6 +145,21 @@ def durable_receipts() -> list[dict]:
     return out
 
 
+def _durable_datum(datum_id: str) -> dict | None:
+    """WP4 — the durable read fallback for a stored datum. `storage_get`/`storage_verify` keep an in-memory
+    `_DATUM` cache that empties on restart; the datum OBJECT itself persists in the registry (`store_datum` did
+    `reg.append` kind=ratify, so it carries object_id + version_hash + payload{root,visibility} + mandate).
+    Rebuild the datum from its latest persisted version so GET + verify SURVIVE a node restart — the same
+    durable-projection pattern as `durable_receipts`. Datum namespace only (`datum:`), never another object kind.
+    Never raises to the caller: a corrupt chain degrades to a miss (the route then 404s), never a 500."""
+    if not str(datum_id).startswith("datum:"):
+        return None
+    try:
+        return _reg().current().get(datum_id)
+    except Exception:  # noqa: BLE001 — degrade to a miss, not a 500
+        return None
+
+
 def _as_chunks(body) -> list[bytes] | None:
     """Accept {chunks: [str|str]} or {content: str}; return a list of bytes, or None if empty/absent."""
     if isinstance(body.get("chunks"), list) and body["chunks"]:
@@ -274,7 +289,7 @@ def storage_store():
 def storage_get(datum_id: str):
     """storage.datum.get — return the governed datum's metadata (object_id, visibility, root, mandate). The node
     never returns the bytes: it holds only the integrity root. Retrieval-with-integrity is the verify POST."""
-    datum = _DATUM.get(datum_id)
+    datum = _DATUM.get(datum_id) or _durable_datum(datum_id)  # WP4: durable fallback survives restart
     if datum is None:
         return jsonify(build_error(
             code="DATUM_NOT_FOUND", what=f"No datum '{datum_id}' on this node.",
@@ -298,7 +313,7 @@ def storage_get(datum_id: str):
 def storage_verify(datum_id: str):
     """storage.datum.verify — wrap retrieve_datum: deny-by-default, scoped, integrity-checked. The caller presents
     the bytes; the node verifies them against the stored Merkle root. Integrity/scope refusals are UNCHANGED."""
-    datum = _DATUM.get(datum_id)
+    datum = _DATUM.get(datum_id) or _durable_datum(datum_id)  # WP4: durable fallback survives restart
     if datum is None:
         return jsonify(build_error(
             code="DATUM_NOT_FOUND", what=f"No datum '{datum_id}' on this node.",
