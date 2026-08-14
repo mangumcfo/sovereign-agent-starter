@@ -230,8 +230,41 @@ def cmd_propose(a) -> int:
     return 0
 
 
+def _pick_largest_model(model_url: str):
+    """Default mind = the LARGEST installed local tag that fits the card (5090: target 32B-70B, never the 1B).
+    Reads Ollama /api/tags (loopback), ranks by parameter size then file size, drops tags that won't fit GPU-free."""
+    tags_url = re.sub(r"/api/.*$", "/api/tags", model_url)
+    try:
+        data = json.loads(urllib.request.urlopen(tags_url, timeout=5).read().decode())
+    except Exception:  # noqa: BLE001
+        return None
+    free = _gpu().get("free_mib")            # MiB, or None if uncheckable
+    cands = []
+    for m in data.get("models", []):
+        name = m.get("name")
+        if not name:
+            continue
+        pstr = (m.get("details") or {}).get("parameter_size", "")
+        pm = re.search(r"([\d.]+)\s*B", pstr, re.I)
+        params_b = float(pm.group(1)) if pm else 0.0
+        size_mib = (m.get("size", 0) or 0) / 1048576
+        if free and size_mib > free * 0.95:  # would not fit in free VRAM
+            continue
+        cands.append((params_b, size_mib, name))
+    if not cands:
+        return None
+    cands.sort(reverse=True)                 # largest params, then largest file
+    big = [c for c in cands if c[0] >= 3.0]  # prefer >=3B — never fall to a 1B if anything bigger fits
+    return (big or cands)[0][2]
+
+
 def cmd_ask(a) -> int:
     _loopback(a.model_url)                                    # M1: refuse a non-loopback session before any probe
+    model = a.model or _pick_largest_model(a.model_url)
+    if not model:
+        print("✗ no --model given and could not auto-detect a local model (is Ollama up on loopback?). "
+              "Pass one explicitly, e.g. --model qwen3:32b"); return 2
+    a.model = model
     ctx = gather(a.model_url)
     tpl = _templates_text(_action_templates())
     prompt = (f"{SYSTEM}\n\nNODE CONTEXT (read-only tools):\n{json.dumps(ctx, indent=2)}\n\n"
@@ -243,7 +276,7 @@ def cmd_ask(a) -> int:
     except urllib.error.URLError:
         print(f"✗ loopback model not answering at {a.model_url} — start it (e.g. `ollama serve`), then ask again.")
         return 3
-    print("∞Δ∞ Sovereign Agent v0 · local answer (loopback mind · propose-only)\n")
+    print(f"∞Δ∞ Sovereign Agent v0 · local answer (model {a.model} · loopback mind · propose-only)\n")
     ans = (ans or "").strip()
     refused = (not ans) or bool(re.search(r"can'?t (fulfill|help|do|assist)|cannot (fulfill|help|assist)|i'?m sorry|as an ai", ans, re.I))
     print(ans if ans else "(the local model returned nothing)")
@@ -266,7 +299,7 @@ def main(argv=None) -> int:
     pr = sub.add_parser("propose"); pr.set_defaults(fn=cmd_propose)   # deterministic exact renew/revoke, no model
     q = sub.add_parser("ask")
     q.add_argument("--prompt", required=True)
-    q.add_argument("--model", default="llama3.2:1b")
+    q.add_argument("--model", default=None, help="local model tag; default = largest installed that fits (5090: 32B-70B)")
     q.add_argument("--model-url", default=MODEL_URL_DEFAULT)
     q.set_defaults(fn=cmd_ask)
     a = p.parse_args(argv)
