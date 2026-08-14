@@ -1,6 +1,10 @@
 # ADR-0001 — Breathline Composition Kit (BCK)
 
-**Status:** Accepted (KM plan-of-record + folds · 2026-08-14). Phase 0 worded by KM.
+**Status:** **FULL-KIT GREEN (phases 0–4)** · KM record 2026-08-14.
+- Starter tip family **`51e6e07`** · graph pinned **`c2706ce`** · cold-agent test **GREEN** (A↔B closed).
+- **Composition Catalog = GO-only** — added **one domain at a time**, each on KM's word (no batch platform packs).
+- **Appendix A sketches ≠ machine truth** — a platform≈series map enters `compose_graph.yaml` only after the
+  four-layer check (substrate → pin → boundary → consumer); until then it lives in Appendix A as a sketch.
 
 ## Context
 Builders must compose the sovereign node's PRESENT capabilities without re-reading the whole shelf and without
