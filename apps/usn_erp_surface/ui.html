@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>USN ERP Operator Surface</title>
+<style>
+:root{
+  --surface-1:#fcfcfb; --plane:#f9f9f7; --text-primary:#0b0b0b; --text-secondary:#52514e;
+  --text-muted:#898781; --grid:#e1e0d9; --rule:#c3c2b7; --ring:rgba(11,11,11,.10);
+  --accent:#2a78d6; --accent-2:#eb6834; --accent-3:#1baf7a;
+  --good:#0ca30c; --good-text:#006300; --warning:#fab219; --critical:#d03b3b;
+  --shadow:0 1px 2px rgba(11,11,11,.05),0 4px 16px rgba(11,11,11,.05);
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])){
+  color-scheme:dark; --surface-1:#1a1a19; --plane:#0d0d0d; --text-primary:#fff;
+  --text-secondary:#c3c2b7; --text-muted:#898781; --grid:#2c2c2a; --rule:#383835;
+  --ring:rgba(255,255,255,.10); --accent:#3987e5; --accent-2:#d95926; --accent-3:#199e70;
+  --good-text:#0ca30c; --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
+}}
+:root[data-theme="dark"]{
+  color-scheme:dark; --surface-1:#1a1a19; --plane:#0d0d0d; --text-primary:#fff;
+  --text-secondary:#c3c2b7; --text-muted:#898781; --grid:#2c2c2a; --rule:#383835;
+  --ring:rgba(255,255,255,.10); --accent:#3987e5; --accent-2:#d95926; --accent-3:#199e70;
+  --good-text:#0ca30c; --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--sans);background:var(--plane);color:var(--text-primary);line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1240px;margin:0 auto;padding:0 1.25rem 5rem}
+
+/* header */
+header{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--plane) 90%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--grid)}
+.hd{max-width:1240px;margin:0 auto;padding:.65rem 1.25rem;display:flex;align-items:center;gap:.9rem;flex-wrap:wrap}
+.logo{font-weight:660;font-size:.95rem;letter-spacing:-.01em}
+.logo em{font-style:normal;color:var(--text-muted);font-weight:400}
+.hd .sp{margin-left:auto;display:flex;gap:.4rem;align-items:center;flex-wrap:wrap}
+.pill{font-size:.72rem;font-weight:620;padding:.2rem .55rem;border-radius:999px;border:1px solid var(--rule);color:var(--text-secondary);white-space:nowrap;display:inline-flex;gap:.3rem;align-items:center}
+.pill.on{border-color:color-mix(in srgb,var(--good) 50%,transparent);color:var(--good-text)}
+.pill.gated{border-color:color-mix(in srgb,var(--warning) 70%,transparent);color:var(--text-primary)}
+.pill.off{border-color:var(--rule);color:var(--text-muted)}
+
+/* generic */
+h1{font-size:1.5rem;letter-spacing:-.02em;margin:1.6rem 0 .3rem;font-weight:670}
+h2{font-size:.95rem;font-weight:650;margin:0 0 .15rem;letter-spacing:-.01em}
+.hint{color:var(--text-secondary);font-size:.82rem;margin:0 0 .9rem}
+.muted{color:var(--text-muted)}
+.card{background:var(--surface-1);border:1px solid var(--ring);border-radius:12px;padding:1.05rem 1.15rem;box-shadow:var(--shadow);margin-bottom:.85rem}
+.card.flag{border-left:3px solid var(--warning)}
+.card.bad{border-left:3px solid var(--critical)}
+code,.mono{font-family:var(--mono);font-size:.85em}
+code{background:var(--grid);padding:.08em .34em;border-radius:4px;word-break:break-all}
+.cols{display:grid;grid-template-columns:minmax(340px,420px) 1fr;gap:.9rem;align-items:start}
+.cols>div{min-width:0}  /* grid items default to min-width:auto; a long <pre> would otherwise widen the page */
+@media(max-width:900px){.cols{grid-template-columns:1fr}}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.row.one{grid-template-columns:1fr}
+
+/* form */
+label{display:block;font-size:.73rem;font-weight:620;color:var(--text-secondary);margin:0 0 .22rem;letter-spacing:.01em}
+input,select,textarea,button{font:inherit;font-size:.85rem}
+input,select,textarea{width:100%;padding:.44rem .58rem;border:1px solid var(--rule);border-radius:7px;background:var(--surface-1);color:var(--text-primary)}
+input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(--accent) 45%,transparent);outline-offset:-1px;border-color:var(--accent)}
+textarea{font-family:var(--mono);font-size:.78rem;resize:vertical;min-height:2.3rem}
+.fld{margin-bottom:.6rem}
+.fld .note{font-size:.7rem;color:var(--text-muted);margin-top:.2rem}
+button{cursor:pointer;padding:.46rem .85rem;border-radius:7px;border:1px solid var(--rule);background:var(--surface-1);color:var(--text-primary);font-weight:600}
+button:hover:not(:disabled){border-color:var(--text-muted)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.primary:hover:not(:disabled){filter:brightness(1.08)}
+button.approve{background:var(--good);border-color:var(--good);color:#fff}
+button.deny{background:var(--surface-1);border-color:color-mix(in srgb,var(--critical) 55%,transparent);color:var(--critical)}
+button.sm{padding:.3rem .6rem;font-size:.76rem}
+.actions{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-top:.7rem}
+
+/* tabs */
+.tabs{display:flex;gap:.25rem;border-bottom:1px solid var(--grid);margin:0 0 .95rem}
+.tabs button{border:none;background:none;border-radius:0;border-bottom:2px solid transparent;padding:.45rem .6rem;color:var(--text-secondary);font-weight:620;font-size:.83rem}
+.tabs button[aria-selected="true"]{color:var(--text-primary);border-bottom-color:var(--accent)}
+
+/* status */
+.kv{display:grid;grid-template-columns:auto 1fr;gap:.3rem .8rem;font-size:.8rem}
+.kv dt{color:var(--text-muted);white-space:nowrap}
+.kv dd{margin:0;font-family:var(--mono);font-size:.76rem;word-break:break-all}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:.5rem;margin-bottom:.7rem}
+.tile{border:1px solid var(--ring);border-radius:9px;padding:.55rem .65rem;background:var(--surface-1)}
+.tile .v{font-size:1.3rem;font-weight:660;letter-spacing:-.02em;line-height:1.15}
+.tile .k{font-size:.68rem;color:var(--text-secondary)}
+
+/* badges */
+.b{display:inline-flex;align-items:center;gap:.28rem;font-size:.68rem;font-weight:640;padding:.1rem .42rem;border-radius:5px;border:1px solid;white-space:nowrap}
+.b.ok{color:var(--good-text);border-color:color-mix(in srgb,var(--good) 45%,transparent)}
+.b.no{color:var(--critical);border-color:color-mix(in srgb,var(--critical) 50%,transparent)}
+.b.wait{color:var(--text-primary);border-color:color-mix(in srgb,var(--warning) 70%,transparent)}
+.b.t-income{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,transparent)}
+.b.t-contribution{color:var(--accent-2);border-color:color-mix(in srgb,var(--accent-2) 50%,transparent)}
+.b.t-tax{color:var(--accent-3);border-color:color-mix(in srgb,var(--accent-3) 55%,transparent)}
+
+/* table */
+table{width:100%;border-collapse:collapse;font-size:.79rem}
+th{text-align:left;font-size:.66rem;letter-spacing:.07em;text-transform:uppercase;color:var(--text-muted);font-weight:650;padding:0 .55rem .4rem;border-bottom:1px solid var(--rule);white-space:nowrap}
+td{padding:.5rem .55rem;border-bottom:1px solid var(--grid);vertical-align:top}
+tr:last-child td{border-bottom:none}
+.tscroll{overflow-x:auto;min-width:0}
+.tscroll table{min-width:660px}
+td .ref{font-family:var(--mono);font-size:.75rem;font-weight:600}
+td .sub{color:var(--text-muted);font-size:.7rem;font-family:var(--mono);word-break:break-all}
+.num{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+
+/* gate */
+.gate-item{border:1px solid color-mix(in srgb,var(--warning) 55%,transparent);border-radius:10px;padding:.75rem .85rem;margin-bottom:.55rem;background:color-mix(in srgb,var(--warning) 6%,var(--surface-1))}
+.gate-item .h{font-weight:640;font-size:.85rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+.gate-item .m{font-size:.76rem;color:var(--text-secondary);margin:.25rem 0 0;font-family:var(--mono)}
+
+/* toast / log */
+#log{position:fixed;right:1rem;bottom:1rem;width:min(380px,calc(100vw - 2rem));z-index:80;display:grid;gap:.45rem}
+.toast{border:1px solid var(--ring);border-radius:10px;padding:.6rem .75rem;background:var(--surface-1);box-shadow:var(--shadow);font-size:.8rem}
+.toast.ok{border-left:3px solid var(--good)}
+.toast.err{border-left:3px solid var(--critical)}
+.toast.warn{border-left:3px solid var(--warning)}
+.toast b{display:block;font-size:.74rem;margin-bottom:.15rem}
+pre{background:var(--surface-1);border:1px solid var(--ring);border-radius:9px;padding:.7rem .8rem;overflow:auto;max-width:100%;max-height:340px;font-family:var(--mono);font-size:.72rem;line-height:1.5;margin:.6rem 0 0}
+.empty{color:var(--text-muted);font-size:.82rem;padding:1rem .2rem;text-align:center}
+.law{font-size:.7rem;color:var(--text-muted);margin-top:.6rem;line-height:1.45}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hd">
+    <div class="logo">USN ERP <em>· operator surface</em></div>
+    <div class="sp">
+      <span class="pill off" id="pNode">no node open</span>
+      <span class="pill off" id="pMode">—</span>
+      <span class="pill on" id="pLaw">money-path OFF · nothing filed</span>
+      <button class="sm" id="themeBtn" type="button">Dark</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ===== OPEN ===== -->
+  <section id="openSec">
+    <h1>Open your node</h1>
+    <p class="hint">
+      The node is the ledger; this app only drives it. Nothing is stored here — paths live in this
+      process for as long as it runs, and are read from your environment if you set them there.
+    </p>
+    <div class="card">
+      <div class="row">
+        <div class="fld">
+          <label for="fOperator">Operator (you)</label>
+          <input id="fOperator" placeholder="kenn">
+          <div class="note">Every record is authored by, and owned by, this name.</div>
+        </div>
+        <div class="fld">
+          <label for="fMandate">Mandate</label>
+          <input id="fMandate" placeholder="household">
+          <div class="note">Who owns the records. Defaults to the operator.</div>
+        </div>
+      </div>
+      <div class="fld">
+        <label for="fRegistry">Registry root <span class="muted">— required</span></label>
+        <input id="fRegistry" placeholder="/path/to/.substrate_storage">
+        <div class="note">Where the node keeps <code>objects.ndjson</code>. Created on your first record if absent.</div>
+      </div>
+      <div class="row">
+        <div class="fld">
+          <label for="fKeystore">Keystore <span class="muted">— optional</span></label>
+          <input id="fKeystore" placeholder="~/.sovereign_keystore">
+          <div class="note">For your fingerprint and receipt log.</div>
+        </div>
+        <div class="fld">
+          <label for="fLedger">Obligation ledger <span class="muted">— optional, read-only</span></label>
+          <input id="fLedger" placeholder="…/memory/obligations/atrium_review">
+          <div class="note">This vertical opens no obligations.</div>
+        </div>
+      </div>
+      <div class="fld">
+        <label for="fMode">Governance posture</label>
+        <select id="fMode">
+          <option value="1" selected>Regulated — every recording act needs your explicit approval</option>
+          <option value="0">Sovereign — the module's own ungated path</option>
+        </select>
+        <div class="note">
+          This is the gate's own vocabulary: <code>requires_approval</code> returns false for any mode
+          other than <code>corporate_regulated</code>, so “sovereign” is genuinely ungated rather than
+          a softened gate.
+        </div>
+      </div>
+      <div class="actions">
+        <button class="primary" id="btnOpen">Open node</button>
+        <span class="muted" style="font-size:.78rem" id="openHint"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== MAIN ===== -->
+  <section id="mainSec" hidden>
+    <h1 id="mainTitle">Your books</h1>
+    <p class="hint" id="mainSub"></p>
+
+    <div class="cols">
+      <!-- LEFT: acts -->
+      <div>
+        <div class="card">
+          <h2>Record an event</h2>
+          <p class="hint">Each of these appends a governed, hash-chained object to your node through
+            its own module. The amount is an attribution figure — the node never holds it.</p>
+          <div class="tabs" role="tablist">
+            <button role="tab" aria-selected="true" data-tab="income">Earning</button>
+            <button role="tab" aria-selected="false" data-tab="contribution">Contribution</button>
+            <button role="tab" aria-selected="false" data-tab="tax">Tax note</button>
+          </div>
+
+          <!-- income -->
+          <div data-panel="income">
+            <div class="fld">
+              <label for="iRef">Reference <span class="muted">— what was earned</span></label>
+              <input id="iRef" placeholder="consulting-august">
+            </div>
+            <div class="row">
+              <div class="fld"><label for="iAmt">Amount <span class="muted">— optional</span></label><input id="iAmt" inputmode="decimal" placeholder="2400"></div>
+              <div class="fld"><label for="iUnit">Unit</label><input id="iUnit" value="credits"></div>
+            </div>
+            <div class="fld">
+              <label for="iPort">Port directive ref <span class="muted">— optional</span></label>
+              <input id="iPort" placeholder="crossing:… (a reference only)">
+              <div class="note">Records a pointer to a crossing you made elsewhere. This app never opens or sanctions one.</div>
+            </div>
+            <div class="fld">
+              <label for="iExtra">Extra attribution fields <span class="muted">— optional JSON</span></label>
+              <textarea id="iExtra" rows="2" placeholder='{"client":"acme","invoice":"INV-12"}'></textarea>
+            </div>
+            <div class="actions"><button class="primary" data-submit="income">Record earning</button></div>
+          </div>
+
+          <!-- contribution -->
+          <div data-panel="contribution" hidden>
+            <div class="row">
+              <div class="fld">
+                <label for="cSource">Source</label>
+                <select id="cSource"></select>
+              </div>
+              <div class="fld">
+                <label for="cClass">Proof grade</label>
+                <select id="cClass"></select>
+                <div class="note">Defaults to the node's own grade for that source.</div>
+              </div>
+            </div>
+            <div class="fld"><label for="cRef">Reference</label><input id="cRef" placeholder="tutoring-august"></div>
+            <div class="row">
+              <div class="fld"><label for="cAmt">Amount <span class="muted">— optional</span></label><input id="cAmt" inputmode="decimal" placeholder="300"></div>
+              <div class="fld"><label for="cUnit">Unit</label><input id="cUnit" value="credits"></div>
+            </div>
+            <div class="fld">
+              <label for="cExtra">Extra attribution fields <span class="muted">— optional JSON</span></label>
+              <textarea id="cExtra" rows="2" placeholder='{"hours":12}'></textarea>
+            </div>
+            <div class="actions"><button class="primary" data-submit="contribution">Record contribution</button></div>
+          </div>
+
+          <!-- tax -->
+          <div data-panel="tax" hidden>
+            <div class="card bad" style="margin:0 0 .8rem;padding:.7rem .85rem">
+              <div style="font-size:.78rem"><b>This records. It does not file.</b>
+              Filing, paying, remitting, forming an entity and representing you are your own statutory
+              acts. There is no path in this app that performs one, and the node has no in-node tax
+              authority to reach.</div>
+            </div>
+            <div class="row">
+              <div class="fld">
+                <label for="tCat">Income category</label>
+                <select id="tCat"></select>
+                <div class="note">The node records the category; you or your accountant map it to law.</div>
+              </div>
+              <div class="fld">
+                <label for="tRefIncome">References earning <span class="muted">— optional</span></label>
+                <select id="tRefIncome"><option value="">— none —</option></select>
+              </div>
+            </div>
+            <div class="fld">
+              <label for="tRef">Reference <span class="muted">— its own, not the earning's</span></label>
+              <input id="tRef" placeholder="tax:consulting-august">
+              <div class="note">A tax note sharing an earning's reference would version that same object and shadow it — give it its own.</div>
+            </div>
+            <div class="row">
+              <div class="fld"><label for="tAmt">Amount <span class="muted">— optional</span></label><input id="tAmt" inputmode="decimal" placeholder="2400"></div>
+              <div class="fld"><label for="tUnit">Unit</label><input id="tUnit" value="credits"></div>
+            </div>
+            <div class="actions"><button class="primary" data-submit="tax">Record tax note</button></div>
+          </div>
+        </div>
+
+        <!-- gate -->
+        <div class="card" id="gateCard">
+          <h2>Human gate <span class="b wait" id="gateCount" hidden></span></h2>
+          <p class="hint" id="gateHint"></p>
+          <div id="gateList"></div>
+        </div>
+
+        <!-- node -->
+        <div class="card">
+          <h2>Node</h2>
+          <dl class="kv" id="nodeKV"></dl>
+          <div class="actions">
+            <button class="sm" id="btnRefresh">Refresh</button>
+            <button class="sm" id="btnClose">Close node</button>
+          </div>
+          <p class="law" id="nodeLaw"></p>
+        </div>
+      </div>
+
+      <!-- RIGHT: books -->
+      <div>
+        <div class="card">
+          <div class="tiles" id="tiles"></div>
+          <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.6rem;flex-wrap:wrap">
+            <h2 style="margin:0">Recorded events</h2>
+            <select id="filter" style="width:auto;padding:.24rem .45rem;font-size:.78rem">
+              <option value="all">all</option><option value="income">earnings</option>
+              <option value="contribution">contributions</option><option value="tax">tax notes</option>
+            </select>
+            <span class="muted" style="font-size:.74rem;margin-left:auto" id="evNote"></span>
+          </div>
+          <div class="tscroll"><table>
+            <thead><tr><th>Event</th><th>Recorded</th><th class="num">Amount</th><th>Approved by</th><th>Check</th></tr></thead>
+            <tbody id="evBody"></tbody>
+          </table></div>
+          <div class="empty" id="evEmpty" hidden>Nothing recorded yet. Record an earning on the left.</div>
+        </div>
+
+        <div class="card">
+          <h2>Portable package</h2>
+          <p class="hint">
+            Derived wholly from node state and stamped <em>as of</em> your newest record — not the
+            moment of export — so re-exporting an unchanged node reproduces the same bytes and the
+            same hash. It holds no statutory authority and files nothing. It is yours to hand over.
+          </p>
+          <div class="actions">
+            <button id="btnPkg">Build package</button>
+            <button class="primary" id="btnDl" disabled>Download</button>
+            <span class="mono muted" style="font-size:.72rem" id="pkgSha"></span>
+          </div>
+          <pre id="pkgOut" hidden></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="log"></div>
+
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+const el = (t, c, x) => { const n = document.createElement(t); if (c) n.className = c; if (x !== undefined) n.textContent = x; return n; };
+let VOCAB = null, STATUS = null, PKG = null;
+
+/* ---------- theme ---------- */
+(function () {
+  const b = $("themeBtn"), r = document.documentElement;
+  const set = t => { r.setAttribute("data-theme", t); b.textContent = t === "dark" ? "Light" : "Dark"; };
+  set(matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  b.onclick = () => set(r.getAttribute("data-theme") === "dark" ? "light" : "dark");
+})();
+
+/* ---------- toast ---------- */
+function toast(kind, title, msg, ms) {
+  const n = el("div", "toast " + kind);
+  n.appendChild(el("b", null, title));
+  n.appendChild(document.createTextNode(msg || ""));
+  $("log").appendChild(n);
+  setTimeout(() => n.remove(), ms || (kind === "err" ? 11000 : 4200));
+  const stack = $("log"); while (stack.children.length > 4) stack.firstChild.remove();
+}
+
+/* ---------- api ---------- */
+async function api(path, opts) {
+  const r = await fetch(path, Object.assign({ headers: { "Content-Type": "application/json" } }, opts || {}));
+  const ct = r.headers.get("content-type") || "";
+  const body = ct.includes("json") ? await r.json() : await r.text();
+  if (!r.ok) throw new Error((body && body.error) || ("HTTP " + r.status));
+  return body;
+}
+const post = (p, b) => api(p, { method: "POST", body: JSON.stringify(b || {}) });
+
+/* ---------- boot ---------- */
+(async function boot() {
+  VOCAB = await api("/api/vocab");
+  const e = VOCAB.env || {};
+  if (e.SUBSTRATE_STORAGE_ROOT) $("fRegistry").value = e.SUBSTRATE_STORAGE_ROOT;
+  if (e.NODE_KEYSTORE_DIR) $("fKeystore").value = e.NODE_KEYSTORE_DIR;
+  if (e.OBLIGATION_LEDGER_ROOT) $("fLedger").value = e.OBLIGATION_LEDGER_ROOT;
+  if (e.USN_OPERATOR) $("fOperator").value = e.USN_OPERATOR;
+  const known = ["SUBSTRATE_STORAGE_ROOT", "NODE_KEYSTORE_DIR", "OBLIGATION_LEDGER_ROOT"].filter(k => e[k]);
+  $("openHint").textContent = known.length
+    ? "Prefilled from your environment: " + known.join(", ")
+    : "No node paths in the environment — enter at least a registry root.";
+
+  fill($("tCat"), VOCAB.tax_categories);
+  fill($("cSource"), Object.keys(VOCAB.contribution_sources));
+  fill($("cClass"), VOCAB.contribution_classes);
+  $("cSource").onchange = () => {
+    const d = VOCAB.contribution_sources[$("cSource").value];
+    if (d) $("cClass").value = d;
+  };
+  $("cSource").onchange();
+  if (VOCAB.open) refresh();
+})();
+
+function fill(sel, items) {
+  sel.innerHTML = "";
+  items.forEach(v => { const o = el("option", null, v); o.value = v; sel.appendChild(o); });
+}
+
+/* ---------- tabs ---------- */
+document.querySelectorAll('[role="tab"]').forEach(t => t.onclick = () => {
+  document.querySelectorAll('[role="tab"]').forEach(x => x.setAttribute("aria-selected", String(x === t)));
+  document.querySelectorAll("[data-panel]").forEach(p => p.hidden = p.dataset.panel !== t.dataset.tab);
+});
+
+/* ---------- open / close ---------- */
+$("btnOpen").onclick = async () => {
+  try {
+    STATUS = await post("/api/open", {
+      operator: $("fOperator").value.trim() || undefined,
+      mandate: $("fMandate").value.trim() || undefined,
+      registry_root: $("fRegistry").value.trim() || undefined,
+      keystore_dir: $("fKeystore").value.trim() || undefined,
+      ledger_root: $("fLedger").value.trim() || undefined,
+      regulated: $("fMode").value === "1",
+    });
+    render();
+    toast("ok", "Node open", STATUS.governance.posture);
+    await Promise.all([loadEvents(), loadGate()]);
+  } catch (err) { toast("err", "Could not open the node", err.message); }
+};
+$("btnClose").onclick = async () => {
+  await post("/api/close"); STATUS = null; PKG = null;
+  $("mainSec").hidden = true; $("openSec").hidden = false;
+  $("pNode").className = "pill off"; $("pNode").textContent = "no node open";
+  $("pMode").className = "pill off"; $("pMode").textContent = "—";
+  toast("ok", "Node closed", "Nothing was written by closing.");
+};
+$("btnRefresh").onclick = () => refresh();
+
+async function refresh() {
+  try { STATUS = await api("/api/status"); render(); await Promise.all([loadEvents(), loadGate()]); }
+  catch (err) { toast("err", "Refresh failed", err.message); }
+}
+
+/* ---------- render status ---------- */
+function render() {
+  if (!STATUS) return;
+  $("openSec").hidden = true; $("mainSec").hidden = false;
+  const id = STATUS.identity, reg = STATUS.registry, g = STATUS.governance;
+
+  $("pNode").className = "pill on";
+  $("pNode").textContent = id.present ? ("node " + id.fingerprint) : "node open · no key";
+  $("pMode").className = "pill " + (g.mode === "corporate_regulated" ? "gated" : "off");
+  $("pMode").textContent = g.posture;
+
+  $("mainTitle").textContent = STATUS.operator + " · " + STATUS.mandate;
+  $("mainSub").textContent = reg.present
+    ? (reg.entries + " entries in the node's registry · root " +
+       (reg.roots_match ? "replays clean" : "DOES NOT REPLAY — investigate before trusting anything here"))
+    : "No registry file yet — it is created by the node's own store on your first record.";
+
+  const t = $("tiles"); t.innerHTML = "";
+  [["Earnings", (reg.income_events || 0) - (reg.tax_events || 0) - (reg.contributions || 0)],
+   ["Contributions", reg.contributions || 0],
+   ["Tax notes", reg.tax_events || 0],
+   ["Objects", reg.objects || 0]].forEach(([k, v]) => {
+    const c = el("div", "tile"); c.appendChild(el("div", "v", String(Math.max(v, 0))));
+    c.appendChild(el("div", "k", k)); t.appendChild(c);
+  });
+
+  const kv = $("nodeKV"); kv.innerHTML = "";
+  const add = (k, v) => { kv.appendChild(el("dt", null, k)); kv.appendChild(el("dd", null, v)); };
+  add("fingerprint", id.present ? id.fingerprint : (id.note ? "— none —" : "—"));
+  add("registry", reg.log_file || STATUS.paths.registry_root);
+  add("root", reg.present ? (reg.population_root || "").slice(0, 24) + "…" : "— empty —");
+  add("replays", reg.present ? (reg.roots_match ? "yes" : "NO") : "—");
+  add("keystore", STATUS.paths.keystore_dir || "— not set —");
+  const ob = STATUS.obligations;
+  add("ledger", ob.present ? ob.ledger_file : "— none —");
+  if (ob.present) {
+    const bs = ob.by_status || {};
+    add("obligations", (bs.open || 0) + " open · " + (bs.closed || 0) + " closed · chain " +
+        (ob.chain_valid ? "verifies" : "DOES NOT VERIFY"));
+    add("last ledger act", ob.last_entry && ob.last_entry.type
+        ? (ob.last_entry.type + " · " + (ob.last_entry.at || "").slice(0, 19))
+        : "— none —");
+  }
+  $("nodeLaw").textContent =
+    "Library-direct: this process imports sovereign_agent and calls it in-process. No HTTP to :8421. " +
+    "No second ledger — every read above replays the node's own files. " + g.note;
+
+  const inc = (STATUS._events || []).filter(e => e.type === "income");
+  fillRefIncome(inc);
+}
+
+function fillRefIncome(items) {
+  const sel = $("tRefIncome"), keep = sel.value;
+  sel.innerHTML = "";
+  const none = el("option", null, "— none —"); none.value = ""; sel.appendChild(none);
+  items.forEach(e => { const o = el("option", null, e.work_ref + (e.amount != null ? "  (" + e.amount + " " + (e.unit || "") + ")" : "")); o.value = e.object_id; sel.appendChild(o); });
+  sel.value = keep;
+}
+
+/* ---------- events ---------- */
+async function loadEvents() {
+  const only = $("filter").value;
+  const data = await api("/api/events?limit=200&only=" + encodeURIComponent(only));
+  const all = only === "all" ? data.items : (await api("/api/events?limit=200")).items;
+  STATUS._events = all;
+  fillRefIncome(all.filter(e => e.type === "income"));
+
+  const b = $("evBody"); b.innerHTML = "";
+  $("evEmpty").hidden = data.items.length > 0;
+  $("evNote").textContent = data.total + (data.total === 1 ? " event" : " events") + ", each verified against its own receipt";
+
+  data.items.forEach(e => {
+    const tr = el("tr");
+    const c1 = el("td");
+    const head = el("div"); head.style.cssText = "display:flex;gap:.4rem;align-items:center;flex-wrap:wrap";
+    head.appendChild(el("span", "b t-" + e.type, e.type === "tax" ? (e.tax_category || "tax") : e.type));
+    head.appendChild(el("span", "ref", e.work_ref || "—"));
+    c1.appendChild(head);
+    const bits = [];
+    if (e.source) bits.push(e.source + " · " + e.contribution_class);
+    if (e.references_income) bits.push("→ " + e.references_income);
+    if (e.port_ref) bits.push("port " + e.port_ref);
+    bits.push(e.object_id);
+    c1.appendChild(el("div", "sub", bits.join("  ·  ")));
+    tr.appendChild(c1);
+
+    tr.appendChild(el("td", "sub", (e.at || "").replace("T", " ").slice(0, 19)));
+    tr.appendChild(el("td", "num", e.amount != null ? e.amount + " " + (e.unit || "") : "—"));
+    tr.appendChild(el("td", "sub", e.approver ? (e.approver + (e.approval_ref ? " · " + e.approval_ref : "")) : "— ungated —"));
+
+    const c5 = el("td");
+    const ok = e.check && e.check.verified;
+    const badge = el("button", "b " + (ok ? "ok" : "no"), ok ? "verified" : "FAILED");
+    badge.prepend(glyph(ok));
+    badge.title = "Click to re-verify this receipt against the node right now.\n" +
+                  ((e.check && e.check.reason) || "");
+    badge.style.cursor = "pointer";
+    badge.onclick = () => reverify(e.object_id, badge);
+    c5.appendChild(badge);
+    if (!ok) c5.appendChild(el("div", "sub", (e.check && e.check.reason) || ""));
+    tr.appendChild(c5);
+    b.appendChild(tr);
+  });
+}
+$("filter").onchange = () => loadEvents().catch(e => toast("err", "Load failed", e.message));
+
+/* Re-verify one receipt on demand — the operator's own weakest-party check, run against the node
+   at the moment they ask, not a cached verdict from page load. */
+async function reverify(objectId, badge) {
+  badge.disabled = true;
+  try {
+    const r = await api("/api/verify/" + encodeURIComponent(objectId));
+    toast(r.verified ? "ok" : "err", r.verified ? "Receipt verifies" : "Receipt FAILED",
+          objectId + " — " + r.reason);
+  } catch (err) { toast("err", "Verify failed", err.message); }
+  finally { badge.disabled = false; }
+}
+
+function glyph(ok) {
+  const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  s.setAttribute("viewBox", "0 0 16 16"); s.setAttribute("width", "10"); s.setAttribute("height", "10");
+  s.setAttribute("fill", "currentColor"); s.style.flex = "none";
+  const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  p.setAttribute("d", ok ? "M6.4 11.8L3 8.4l1.1-1.1 2.3 2.3 5.5-5.5L13 5.2z"
+                         : "M8 1a7 7 0 100 14A7 7 0 008 1zm3.2 9.1l-1.1 1.1L8 9.1l-2.1 2.1-1.1-1.1L6.9 8 4.8 5.9l1.1-1.1L8 6.9l2.1-2.1 1.1 1.1L9.1 8z");
+  s.appendChild(p); return s;
+}
+
+/* ---------- record ---------- */
+document.querySelectorAll("[data-submit]").forEach(btn => btn.onclick = async () => {
+  const w = btn.dataset.submit;
+  const body = w === "income" ? {
+      work_ref: $("iRef").value.trim(), amount: $("iAmt").value.trim(),
+      unit: $("iUnit").value.trim(), port_ref: $("iPort").value.trim(), extra: $("iExtra").value.trim()
+    } : w === "contribution" ? {
+      source: $("cSource").value, contribution_class: $("cClass").value,
+      work_ref: $("cRef").value.trim(), amount: $("cAmt").value.trim(),
+      unit: $("cUnit").value.trim(), extra: $("cExtra").value.trim()
+    } : {
+      work_ref: $("tRef").value.trim(), category: $("tCat").value,
+      references_income: $("tRefIncome").value, amount: $("tAmt").value.trim(), unit: $("tUnit").value.trim()
+    };
+  if (!body.work_ref) { toast("err", "A reference is required", "It is what the record is about."); return; }
+  btn.disabled = true;
+  try {
+    const r = await post("/api/record/" + w, body);
+    if (r.gated) {
+      toast("warn", "Held at the gate", "Nothing written yet. Approve it below to record it.");
+    } else {
+      toast("ok", "Recorded", r.receipt.object_id + " · seq " + r.receipt.seq);
+      clearForm(w);
+    }
+    renderGate(r.gate);
+    await refresh();
+  } catch (err) { toast("err", "Refused", err.message); }
+  finally { btn.disabled = false; }
+});
+
+function clearForm(w) {
+  if (w === "income") ["iRef", "iAmt", "iPort", "iExtra"].forEach(i => $(i).value = "");
+  if (w === "contribution") ["cRef", "cAmt", "cExtra"].forEach(i => $(i).value = "");
+  if (w === "tax") ["tRef", "tAmt"].forEach(i => $(i).value = "");
+}
+
+/* ---------- gate ---------- */
+async function loadGate() { renderGate(await api("/api/gate")); }
+
+function renderGate(g) {
+  if (!g) return;
+  const list = $("gateList"); list.innerHTML = "";
+  const c = $("gateCount");
+  c.hidden = !g.pending_count; c.textContent = g.pending_count + " awaiting you";
+  $("gateCard").className = "card" + (g.pending_count ? " flag" : "");
+  $("gateHint").textContent = g.engaged
+    ? "Every recording act is held here until you approve it. Approving performs the act; denying writes nothing at all."
+    : "Not engaged in sovereign posture — the module's own gate returns false outside regulated mode. Reopen the node as regulated to gate acts.";
+
+  if (!g.pending_count) {
+    const d = g.disposed || [];
+    if (d.length) {
+      const last = d[d.length - 1];
+      const n = el("div", "sub");
+      n.textContent = "last: " + last.action_class + " — " + last.status + " by " + last.approver +
+                      (last.receipt ? (" · " + last.receipt.object_id) : " · nothing written");
+      list.appendChild(n);
+    } else if (g.engaged) {
+      list.appendChild(el("div", "empty", "Nothing waiting."));
+    }
+    return;
+  }
+
+  g.pending.forEach(p => {
+    const box = el("div", "gate-item");
+    const h = el("div", "h");
+    h.appendChild(el("span", "b wait", "approval needed"));
+    h.appendChild(el("span", null, p.action_class));
+    box.appendChild(h);
+    box.appendChild(el("p", "m", p.summary));
+    const row = el("div", "actions");
+    const why = el("input"); why.placeholder = "reason (optional)"; why.style.maxWidth = "170px";
+    const yes = el("button", "approve sm", "Approve"); const no = el("button", "deny sm", "Deny");
+    yes.onclick = () => dispose(p.req_id, "approve", why.value);
+    no.onclick = () => dispose(p.req_id, "deny", why.value);
+    row.appendChild(yes); row.appendChild(no); row.appendChild(why);
+    box.appendChild(row);
+    list.appendChild(box);
+  });
+}
+
+async function dispose(reqId, what, reason) {
+  try {
+    const r = await post("/api/gate/" + encodeURIComponent(reqId) + "/" + what, { reason });
+    if (r.status === "approved") toast("ok", "Approved by you", r.receipt.object_id + " · seq " + r.receipt.seq);
+    else toast("warn", "Denied", "Nothing was written. The refusal is the act.");
+    renderGate(r.gate);
+    await refresh();
+  } catch (err) { toast("err", "Gate failed", err.message); }
+}
+
+/* ---------- package ---------- */
+$("btnPkg").onclick = async () => {
+  try {
+    PKG = await api("/api/package");
+    $("pkgSha").textContent = "sha256 " + PKG.sha256.slice(0, 24) + "…";
+    $("pkgOut").hidden = false;
+    $("pkgOut").textContent = JSON.stringify(PKG.package, null, 2);
+    $("btnDl").disabled = false;
+    const rp = PKG.package.reporting_package;
+    toast(rp.complete ? "ok" : "warn", "Package built",
+          rp.event_count + " tax event(s) · " + rp.reason);
+  } catch (err) { toast("err", "Could not build the package", err.message); }
+};
+$("btnDl").onclick = () => { window.location = "/api/package/download"; };
+</script>
+</body>
+</html>
