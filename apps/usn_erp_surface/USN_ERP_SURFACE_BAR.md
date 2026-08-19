@@ -2,18 +2,19 @@
 
 ∞Δ∞ Seal 1176-INFINITY-RHO · Breath only ∞Δ∞
 
-Scored 2026-08-19. **v0 (P1–P8) re-verified · obligations write surface (O1–O6) · plus
-invoice / receivable-lite (I1–I6, KM ruling Option A).** Every row below was re-run immediately
-before writing this file.
+Scored 2026-08-19. **v0 (P1–P8) re-verified · obligations write surface (O1–O6) · invoice /
+receivable-lite (I1–I6, KM ruling Option A) · plus period view + close (PV1–PV6, KM CFO ruling —
+full GAAP-shaped books).** Every row below was re-run immediately before writing this file.
 
 | | |
 |---|---|
 | **Build** | `apps/usn_erp_surface/` — local web app, Flask on loopback, single self-contained page |
 | **Binding** | library-direct; `node_binding.py` is the only module that touches `sovereign_agent` |
-| **Vertical** | solo/household: open node · record income/contribution · record tax note · **record invoice + AR aging** · **open / approve / close obligations** · gate · export package |
+| **Vertical** | solo/household: open node · record income/contribution · record tax note · **record invoice + AR aging** · **trial balance + income statement + balance sheet + period close** · **open / approve / close obligations** · gate · export package |
 | **Invoice-lite** | `revenue.billing.invoice` shapes it (pure) → persisted through the **same fence-owning attribution writer** as income (`work_ref=invoice:<id>`, `doc_kind=invoice`); `revenue.billing.ar_aging` projects aging on read. No new object kind, no second ledger. |
-| **Tests** | **93 passed** (`apps/usn_erp_surface/tests/`) — was 74 at v0.1, 48 at v0 |
-| **Kill-grep** | **GREEN**, 0 findings across **9** checks (`killgrep.py`, exit 0); invoice collection verbs added to check 2's vocabulary and proven to bite (I5) |
+| **Tests** | **108 passed** (`apps/usn_erp_surface/tests/`) — was 93 at v0.2, 74 at v0.1, 48 at v0 |
+| **Kill-grep** | **GREEN**, 0 findings across **9** checks (`killgrep.py`, exit 0); invoice-collection verbs in check 2's vocabulary, proven to bite (I5); period-close violations proven to bite (PV5) |
+| **Period view** | read-time derivation: node objects → sealed `posting.post` → `trial_balance` / `income_statement` / `balance_sheet` over a typed CoA (Cash · AR · Unearned · Equity · Revenue · Expense). Close persists via the obligation ledger. No second GL store; objects stay source of truth. Full GAAP-shaped books — money-path OFF ≠ empty GL. |
 
 **This is not an ERP suite.** It is one operator loop, complete. Invoice is a **billing-event
 record, not an AR balance** — the node holds no receivable and moves no money; **collection /
@@ -48,6 +49,13 @@ inventory, no multi-entity, no dashboard chrome beyond what these loops need.
 | I4 | No pay / remit / file / crossing callable reachable from the binding | **GREEN** |
 | I5 | Kill-grep GREEN; invoice money-path verbs proven to bite | **GREEN** |
 | I6 | Read panel and write path are one source of truth; P/O rows stay GREEN | **GREEN** |
+| | | |
+| PV1 | Trial balance / statement reads reflect node state only; survive restart | **GREEN** |
+| PV2 | Close holds at gate → deny writes nothing → approve persists via the ledger | **GREEN** |
+| PV3 | Open invoices earned = Dr AR / Cr Revenue; deferred = Unearned; tax notes never in P&L | **GREEN** |
+| PV4 | No pay / remit / file / crossing reachable | **GREEN** |
+| PV5 | Kill-grep GREEN; period-close violations proven to bite | **GREEN** |
+| PV6 | Statement AR ties to the receivables detail; one source of truth; prior rows GREEN | **GREEN** |
 
 **RED rows: none.** Nine disclosures are recorded below — five carried from v0, four new to the
 obligations surface. None is a failed row; all are things you should know before you trust a GREEN.
@@ -478,5 +486,47 @@ and persisted through the exact fence-owning writer an income record uses — `w
   node and agree; all P1–P8 and O1–O6 rows re-ran GREEN in the same suite (**93 passed**).
 
 **STOP — working UI + BAR GREEN.** Collection remains OUT; the S4/fence re-audit is a later pass.
+
+---
+
+## Period view + close, row by row (PV1–PV6) — GREEN
+
+**Law (KM CFO ruling).** Full GAAP-shaped books. Statements are a **read-time projection**: the
+node's attribution objects map to balanced double-entry postings through the sealed
+`financials.posting.post`, then `trial_balance` / `income_statement` / `balance_sheet` compute over
+a typed chart of accounts. Nothing persists — objects stay the single source of truth, no second GL
+store. Money-path OFF (the node moves no value) does **not** mean an empty GL.
+
+Derivation: income/contribution → Dr cash / Cr revenue · invoice (open) → Dr AR / Cr revenue ·
+invoice (deferred) → Dr AR / Cr unearned · tax note → memo (no P&L). Close persists through the
+node's own obligation ledger (open → approve → close, the sealed close record's trial-balance hash
+as evidence).
+
+- **PV1 · reads reflect state, survive restart — GREEN.** A mixed book (2,400 cash earning +
+  1,000 open invoice + 600 deferred + a tax note) projects, from a fresh binding, revenue 3,400,
+  net income 3,400, assets 4,000 (cash 2,400 + AR 1,600), liabilities 600 (unearned); trial balance
+  nets to zero. Empty node projects zero and balances.
+- **PV2 · close gated — GREEN.** Under the regulated posture the close is held at the gate; a denial
+  writes nothing to the ledger; an approval persists it through the obligation ledger (locked close
+  record, chain verifies, one closed obligation).
+- **PV3 · classification honest — GREEN.** An open invoice recognises **revenue** on the AR leg
+  (Dr AR / Cr Revenue), not cash; a deferred invoice posts to **unearned** (not revenue); a **tax
+  note never appears in the P&L**; cash income and invoice AR are classified distinctly.
+- **PV4 · no money-path reachable — GREEN.** Period view is a pure read; the close persists only
+  through the obligation ledger. No pay/remit/file/crossing method on the binding; kill-grep GREEN.
+- **PV5 · kill-grep bites — GREEN.** Injecting a second GL store, a bank egress, a money-movement
+  identifier, or a `reopen` of a closed period each drives P6 to RED.
+- **PV6 · one source of truth — GREEN.** The statement AR (1,600) ties to the receivables detail
+  (2 invoices); period view, `invoices()` and `status()` all replay the same node. All prior P/O/I
+  rows re-ran GREEN in the same suite (**108 passed**).
+
+**Surface terms (standing rule):** operator-visible strings use standard accounting vocabulary
+(Revenue · AR · Cash · Equity · Trial balance · Income statement · Balance sheet · Period close ·
+Pending approval); sealed kernel module names are unchanged — `node_binding` maps the labels. A
+`Surface terms` glossary is in the README. A broader relabel micro-pass (Contribution tab → Revenue,
+Work ref → Document ref) is a cheap follow-on, not this bar.
+
+**STOP — working UI + BAR GREEN.** Money-path OFF, collection/filing OUT; audit-package and
+exception-queue chrome are the next rolling shots.
 
 Breath only. ∞Δ∞

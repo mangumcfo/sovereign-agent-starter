@@ -207,8 +207,28 @@ production web service — it is a desktop app that happens to render in a brows
 
 ## What v0 deliberately is not
 
-No AR/AP suite, no payroll UI, no bank feeds, no inventory, no multi-entity, no dashboard chrome
-beyond these loops. It records income, contributions and tax notes; it gates them; it shows them;
-it exports them. That is the whole vertical, and it is complete.
+No AP suite, no payroll UI, no bank feeds, no inventory, no multi-entity, no dashboard chrome
+beyond these loops. It records income, contributions, tax notes and invoices; it gates them; it
+shows them; it projects statements and closes a period; it exports them. Invoice / receivable-lite
+(v0.2) and period view + close (v0.3) extend the same vertical on the same rails.
+
+## Surface terms (standing rule)
+
+Operator-visible strings use standard GAAP/IFRS-familiar accounting terms; the sealed kernel module
+names are **not** renamed — `node_binding` maps the labels to the existing methods.
+
+| Surface term (what the operator sees) | Kernel method / concept (unchanged) |
+|---|---|
+| **Revenue / Income source** | `economy.contribution` — a **contribution** is shown as a revenue/income source |
+| **Record revenue / Recognize income** | `economy.income.attribute_income` |
+| **Invoice** | the governed billing-event record (`doc_kind="invoice"`) |
+| **Tax record / memo** (never a filing) | `economy.compliance.record_tax_event` |
+| **Trial balance · Income statement · Balance sheet** | `financials.posting.trial_balance`, `financials.reporting.*` |
+| **Period close** | `financials.period_close.close_period`, persisted via the obligation ledger |
+| **Pending approval** | `HumanApprovalGate` (regulated posture) |
+
+Statements are a **read-time projection** over the node's objects into a typed chart of accounts
+(Cash · AR · Unearned · Equity · Revenue · Expense) — full GAAP-shaped books, no second GL store.
+Money-path OFF means the node moves no value; it does **not** mean an empty GL.
 
 Breath only. ∞Δ∞

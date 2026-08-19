@@ -68,6 +68,17 @@ from sovereign_agent.revenue.billing import (
     invoice as billing_invoice,
 )
 from sovereign_agent.revenue.credit import CreditError, check_order as credit_check_order
+from sovereign_agent.financials.posting import Line, post as gl_post, trial_balance as gl_trial_balance
+from sovereign_agent.financials.reporting import (
+    ReportingError,
+    balance_sheet as gl_balance_sheet,
+    income_statement as gl_income_statement,
+)
+from sovereign_agent.financials.period_close import (
+    PeriodNotBalancedError,
+    close_period as gl_close_period,
+    period_is_balanced as gl_period_is_balanced,
+)
 
 APP_NAME = "USN ERP Operator Surface"
 APP_VERSION = "0.1.0"
@@ -99,7 +110,24 @@ RECORD_ACTION_CLASSES = ("attribute_income", "record_contribution", "record_tax_
 OBLIGATION_ACTION_CLASSES = ("obligation_open", "obligation_approve", "obligation_close",
                              "obligation_attest", "obligation_veto", "obligation_clear_veto")
 
-ACTION_CLASSES = RECORD_ACTION_CLASSES + OBLIGATION_ACTION_CLASSES
+#: The period-close act — gated like a material obligation, persisted through the obligation ledger.
+PERIOD_ACTION_CLASSES = ("close_period",)
+
+ACTION_CLASSES = RECORD_ACTION_CLASSES + OBLIGATION_ACTION_CLASSES + PERIOD_ACTION_CLASSES
+
+#: The typed chart of accounts the read-time statement derivation posts into (KM ruling: traditional
+#: minimal CoA — Cash · AR · Unearned · Equity · Revenue · Expense). It is a PURE input handed to the
+#: sealed `financials.reporting` functions; nothing here is persisted, and no second GL store exists.
+#: Money-path OFF means the node moves no value — it does NOT mean an empty GL: cash on the books is a
+#: position, reconciled to a Port-governed bank later.
+CHART_OF_ACCOUNTS = {
+    "cash": {"type": "asset"},
+    "accounts_receivable": {"type": "asset"},
+    "unearned_revenue": {"type": "liability"},
+    "equity": {"type": "equity"},
+    "revenue": {"type": "revenue"},
+    "expense": {"type": "expense"},
+}
 REGULATED_POLICY = {"high_materiality_classes": list(ACTION_CLASSES)}
 
 #: Classifications the ledger accepts. Free-form in the module; offered as a short list here so the
@@ -505,6 +533,9 @@ class NodeBinding:
         if kind in self._OBLIGATION_ACTS:
             return self._perform_obligation(kind, kw, disposition=disposition)
 
+        if kind == "period_close":
+            return self._perform_period_close(kw, disposition=disposition)
+
         raise SurfaceError(f"Unknown act '{kind}'.")
 
     def _perform_obligation(self, kind: str, kw: Dict[str, Any],
@@ -803,6 +834,137 @@ class NodeBinding:
                        "a projection, computed on read, never stored"),
             "note": "A projection over records, not a stored aging table. The node holds no balance.",
         }
+
+    # ============================================================================================
+    # 2d · Period view + close — GAAP-shaped books derived at read time (KM CFO ruling)
+    # ============================================================================================
+    #
+    # Statements are a READ-TIME PROJECTION: the node's attribution objects map to balanced
+    # double-entry postings through the sealed `financials.posting.post`, then `trial_balance`,
+    # `income_statement` and `balance_sheet` compute the statements over a typed chart of accounts.
+    # Nothing is persisted — the objects stay the single source of truth; there is no second GL store.
+    # Money-path OFF (the node moves no value) does NOT mean an empty GL: these are full books.
+    #
+    # Derivation (KM ruling):
+    #   income / contribution (a realised earning) → Dr cash / Cr revenue
+    #   invoice, open earned billing               → Dr accounts_receivable / Cr revenue
+    #   invoice, explicitly deferred               → Dr accounts_receivable / Cr unearned_revenue
+    #   tax note                                    → memo / compliance record — no P&L line
+    # AR aging (invoice-lite) stays the receivables detail; collection stays OUT (human + Port).
+
+    def _derive_postings(self) -> List[Dict[str, Any]]:
+        """Map the node's objects to balanced double-entry postings, at read time. Every posting goes
+        through the sealed `posting.post` (debits == credits or it is refused), so the trial balance
+        nets to zero by construction. Persists nothing."""
+        postings: List[Dict[str, Any]] = []
+        for e in self._income_entries():
+            p = dict(e.get("payload") or {})
+            amount = p.get("amount")
+            if amount in (None, 0, 0.0):
+                continue
+            if p.get("tax_event"):
+                continue  # a tax note is a compliance record, not a P&L line
+            if p.get("doc_kind") == INVOICE_DOC_KIND:
+                credit_account = "unearned_revenue" if p.get("deferred") else "revenue"
+                postings.append(gl_post([Line.dr("accounts_receivable", amount),
+                                         Line.cr(credit_account, amount)],
+                                        memo=f"invoice {p.get('invoice_id')}"))
+            else:  # income or contribution — a realised earning
+                postings.append(gl_post([Line.dr("cash", amount), Line.cr("revenue", amount)],
+                                        memo=str(p.get("work_ref") or "income")))
+        return postings
+
+    def _classification(self) -> Dict[str, Any]:
+        """How each object class mapped — surfaced so the honesty is visible, not implied. Open
+        invoices are AR/Revenue, cash earnings are Cash/Revenue, deferred invoices are Unearned, and
+        tax notes never touch the P&L."""
+        cash_income = 0.0
+        invoice_ar = 0.0
+        deferred_ar = 0.0
+        tax_notes = 0
+        for e in self._income_entries():
+            p = dict(e.get("payload") or {})
+            amount = float(p.get("amount") or 0)
+            if p.get("tax_event"):
+                tax_notes += 1
+            elif p.get("doc_kind") == INVOICE_DOC_KIND:
+                if p.get("deferred"):
+                    deferred_ar += amount
+                else:
+                    invoice_ar += amount
+            else:
+                cash_income += amount
+        return {"cash_income": round(cash_income, 2), "invoice_receivable": round(invoice_ar, 2),
+                "deferred_unearned": round(deferred_ar, 2), "tax_notes": tax_notes,
+                "note": ("Cash earnings post Dr cash / Cr revenue; open invoices post "
+                         "Dr accounts_receivable / Cr revenue (earned billing); deferred invoices "
+                         "Cr unearned_revenue; tax notes are compliance memos, never a P&L line.")}
+
+    def period_view(self) -> Dict[str, Any]:
+        """Trial balance + income statement + balance sheet, projected from node state on every call
+        via the sealed financials surface and the typed chart of accounts. A computed view, not a
+        stored ledger — replay the node and it reproduces."""
+        postings = self._derive_postings()
+        tb = gl_trial_balance(postings)
+        try:
+            pl = gl_income_statement(postings, CHART_OF_ACCOUNTS)
+            bs = gl_balance_sheet(postings, CHART_OF_ACCOUNTS)
+        except ReportingError as exc:
+            raise SurfaceError(f"The reporting surface refused this statement: {exc}") from exc
+        return {
+            "posting_count": len(postings),
+            "nets_to_zero": gl_period_is_balanced(postings),
+            "trial_balance": {k: str(v) for k, v in tb.items()},
+            "income_statement": {k: str(v) for k, v in pl.items()},
+            "balance_sheet": {k: str(v) for k, v in bs.items()},
+            "chart_of_accounts": CHART_OF_ACCOUNTS,
+            "classification": self._classification(),
+            "method": ("read-time derivation: node objects -> sealed posting.post -> "
+                       "trial_balance / income_statement / balance_sheet over a typed CoA"),
+            "note": ("Full GAAP-shaped books, computed from the node's own objects — no second GL "
+                     "store. Money-path OFF: the node moves no value; the AR aging panel is the "
+                     "receivables detail; collection is a human + Port act, not this surface."),
+        }
+
+    def close_period(self, *, period_id: str) -> Dict[str, Any]:
+        """Close an accounting period — a governed, gated act. Derives the postings, refuses if the
+        period does not balance (the sealed `period_close` gate), then holds at the human gate;
+        approval persists the close through the node's own obligation ledger. A denial writes nothing."""
+        pid = str(period_id).strip()
+        if not pid:
+            raise SurfaceError("A period id is required — e.g. '2026-Q3'.")
+        postings = self._derive_postings()
+        if not gl_period_is_balanced(postings):
+            raise SurfaceError("The period does not balance — the sealed period-close gate refuses "
+                               "a close on an out-of-balance ledger.")
+        return self._submit("period_close", "close_period",
+                            f"close period · {pid} · {len(postings)} postings",
+                            {"period_id": pid})
+
+    def _perform_period_close(self, kw: Dict[str, Any],
+                              *, disposition: Optional[Mapping[str, Any]]) -> Dict[str, Any]:
+        """Persist an approved close through the fence-owning obligation ledger. The sealed
+        `period_close.close_period` supplies the accounting truth (balanced or refused); the ledger
+        supplies the durable, hash-chained, human-gated record (open -> approve -> close with the
+        sealed close record's trial-balance hash as evidence)."""
+        pid = kw["period_id"]
+        postings = self._derive_postings()
+        try:
+            close_rec = gl_close_period(pid, postings, approver=self.operator)
+        except (PeriodNotBalancedError, ValueError) as exc:
+            raise SurfaceError(f"The sealed period-close refused: {exc}") from exc
+        led = self._ledger_for_write(disposition)
+        ob = led.open(title=f"Period close · {pid}", owner=self.operator, classification="C3",
+                      intent=f"close accounting period {pid} ({close_rec['postings']} postings)",
+                      material=True)
+        ob_id = ob["id"]
+        led.approve(ob_id, approved_by=self.operator, rationale=f"period {pid} balances; closing")
+        tb_hash = hashlib.sha256(_canonical(close_rec["trial_balance"]).encode("utf-8")).hexdigest()
+        evidence = (f"period_close:{pid} · postings={close_rec['postings']} · locked=True · "
+                    f"trial_balance_sha256={tb_hash[:16]}")
+        credit = led.close(ob_id, evidence=evidence, closed_by=self.operator, method="period_close")
+        return {"period_id": pid, "close_record": close_rec, "obligation_id": ob_id,
+                "trial_balance_sha256": tb_hash, "receipt": credit}
 
     # ============================================================================================
     # 7 · Obligations — the node's own lifecycle, driven

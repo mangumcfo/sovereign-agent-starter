@@ -391,6 +391,21 @@ pre{background:var(--surface-1);border:1px solid var(--ring);border-radius:9px;p
           <p class="law" style="margin-top:.5rem">Aging is a projection over these records, computed on read by the node's sealed billing surface. Nothing here is a stored balance, and this surface collects nothing.</p>
         </div>
 
+        <div class="card" id="periodCard">
+          <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.6rem;flex-wrap:wrap">
+            <h2 style="margin:0">Period view — books</h2>
+            <span class="muted" style="font-size:.72rem" id="pvBalanced"></span>
+            <span style="margin-left:auto;display:flex;gap:.35rem;align-items:center">
+              <input id="pvPeriodId" placeholder="2026-Q3" style="width:7rem;padding:.24rem .45rem;font-size:.78rem">
+              <button class="sm" id="btnClosePeriod">Close period</button>
+            </span>
+          </div>
+          <div id="pvStatements" class="sub" style="margin-bottom:.5rem"></div>
+          <table class="tbl"><thead><tr><th>Account</th><th class="num">Net (Dr − Cr)</th></tr></thead>
+            <tbody id="pvTbBody"></tbody></table>
+          <p class="law" id="pvNote" style="margin-top:.5rem"></p>
+        </div>
+
         <div class="card" id="oblCard">
           <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.6rem;flex-wrap:wrap">
             <h2 style="margin:0">Obligations</h2>
@@ -547,7 +562,7 @@ $("btnOpen").onclick = async () => {
     });
     render();
     toast("ok", "Node open", STATUS.governance.posture);
-    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables()]);
+    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables(), loadPeriodView()]);
   } catch (err) { toast("err", "Could not open the node", err.message); }
 };
 $("btnClose").onclick = async () => {
@@ -562,7 +577,7 @@ $("btnRefresh").onclick = () => refresh();
 async function refresh() {
   try {
     STATUS = await api("/api/status"); render();
-    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables()]);
+    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables(), loadPeriodView()]);
   } catch (err) { toast("err", "Refresh failed", err.message); }
 }
 
@@ -790,6 +805,58 @@ async function loadReceivables() {
     body.appendChild(tr);
   });
 }
+
+/* ---------- period view — books ---------- */
+const ACCT_LABELS = {
+  cash: "Cash", accounts_receivable: "Accounts receivable (AR)", revenue: "Revenue",
+  unearned_revenue: "Unearned revenue", equity: "Equity", expense: "Expense",
+};
+
+async function loadPeriodView() {
+  const pv = await api("/api/period-view");
+  const pl = pv.income_statement, bs = pv.balance_sheet, cl = pv.classification;
+  $("pvBalanced").textContent = pv.nets_to_zero ? "trial balance nets to zero ✓" : "OUT OF BALANCE — investigate";
+  const line = (label, val) => {
+    const d = el("div"); d.style.cssText = "display:flex;justify-content:space-between;gap:1rem";
+    d.appendChild(el("span", null, label)); d.appendChild(el("span", "num", String(val))); return d;
+  };
+  const box = (title, rows) => {
+    const c = el("div"); c.style.cssText = "margin:.15rem 0 .55rem";
+    c.appendChild(el("div", "b", title)); rows.forEach(r => c.appendChild(line(r[0], r[1]))); return c;
+  };
+  const s = $("pvStatements"); s.innerHTML = "";
+  s.appendChild(box("Income statement", [["Revenue", pl.revenue], ["Expense", pl.expense], ["Net income", pl.net_income]]));
+  s.appendChild(box("Balance sheet", [["Assets", bs.assets], ["Liabilities", bs.liabilities],
+    ["Equity", bs.equity], ["Net income", bs.net_income], ["L + E + NI", bs.total_liabilities_and_equity]]));
+  s.appendChild(box("Classification", [["Cash income", cl.cash_income], ["Invoice receivable (earned)", cl.invoice_receivable],
+    ["Deferred (unearned)", cl.deferred_unearned], ["Tax notes (memo, not P&L)", cl.tax_notes]]));
+  const tb = $("pvTbBody"); tb.innerHTML = "";
+  Object.entries(pv.trial_balance).forEach(([acct, net]) => {
+    const tr = el("tr");
+    tr.appendChild(el("td", "sub", ACCT_LABELS[acct] || acct));
+    tr.appendChild(el("td", "num", String(net)));
+    tb.appendChild(tr);
+  });
+  $("pvNote").textContent = pv.note;
+}
+
+$("btnClosePeriod").onclick = async () => {
+  const btn = $("btnClosePeriod");
+  const pid = $("pvPeriodId").value.trim();
+  if (!pid) { toast("err", "A period id is required", "e.g. 2026-Q3."); return; }
+  btn.disabled = true;
+  try {
+    const r = await post("/api/close-period", { period_id: pid });
+    if (r.gated) toast("warn", "Close held at the gate", "Nothing written yet. Approve it below to close the period.");
+    else {
+      toast("ok", "Period closed", "period " + (r.receipt && r.receipt.period_id) + " · obligation " + (r.receipt && r.receipt.obligation_id));
+      $("pvPeriodId").value = "";
+    }
+    renderGate(r.gate);
+    await refresh();
+  } catch (err) { toast("err", "Refused", err.message); }
+  finally { btn.disabled = false; }
+};
 
 /* ---------- gate ---------- */
 async function loadGate() { renderGate(await api("/api/gate")); }

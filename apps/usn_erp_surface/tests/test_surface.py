@@ -946,3 +946,160 @@ def test_i6_invoice_read_and_write_are_one_source_of_truth(node):
     aged = bind(node, regulated=False).ar_aging(as_of_day=1)
     assert st["invoices"] == 1 == inv["total"]
     assert aged["total_receivable"] == "100.00" and aged["open_invoice_count"] == 1
+
+
+# ==================================================================================================
+# PV1–PV6 · Period view + close — GAAP-shaped books derived at read time (KM CFO ruling)
+#
+#   PV1  trial balance / statement reads reflect node state only; survive restart
+#   PV2  close holds at gate → deny writes nothing → approve persists via the ledger
+#   PV3  open invoices are earned revenue (Dr AR / Cr Revenue), classified distinctly from cash
+#        income; deferred invoices post to Unearned; tax notes never touch the P&L
+#   PV4  no pay / remit / file / crossing reachable
+#   PV5  kill-grep GREEN + injected-violation proofs
+#   PV6  BAR.md updated; prior rows GREEN
+# ==================================================================================================
+
+def _seed_books(nb):
+    """A mixed book: a cash earning, an open invoice, a deferred invoice, and a tax note."""
+    nb.record_income(work_ref="consulting", amount=2400, unit="USD")
+    nb.record_invoice(invoice_id="INV-1", customer="Acme", lines=_lines(("svc", 1, 1000)),
+                      currency="USD", issued_day=5)
+    nb.record_invoice(invoice_id="INV-2", customer="Beta", lines=_lines(("retainer", 1, 600)),
+                      currency="USD", issued_day=1, extra={"deferred": True})
+    nb.record_tax_note(work_ref="tax:consulting", category="labor", amount=300)
+
+
+# ---- PV1 ----------------------------------------------------------------------------------------
+
+def test_pv1_statements_reflect_node_state_and_survive_restart(node):
+    _seed_books(bind(node, regulated=False))
+    # a fresh binding replays from disk — the statements are a projection of the node, not a cache
+    pv = bind(node, regulated=False).period_view()
+    assert pv["nets_to_zero"] is True
+    assert pv["income_statement"]["revenue"] == "3400.0"      # 2400 cash + 1000 earned invoice
+    assert pv["income_statement"]["net_income"] == "3400.0"
+    assert pv["balance_sheet"]["assets"] == "4000.0"          # cash 2400 + AR 1600
+    assert pv["balance_sheet"]["liabilities"] == "600.0"      # deferred invoice -> unearned
+    assert pv["trial_balance"]["cash"] == "2400.0"
+    assert pv["trial_balance"]["accounts_receivable"] == "1600.0"
+
+
+def test_pv1_empty_node_projects_zero_and_balances(node):
+    pv = bind(node, regulated=False).period_view()
+    assert pv["posting_count"] == 0 and pv["nets_to_zero"] is True
+    assert pv["income_statement"]["revenue"] == "0"
+
+
+# ---- PV2 ----------------------------------------------------------------------------------------
+
+def test_pv2_close_gated_then_deny_writes_nothing(node):
+    _seed_books(bind(node, regulated=False))
+    nb = bind(node)  # regulated → gated
+    sub = nb.close_period(period_id="2026-Q3")
+    assert sub["gated"] is True and sub["receipt"] is None
+    ledger = os.path.join(node["ledger"], "obligations.ndjson")
+    nb.dispose(sub["req_id"], approve=False, reason="not yet")
+    assert not os.path.exists(ledger), "a denied close writes nothing to the ledger"
+
+
+def test_pv2_close_approve_persists_via_the_ledger(node):
+    _seed_books(bind(node, regulated=False))
+    nb = bind(node)
+    sub = nb.close_period(period_id="2026-Q3")
+    res = nb.dispose(sub["req_id"], approve=True)
+    assert res["status"] == "approved" and res["real"] is True
+    rec = res["receipt"]
+    assert rec["close_record"]["locked"] is True and rec["close_record"]["period"] == "2026-Q3"
+    # the close is durable on the node's own obligation ledger, and the chain verifies
+    obs = bind(node).obligations()
+    assert obs["present"] is True and obs["chain_valid"] is True and obs["by_status"]["closed"] == 1
+
+
+# ---- PV3 ----------------------------------------------------------------------------------------
+
+def test_pv3_open_invoice_is_earned_revenue_not_cash(node):
+    nb = bind(node, regulated=False)
+    nb.record_invoice(invoice_id="INV-1", customer="Acme", lines=_lines(("svc", 1, 1000)), issued_day=5)
+    pv = nb.period_view()
+    assert pv["income_statement"]["revenue"] == "1000.0"           # earned billing -> revenue (KM ruling)
+    assert pv["trial_balance"]["accounts_receivable"] == "1000.0"  # Dr AR, not cash
+    assert "cash" not in pv["trial_balance"]
+    assert pv["classification"]["invoice_receivable"] == 1000.0
+
+
+def test_pv3_deferred_invoice_is_unearned_not_revenue(node):
+    nb = bind(node, regulated=False)
+    nb.record_invoice(invoice_id="INV-D", customer="Beta", lines=_lines(("retainer", 1, 600)),
+                      issued_day=1, extra={"deferred": True})
+    pv = nb.period_view()
+    assert pv["income_statement"]["revenue"] == "0"                # deferred -> not revenue
+    assert pv["balance_sheet"]["liabilities"] == "600.0"          # unearned liability
+    assert pv["classification"]["deferred_unearned"] == 600.0
+
+
+def test_pv3_tax_note_never_appears_in_the_pl(node):
+    nb = bind(node, regulated=False)
+    nb.record_income(work_ref="job", amount=1000)
+    nb.record_tax_note(work_ref="tax:job", category="labor", amount=250)
+    pv = nb.period_view()
+    assert pv["income_statement"]["revenue"] == "1000.0"          # tax note excluded from the P&L
+    assert pv["income_statement"]["expense"] == "0"
+    assert pv["classification"]["tax_notes"] == 1
+
+
+def test_pv3_cash_income_and_invoice_are_classified_distinctly(node):
+    nb = bind(node, regulated=False)
+    nb.record_income(work_ref="cash-sale", amount=500)
+    nb.record_invoice(invoice_id="INV-9", customer="X", lines=_lines(("a", 1, 700)), issued_day=1)
+    cl = nb.period_view()["classification"]
+    assert cl["cash_income"] == 500.0 and cl["invoice_receivable"] == 700.0
+
+
+# ---- PV4 ----------------------------------------------------------------------------------------
+
+def test_pv4_no_money_path_or_pay_verb_leaks_from_the_binding(node):
+    nb = bind(node, regulated=False)
+    forbidden = ("pay_", "remit", "disburse", "settle_pay", "collect", "wire_", "bank_transfer")
+    for name in dir(nb):
+        if name.startswith("__"):
+            continue
+        low = name.lower()
+        assert not any(f in low for f in forbidden), f"binding exposes a money-path method: {name}"
+
+
+def test_pv4_period_surface_reaches_no_statutory_or_crossing_callable(node):
+    """Period view is a pure read; the close persists only through the obligation ledger. Neither
+    reaches a filing, a payment, or a Port crossing — proven by the kill-grep on the shipped app."""
+    proc = _run_killgrep(APP_DIR)
+    assert proc.returncode == 0 and "P6: GREEN" in proc.stdout
+
+
+# ---- PV5 ----------------------------------------------------------------------------------------
+
+@pytest.mark.parametrize("label,inject", [
+    ("second GL store", "import sqlite3\n_gl = sqlite3.connect('gl.db')\n"),
+    ("bank egress", "import requests\ndef _bank():\n    return requests.post('http://bank/pay')\n"),
+    ("money movement", "def _settle(period):\n    settle_payment = True\n    return settle_payment\n"),
+    ("reopen closed period", "def _f(led, oid):\n    return led.reopen(oid)\n"),
+])
+def test_pv5_killgrep_catches_period_close_violations(tmp_path, label, inject):
+    copy = tmp_path / "app"
+    shutil.copytree(APP_DIR, copy, ignore=shutil.ignore_patterns("__pycache__", "tests"))
+    target = copy / "node_binding.py"
+    target.write_text(target.read_text() + "\n\n" + textwrap.dedent(inject), encoding="utf-8")
+    proc = _run_killgrep(str(copy))
+    assert proc.returncode == 1, f"kill-grep stayed GREEN with '{label}' injected:\n{proc.stdout}"
+    assert "P6: RED" in proc.stdout
+
+
+# ---- PV6 ----------------------------------------------------------------------------------------
+
+def test_pv6_period_view_agrees_with_the_receivables_detail(node):
+    _seed_books(bind(node, regulated=False))
+    # period_view and invoices() both replay the same node — the statement AR ties to the detail,
+    # and both derive from the same objects: no app cache, no second GL store
+    pv = bind(node, regulated=False).period_view()
+    inv = bind(node, regulated=False).invoices()
+    assert pv["trial_balance"]["accounts_receivable"] == "1600.0"
+    assert inv["total"] == 2

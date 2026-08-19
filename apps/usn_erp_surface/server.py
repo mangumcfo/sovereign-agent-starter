@@ -300,6 +300,36 @@ def ar_aging() -> Tuple[Response, int]:
         return _fail(exc, 500)
 
 
+@app.get("/api/period-view")
+def period_view() -> Tuple[Response, int]:
+    """Trial balance + income statement + balance sheet, projected from node state on every call via
+    the sealed financials surface. A computed view — no stored GL. Full GAAP-shaped books; the node
+    moves no value (money-path OFF)."""
+    try:
+        return _ok(_bound().period_view())
+    except SurfaceError as exc:
+        return _fail(exc, 409)
+    except Exception as exc:  # noqa: BLE001
+        return _fail(exc, 500)
+
+
+@app.post("/api/close-period")
+def close_period() -> Tuple[Response, int]:
+    """Open a period-close intent. Under the regulated posture it is held at the human gate — nothing
+    is written until you approve it; a denial writes nothing. On approval the close is persisted
+    through the node's own obligation ledger. This surface moves no money and files nothing."""
+    b = _body()
+    try:
+        nb = _bound()
+        with _LOCK:
+            res = nb.close_period(period_id=str(b.get("period_id", "")).strip())
+        return _ok(dict(res, gate=nb.gate_state()))
+    except SurfaceError as exc:
+        return _fail(exc)
+    except Exception as exc:  # noqa: BLE001
+        return _fail(exc, 500)
+
+
 # ==================================================================================================
 # 4 · The gate
 # ==================================================================================================
