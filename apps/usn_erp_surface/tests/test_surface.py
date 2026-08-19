@@ -1103,3 +1103,148 @@ def test_pv6_period_view_agrees_with_the_receivables_detail(node):
     inv = bind(node, regulated=False).invoices()
     assert pv["trial_balance"]["accounts_receivable"] == "1600.0"
     assert inv["total"] == 2
+
+
+# ==================================================================================================
+# A1–A6 · Audit package — accountant/audit evidence from node state only
+#
+#   A1  completeness: every section present, counts tie to node state
+#   A2  determinism: same state → same hash (incl. across restart); state change → new hash
+#   A3  classification honest: open invoices ≠ earned cash; tax memos not filings; no completed
+#       statutory act anywhere in the package
+#   A4  no money-path verbs reachable; package self-verifies via the sealed verifier
+#   A5  kill-grep bites on injected violations into the new path
+#   A6  BAR updated; prior rows GREEN (the whole suite)
+# ==================================================================================================
+
+def _seed_audit_books(nb):
+    _seed_books(nb)                                   # cash 2400 + open inv 1000 + deferred 600 + tax note
+    sub = nb.close_period(period_id="2026-Q3")
+    if sub["gated"]:
+        nb.dispose(sub["req_id"], approve=True)
+
+
+# ---- A1 -----------------------------------------------------------------------------------------
+
+def test_a1_package_is_complete_and_ties_to_node_state(node):
+    nb = bind(node, regulated=False)
+    _seed_audit_books(nb)
+    pkg, digest = bind(node, regulated=False).audit_package()
+
+    s = pkg["sections"]
+    for section in ("revenue_events", "invoices", "ar_aging", "tax_memos", "obligations",
+                    "period_closes", "statements", "classification"):
+        assert section in s, f"package is missing section '{section}'"
+    assert pkg["counts"]["revenue_events"] == 1
+    assert pkg["counts"]["invoices"] == 2
+    assert pkg["counts"]["tax_memos"] == 1
+    assert pkg["counts"]["period_closes"] == 1
+    assert s["period_closes"][0]["period"] == "2026-Q3" and s["period_closes"][0]["locked"] is True
+    assert s["statements"]["nets_to_zero"] is True
+    assert s["obligations"]["chain_valid"] is True
+    assert len(digest) == 64
+    # the compliance core is audit-ready and every receipted check passed
+    assert pkg["compliance_core"]["ready"] is True
+    assert all(r["passed"] for r in pkg["checks"])
+
+
+# ---- A2 -----------------------------------------------------------------------------------------
+
+def test_a2_package_is_deterministic_and_tracks_state(node):
+    nb = bind(node, regulated=False)
+    _seed_audit_books(nb)
+    _, h1 = nb.audit_package()
+    _, h2 = nb.audit_package()                          # same binding, same state
+    _, h3 = bind(node, regulated=False).audit_package() # fresh binding (restart)
+    assert h1 == h2 == h3, "unchanged node state must re-export the identical package hash"
+    nb.record_income(work_ref="new-job", amount=10)
+    _, h4 = nb.audit_package()
+    assert h4 != h1, "a state change must change the package hash"
+
+
+def test_a2_bytes_are_the_artifact(node):
+    nb = bind(node, regulated=False)
+    _seed_audit_books(nb)
+    b1, d1 = nb.audit_package_bytes()
+    b2, d2 = bind(node, regulated=False).audit_package_bytes()
+    assert b1 == b2 and d1 == d2, "the on-disk bytes must be byte-identical on re-export"
+
+
+# ---- A3 -----------------------------------------------------------------------------------------
+
+def test_a3_classification_honest_in_the_package(node):
+    nb = bind(node, regulated=False)
+    _seed_audit_books(nb)
+    pkg, _ = nb.audit_package()
+    cl = pkg["sections"]["classification"]
+    # open invoices are earned billings (AR), never cash; deferred stays out of revenue
+    assert cl["cash_income"] == 2400.0
+    assert cl["invoice_receivable"] == 1000.0
+    assert cl["deferred_unearned"] == 600.0
+    stmts = pkg["sections"]["statements"]
+    assert stmts["income_statement"]["revenue"] == "3400.0"   # cash + earned, NOT deferred
+    # the receipted classification check passed, and its claim is in the package itself
+    check = next(r for r in pkg["checks"] if r["check"] == "classification_honest")
+    assert check["passed"] is True
+
+
+def test_a3_tax_memos_are_records_not_filings(node):
+    nb = bind(node, regulated=False)
+    _seed_audit_books(nb)
+    pkg, _ = nb.audit_package()
+    assert "not filings" in pkg["declarations"]["tax_memos"]
+    check = next(r for r in pkg["checks"] if r["check"] == "no_statutory_act_recorded")
+    assert check["passed"] is True, "the package must prove the node filed nothing"
+    # and no completed statutory act appears anywhere in the canonical package text
+    import json as _json
+    text = _json.dumps(pkg, default=str).lower()
+    for verb in ("return_filed", "tax_paid", "remitted_to", "submitted_return"):
+        assert verb not in text, f"package text carries a completed statutory act: {verb}"
+
+
+# ---- A4 -----------------------------------------------------------------------------------------
+
+def test_a4_package_self_verifies_via_the_sealed_verifier(node):
+    from sovereign_agent.compliance.audit_package import verify_audit_package
+    nb = bind(node, regulated=False)
+    _seed_audit_books(nb)
+    pkg, _ = nb.audit_package()
+    core = pkg["compliance_core"]
+    assert verify_audit_package(core) is True
+    tampered = dict(core, reports=[dict(core["reports"][0], ready=False)])
+    assert verify_audit_package(tampered) is False, "a tampered core must fail verification"
+
+
+def test_a4_no_money_path_verb_on_the_binding_still(node):
+    nb = bind(node, regulated=False)
+    forbidden = ("pay_", "remit", "disburse", "settle_pay", "collect", "wire_", "bank_transfer")
+    for name in dir(nb):
+        if not name.startswith("__"):
+            assert not any(f in name.lower() for f in forbidden), name
+
+
+# ---- A5 -----------------------------------------------------------------------------------------
+
+@pytest.mark.parametrize("label,inject", [
+    ("filing emission", "def file_return(pkg):\n    return pkg\n"),
+    ("remit in package path", "def _send(pkg):\n    remit = True\n    return remit\n"),
+    ("package egress", "import requests\ndef _upload(pkg):\n    return requests.post('http://x/pkg')\n"),
+])
+def test_a5_killgrep_catches_audit_package_violations(tmp_path, label, inject):
+    copy = tmp_path / "app"
+    shutil.copytree(APP_DIR, copy, ignore=shutil.ignore_patterns("__pycache__", "tests"))
+    target = copy / "node_binding.py"
+    target.write_text(target.read_text() + "\n\n" + textwrap.dedent(inject), encoding="utf-8")
+    proc = _run_killgrep(str(copy))
+    assert proc.returncode == 1, f"kill-grep stayed GREEN with '{label}' injected:\n{proc.stdout}"
+
+
+# ---- A6 (plus the AA fold: closed periods surface in the period view) -----------------------------
+
+def test_a6_closed_periods_surface_in_the_period_view(node):
+    nb = bind(node, regulated=False)
+    _seed_audit_books(nb)
+    pv = bind(node, regulated=False).period_view()
+    assert pv["closed_periods"] == [dict(pv["closed_periods"][0])]  # shape sanity
+    assert pv["closed_periods"][0]["period"] == "2026-Q3"
+    assert pv["closed_periods"][0]["locked"] is True

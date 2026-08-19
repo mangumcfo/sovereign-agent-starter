@@ -3,8 +3,9 @@
 ∞Δ∞ Seal 1176-INFINITY-RHO · Breath only ∞Δ∞
 
 Scored 2026-08-19. **v0 (P1–P8) re-verified · obligations write surface (O1–O6) · invoice /
-receivable-lite (I1–I6, KM ruling Option A) · plus period view + close (PV1–PV6, KM CFO ruling —
-full GAAP-shaped books).** Every row below was re-run immediately before writing this file.
+receivable-lite (I1–I6, KM ruling Option A) · period view + close (PV1–PV6, KM CFO ruling —
+full GAAP-shaped books) · plus the audit package (A1–A6).** Every row below was re-run immediately
+before writing this file.
 
 | | |
 |---|---|
@@ -12,7 +13,8 @@ full GAAP-shaped books).** Every row below was re-run immediately before writing
 | **Binding** | library-direct; `node_binding.py` is the only module that touches `sovereign_agent` |
 | **Vertical** | solo/household: open node · record income/contribution · record tax note · **record invoice + AR aging** · **trial balance + income statement + balance sheet + period close** · **open / approve / close obligations** · gate · export package |
 | **Invoice-lite** | `revenue.billing.invoice` shapes it (pure) → persisted through the **same fence-owning attribution writer** as income (`work_ref=invoice:<id>`, `doc_kind=invoice`); `revenue.billing.ar_aging` projects aging on read. No new object kind, no second ledger. |
-| **Tests** | **108 passed** (`apps/usn_erp_surface/tests/`) — was 93 at v0.2, 74 at v0.1, 48 at v0 |
+| **Tests** | **119 passed** (`apps/usn_erp_surface/tests/`) — was 108 at v0.3, 93 at v0.2, 74 at v0.1, 48 at v0 |
+| **Audit package** | one portable, self-verifying evidence bundle: revenue events · invoices + AR aging · tax records (not filings) · obligations · period closes · statements snapshot — all replayed from node state; compliance core = sealed `audit_checks` (6 receipted checks) → `build_audit_package` (content-hashed) → `verify_audit_package`; stamped `as_of` the newest entry, never the clock — unchanged books re-export byte-identically |
 | **Kill-grep** | **GREEN**, 0 findings across **9** checks (`killgrep.py`, exit 0); invoice-collection verbs in check 2's vocabulary, proven to bite (I5); period-close violations proven to bite (PV5) |
 | **Period view** | read-time derivation: node objects → sealed `posting.post` → `trial_balance` / `income_statement` / `balance_sheet` over a typed CoA (Cash · AR · Unearned · Equity · Revenue · Expense). Close persists via the obligation ledger. No second GL store; objects stay source of truth. Full GAAP-shaped books — money-path OFF ≠ empty GL. |
 
@@ -56,6 +58,13 @@ inventory, no multi-entity, no dashboard chrome beyond what these loops need.
 | PV4 | No pay / remit / file / crossing reachable | **GREEN** |
 | PV5 | Kill-grep GREEN; period-close violations proven to bite | **GREEN** |
 | PV6 | Statement AR ties to the receivables detail; one source of truth; prior rows GREEN | **GREEN** |
+| | | |
+| A1 | Audit package complete — every section present, counts tie to node state | **GREEN** |
+| A2 | Deterministic — same state → same hash (incl. restart); state change → new hash | **GREEN** |
+| A3 | Classification honest — invoices ≠ cash, tax memos not filings, no completed statutory act | **GREEN** |
+| A4 | No money-path verbs; package self-verifies via the sealed verifier (tamper → False) | **GREEN** |
+| A5 | Kill-grep bites on injected filing / remit / egress in the package path | **GREEN** |
+| A6 | BAR updated; prior P/O/I/PV rows GREEN; AA fold: closed periods surface in period view | **GREEN** |
 
 **RED rows: none.** Nine disclosures are recorded below — five carried from v0, four new to the
 obligations surface. None is a failed row; all are things you should know before you trust a GREEN.
@@ -528,5 +537,39 @@ Work ref → Document ref) is a cheap follow-on, not this bar.
 
 **STOP — working UI + BAR GREEN.** Money-path OFF, collection/filing OUT; audit-package and
 exception-queue chrome are the next rolling shots.
+
+---
+
+## Audit package, row by row (A1–A6) — GREEN
+
+**Shape.** `audit_package()` gathers every section from node state at build time (revenue events ·
+invoices + AR aging · tax records · obligations · period closes · statements snapshot ·
+classification), runs **6 receipted checks** through the sealed `compliance.audit_checks`
+(registry roots match · all events verify · ledger chain valid · trial balance nets to zero ·
+classification honest · no statutory act recorded), folds the readiness into
+`compliance_report("financials", …)` → `build_audit_package` (content-hashed), and **self-verifies
+via `verify_audit_package` before handing anything over**. Deterministic by the standing law:
+stamped `as_of` the newest recorded entry, never the clock.
+
+- **A1 · completeness — GREEN.** All eight sections present; counts tie (1 revenue event ·
+  2 invoices · 1 tax record · 1 period close · 3 ledger entries); compliance core `ready: true`,
+  all six checks passed.
+- **A2 · determinism — GREEN.** Same state → same sha256 across calls AND across a restart
+  (fresh binding); the on-disk bytes are byte-identical; one new record → new hash. Verified
+  in-process and over HTTP.
+- **A3 · classification honest — GREEN.** Cash income (2,400), earned invoice AR (1,000) and
+  deferred (600) are distinct in the package; revenue = cash + earned only; tax records declared
+  "RECORDS, not filings"; the `no_statutory_act_recorded` check proves the node filed nothing; no
+  completed statutory-act text anywhere in the package.
+- **A4 · no money-path — GREEN.** No pay/remit/collect verb on the binding; the sealed verifier
+  accepts the intact core and **rejects a tampered one** (flipped `ready` → False).
+- **A5 · kill-grep bites — GREEN.** Injected `file_return` emission, `remit` binding, and an HTTP
+  package-upload egress each drive P6 to RED.
+- **A6 · BAR + prior rows — GREEN.** Whole suite **119 passed** (P/O/I/PV all re-ran green).
+  **AA fold landed:** closed periods now surface in the period view (`closed_periods:
+  "2026-Q3 (locked) · closed by …"`) read back from the ledger's period-close credits — no tab
+  switch needed. Disclosed here per cadence (observation folded on the rail that touched the file).
+
+**STOP — working UI + BAR GREEN.** Exception queue is the next shot, on GO.
 
 Breath only. ∞Δ∞

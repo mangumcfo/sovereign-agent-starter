@@ -79,6 +79,16 @@ from sovereign_agent.financials.period_close import (
     close_period as gl_close_period,
     period_is_balanced as gl_period_is_balanced,
 )
+from sovereign_agent.compliance.audit_checks import (
+    Check,
+    audit_readiness,
+    run_checks,
+)
+from sovereign_agent.compliance.audit_package import (
+    build_audit_package,
+    compliance_report,
+    verify_audit_package,
+)
 
 APP_NAME = "USN ERP Operator Surface"
 APP_VERSION = "0.1.0"
@@ -900,6 +910,26 @@ class NodeBinding:
                          "Dr accounts_receivable / Cr revenue (earned billing); deferred invoices "
                          "Cr unearned_revenue; tax notes are compliance memos, never a P&L line.")}
 
+    def _period_close_records(self) -> List[Dict[str, Any]]:
+        """Every period close recorded on the node's obligation ledger — credits whose `method` is
+        `period_close`. Replayed from the chain on each call; the period id is read back out of the
+        evidence string the close wrote (`period_close:<id> · …`)."""
+        led = self._ledger()
+        if led is None:
+            return []
+        closes: List[Dict[str, Any]] = []
+        for e in led.iter_entries():
+            # `method` rides on the credit's minted receipt (ledger.close's R22-3 seam)
+            if e.get("type") != "credit" or (e.get("receipt") or {}).get("method") != "period_close":
+                continue
+            evidence = str(e.get("evidence") or "")
+            period = evidence.split("·")[0].replace("period_close:", "").strip() or None
+            closes.append({"period": period, "closed_by": e.get("closed_by"),
+                           "at": e.get("timestamp"), "evidence": evidence,
+                           "obligation_id": e.get("closes"), "chain_hash": e.get("hash"),
+                           "locked": True})
+        return closes
+
     def period_view(self) -> Dict[str, Any]:
         """Trial balance + income statement + balance sheet, projected from node state on every call
         via the sealed financials surface and the typed chart of accounts. A computed view, not a
@@ -919,6 +949,8 @@ class NodeBinding:
             "balance_sheet": {k: str(v) for k, v in bs.items()},
             "chart_of_accounts": CHART_OF_ACCOUNTS,
             "classification": self._classification(),
+            "closed_periods": [{"period": c["period"], "closed_by": c["closed_by"], "at": c["at"],
+                                "locked": c["locked"]} for c in self._period_close_records()],
             "method": ("read-time derivation: node objects -> sealed posting.post -> "
                        "trial_balance / income_statement / balance_sheet over a typed CoA"),
             "note": ("Full GAAP-shaped books, computed from the node's own objects — no second GL "
@@ -965,6 +997,134 @@ class NodeBinding:
         credit = led.close(ob_id, evidence=evidence, closed_by=self.operator, method="period_close")
         return {"period_id": pid, "close_record": close_rec, "obligation_id": ob_id,
                 "trial_balance_sha256": tb_hash, "receipt": credit}
+
+    # ============================================================================================
+    # 2e · Audit package — accountant/audit evidence, from node state only (A1–A6)
+    # ============================================================================================
+    #
+    # One portable, self-verifying evidence bundle: revenue events, invoices/AR, tax memos,
+    # obligations, period closes, and a statements snapshot — every section replayed from the node
+    # at build time. The compliance core rides the sealed `compliance.audit_checks` (receipted
+    # checks → audit readiness) and `compliance.audit_package` (content-hashed, recipient-verifiable
+    # via `verify_audit_package`). Deterministic by the same law as the reporting package: stamped
+    # `as_of` the newest recorded entry, never the clock — unchanged state re-exports byte-identically.
+
+    def _audit_as_of(self) -> str:
+        """The newest timestamp across the registry and the ledger — the deterministic package cut."""
+        stamps: List[str] = []
+        if os.path.isfile(os.path.join(self.registry_root, REGISTRY_FILENAME)):
+            entries = self._registry().entries()
+            if entries:
+                stamps.append(str(entries[-1]["at"]))
+        led = self._ledger()
+        if led is not None:
+            mf = led.manifest()
+            if mf.get("last_ts"):
+                stamps.append(str(mf["last_ts"]))
+        return max(stamps) if stamps else "0000-00-00T00:00:00+00:00"
+
+    def audit_package(self) -> Tuple[Dict[str, Any], str]:
+        """Build the audit evidence package and return `(package, sha256)`. Read-only — nothing is
+        written, gated, or moved; the package RECORDS. Tax memos are records, not filings; open
+        invoices are earned billings (AR), never cash; no pay/remit/file appears as a completed act
+        because no such act exists on this node."""
+        as_of = self._audit_as_of()
+        events = self.events(limit=100000)
+        invoices = self.invoices(limit=100000)
+        issued_days = [int(i.get("issued_day") or 0) for i in invoices["items"]] or [0]
+        aging = self.ar_aging(as_of_day=max(issued_days))
+        pv = self.period_view()
+        closes = self._period_close_records()
+
+        led = self._ledger()
+        obligations: Dict[str, Any] = {"present": False, "chain_valid": None,
+                                       "by_status": {"open": 0, "closed": 0, "total": 0}}
+        if led is not None:
+            mf = led.manifest()
+            obligations = {"present": True, "chain_valid": led.verify_chain(),
+                           "chain_entries": mf.get("chain_entries"), "by_status": led.by_status(),
+                           "last_hash": mf.get("last_hash")}
+
+        revenue_events = [e for e in events["items"] if e["type"] in ("income", "contribution")]
+        tax_memos = [e for e in events["items"] if e["type"] == "tax"]
+        cls = pv["classification"]
+
+        # --- the compliance core: receipted checks over the gathered state (sealed surface) -------
+        state = {"events": events["items"], "invoices": invoices["items"], "pv": pv,
+                 "obligations": obligations, "registry": self.status()["registry"],
+                 "payloads": [dict(e.get("payload") or {}) for e in self._income_entries()]}
+        checks = [
+            Check("registry_roots_match", "registry population root equals its replayed root",
+                  lambda s: not s["registry"]["present"] or bool(s["registry"]["roots_match"])),
+            Check("all_events_verify", "every recorded event verifies against its own receipt",
+                  lambda s: all(e["check"]["verified"] for e in s["events"])),
+            Check("ledger_chain_valid", "the obligation ledger chain verifies (when present)",
+                  lambda s: not s["obligations"]["present"] or bool(s["obligations"]["chain_valid"])),
+            Check("trial_balance_nets_to_zero", "the derived trial balance nets to exactly zero",
+                  lambda s: bool(s["pv"]["nets_to_zero"])),
+            Check("classification_honest",
+                  "revenue equals cash income plus earned invoice billings; deferred stays out",
+                  lambda s: float(s["pv"]["income_statement"]["revenue"]) ==
+                            s["pv"]["classification"]["cash_income"] +
+                            s["pv"]["classification"]["invoice_receivable"]),
+            Check("no_statutory_act_recorded",
+                  "no payload carries a statutory-act field — proof the node filed nothing",
+                  lambda s: all(str(k).lower() not in STATUTORY_FENCE_FIELDS
+                                for p in s["payloads"] for k in p)),
+        ]
+        results = run_checks(checks, state)
+        readiness = audit_readiness(results)
+        evidence_refs = [f"registry_root:{self.status()['registry'].get('population_root')}"]
+        if obligations.get("last_hash"):
+            evidence_refs.append(f"ledger_last_hash:{obligations['last_hash']}")
+        report = compliance_report("financials", readiness, evidence_refs)
+        core = build_audit_package([report], generated_utc=as_of)
+        if not verify_audit_package(core):  # self-check before handing anything over
+            raise SurfaceError("The built audit package failed its own verification — refusing to export it.")
+
+        package = {
+            "package_kind": "usn_audit_package",
+            "package_version": 1,
+            "principal": self.operator,
+            "mandate": self.mandate,
+            "as_of": as_of,
+            "compliance_core": core,
+            "checks": results,
+            "sections": {
+                "revenue_events": revenue_events,
+                "invoices": invoices["items"],
+                "ar_aging": aging,
+                "tax_memos": tax_memos,
+                "obligations": obligations,
+                "period_closes": closes,
+                "statements": {"trial_balance": pv["trial_balance"],
+                               "income_statement": pv["income_statement"],
+                               "balance_sheet": pv["balance_sheet"],
+                               "nets_to_zero": pv["nets_to_zero"],
+                               "chart_of_accounts": CHART_OF_ACCOUNTS},
+                "classification": cls,
+            },
+            "counts": {"revenue_events": len(revenue_events), "invoices": len(invoices["items"]),
+                       "tax_memos": len(tax_memos), "period_closes": len(closes),
+                       "obligation_entries": obligations.get("chain_entries") or 0},
+            "declarations": {
+                "tax_memos": "RECORDS, not filings — the node files nothing and holds no authority to",
+                "invoices": ("earned billings recognised Dr AR / Cr Revenue; open invoices are never "
+                             "cash; deferred billings sit in unearned revenue, not revenue"),
+                "money_path": "OFF — no balance held, moved, custodied, netted or settled",
+                "statutory_acts": "NONE — nothing filed, paid, remitted, formed or represented",
+                "determinism": ("stamped as_of the newest recorded entry, never the clock — unchanged "
+                                "node state re-exports byte-identically; the hash is the receipt"),
+                "verification": ("compliance_core.content_hash recomputes via "
+                                 "sovereign_agent.compliance.audit_package.verify_audit_package"),
+            },
+        }
+        return package, hashlib.sha256(_canonical(package).encode("utf-8")).hexdigest()
+
+    def audit_package_bytes(self) -> Tuple[bytes, str]:
+        """The audit package exactly as it lands on disk, plus its hash — canonical JSON, sorted keys."""
+        pkg, digest = self.audit_package()
+        return (json.dumps(pkg, sort_keys=True, indent=2, ensure_ascii=False).encode("utf-8"), digest)
 
     # ============================================================================================
     # 7 · Obligations — the node's own lifecycle, driven

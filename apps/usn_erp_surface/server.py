@@ -313,6 +313,30 @@ def period_view() -> Tuple[Response, int]:
         return _fail(exc, 500)
 
 
+@app.get("/api/audit-package")
+def audit_package() -> Tuple[Response, int]:
+    """Preview the audit evidence package plus its hash. Read-only: the package RECORDS — tax memos
+    are records not filings, invoices are earned billings never cash, and no pay/remit/file appears
+    as a completed act because no such act exists on this node."""
+    try:
+        pkg, digest = _bound().audit_package()
+        return _ok({"sha256": digest, "package": pkg})
+    except SurfaceError as exc:
+        return _fail(exc, 409)
+    except Exception as exc:  # noqa: BLE001
+        return _fail(exc, 500)
+
+
+@app.get("/api/audit-package/download")
+def audit_package_download() -> Response:
+    """The audit package as a file — byte-identical on re-export against unchanged node state."""
+    payload, digest = _bound().audit_package_bytes()
+    return Response(payload, mimetype="application/json", headers={
+        "Content-Disposition": f'attachment; filename="usn-audit-package-{digest[:12]}.json"',
+        "X-Package-SHA256": digest,
+    })
+
+
 @app.post("/api/close-period")
 def close_period() -> Tuple[Response, int]:
     """Open a period-close intent. Under the regulated posture it is held at the human gate — nothing

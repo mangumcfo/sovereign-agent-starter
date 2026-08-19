@@ -470,6 +470,19 @@ pre{background:var(--surface-1);border:1px solid var(--ring);border-radius:9px;p
             <span class="mono muted" style="font-size:.72rem" id="pkgSha"></span>
           </div>
           <pre id="pkgOut" hidden></pre>
+          <hr style="border:none;border-top:1px solid var(--border);margin:.7rem 0">
+          <h2 style="font-size:.9rem">Audit package</h2>
+          <p class="hint">
+            The accountant/audit evidence bundle: revenue events, invoices &amp; AR aging, tax
+            records (records, not filings), obligations, period closes, and a statements snapshot —
+            all from node state, self-verifying, deterministic. Same books → same hash.
+          </p>
+          <div class="actions">
+            <button id="btnAudit">Build audit package</button>
+            <button class="primary" id="btnAuditDl" disabled>Download</button>
+            <span class="mono muted" style="font-size:.72rem" id="auditSha"></span>
+          </div>
+          <div class="sub" id="auditSummary"></div>
         </div>
       </div>
     </div>
@@ -830,6 +843,10 @@ async function loadPeriodView() {
     ["Equity", bs.equity], ["Net income", bs.net_income], ["L + E + NI", bs.total_liabilities_and_equity]]));
   s.appendChild(box("Classification", [["Cash income", cl.cash_income], ["Invoice receivable (earned)", cl.invoice_receivable],
     ["Deferred (unearned)", cl.deferred_unearned], ["Tax notes (memo, not P&L)", cl.tax_notes]]));
+  const cp = pv.closed_periods || [];
+  if (cp.length) {
+    s.appendChild(box("Closed periods", cp.map(p => [p.period + " (locked)", "closed by " + p.closed_by])));
+  }
   const tb = $("pvTbBody"); tb.innerHTML = "";
   Object.entries(pv.trial_balance).forEach(([acct, net]) => {
     const tr = el("tr");
@@ -1140,6 +1157,25 @@ $("btnPkg").onclick = async () => {
   } catch (err) { toast("err", "Could not build the package", err.message); }
 };
 $("btnDl").onclick = () => { window.location = "/api/package/download"; };
+
+$("btnAudit").onclick = async () => {
+  const btn = $("btnAudit");
+  btn.disabled = true;
+  try {
+    const r = await api("/api/audit-package");
+    $("auditSha").textContent = "sha256 " + r.sha256.slice(0, 20) + "…";
+    const c = r.package.counts, ready = r.package.compliance_core.ready;
+    $("auditSummary").textContent =
+      (ready ? "Audit-ready ✓" : "NOT audit-ready — see gaps") +
+      " · " + c.revenue_events + " revenue events · " + c.invoices + " invoices · " +
+      c.tax_memos + " tax records · " + c.period_closes + " period closes · as of " +
+      (r.package.as_of || "").slice(0, 19);
+    $("btnAuditDl").disabled = false;
+    toast("ok", "Audit package built", "Deterministic — unchanged books rebuild this exact hash.");
+  } catch (err) { toast("err", "Refused", err.message); }
+  finally { btn.disabled = false; }
+};
+$("btnAuditDl").onclick = () => { window.location = "/api/audit-package/download"; };
 </script>
 </body>
 </html>
