@@ -1128,6 +1128,64 @@ class NodeBinding:
         return (json.dumps(pkg, sort_keys=True, indent=2, ensure_ascii=False).encode("utf-8"), digest)
 
     # ============================================================================================
+    # 2g · Operator status home (v0.6) — ONE read-only screen composing ONLY existing reads.
+    #      No new derivation, no new kernel, no new store, no write path, no dismiss. Every figure
+    #      below is lifted verbatim from a surface that already carries its own bar rows.
+    # ============================================================================================
+
+    def status_home(self) -> Dict[str, Any]:
+        """The solo operator's home screen: what needs attention, what's pending approval, where
+        the period stands, and whether the books are audit-ready — composed from the existing
+        exception-queue, period-view, obligations and audit-package reads. Enterprise labels;
+        read-only; a figure changes only when the underlying governed state does."""
+        q = self.exceptions_queue()
+        pv = self.period_view()
+        pkg, pkg_hash = self.audit_package()          # the EXISTING package path — no new build
+        gate = self.gate_state()
+
+        holds = [i for i in q["items"] if i["kind"] == "hold"]
+        denies = [d for d in gate.get("disposed", []) if d.get("status") == "denied"]
+        core = pkg["compliance_core"]
+        gaps = [r for r in pkg["checks"] if not r["passed"]]
+
+        return {
+            "open_exceptions": {
+                "label": "Open exceptions",
+                "open": q["by_status"]["pending_gate"] + q["by_status"]["policy_gap"],
+                "policy_gaps": q["by_status"]["policy_gap"],
+                "needs_approval": q["by_status"]["pending_gate"],
+                "recorded": q["by_status"]["recorded"],
+                "detail": "exception queue panel",
+            },
+            "approvals": {
+                "label": "Approvals",
+                "pending_now": gate["pending_count"],
+                "material_awaiting_gate": len(holds),
+                "denied_this_session": len(denies),
+                "session_scoped_note": "pending and denied counts live in this process only",
+                "detail": "gate + obligations panels",
+            },
+            "period": {
+                "label": "Period status",
+                "open_postings": pv["posting_count"],
+                "in_balance": pv["nets_to_zero"],
+                "closed_periods": pv["closed_periods"],
+                "detail": "period view panel",
+            },
+            "audit_readiness": {
+                "label": "Audit readiness",
+                "ready": bool(core["ready"]),
+                "checks_passed": sum(1 for r in pkg["checks"] if r["passed"]),
+                "checks_total": len(pkg["checks"]),
+                "gaps": [g["check"] for g in gaps],
+                "package_sha256": pkg_hash,
+                "detail": "audit package (existing readiness — same verdict, same path)",
+            },
+            "note": ("One screen, read-only, composed from the existing panels — nothing here can "
+                     "be cleared or acted on from the home; act on the panel each tile names."),
+        }
+
+    # ============================================================================================
     # 2f · Exception queue — pending deviations, read from node state, classified by the sealed
     #      router (E1–E6). READ-ONLY: this panel clears nothing. A row leaves the queue only when
     #      the underlying governed state changes through an EXISTING gated verb (approve a draft,

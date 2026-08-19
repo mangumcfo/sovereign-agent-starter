@@ -313,6 +313,18 @@ def period_view() -> Tuple[Response, int]:
         return _fail(exc, 500)
 
 
+@app.get("/api/home")
+def status_home() -> Tuple[Response, int]:
+    """The operator status home — one read-only screen composing the existing reads (exceptions,
+    approvals, period, audit readiness). Nothing can be acted on or cleared from here."""
+    try:
+        return _ok(_bound().status_home())
+    except SurfaceError as exc:
+        return _fail(exc, 409)
+    except Exception as exc:  # noqa: BLE001
+        return _fail(exc, 500)
+
+
 @app.get("/api/exceptions")
 def exceptions() -> Tuple[Response, int]:
     """The exception queue — pending deviations derived from node state, classified by the sealed

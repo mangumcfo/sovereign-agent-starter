@@ -13,7 +13,8 @@ before writing this file.
 | **Binding** | library-direct; `node_binding.py` is the only module that touches `sovereign_agent` |
 | **Vertical** | solo/household: open node · record income/contribution · record tax note · **record invoice + AR aging** · **trial balance + income statement + balance sheet + period close** · **open / approve / close obligations** · gate · export package |
 | **Invoice-lite** | `revenue.billing.invoice` shapes it (pure) → persisted through the **same fence-owning attribution writer** as income (`work_ref=invoice:<id>`, `doc_kind=invoice`); `revenue.billing.ar_aging` projects aging on read. No new object kind, no second ledger. |
-| **Tests** | **131 passed** (`apps/usn_erp_surface/tests/`) — was 119 at v0.4, 108 at v0.3, 93 at v0.2, 74 at v0.1, 48 at v0 |
+| **Tests** | **137 passed** (`apps/usn_erp_surface/tests/`) — was 131 at v0.5, 119 at v0.4, 108 at v0.3, 93 at v0.2, 74 at v0.1, 48 at v0 |
+| **Status home (v0.6)** | ONE read-only screen composing ONLY existing reads — open exceptions/policy gaps (exception queue) · approvals pending + material awaiting gate (gate/obligations) · period open/closed + in-balance (period view) · audit-ready Y/N (the existing package verdict, same sha, no new build path). Enterprise labels; no write path; tiles move only on governed change |
 | **Exception queue** | read-only projection of pending deviations (integrity breaches · failed verifies · standing vetoes · material-awaiting-gate · out-of-balance books · session pendings · locks), classified by the sealed `governance.exception.route_batch` — material + no covering gate = the router's own REFUSED (policy gap), never auto-resolved; **no dismiss exists**; a row leaves only when the governed state changes through an existing gated verb |
 | **Audit package** | one portable, self-verifying evidence bundle: revenue events · invoices + AR aging · tax records (not filings) · obligations · period closes · statements snapshot — all replayed from node state; compliance core = sealed `audit_checks` (6 receipted checks) → `build_audit_package` (content-hashed) → `verify_audit_package`; stamped `as_of` the newest entry, never the clock — unchanged books re-export byte-identically |
 | **Kill-grep** | **GREEN**, 0 findings across **9** checks (`killgrep.py`, exit 0); invoice-collection verbs in check 2's vocabulary, proven to bite (I5); period-close violations proven to bite (PV5) |
@@ -73,6 +74,13 @@ inventory, no multi-entity, no dashboard chrome beyond what these loops need.
 | E4 | No pay/remit/file/crossing reachable; the queue read writes nothing | **GREEN** |
 | E5 | Kill-grep bites on injected silent-clear verbs (dismiss/silent_clear/bulk_dismiss) | **GREEN** |
 | E6 | Queue rows tie to the panels that own the verbs; prior P/O/I/PV/A rows GREEN | **GREEN** |
+| | | |
+| H1 | Home composes ONLY existing reads; every figure equals its panel; survives restart | **GREEN** |
+| H2 | Home read writes nothing — registry + ledger bytes unchanged | **GREEN** |
+| H3 | Audit-ready Y/N is the existing package verdict (same path, same sha) — no new build path | **GREEN** |
+| H4 | Enterprise labels only; no kernel jargon leaks into the home payload | **GREEN** |
+| H5 | Kill-grep still bites silent-clear on the home build | **GREEN** |
+| H6 | Tiles move only on governed change (denied act changes nothing); prior rows GREEN | **GREEN** |
 
 **RED rows: none.** Nine disclosures are recorded below — five carried from v0, four new to the
 obligations surface. None is a failed row; all are things you should know before you trust a GREEN.
@@ -612,5 +620,29 @@ dismiss**; each row names the existing panel + gated verb that resolves it.
   **131 passed** (P/O/I/PV/A all re-ran green).
 
 **STOP — working UI + BAR GREEN.** Queue clears only through governed acts; next shot on GO.
+
+---
+
+## Operator status home, row by row (H1–H6) — GREEN
+
+**Shape.** `status_home()` is a pure composition of four existing reads: `exceptions_queue()`
+(open / policy-gap / needs-approval counts), `gate_state()` + the queue's hold rows (approvals
+pending, material awaiting the breath-gate, session denials — labeled session-scoped),
+`period_view()` (postings, in-balance, closed periods), and `audit_package()` (the existing
+readiness verdict + package sha — same path, no new build). One screen, enterprise labels,
+read-only: nothing can be acted on or cleared from the home; each tile names the panel that owns
+the verb.
+
+- **H1 — GREEN.** Every home figure equals the panel it names, from a fresh binding (restart).
+- **H2 — GREEN.** Registry and ledger bytes are byte-identical across a home read.
+- **H3 — GREEN.** `audit_readiness.ready` and the package sha equal the existing
+  `audit_package()` verdict exactly.
+- **H4 — GREEN.** Labels are "Open exceptions · Approvals · Period status · Audit readiness";
+  no kernel jargon (`doc_kind`, `work_ref`, `obl_open`) appears in the payload.
+- **H5 — GREEN.** Injected `dismiss_exception` still drives the kill-grep RED.
+- **H6 — GREEN.** A *denied* clear-veto moves no tile; only the approved, gated act does.
+  Whole suite **137 passed** (P/O/I/PV/A/E all re-ran green).
+
+**STOP — working UI + BAR GREEN.** Next shot on GO.
 
 Breath only. ∞Δ∞

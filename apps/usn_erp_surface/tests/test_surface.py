@@ -1399,3 +1399,77 @@ def test_e6_queue_agrees_with_the_panels_it_points_at(node):
     lock = next(i for i in q["items"] if i["kind"] == "lock")
     assert any(c["period"] == "2026-Q3" for c in nb.period_view()["closed_periods"])
     assert lock["status"] == "recorded"
+
+
+# ==================================================================================================
+# H1–H6 · Operator status home — ONE read-only screen composing ONLY existing reads
+# ==================================================================================================
+
+def test_h1_home_composes_existing_reads_and_survives_restart(node):
+    nb = bind(node, regulated=False)
+    _seed_exceptions(nb)                                  # material hold + veto + closed period
+    h = bind(node, regulated=True).status_home()          # fresh binding = restart
+    q = bind(node, regulated=True).exceptions_queue()
+    pv = bind(node, regulated=True).period_view()
+    # every home figure equals the panel it names — same reads, no new derivation
+    assert h["open_exceptions"]["open"] == q["by_status"]["pending_gate"] + q["by_status"]["policy_gap"]
+    assert h["open_exceptions"]["recorded"] == q["by_status"]["recorded"]
+    assert h["approvals"]["material_awaiting_gate"] == sum(1 for i in q["items"] if i["kind"] == "hold")
+    assert h["period"]["in_balance"] == pv["nets_to_zero"]
+    assert [c["period"] for c in h["period"]["closed_periods"]] == \
+           [c["period"] for c in pv["closed_periods"]]
+
+
+def test_h2_home_read_writes_nothing(node):
+    nb = bind(node, regulated=False)
+    _seed_exceptions(nb)
+    reg_log, led_log = objects_ndjson(node), os.path.join(node["ledger"], "obligations.ndjson")
+    before = (open(reg_log, "rb").read(), open(led_log, "rb").read())
+    bind(node, regulated=True).status_home()
+    assert (open(reg_log, "rb").read(), open(led_log, "rb").read()) == before
+
+
+def test_h3_audit_ready_is_the_existing_package_verdict(node):
+    nb = bind(node, regulated=False)
+    _seed_audit_books(nb)
+    h = nb.status_home()
+    pkg, digest = nb.audit_package()
+    assert h["audit_readiness"]["ready"] == pkg["compliance_core"]["ready"]
+    assert h["audit_readiness"]["package_sha256"] == digest      # same path, same verdict
+    assert h["audit_readiness"]["checks_total"] == len(pkg["checks"])
+
+
+def test_h4_home_uses_enterprise_labels_and_no_write_verbs(node):
+    nb = bind(node, regulated=False)
+    nb.record_income(work_ref="j", amount=10)
+    h = nb.status_home()
+    assert h["open_exceptions"]["label"] == "Open exceptions"
+    assert h["approvals"]["label"] == "Approvals"
+    assert h["period"]["label"] == "Period status"
+    assert h["audit_readiness"]["label"] == "Audit readiness"
+    # no kernel jargon leaks into the home payload's labels
+    text = json.dumps(h)
+    for jargon in ("doc_kind", "work_ref", "obl_open"):
+        assert jargon not in text, f"kernel jargon '{jargon}' leaked into the home screen"
+
+
+def test_h5_killgrep_still_bites_silent_clear_on_the_home_build(tmp_path):
+    copy = tmp_path / "app"
+    shutil.copytree(APP_DIR, copy, ignore=shutil.ignore_patterns("__pycache__", "tests"))
+    target = copy / "node_binding.py"
+    target.write_text(target.read_text() + "\n\ndef dismiss_exception(row):\n    return row\n",
+                      encoding="utf-8")
+    proc = _run_killgrep(str(copy))
+    assert proc.returncode == 1 and "P6: RED" in proc.stdout
+
+
+def test_h6_home_reflects_governed_change_only(node):
+    vetoed = _seed_exceptions(bind(node, regulated=False))
+    nb = bind(node, regulated=True)
+    before = nb.status_home()["open_exceptions"]["open"]
+    sub = nb.obligation_clear_veto(vetoed, role="cfo")
+    nb.dispose(sub["req_id"], approve=False, reason="hold")       # denial changes nothing
+    assert nb.status_home()["open_exceptions"]["open"] == before
+    sub2 = nb.obligation_clear_veto(vetoed, role="cfo")
+    nb.dispose(sub2["req_id"], approve=True)                       # the governed act moves the tile
+    assert nb.status_home()["open_exceptions"]["open"] == before - 1

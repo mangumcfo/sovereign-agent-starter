@@ -406,6 +406,15 @@ pre{background:var(--surface-1);border:1px solid var(--ring);border-radius:9px;p
           <p class="law" id="pvNote" style="margin-top:.5rem"></p>
         </div>
 
+        <div class="card" id="homeCard">
+          <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.6rem;flex-wrap:wrap">
+            <h2 style="margin:0">Status</h2>
+            <span class="muted" style="font-size:.72rem">one screen · read-only · act on the panel each tile names</span>
+          </div>
+          <div class="tiles" id="homeTiles"></div>
+          <div class="sub" id="homeDetail"></div>
+        </div>
+
         <div class="card" id="excCard">
           <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.6rem;flex-wrap:wrap">
             <h2 style="margin:0">Exception queue</h2>
@@ -588,7 +597,7 @@ $("btnOpen").onclick = async () => {
     });
     render();
     toast("ok", "Node open", STATUS.governance.posture);
-    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables(), loadPeriodView(), loadExceptions()]);
+    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables(), loadPeriodView(), loadExceptions(), loadHome()]);
   } catch (err) { toast("err", "Could not open the node", err.message); }
 };
 $("btnClose").onclick = async () => {
@@ -603,7 +612,7 @@ $("btnRefresh").onclick = () => refresh();
 async function refresh() {
   try {
     STATUS = await api("/api/status"); render();
-    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables(), loadPeriodView(), loadExceptions()]);
+    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables(), loadPeriodView(), loadExceptions(), loadHome()]);
   } catch (err) { toast("err", "Refresh failed", err.message); }
 }
 
@@ -887,6 +896,30 @@ $("btnClosePeriod").onclick = async () => {
   } catch (err) { toast("err", "Refused", err.message); }
   finally { btn.disabled = false; }
 };
+
+/* ---------- status home ---------- */
+async function loadHome() {
+  const h = await api("/api/home");
+  const t = $("homeTiles"); t.innerHTML = "";
+  const tile = (v, k, warn) => {
+    const c = el("div", "tile"); const val = el("div", "v", String(v));
+    if (warn) val.style.color = "var(--bad, #c92a2a)";
+    c.appendChild(val); c.appendChild(el("div", "k", k)); t.appendChild(c);
+  };
+  const ex = h.open_exceptions, ap = h.approvals, pd = h.period, ar = h.audit_readiness;
+  tile(ex.open, "Open exceptions", ex.open > 0);
+  tile(ex.policy_gaps, "Policy gaps", ex.policy_gaps > 0);
+  tile(ap.pending_now + ap.material_awaiting_gate, "Approvals pending", false);
+  tile(pd.in_balance ? "Yes" : "NO", "Books in balance", !pd.in_balance);
+  tile(pd.closed_periods.length, "Periods closed", false);
+  tile(ar.ready ? "Ready" : "NOT READY", "Audit readiness", !ar.ready);
+  $("homeDetail").textContent =
+    (ar.ready ? "Audit-ready (" + ar.checks_passed + "/" + ar.checks_total + " checks)" :
+      "Audit gaps: " + ar.gaps.join(", ")) +
+    " · " + pd.open_postings + " postings this period" +
+    (pd.closed_periods.length ? " · closed: " + pd.closed_periods.map(p => p.period).join(", ") : "") +
+    " · " + ap.denied_this_session + " denied this session (session-scoped)";
+}
 
 /* ---------- exception queue ---------- */
 const EXC_STATUS = { policy_gap: ["no", "POLICY GAP"], pending_gate: ["wait", "needs approval"], recorded: ["ok", "recorded"] };
