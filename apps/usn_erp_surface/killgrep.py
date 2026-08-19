@@ -27,8 +27,13 @@ The checks:
      name, which is how a money-path would first appear.
   5. UI IS SAME-ORIGIN — every `fetch` in the page targets a relative `/api/...` path; no external
      host, no CDN, no telemetry beacon.
-  6. THE APP OWNS NO STORE — `node_binding` names exactly one store class (`ObjectRegistry`) and one
-     read-only ledger class, both the node's own.
+  6. THE APP OWNS NO STORE — `node_binding` names only the node's own store classes
+     (`ObjectRegistry`, `ObligationLedger`).
+  7. NO OUT-OF-SCOPE LEDGER VERB — no `repair_chain` (which rewrites the append-only chain) and no
+     `reopen`. The scope boundary is machine-checked, not remembered.
+  8. NO REACH PAST THE LEDGER'S PUBLIC METHODS — no `_append` / `_entries` / `_get` / `_is_approved`
+     and friends. Those public methods are where AH-1, the evidence floor and the veto and
+     attestation guards actually live; going around them would write entries no guard ever saw.
 """
 
 from __future__ import annotations
@@ -71,6 +76,17 @@ CUSTODY_NAMES = {
     "net_position", "pool_balance", "clearing_balance", "ledger_balance", "running_balance",
     "account_balance",
 }
+
+#: Ledger verbs outside this version's scope. `repair_chain` is the sharp one — it rewrites the
+#: append-only chain, which is precisely the authority an operator surface must never hold. `reopen`
+#: is simply not in scope; forbidding it here is how the scope boundary stays machine-checked rather
+#: than remembered.
+OUT_OF_SCOPE_LEDGER_VERBS = {"repair_chain", "reopen"}
+
+#: The ledger's private internals. Reaching past its public methods would mean writing entries the
+#: ledger's own guards never saw — AH-1, the evidence floor, the veto and attestation rules all live
+#: in those public methods.
+LEDGER_PRIVATES = {"_append", "_entries", "_get", "_require", "_is_approved", "_is_closed"}
 
 #: Whole node modules this app must never reach into. Importing one is the violation, whatever it
 #: then does with it.
@@ -180,6 +196,18 @@ def run() -> int:
                 reds.append((name, lineno, "statutory-act-or-crossing",
                              f"imports '{mod}' — this vertical does not reach that surface at all"))
 
+    # 2b — out-of-scope ledger verbs and private ledger internals
+    for name, tree in trees.items():
+        for lineno, ident in list(_code_identifiers(tree)) + list(_imported_names(tree)):
+            if ident in OUT_OF_SCOPE_LEDGER_VERBS:
+                reds.append((name, lineno, "out-of-scope-ledger-verb",
+                             f"'{ident}' is outside this version's scope — chain repair and reopen "
+                             f"are not an operator-surface authority"))
+            if ident in LEDGER_PRIVATES:
+                reds.append((name, lineno, "ledger-private",
+                             f"'{ident}' reaches past the ledger's public methods, where AH-1, the "
+                             f"evidence floor and the veto guards live"))
+
     # 2 — forbidden identifiers, whether written in code OR pulled in by an import. An
     # `from … import open_crossing` never appears as a Name node until it is called, so the import
     # list is checked against the same vocabulary. (This gap was found by the negative test that
@@ -246,6 +274,8 @@ def run() -> int:
         ("5  UI speaks only to its own loopback API", "ui-egress"),
         ("5b UI is fully self-contained (no external asset)", "ui-external-asset"),
         ("6  only the node's own store classes are named", "second-ledger"),
+        ("7  no out-of-scope ledger verb (repair_chain / reopen)", "out-of-scope-ledger-verb"),
+        ("8  no reach past the ledger's public methods", "ledger-private"),
     ]
     for label, rule in checks:
         hits = [f for f in reds if f[2] == rule]

@@ -1,16 +1,17 @@
-# USN ERP Operator Surface v0 — BAR
+# USN ERP Operator Surface — BAR
 
 ∞Δ∞ Seal 1176-INFINITY-RHO · Breath only ∞Δ∞
 
-Scored 2026-08-19. Every row below was re-run immediately before writing this file.
+Scored 2026-08-19. **v0 (P1–P8) re-verified, plus the obligations write surface (O1–O6).**
+Every row below was re-run immediately before writing this file.
 
 | | |
 |---|---|
 | **Build** | `apps/usn_erp_surface/` — local web app, Flask on loopback, single self-contained page |
 | **Binding** | library-direct; `node_binding.py` is the only module that touches `sovereign_agent` |
-| **Vertical** | solo/household: open node · record income/contribution · record tax note · gate · export package · read-only panels |
-| **Tests** | **48 passed** (`apps/usn_erp_surface/tests/`) |
-| **Kill-grep** | **GREEN**, 0 findings (`apps/usn_erp_surface/killgrep.py`, exit 0) |
+| **Vertical** | solo/household: open node · record income/contribution · record tax note · **open / approve / close obligations** · gate · export package |
+| **Tests** | **74 passed** (`apps/usn_erp_surface/tests/`) — was 48 at v0 |
+| **Kill-grep** | **GREEN**, 0 findings across **9** checks (`killgrep.py`, exit 0) — was 7 checks |
 
 **This is not an ERP suite.** It is one operator loop, complete. No AR/AP, no payroll UI, no bank
 feeds, no inventory, no multi-entity, no dashboard chrome beyond what these loops need.
@@ -29,9 +30,16 @@ feeds, no inventory, no multi-entity, no dashboard chrome beyond what these loop
 | P6 | Kill-grep clean — and proven to bite | **GREEN** |
 | P7 | Read semantics mirror MCP; the UI is the product | **GREEN** |
 | P8 | Stranger test sentence is true of the build | **GREEN** |
+| | | |
+| O1 | Open obligation → pending at gate → nothing on disk until approve | **GREEN** |
+| O2 | Approve → durable on node ledger; survives restart; chain verifies | **GREEN** |
+| O3 | Deny → nothing written | **GREEN** |
+| O4 | Close only through existing APIs + gate as required | **GREEN** |
+| O5 | Kill-grep still GREEN; new paths covered | **GREEN** |
+| O6 | Read panel and write path agree on the same ledger files | **GREEN** |
 
-**RED rows: none.** Four disclosures are recorded below — none of them a failed row, all of them
-things you should know before you trust a GREEN.
+**RED rows: none.** Nine disclosures are recorded below — five carried from v0, four new to the
+obligations surface. None is a failed row; all are things you should know before you trust a GREEN.
 
 ---
 
@@ -207,9 +215,124 @@ authority* in its declarations.
 
 ---
 
+## Obligations, row by row
+
+### O1 · Open is held at the gate — GREEN
+
+Live, through the browser, against an empty ledger root:
+
+```
+O6 panel (empty): No obligation ledger yet at '/tmp/demo_node/ledger'. It is created by …
+O1 held at gate:  1 awaiting you  |  ledger rows: 0
+```
+
+`test_o1_open_is_held_at_the_gate` asserts `obligations.ndjson` **does not exist** while the act is
+pending. `test_o1_every_obligation_act_is_gated` goes further: open, approve, close, attest, veto
+and clear-veto are all held — five pending at once, zero written.
+
+### O2 · Approve is durable, survives restart, chain verifies — GREEN
+
+```
+O2 after APPROVE, rows: 1  |  chain verifies · 1 entries
+```
+
+Then the **app process was killed and restarted** against the same ledger:
+
+```
+present: True | by_status: {'open': 0, 'closed': 1, 'total': 1} | chain_valid: True | entries: 3
+```
+
+The three bytes-on-disk entries, read straight out of `obligations.ndjson`:
+
+```
+debit    | Send Q3 books to the accountant | hash a5d03b7a51f3 | prev genesis
+approval | obl_20260819042620_41d71913     | hash 12df47eb49d1 | prev a5d03b7a51f3
+credit   | obl_20260819042620_41d71913     | hash 9a0a9205e367 | prev 12df47eb49d1
+```
+
+`test_o2_the_recorded_disposition_is_the_operators` asserts the approval entry carries
+`disposition: approved`, `approved_by: kenn`, and `gate.real: True` — a simulated disposition must
+never reach the chain.
+
+`test_o2_ledger_gate_fails_closed_without_a_disposition` is the sharp one. It builds the ledger with
+**no** recorded verdict and asserts `approve()` raises and the obligation stays `draft`. That is the
+whole point of the seam, and it is stricter than the repo's own adapter (see disclosure 6).
+
+### O3 · Deny writes nothing — GREEN
+
+```
+O3 after DENY, rows: 0  |  panel: No obligation ledger yet at …
+```
+
+Two tests, because there are two denials worth proving. `test_o3_denying_an_open_writes_nothing`
+asserts the ledger file is never created. `test_o3_denying_an_approve_leaves_the_draft_untouched`
+counts the chain lines before and after a denied approval and asserts they are equal — a denial must
+not append.
+
+### O4 · Close goes only through the existing API, and its guards hold — GREEN
+
+A real close, on the chain:
+
+```
+type: credit · evidence_tier: E1 · closed_by: kenn · receipt rcpt_20260819042628_5cd9cfc4
+```
+
+Every guard below belongs to the ledger. This app calls the method and shows the refusal verbatim;
+it does not re-implement, pre-empt or paraphrase any of them:
+
+| Guard | Proof |
+|---|---|
+| Material cannot close before the breath-gate | `'…' is material and has not cleared the breath-gate` — seen live in the UI, and `test_o4_material_cannot_close_before_the_breath_gate` |
+| Evidence floor | claim-only text is refused with the tier named; the UI shows E0/E1/E2 live as you type |
+| A refusal needs no gate | `test_o4_a_refusal_needs_no_gate` — rejection closes a material obligation with no prior approval |
+| Cannot close twice | `AlreadyClosedError`, surfaced as an operator sentence |
+| Partial attestation blocks execution | `test_o4_attestation_and_veto_guards_hold` |
+| A standing veto is default-deny | same test: `VETOED by ['counsel']` blocks the close until cleared |
+| A veto needs a reason | `test_o4_veto_requires_a_reason` |
+| A path-like reference must resolve | `test_o4_unresolvable_path_reference_is_refused` — *a citation is never written false* |
+
+### O5 · Kill-grep still GREEN, and covers the new paths — GREEN
+
+Two checks were added for this surface, bringing it to nine:
+
+```
+[GREEN] 7  no out-of-scope ledger verb (repair_chain / reopen)
+[GREEN] 8  no reach past the ledger's public methods
+```
+
+Check 7 makes the scope boundary machine-checked rather than remembered. `repair_chain` is the sharp
+one — it rewrites the append-only chain, which is precisely the authority an operator surface must
+never hold. Check 8 forbids `_append`, `_entries`, `_get`, `_is_approved` and friends: going around
+the ledger's public methods would write entries that AH-1, the evidence floor and the veto guards
+never saw.
+
+Four more injected violations were added to the negative suite — chain repair, out-of-scope reopen,
+private append, private replay — and each is asserted to flip the gate RED.
+
+`test_o5_app_owns_no_obligation_store` asserts every file under the ledger root belongs to the
+node's own `ObligationLedger` (see disclosure 8 on the lock file).
+
+### O6 · Panel and write path are the same bytes — GREEN
+
+`test_o6_panel_matches_the_ledger_file` reads `obligations.ndjson` directly and asserts the panel's
+`chain_entries` equals the raw line count, that the panel's ids are exactly the `debit` ids on the
+chain, and that each status matches what the chain says.
+
+The panel derives status through `ObligationLedger.iter_entries` (the ledger's own public read
+gateway) and `obligations.projection` (its own public replay module) — the same committed entries
+the write path guards on. There is no app-side interpretation between them, and no cache to go
+stale.
+
+`test_o6_panel_reports_a_tampered_chain` alters one title in the file and asserts `chain_valid`
+flips to false. `test_o6_reads_create_nothing` asserts opening the ledger to read brings no file
+into being.
+
+---
+
 ## Disclosures
 
-Four things that are true, that a GREEN row could otherwise hide.
+Nine things that are true, that a GREEN row could otherwise hide. **1–5 carry from v0; 6–9 are new
+to the obligations surface.**
 
 **1 · The statutory fence on plain income is ours, not the module's.**
 The module's `TAX_FENCE_BREACH_FIELDS` runs inside `_tax_extra`, so it guards a tax event — but a
@@ -238,22 +361,64 @@ They live in the process and are lost on restart, exactly like the node's own ga
 was ever written, so nothing is lost but the half-finished intent. The gate panel reports
 `durable: false` rather than implying otherwise.
 
-Also, plainly: this runs Flask's development server. For one operator on loopback that is the right
-size of machinery. It is a desktop app that renders in a browser, not a production web service, and
-the README says so.
+**5 · Flask's development server.** For one operator on loopback that is the right size of
+machinery. It is a desktop app that renders in a browser, not a production web service, and the
+README says so.
+
+**6 · The ledger's gate seam is served by our own adapter, and that deserves naming.**
+`ObligationLedger` takes a `gate` callable and records its verdict on the chain; with none injected,
+AH-1 fail-closes a material approval. The repo ships one adapter — `node_integration.make_gate` —
+but it hardcodes `status="approved"` on the assumption that reaching `approve()` already implies an
+authenticated human. This app supplies its own instead, for one reason: **it cannot mint an approval
+the operator did not give.** Handed no recorded disposition it returns a DENY, so a code path that
+reaches `approve()` with no human behind it fails closed rather than passing. That is using the
+documented seam, not adding a verb — but it is *our* code sitting in the authority path, and
+`test_o2_ledger_gate_fails_closed_without_a_disposition` is the test that keeps it honest.
+
+**7 · A denial writes nothing — including no record of the refusal.** O3 says deny writes nothing, so
+that is what it does. Worth knowing: the ledger *can* record a refusal, and arguably should — a
+denied gate verdict appends an `approval` entry with `disposition: denied`, which is the chain
+confessing that someone said no. We deliberately do not reach that path, because a refusal at the
+app gate happens before the ledger is ever called. If you want refusals on the chain, that is a
+one-line change and its own bar row — say the word.
+
+**8 · The ledger writes a lock file.** `obligations.lock` appears alongside `obligations.ndjson` once
+you write. It is the module's own POSIX advisory write-fence, under the node's ledger root — the
+node's file, not an app store. `test_o5_app_owns_no_obligation_store` allows exactly those two names
+and nothing else. Reads create neither (`test_o6_reads_create_nothing`).
+
+**9 · No LAN bind was built.** The brief made it conditional on you having already asked for a phone
+LAN view, and you have not asked in this thread — so it is not there. The loopback-only refusal is
+unchanged and still tested; it now rejects a private RFC1918 address too:
+
+```
+$ python server.py --host 192.168.1.50
+Refusing to bind '192.168.1.50'. The operator surface is loopback-only… If you need access from
+another machine, that is a Port-governed crossing — not a bind flag.
+```
 
 ---
 
 ## What is deliberately absent
 
-Not built, not stubbed, not implied: AR/AP, payroll UI, bank feeds, inventory, multi-entity,
-period close, obligations *write* (the panel is read-only), Port crossings, propose-only tools, and
-any MCP or agent surface. The vertical was six loops and it is six loops.
+Not built, not stubbed, not implied: AR/AP, payroll UI, bank feeds, inventory, multi-entity, period
+close chrome, Port crossings, propose-only tools, LAN bind, and any MCP or agent surface. Two ledger
+verbs the module *does* expose are deliberately out of scope and **machine-checked out** —
+`repair_chain` (which rewrites the append-only chain) and `reopen`. Kill-grep check 7 fails RED if
+either ever appears.
 
-No write path was added that the node's modules do not already expose. The three recording acts are
-`economy.income.attribute_income`, `economy.contribution.record_contribution` and
-`economy.compliance.record_tax_event` — called with their own arguments, through their own gate,
-behind their own fences.
+No write path was added that the node's modules do not already expose. Every act is an existing
+method, called with its own arguments, through its own gate, behind its own guards:
+
+| Act | Module method |
+|---|---|
+| record an earning | `economy.income.attribute_income` |
+| record a contribution | `economy.contribution.record_contribution` |
+| record a tax note | `economy.compliance.record_tax_event` |
+| open an obligation | `obligations.ledger.ObligationLedger.open` |
+| approve one | `…ObligationLedger.approve` |
+| close or refuse one | `…ObligationLedger.close` |
+| attest / veto / clear | `…ObligationLedger.attest` / `.veto` / `.clear_veto` |
 
 ---
 
@@ -261,11 +426,15 @@ behind their own fences.
 
 ```bash
 cd /path/to/sovereign-agent-starter
-./.venv/bin/python apps/usn_erp_surface/killgrep.py            # P6      → exit 0
-./.venv/bin/python -m pytest apps/usn_erp_surface/tests/ -q    # P2–P6,P8 → 48 passed
+./.venv/bin/python apps/usn_erp_surface/killgrep.py            # P6, O5        → exit 0, 9 GREEN
+./.venv/bin/python -m pytest apps/usn_erp_surface/tests/ -q    # P2–P6,P8,O1–O6 → 74 passed
 ./apps/usn_erp_surface/launch.sh --open                        # P1,P4,P5,P7 by hand
 ```
 
-**STOP — for KM review.**
+**STOP — for KM review. Nothing pushed.**
+
+No commit and no push was made. I have no standing P-Push instruction in this thread and no remote
+credentials here, so `apps/` is delivered as files for you to land yourself. Say the word and I will
+prepare the commit.
 
 Breath only. ∞Δ∞

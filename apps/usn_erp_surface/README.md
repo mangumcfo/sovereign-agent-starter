@@ -3,9 +3,9 @@
 ∞Δ∞ The Universal Sovereign Node **is** the ERP. This app only drives it. ∞Δ∞
 
 A local app for one operator running their own books on their own node. You open your node, record
-what you earned, record a tax note about it, and export a package you can hand to your accountant.
-Everything you record goes into the node's own hash-chained store through the node's own modules.
-This app keeps no ledger of its own.
+what you earned, record a tax note about it, keep a ledger of what you have undertaken to do, and
+export a package you can hand to your accountant. Everything you record goes into the node's own
+hash-chained stores through the node's own modules. This app keeps no ledger of its own.
 
 **What it does not do, ever:** file, pay, remit, form an entity, represent you, hold a balance,
 move value, or cross the Port. Those are your acts, not the node's and not this app's.
@@ -44,7 +44,7 @@ a restart means the environment or the form again.
 |---|---|---|
 | `SUBSTRATE_STORAGE_ROOT` | the registry root holding `objects.ndjson` | **required** — this is where your records live |
 | `NODE_KEYSTORE_DIR` | your keystore | your fingerprint and receipt log |
-| `OBLIGATION_LEDGER_ROOT` | the obligation ledger root | the read-only obligations line |
+| `OBLIGATION_LEDGER_ROOT` | the obligation ledger root | the obligations panel — reading **and** opening, approving, closing |
 | `USN_OPERATOR` | your name | prefills the operator field |
 
 ### Point it at a throwaway node
@@ -113,6 +113,52 @@ the node's stored record carries it as `tax_category`. The UI handles this for y
 
 ---
 
+## Obligations — opening, approving, closing one
+
+An obligation is something you have undertaken to do. It lives on the node's own append-only,
+hash-chained `obligations.ndjson`, and the panel you read it in and the acts that change it are the
+same file — they cannot drift apart.
+
+**Open one.** *New obligation* → title it (*Send Q3 books to the accountant*), give it an intent and
+a reference, and decide the one setting that matters:
+
+> **Material.** A material obligation cannot be closed until it has cleared the breath-gate, and the
+> ledger refuses to approve one with no human gate behind it. Leave it off for routine work; turn it
+> on for anything you would want a record of having personally authorised.
+
+A reference like `q3-books` is symbolic and always fine. A *path-like* reference — anything with a
+slash and a file extension — must actually resolve on this machine, or the ledger refuses it: a
+citation is never written false.
+
+**Approve it.** A freshly opened obligation reads `draft`. Click **Approve**, say why, and the
+disposition recorded on the chain is yours — this app has no path that approves on your behalf, and
+the ledger's gate fails closed if it is ever handed no verdict.
+
+**Close it.** Click **Close** and give evidence. The ledger has a floor here and the field tells you
+live which side of it you are on:
+
+| tier | what it means |
+|---|---|
+| **E0** | claim-only — *"I did it"*. Will **not** close an obligation. |
+| **E1** | an artifact pointer: a path, a URL, a hash, or a receipt id. Enough. |
+| **E2** | artifact **and** verification — a path plus a hash. The preferred grade. |
+
+Tick *record this as a refusal* to close it as a **no** instead. A refusal needs no gate and no
+artifact — saying no is itself the human disposition.
+
+**Joint attestation.** Name roles in *Requires attestation from* (`cfo, counsel`) and each must
+attest before the obligation can execute. Any role can stand a **veto**, with a reason, and while it
+stands the obligation is default-deny — it cannot close until the veto is cleared. All of that is
+the ledger's own rule; the app surfaces its refusals verbatim rather than paraphrasing them.
+
+Under the regulated posture every one of these acts is held at the human gate first, exactly like a
+recording act. Deny one and nothing is written at all — not the obligation, not the approval.
+
+What this version deliberately does **not** expose: `reopen` and `repair_chain`. Chain repair is not
+an authority an operator surface should hold, and the kill-grep fails RED if either ever appears.
+
+---
+
 ## What is where
 
 ```
@@ -121,7 +167,7 @@ apps/usn_erp_surface/
   server.py         loopback Flask shell; a thin JSON translation, no business logic
   ui.html           the whole interface, self-contained: no CDN, no external asset, no telemetry
   killgrep.py       the P6 gate — run it any time; exit 0 GREEN, 1 RED
-  tests/            the P2/P3/P4/P5/P6/P8 proof tests
+  tests/            the P2–P6, P8 and O1–O6 proof tests
   launch.sh
 ```
 
@@ -131,6 +177,14 @@ Verify it before you trust it:
 ./.venv/bin/python apps/usn_erp_surface/killgrep.py          # P6
 ./.venv/bin/python -m pytest apps/usn_erp_surface/tests/ -q  # the rest
 ```
+
+---
+
+## Remote access
+
+Not built, and not by omission. The surface binds loopback and refuses anything else — including a
+private LAN address — because reach from another machine is a Port-governed crossing, not a bind
+flag. If that changes it will arrive as an explicit, reviewable decision with its own bar row.
 
 ---
 

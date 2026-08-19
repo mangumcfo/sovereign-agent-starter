@@ -59,7 +59,9 @@ from sovereign_agent.keystore.node_keystore import KeystoreError, load_node_key
 from sovereign_agent.objects.manifest import cut_manifest
 from sovereign_agent.objects.proofs import replay_root
 from sovereign_agent.objects.registry import ObjectRegistry
-from sovereign_agent.obligations.ledger import ObligationLedger
+from sovereign_agent.obligations import projection as obligation_projection
+from sovereign_agent.obligations.evidence import EvidenceTier, classify_evidence
+from sovereign_agent.obligations.ledger import AlreadyClosedError, ObligationLedger
 
 APP_NAME = "USN ERP Operator Surface"
 APP_VERSION = "0.1.0"
@@ -78,8 +80,19 @@ MODE_REGULATED = "corporate_regulated"
 
 #: The three action classes this vertical performs. Under the regulated posture every one is
 #: declared high-materiality, so the gate engages on all of them.
-ACTION_CLASSES = ("attribute_income", "record_contribution", "record_tax_event")
+RECORD_ACTION_CLASSES = ("attribute_income", "record_contribution", "record_tax_event")
+
+#: The obligation lifecycle acts this app drives. Every one is an existing `ObligationLedger`
+#: method — no new engine, no new verb.
+OBLIGATION_ACTION_CLASSES = ("obligation_open", "obligation_approve", "obligation_close",
+                             "obligation_attest", "obligation_veto", "obligation_clear_veto")
+
+ACTION_CLASSES = RECORD_ACTION_CLASSES + OBLIGATION_ACTION_CLASSES
 REGULATED_POLICY = {"high_materiality_classes": list(ACTION_CLASSES)}
+
+#: Classifications the ledger accepts. Free-form in the module; offered as a short list here so the
+#: UI does not invent one.
+CLASSIFICATIONS = ("C1", "C2", "C3")
 
 #: Payload keys that `income_record` / `_tax_extra` / `_contribution_extra` generate themselves.
 #: Anything else in a stored payload is operator-supplied `extra` and must be handed back to the
@@ -193,13 +206,49 @@ class NodeBinding:
         return ObjectRegistry(self.registry_root)
 
     def _ledger(self) -> Optional[ObligationLedger]:
-        """The node's obligation ledger, if one exists. Never created here — this vertical does not
-        open obligations, so an absent ledger is reported, not conjured."""
+        """The node's obligation ledger for READS, if one exists. Never created by a read — an absent
+        ledger is reported, not conjured. Reads touch no bytes (verified: opening for read creates
+        no file)."""
         if not self.ledger_root:
             return None
         if not os.path.isfile(os.path.join(self.ledger_root, LEDGER_FILENAME)):
             return None
         return ObligationLedger(root=self.ledger_root)
+
+    def _ledger_gate(self, disposition: Optional[Mapping[str, Any]]):
+        """The ledger's `gate` seam, fed the operator's ACTUAL disposition.
+
+        `ObligationLedger.approve` consults an injected callable and records its verdict on the
+        chain; with no gate injected, AH-1 fail-closes a MATERIAL approval. The repo ships one
+        adapter for this seam, `obligations.node_integration.make_gate` — but that one hardcodes
+        `status="approved"` on the assumption that reaching `approve()` already implies an
+        authenticated human. This app supplies its own adapter instead, for one reason: **it cannot
+        mint an approval the operator did not give.** With no recorded disposition it returns a
+        DENY, so a code path that reaches `approve()` without a human behind it fails closed rather
+        than passing.
+
+        This is using the documented seam, not adding a verb. The verdict handed back is the very
+        `record_disposition` result the operator produced by clicking.
+        """
+        def gate(action: str, obligation: Mapping[str, Any]) -> Dict[str, Any]:
+            if not disposition:
+                return {"status": "denied", "real": False,
+                        "reason": ("no human disposition was recorded for this act — this app never "
+                                   "synthesises one, so the ledger fails closed")}
+            return dict(disposition)
+        return gate
+
+    def _ledger_for_write(self, disposition: Optional[Mapping[str, Any]] = None) -> ObligationLedger:
+        """The node's obligation ledger, wired to write. Creating it on first use is the node's own
+        store coming into existence, exactly as the object registry does — not a store of ours."""
+        if not self.ledger_root:
+            raise SurfaceError(
+                "No obligation ledger root configured. Set OBLIGATION_LEDGER_ROOT, or enter the path "
+                "when opening the node. Obligations live in the node's own obligations.ndjson."
+            )
+        os.makedirs(self.ledger_root, exist_ok=True)
+        return ObligationLedger(root=self.ledger_root, principal_id=self.operator,
+                                gate=self._ledger_gate(disposition))
 
     # ============================================================================================
     # 1 · Open the node — status
@@ -400,7 +449,11 @@ class NodeBinding:
             self._disposed[req_id] = record
             return record
 
-        receipt = self._perform(staged["call"], approver=who, approval_ref=req_id)
+        # The operator's real, recorded disposition is what the ledger's gate seam receives — the
+        # app never manufactures one. For an economy act it rides as approver + approval_ref; for an
+        # obligation act it IS the gate verdict the chain records.
+        receipt = self._perform(staged["call"], approver=who, approval_ref=req_id,
+                                disposition=dict(disposition, req_id=req_id))
         record["receipt"] = receipt
         record["note"] = "Approved by you. The act was then performed through the node's own module."
         self._disposed[req_id] = record
@@ -410,23 +463,72 @@ class NodeBinding:
     # 2 & 3 · Recording acts — every one goes through the module that owns the fence
     # ============================================================================================
 
+    #: Every act this app can perform, mapped to the module method that owns it. There is no other
+    #: write path, and nothing here is a verb the node does not already expose.
+    _ECONOMY_ACTS = ("income", "contribution", "tax_event")
+    _OBLIGATION_ACTS = ("obl_open", "obl_approve", "obl_close", "obl_attest", "obl_veto",
+                        "obl_clear_veto")
+
     def _perform(self, call: Mapping[str, Any], *, approver: Optional[str] = None,
-                 approval_ref: Optional[str] = None) -> Dict[str, Any]:
+                 approval_ref: Optional[str] = None,
+                 disposition: Optional[Mapping[str, Any]] = None) -> Dict[str, Any]:
         """Dispatch a staged (or ungated) act to its module. This is the ONLY place this app writes."""
         kind = call["kind"]
         kw = dict(call["kwargs"])
-        kw.update(registry=self._registry(), gate=self.gate, mode=self.mode,
-                  approver=approver, approval_ref=approval_ref)
-        try:
-            if kind == "income":
-                return attribute_income(**kw)
-            if kind == "contribution":
-                return record_contribution(**kw)
-            if kind == "tax_event":
+
+        if kind in self._ECONOMY_ACTS:
+            kw.update(registry=self._registry(), gate=self.gate, mode=self.mode,
+                      approver=approver, approval_ref=approval_ref)
+            try:
+                if kind == "income":
+                    return attribute_income(**kw)
+                if kind == "contribution":
+                    return record_contribution(**kw)
                 return record_tax_event(**kw)
-        except IncomeRefused as exc:
-            raise SurfaceError(f"The node refused this record: {exc}") from exc
+            except IncomeRefused as exc:
+                raise SurfaceError(f"The node refused this record: {exc}") from exc
+
+        if kind in self._OBLIGATION_ACTS:
+            return self._perform_obligation(kind, kw, disposition=disposition)
+
         raise SurfaceError(f"Unknown act '{kind}'.")
+
+    def _perform_obligation(self, kind: str, kw: Dict[str, Any],
+                            *, disposition: Optional[Mapping[str, Any]]) -> Dict[str, Any]:
+        """Every obligation act, through the ledger's own method. The ledger owns the rules — AH-1,
+        the evidence floor, the attestation and veto guards — and this app surfaces its refusals
+        verbatim rather than pre-empting or softening them."""
+        led = self._ledger_for_write(disposition)
+        try:
+            if kind == "obl_open":
+                return led.open(**kw)
+            if kind == "obl_approve":
+                return led.approve(kw["obligation_id"], approved_by=self.operator,
+                                   rationale=kw.get("rationale", ""))
+            if kind == "obl_close":
+                return led.close(kw["obligation_id"], evidence=kw["evidence"],
+                                 require_e1=bool(kw.get("require_e1", True)),
+                                 rejected=bool(kw.get("rejected", False)),
+                                 closed_by=self.operator, method=kw.get("method") or None)
+            if kind == "obl_attest":
+                return led.attest(kw["obligation_id"], role=kw["role"], attested_by=self.operator)
+            if kind == "obl_veto":
+                return led.veto(kw["obligation_id"], role=kw["role"], reason=kw["reason"],
+                                vetoed_by=self.operator)
+            if kind == "obl_clear_veto":
+                return led.clear_veto(kw["obligation_id"], role=kw["role"], cleared_by=self.operator)
+        except AlreadyClosedError as exc:
+            raise SurfaceError(f"That obligation is already closed: {exc}") from exc
+        except KeyError as exc:
+            raise SurfaceError(f"No such obligation on this ledger: {exc}") from exc
+        except PermissionError as exc:
+            # The ledger's own fail-closed guards: AH-1, the breath-gate-before-execute rule, a
+            # standing veto, or missing attestation. Surfaced as the ledger wrote it.
+            raise SurfaceError(f"The ledger refused this act: {exc}") from exc
+        except ValueError as exc:
+            # Evidence floor (E0), an unresolvable path-like reference, or a missing veto reason.
+            raise SurfaceError(f"The ledger refused this act: {exc}") from exc
+        raise SurfaceError(f"Unknown obligation act '{kind}'.")
 
     def _fence_extra(self, extra: Optional[Mapping[str, Any]]) -> Optional[Dict[str, Any]]:
         """App-level narrowing: refuse a statutory-act field on ANY act, not just a tax event.
@@ -479,9 +581,24 @@ class NodeBinding:
                     "summary": summary, "receipt": None,
                     "note": ("Held at the gate. Nothing has been written. Approve it yourself to "
                              "record it, or deny it and nothing happens.")}
-        receipt = self._perform(call)
+        # Ungated (sovereign posture): the operator's click IS the disposition, so it is minted as a
+        # real one — a named approver and a real UTC timestamp — and handed to the ledger's gate.
+        # Not an auto-approval: nothing reaches here without an explicit act by the operator.
+        receipt = self._perform(call, disposition=self._click_disposition(action_class, summary))
         return {"gated": False, "req_id": None, "action_class": action_class, "summary": summary,
                 "receipt": receipt, "note": "Recorded through the node's own module."}
+
+    def _click_disposition(self, action_class: str, summary: str) -> Dict[str, Any]:
+        """Mint a REAL disposition for an ungated act — the operator's own click, on their own iron,
+        recorded with `record_disposition` (never `simulate_approval`, which the repo marks
+        TEST-ONLY). Used only for the ledger's gate seam, which requires a verdict to exist."""
+        req = ApprovalRequest(action_class=action_class, role_id="usn_erp_surface",
+                              principal_id=self.operator, risk_level="operator_click",
+                              rationale=summary, required_approvers=[self.operator])
+        req_id = self.gate.request_approval(req)
+        res = self.gate.record_disposition(req_id, status="approved", approver=self.operator,
+                                           reason="operator acted directly (sovereign posture)")
+        return dict(res, req_id=req_id)
 
     def record_income(self, *, work_ref: str, amount: Optional[float] = None,
                       unit: str = "credits", port_ref: Optional[str] = None,
@@ -551,6 +668,193 @@ class NodeBinding:
                              "source_ref": "usn_erp_surface", "at": at or utc_now(),
                              "amount": amount, "unit": unit,
                              "extra": dict(extra or {}) or None})
+
+    # ============================================================================================
+    # 7 · Obligations — the node's own lifecycle, driven
+    # ============================================================================================
+    #
+    # The obligation ledger is an append-only, hash-chained NDJSON file the node owns. This app
+    # opens, approves and closes through `ObligationLedger`'s own methods and reads by replaying the
+    # same file. There is no app-side obligation cache: the panel below and the write path above
+    # read and write the one set of bytes, so they cannot disagree.
+
+    def obligation_open(self, *, title: str, intent: Optional[str] = None,
+                        classification: str = "C2", ref: Optional[str] = None,
+                        material: bool = False, next_gate: Optional[str] = None,
+                        requires_attestation: Optional[List[str]] = None,
+                        mandate: Optional[str] = None) -> Dict[str, Any]:
+        """Open an obligation — a draft action-proposal (a `debit` on the chain).
+
+        `material=True` is the consequential setting: a material obligation cannot be closed until it
+        has cleared the breath-gate, and the ledger fail-closes any attempt to approve one without a
+        human gate behind it (AH-1). Leave it off for routine work.
+        """
+        if not str(title).strip():
+            raise SurfaceError("An obligation needs a title — what is being undertaken.")
+        cls = str(classification or "C2").strip().upper()
+        if cls not in CLASSIFICATIONS:
+            raise SurfaceError(f"Classification must be one of {list(CLASSIFICATIONS)}.")
+        roles = [r.strip() for r in (requires_attestation or []) if str(r).strip()]
+        return self._submit(
+            "obl_open", "obligation_open",
+            f"open obligation · {title}" + (" · MATERIAL" if material else ""),
+            {"title": str(title).strip(), "owner": self.operator, "classification": cls,
+             "intent": (intent or None), "ref": (ref or None), "material": bool(material),
+             "next_gate": (next_gate or None),
+             "requires_attestation": roles or None,
+             "mandate": (mandate or None)})
+
+    def obligation_approve(self, obligation_id: str, *, rationale: str = "") -> Dict[str, Any]:
+        """Approve a draft obligation through the breath-gate.
+
+        The disposition recorded on the chain is the one you gave — this app has no path that
+        approves on your behalf, and the ledger's gate seam fails closed without a recorded verdict.
+        """
+        ob = self._obligation(obligation_id)
+        return self._submit("obl_approve", "obligation_approve",
+                            f"approve obligation · {ob.get('title') or obligation_id}",
+                            {"obligation_id": obligation_id, "rationale": rationale or ""})
+
+    def obligation_close(self, obligation_id: str, *, evidence: str, rejected: bool = False,
+                         require_e1: bool = True, method: Optional[str] = None) -> Dict[str, Any]:
+        """Close an obligation with evidence (a `credit` and a minted receipt), or record a refusal.
+
+        The ledger's evidence floor applies: claim-only text (E0) will not close it — give an
+        artifact pointer, a URL, a hash or a receipt id (E1+). A refusal (`rejected=True`) is exempt
+        from both the evidence floor's intent and the breath-gate: saying no needs no gate.
+        """
+        ob = self._obligation(obligation_id)
+        if not str(evidence).strip():
+            raise SurfaceError("Closing needs evidence — what shows this was done (or why it was refused).")
+        tier = classify_evidence(evidence)
+        if require_e1 and not rejected and tier == EvidenceTier.E0_CLAIM:
+            raise SurfaceError(
+                f"That evidence reads as claim-only (tier E0) and will not close an obligation. Give "
+                f"something checkable: a file path, a URL, a hash, or a receipt id. "
+                f"For example: 'emailed 2026-08-19 · receipt_id rcpt_9f3a2b1c'."
+            )
+        verb = "reject" if rejected else "close"
+        return self._submit("obl_close", "obligation_close",
+                            f"{verb} obligation · {ob.get('title') or obligation_id} · evidence {tier.value}",
+                            {"obligation_id": obligation_id, "evidence": str(evidence).strip(),
+                             "rejected": bool(rejected), "require_e1": bool(require_e1),
+                             "method": method or None})
+
+    def obligation_attest(self, obligation_id: str, *, role: str) -> Dict[str, Any]:
+        """Attest as one of the roles a joint-attestation obligation requires."""
+        ob = self._obligation(obligation_id)
+        if not str(role).strip():
+            raise SurfaceError("Attesting needs the role you are attesting as.")
+        return self._submit("obl_attest", "obligation_attest",
+                            f"attest as {role} · {ob.get('title') or obligation_id}",
+                            {"obligation_id": obligation_id, "role": str(role).strip()})
+
+    def obligation_veto(self, obligation_id: str, *, role: str, reason: str) -> Dict[str, Any]:
+        """Stand a veto against an obligation. Default-deny while it stands: it cannot execute."""
+        ob = self._obligation(obligation_id)
+        if not str(reason).strip():
+            raise SurfaceError("A veto requires a reason — it is recorded loudly, on the chain.")
+        return self._submit("obl_veto", "obligation_veto",
+                            f"veto as {role} · {ob.get('title') or obligation_id}",
+                            {"obligation_id": obligation_id, "role": str(role).strip(),
+                             "reason": str(reason).strip()})
+
+    def obligation_clear_veto(self, obligation_id: str, *, role: str) -> Dict[str, Any]:
+        """Withdraw a veto — the vetoing role stands down. The chain keeps both acts."""
+        ob = self._obligation(obligation_id)
+        return self._submit("obl_clear_veto", "obligation_clear_veto",
+                            f"clear veto as {role} · {ob.get('title') or obligation_id}",
+                            {"obligation_id": obligation_id, "role": str(role).strip()})
+
+    # -- obligation reads -------------------------------------------------------------------------
+
+    def _obligation(self, obligation_id: str) -> Dict[str, Any]:
+        """Find one obligation by replaying the ledger. Raises with the ids that do exist."""
+        led = self._ledger()
+        if led is None:
+            raise SurfaceError(
+                "There is no obligation ledger at the configured path yet. Open one first — the "
+                "node's own store is created on your first obligation."
+            )
+        state = led.replay()
+        for ob in list(state.get("open", [])) + list(state.get("closed", [])):
+            if ob.get("id") == obligation_id:
+                return ob
+        known = [o.get("id") for o in list(state.get("open", []))][:5]
+        raise SurfaceError(
+            f"No obligation '{obligation_id}' on this ledger. Open ones include: "
+            f"{', '.join(known) if known else '(none)'}."
+        )
+
+    def obligations(self, *, only: str = "all", limit: int = 100, offset: int = 0) -> Dict[str, Any]:
+        """The obligations panel — replayed from the node's ledger on every call.
+
+        `chain_valid` is the load-bearing field. If it reads false the append-only chain has been
+        altered and every count beneath it should be treated as unreliable.
+        """
+        led = self._ledger()
+        if led is None:
+            return {"present": False, "chain_valid": None, "by_status": {"open": 0, "closed": 0, "total": 0},
+                    "total": 0, "count": 0, "offset": offset, "has_more": False, "items": [],
+                    "note": (f"No obligation ledger yet at "
+                             f"'{self.ledger_root or '(no path configured)'}'. It is created by the "
+                             f"node's own store when you open your first obligation.")}
+
+        state = led.replay()
+        # `iter_entries` is the ledger's public read-gateway over the raw chain, and `projection` is
+        # its public replay module — so the panel derives status the same way the write path does,
+        # from committed entries, with no private method and no app-side interpretation.
+        entries = list(led.iter_entries())
+        closed_ids = {o.get("id") for o in state.get("closed", [])}
+        rows: List[Dict[str, Any]] = []
+        for ob in list(state.get("open", [])) + list(state.get("closed", [])):
+            oid = ob.get("id")
+            is_closed = oid in closed_ids
+            approved = obligation_projection.is_approved(entries, oid)
+            status = "closed" if is_closed else ("approved" if approved else "draft")
+            if only != "all" and only != ("closed" if is_closed else "open"):
+                continue
+            att = led.attestation_status(oid) if ob.get("requires_attestation") else None
+            rows.append({
+                "id": oid, "title": ob.get("title"), "owner": ob.get("owner"),
+                "classification": ob.get("classification"), "intent": ob.get("intent"),
+                "ref": ob.get("ref"), "material": bool(ob.get("material")),
+                "status": status, "closed": is_closed,
+                "approved": bool(ob.get("approved")) or status in ("approved", "closed"),
+                "approved_by": ob.get("approved_by"),
+                "next_gate": ob.get("next_gate"), "mandate": ob.get("mandate"),
+                "requires_attestation": ob.get("requires_attestation"),
+                "attestation": att,
+                "opened_at": ob.get("timestamp"),
+                "chain_hash": ob.get("hash"), "prev_hash": ob.get("prev_hash"),
+                "can_approve": (not is_closed) and status == "draft",
+                "can_close": not is_closed,
+            })
+        rows.sort(key=lambda r: str(r.get("opened_at") or ""), reverse=True)
+
+        # the terminal acts, read back off the chain so the panel shows what was actually recorded
+        terminal: Dict[str, Dict[str, Any]] = {}
+        for e in entries:
+            if e.get("type") == "credit":
+                terminal[str(e.get("closes"))] = {
+                    "evidence": e.get("evidence"), "evidence_tier": e.get("evidence_tier"),
+                    "closed_by": e.get("closed_by"), "at": e.get("timestamp"),
+                    "receipt_id": (e.get("receipt") or {}).get("receipt_id"),
+                    "payload_hash": (e.get("receipt") or {}).get("payload_hash")}
+        for r in rows:
+            r["closure"] = terminal.get(r["id"])
+
+        mf = led.manifest()
+        window = rows[offset: offset + limit]
+        return {
+            "present": True, "ledger_file": mf.get("file"),
+            "chain_valid": led.verify_chain(), "chain_entries": mf.get("chain_entries"),
+            "by_status": led.by_status(), "by_owner": led.by_owner(),
+            "last_entry": {"type": mf.get("last_type"), "ref": mf.get("last_ref"),
+                           "at": mf.get("last_ts"), "hash": mf.get("last_hash")},
+            "total": len(rows), "count": len(window), "offset": offset,
+            "has_more": offset + len(window) < len(rows), "items": window,
+        }
 
     # ============================================================================================
     # 6 · Reads — replayed from the node every time
@@ -713,5 +1017,6 @@ class NodeBinding:
 __all__ = [
     "APP_NAME", "APP_VERSION", "ACTION_CLASSES", "CONTRIBUTION_CLASSES", "SOURCE_DEFAULT_CLASS",
     "TAX_CATEGORIES", "STATUTORY_FENCE_FIELDS", "GateRequired", "NodeBinding",
-    "SurfaceError", "utc_now",
+    "SurfaceError", "utc_now", "OBLIGATION_ACTION_CLASSES", "RECORD_ACTION_CLASSES",
+    "CLASSIFICATIONS", "EvidenceTier", "classify_evidence",
 ]

@@ -43,11 +43,14 @@ from usn_erp_surface.node_binding import (  # noqa: E402
     ACTION_CLASSES,
     APP_NAME,
     APP_VERSION,
+    CLASSIFICATIONS,
     CONTRIBUTION_CLASSES,
+    OBLIGATION_ACTION_CLASSES,
     SOURCE_DEFAULT_CLASS,
     TAX_CATEGORIES,
     NodeBinding,
     SurfaceError,
+    classify_evidence,
 )
 
 DEFAULT_PORT = 8477
@@ -134,6 +137,8 @@ def vocab() -> Tuple[Response, int]:
         "contribution_classes": sorted(CONTRIBUTION_CLASSES),
         "contribution_sources": SOURCE_DEFAULT_CLASS,
         "gated_action_classes": list(ACTION_CLASSES),
+        "obligation_action_classes": list(OBLIGATION_ACTION_CLASSES),
+        "classifications": list(CLASSIFICATIONS),
         "env": {"NODE_KEYSTORE_DIR": os.environ.get("NODE_KEYSTORE_DIR"),
                 "SUBSTRATE_STORAGE_ROOT": os.environ.get("SUBSTRATE_STORAGE_ROOT"),
                 "OBLIGATION_LEDGER_ROOT": os.environ.get("OBLIGATION_LEDGER_ROOT"),
@@ -327,6 +332,116 @@ def package_download() -> Response:
         "Content-Disposition": f'attachment; filename="usn-package-{digest[:12]}.json"',
         "X-Package-SHA256": digest,
     })
+
+
+# ==================================================================================================
+# 7 · Obligations — read the node's ledger, and drive its own lifecycle
+# ==================================================================================================
+
+@app.get("/api/obligations")
+def obligations() -> Tuple[Response, int]:
+    """The panel. Replayed from the node's obligations.ndjson on every call — never from a cache,
+    because there is no cache."""
+    try:
+        return _ok(_bound().obligations(
+            only=request.args.get("only", "all"),
+            limit=int(request.args.get("limit", 100)),
+            offset=int(request.args.get("offset", 0))))
+    except SurfaceError as exc:
+        return _fail(exc, 409)
+    except Exception as exc:  # noqa: BLE001
+        return _fail(exc, 500)
+
+
+@app.get("/api/obligations/evidence-tier")
+def evidence_tier() -> Tuple[Response, int]:
+    """Classify a draft evidence string with the ledger's own classifier, so the operator sees the
+    tier before they try to close on it. Pure computation; writes nothing."""
+    text = request.args.get("evidence", "")
+    tier = classify_evidence(text)
+    return _ok({
+        "evidence": text, "tier": tier.value,
+        "closes": tier.value != "E0",
+        "note": {"E0": "claim-only — this will not close an obligation. Add a path, URL, hash or receipt id.",
+                 "E1": "artifact pointer — enough to close.",
+                 "E2": "artifact plus verification — the preferred grade."}[tier.value],
+    })
+
+
+def _obligation_act(fn_name: str, obligation_id: Optional[str] = None) -> Tuple[Response, int]:
+    """One shape for every obligation act: dispatch, then hand back the fresh gate and panel so the
+    UI never has to guess what changed."""
+    b = _body()
+    try:
+        nb = _bound()
+        with _LOCK:
+            if fn_name == "open":
+                roles = b.get("requires_attestation")
+                if isinstance(roles, str):
+                    roles = [r.strip() for r in roles.split(",") if r.strip()]
+                res = nb.obligation_open(
+                    title=str(b.get("title", "")).strip(),
+                    intent=(b.get("intent") or None),
+                    classification=str(b.get("classification") or "C2"),
+                    ref=(b.get("ref") or None),
+                    material=bool(b.get("material", False)),
+                    next_gate=(b.get("next_gate") or None),
+                    requires_attestation=roles or None,
+                    mandate=(b.get("mandate") or None))
+            elif fn_name == "approve":
+                res = nb.obligation_approve(obligation_id, rationale=str(b.get("rationale") or ""))
+            elif fn_name == "close":
+                res = nb.obligation_close(
+                    obligation_id, evidence=str(b.get("evidence", "")),
+                    rejected=bool(b.get("rejected", False)),
+                    method=(b.get("method") or None))
+            elif fn_name == "attest":
+                res = nb.obligation_attest(obligation_id, role=str(b.get("role", "")))
+            elif fn_name == "veto":
+                res = nb.obligation_veto(obligation_id, role=str(b.get("role", "")),
+                                         reason=str(b.get("reason", "")))
+            else:
+                res = nb.obligation_clear_veto(obligation_id, role=str(b.get("role", "")))
+        return _ok(dict(res, gate=nb.gate_state(), obligations=nb.obligations()))
+    except SurfaceError as exc:
+        return _fail(exc)
+    except Exception as exc:  # noqa: BLE001
+        return _fail(exc, 500)
+
+
+@app.post("/api/obligations")
+def obligation_open() -> Tuple[Response, int]:
+    """Open a draft obligation. Under the regulated posture it is held at the gate first — nothing
+    reaches the ledger until you approve it."""
+    return _obligation_act("open")
+
+
+@app.post("/api/obligations/<obligation_id>/approve")
+def obligation_approve(obligation_id: str) -> Tuple[Response, int]:
+    """Approve a draft through the breath-gate. The disposition recorded on the chain is yours."""
+    return _obligation_act("approve", obligation_id)
+
+
+@app.post("/api/obligations/<obligation_id>/close")
+def obligation_close(obligation_id: str) -> Tuple[Response, int]:
+    """Close with evidence, or record a refusal. The ledger's evidence floor and breath-gate rule
+    both apply, and its refusals are surfaced verbatim."""
+    return _obligation_act("close", obligation_id)
+
+
+@app.post("/api/obligations/<obligation_id>/attest")
+def obligation_attest(obligation_id: str) -> Tuple[Response, int]:
+    return _obligation_act("attest", obligation_id)
+
+
+@app.post("/api/obligations/<obligation_id>/veto")
+def obligation_veto(obligation_id: str) -> Tuple[Response, int]:
+    return _obligation_act("veto", obligation_id)
+
+
+@app.post("/api/obligations/<obligation_id>/clear-veto")
+def obligation_clear_veto(obligation_id: str) -> Tuple[Response, int]:
+    return _obligation_act("clear_veto", obligation_id)
 
 
 # ==================================================================================================

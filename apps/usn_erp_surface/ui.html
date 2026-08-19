@@ -110,6 +110,20 @@ td .ref{font-family:var(--mono);font-size:.75rem;font-weight:600}
 td .sub{color:var(--text-muted);font-size:.7rem;font-family:var(--mono);word-break:break-all}
 .num{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
 
+/* obligations */
+.b.s-draft{color:var(--text-primary);border-color:color-mix(in srgb,var(--warning) 70%,transparent)}
+.b.s-approved{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,transparent)}
+.b.s-closed{color:var(--good-text);border-color:color-mix(in srgb,var(--good) 45%,transparent)}
+.b.mat{color:var(--critical);border-color:color-mix(in srgb,var(--critical) 45%,transparent)}
+.obl-form{border:1px solid var(--ring);border-radius:10px;padding:.85rem .95rem;margin-bottom:.75rem;background:color-mix(in srgb,var(--accent) 4%,var(--surface-1))}
+.act-row td{background:color-mix(in srgb,var(--accent) 4%,var(--surface-1));padding-top:.7rem;padding-bottom:.8rem}
+.act-row .inline{display:flex;gap:.45rem;flex-wrap:wrap;align-items:flex-end}
+.act-row .inline .fld{margin:0;flex:1 1 190px}
+.tier{font-size:.7rem;font-weight:640;margin-top:.25rem}
+.tier.ok{color:var(--good-text)} .tier.no{color:var(--critical)}
+.chk{display:flex;gap:.4rem;align-items:center;font-size:.79rem;color:var(--text-primary);margin:.15rem 0 .5rem}
+.chk input{width:auto;margin:0}
+
 /* gate */
 .gate-item{border:1px solid color-mix(in srgb,var(--warning) 55%,transparent);border-radius:10px;padding:.75rem .85rem;margin-bottom:.55rem;background:color-mix(in srgb,var(--warning) 6%,var(--surface-1))}
 .gate-item .h{font-weight:640;font-size:.85rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
@@ -334,6 +348,57 @@ pre{background:var(--surface-1);border:1px solid var(--ring);border-radius:9px;p
           <div class="empty" id="evEmpty" hidden>Nothing recorded yet. Record an earning on the left.</div>
         </div>
 
+        <div class="card" id="oblCard">
+          <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.6rem;flex-wrap:wrap">
+            <h2 style="margin:0">Obligations</h2>
+            <span class="b" id="oblChain" hidden></span>
+            <select id="oblFilter" style="width:auto;padding:.24rem .45rem;font-size:.78rem">
+              <option value="all">all</option><option value="open">open</option><option value="closed">closed</option>
+            </select>
+            <button class="sm" id="btnNewObl" style="margin-left:auto">New obligation</button>
+          </div>
+          <p class="hint" style="margin-bottom:.7rem">
+            The node's own append-only ledger. Opening, approving and closing all go through its own
+            methods — this panel and those acts read and write the same file, so they cannot disagree.
+          </p>
+
+          <div class="obl-form" id="oblForm" hidden>
+            <div class="fld">
+              <label for="oTitle">What is being undertaken</label>
+              <input id="oTitle" placeholder="Send Q3 books to the accountant">
+            </div>
+            <div class="row">
+              <div class="fld"><label for="oIntent">Intent <span class="muted">— optional</span></label><input id="oIntent" placeholder="comply"></div>
+              <div class="fld"><label for="oClass">Classification</label><select id="oClass"></select></div>
+            </div>
+            <div class="fld">
+              <label for="oRef">Reference <span class="muted">— optional</span></label>
+              <input id="oRef" placeholder="q3-books">
+              <div class="note">A symbolic reference is safest. A path-like one must actually resolve on this machine, or the ledger refuses it — a citation is never written false.</div>
+            </div>
+            <div class="chk"><input type="checkbox" id="oMaterial"><label for="oMaterial" style="margin:0;font-size:.79rem;color:var(--text-primary);font-weight:600">Material</label></div>
+            <div class="note" style="margin:-.35rem 0 .55rem;font-size:.7rem;color:var(--text-muted)">
+              A material obligation cannot be closed until it has cleared the breath-gate, and the ledger
+              refuses to approve one with no human gate behind it. Leave it off for routine work.
+            </div>
+            <div class="fld">
+              <label for="oAttest">Requires attestation from <span class="muted">— optional, comma-separated roles</span></label>
+              <input id="oAttest" placeholder="cfo, counsel">
+              <div class="note">Each named role must attest, and any standing veto blocks execution.</div>
+            </div>
+            <div class="actions">
+              <button class="primary" id="btnOpenObl">Open obligation</button>
+              <button class="sm" id="btnCancelObl">Cancel</button>
+            </div>
+          </div>
+
+          <div class="tscroll"><table>
+            <thead><tr><th>Obligation</th><th>Opened</th><th>Status</th><th>Act</th></tr></thead>
+            <tbody id="oblBody"></tbody>
+          </table></div>
+          <div class="empty" id="oblEmpty" hidden></div>
+        </div>
+
         <div class="card">
           <h2>Portable package</h2>
           <p class="hint">
@@ -403,6 +468,8 @@ const post = (p, b) => api(p, { method: "POST", body: JSON.stringify(b || {}) })
     : "No node paths in the environment — enter at least a registry root.";
 
   fill($("tCat"), VOCAB.tax_categories);
+  fill($("oClass"), VOCAB.classifications || ["C1", "C2", "C3"]);
+  $("oClass").value = "C2";
   fill($("cSource"), Object.keys(VOCAB.contribution_sources));
   fill($("cClass"), VOCAB.contribution_classes);
   $("cSource").onchange = () => {
@@ -437,7 +504,7 @@ $("btnOpen").onclick = async () => {
     });
     render();
     toast("ok", "Node open", STATUS.governance.posture);
-    await Promise.all([loadEvents(), loadGate()]);
+    await Promise.all([loadEvents(), loadGate(), loadObligations()]);
   } catch (err) { toast("err", "Could not open the node", err.message); }
 };
 $("btnClose").onclick = async () => {
@@ -450,8 +517,10 @@ $("btnClose").onclick = async () => {
 $("btnRefresh").onclick = () => refresh();
 
 async function refresh() {
-  try { STATUS = await api("/api/status"); render(); await Promise.all([loadEvents(), loadGate()]); }
-  catch (err) { toast("err", "Refresh failed", err.message); }
+  try {
+    STATUS = await api("/api/status"); render();
+    await Promise.all([loadEvents(), loadGate(), loadObligations()]);
+  } catch (err) { toast("err", "Refresh failed", err.message); }
 }
 
 /* ---------- render status ---------- */
@@ -636,8 +705,12 @@ function renderGate(g) {
     if (d.length) {
       const last = d[d.length - 1];
       const n = el("div", "sub");
+      // An economy act's receipt is identified by object_id; a ledger entry by its own id. Name
+      // whichever the act produced rather than printing "undefined" at the operator.
+      const r = last.receipt;
+      const what = r ? (r.object_id || r.id || r.type || "recorded") : null;
       n.textContent = "last: " + last.action_class + " — " + last.status + " by " + last.approver +
-                      (last.receipt ? (" · " + last.receipt.object_id) : " · nothing written");
+                      (what ? (" · " + what) : " · nothing written");
       list.appendChild(n);
     } else if (g.engaged) {
       list.appendChild(el("div", "empty", "Nothing waiting."));
@@ -670,8 +743,217 @@ async function dispose(reqId, what, reason) {
     else toast("warn", "Denied", "Nothing was written. The refusal is the act.");
     renderGate(r.gate);
     await refresh();
-  } catch (err) { toast("err", "Gate failed", err.message); }
+  } catch (err) {
+    // A refusal from the node is a result, not a malfunction — title it as one so the operator
+    // reads the ledger's reason rather than assuming the app broke.
+    const refused = /refused|already closed|no such obligation|breath-gate|VETOED|attestation/i.test(err.message);
+    toast("err", refused ? "Refused by the node" : "Gate failed", err.message);
+  }
 }
+
+/* ---------- obligations ---------- */
+let OBL = null, OPEN_ACT = null;   // OPEN_ACT = {id, kind} — which inline action row is showing
+
+$("btnNewObl").onclick = () => {
+  const f = $("oblForm"); f.hidden = !f.hidden;
+  if (!f.hidden) $("oTitle").focus();
+};
+$("btnCancelObl").onclick = () => { $("oblForm").hidden = true; };
+$("oblFilter").onchange = () => loadObligations().catch(e => toast("err", "Load failed", e.message));
+
+async function loadObligations() {
+  OBL = await api("/api/obligations?limit=200&only=" + encodeURIComponent($("oblFilter").value));
+  renderObligations();
+}
+
+function renderObligations() {
+  const o = OBL; if (!o) return;
+  const chain = $("oblChain"), body = $("oblBody"), empty = $("oblEmpty");
+  body.innerHTML = "";
+
+  if (!o.present) {
+    chain.hidden = true; empty.hidden = false; empty.textContent = o.note;
+    return;
+  }
+  chain.hidden = false;
+  chain.className = "b " + (o.chain_valid ? "ok" : "no");
+  chain.textContent = o.chain_valid
+    ? ("chain verifies · " + o.chain_entries + " entries")
+    : "CHAIN DOES NOT VERIFY";
+  chain.prepend(glyph(!!o.chain_valid));
+
+  empty.hidden = o.items.length > 0;
+  empty.textContent = "No obligations yet. Open one above.";
+
+  o.items.forEach(ob => {
+    const tr = el("tr");
+
+    const c1 = el("td");
+    const head = el("div"); head.style.cssText = "display:flex;gap:.4rem;align-items:center;flex-wrap:wrap";
+    head.appendChild(el("span", "ref", ob.title || "(untitled)"));
+    if (ob.material) head.appendChild(el("span", "b mat", "material"));
+    if (ob.requires_attestation) {
+      const a = ob.attestation || {};
+      const done = (a.attested || []).length, need = (ob.requires_attestation || []).length;
+      const bg = el("span", "b " + (a.vetoed ? "no" : (a.can_execute ? "ok" : "wait")),
+                    a.vetoed ? ("vetoed by " + (a.standing_vetoes || []).join(", "))
+                             : ("attested " + done + "/" + need));
+      head.appendChild(bg);
+    }
+    c1.appendChild(head);
+    const bits = [];
+    if (ob.intent) bits.push(ob.intent);
+    if (ob.classification) bits.push(ob.classification);
+    if (ob.ref) bits.push("ref " + ob.ref);
+    bits.push(ob.id);
+    c1.appendChild(el("div", "sub", bits.join("  ·  ")));
+    if (ob.closure) {
+      c1.appendChild(el("div", "sub",
+        "closed " + ob.closure.evidence_tier + " · " + ob.closure.evidence +
+        (ob.closure.receipt_id ? ("  ·  " + ob.closure.receipt_id) : "")));
+    }
+    tr.appendChild(c1);
+
+    tr.appendChild(el("td", "sub", (ob.opened_at || "").replace("T", " ").slice(0, 19)));
+
+    const c3 = el("td");
+    const sb = el("span", "b s-" + ob.status, ob.status);
+    if (ob.status === "closed") sb.prepend(glyph(true));
+    c3.appendChild(sb);
+    if (ob.approved_by) c3.appendChild(el("div", "sub", "by " + ob.approved_by));
+    tr.appendChild(c3);
+
+    const c4 = el("td");
+    const acts = el("div"); acts.style.cssText = "display:flex;gap:.35rem;flex-wrap:wrap";
+    if (ob.can_approve) acts.appendChild(actBtn(ob, "approve", "Approve", "approve sm"));
+    if (ob.can_close) acts.appendChild(actBtn(ob, "close", "Close", "sm"));
+    if (ob.requires_attestation && !ob.closed) {
+      acts.appendChild(actBtn(ob, "attest", "Attest", "sm"));
+      const vetoed = ob.attestation && ob.attestation.vetoed;
+      acts.appendChild(actBtn(ob, vetoed ? "clear-veto" : "veto", vetoed ? "Clear veto" : "Veto",
+                              vetoed ? "sm" : "deny sm"));
+    }
+    if (!acts.children.length) acts.appendChild(el("span", "sub", "—"));
+    c4.appendChild(acts);
+    tr.appendChild(c4);
+    body.appendChild(tr);
+
+    if (OPEN_ACT && OPEN_ACT.id === ob.id) body.appendChild(actionRow(ob, OPEN_ACT.kind));
+  });
+}
+
+function actBtn(ob, kind, label, cls) {
+  const b = el("button", cls, label);
+  b.onclick = () => {
+    OPEN_ACT = (OPEN_ACT && OPEN_ACT.id === ob.id && OPEN_ACT.kind === kind) ? null : { id: ob.id, kind };
+    renderObligations();
+  };
+  return b;
+}
+
+/* The inline act row. Each act asks for exactly what the ledger requires and nothing more. */
+function actionRow(ob, kind) {
+  const tr = el("tr", "act-row");
+  const td = el("td"); td.colSpan = 4;
+  const wrap = el("div", "inline");
+
+  const mk = (id, label, placeholder, note) => {
+    const f = el("div", "fld");
+    const l = el("label", null, label); l.setAttribute("for", id); f.appendChild(l);
+    const i = el("input"); i.id = id; i.placeholder = placeholder || ""; f.appendChild(i);
+    if (note) f.appendChild(el("div", "note", note));
+    wrap.appendChild(f); return i;
+  };
+
+  let go;
+  if (kind === "approve") {
+    const r = mk("aRationale", "Why you are approving", "books are ready", "");
+    go = () => act(ob.id, "approve", { rationale: r.value });
+    td.appendChild(el("div", "sub",
+      "Approving records YOUR disposition on the chain. This app has no path that approves for you."));
+  } else if (kind === "close") {
+    const ev = mk("cEvidence", "Evidence", "emailed 2026-08-19 · receipt_id rcpt_9f3a…",
+                  "Claim-only text will not close it — give a path, URL, hash or receipt id.");
+    const tier = el("div", "tier"); wrap.appendChild(tier);
+    let t = null;
+    ev.oninput = () => {
+      clearTimeout(t);
+      t = setTimeout(async () => {
+        if (!ev.value.trim()) { tier.textContent = ""; return; }
+        try {
+          const r = await api("/api/obligations/evidence-tier?evidence=" + encodeURIComponent(ev.value));
+          tier.className = "tier " + (r.closes ? "ok" : "no");
+          tier.textContent = "tier " + r.tier + " — " + r.note;
+        } catch (_) { tier.textContent = ""; }
+      }, 220);
+    };
+    const rej = el("div", "chk");
+    const cb = el("input"); cb.type = "checkbox"; cb.id = "cRejected";
+    const lb = el("label", null, "record this as a refusal, not work done");
+    lb.setAttribute("for", "cRejected"); lb.style.cssText = "margin:0;font-size:.78rem;font-weight:600;color:var(--text-primary)";
+    rej.appendChild(cb); rej.appendChild(lb); wrap.appendChild(rej);
+    go = () => act(ob.id, "close", { evidence: ev.value, rejected: cb.checked });
+  } else if (kind === "attest") {
+    const role = mk("atRole", "Attesting as", (ob.requires_attestation || []).join(" / "), "");
+    go = () => act(ob.id, "attest", { role: role.value });
+  } else if (kind === "veto") {
+    const role = mk("vRole", "Vetoing as", (ob.requires_attestation || []).join(" / "), "");
+    const why = mk("vReason", "Reason", "needs review", "Recorded loudly, on the chain.");
+    go = () => act(ob.id, "veto", { role: role.value, reason: why.value });
+  } else {
+    const role = mk("cvRole", "Standing down as", (ob.requires_attestation || []).join(" / "), "");
+    go = () => act(ob.id, "clear-veto", { role: role.value });
+  }
+
+  const btn = el("button", "primary sm", kind === "clear-veto" ? "Clear veto"
+                 : kind.charAt(0).toUpperCase() + kind.slice(1));
+  btn.onclick = () => { btn.disabled = true; go().finally(() => { btn.disabled = false; }); };
+  const cancel = el("button", "sm", "Cancel");
+  cancel.onclick = () => { OPEN_ACT = null; renderObligations(); };
+  const row = el("div", "actions"); row.appendChild(btn); row.appendChild(cancel);
+
+  td.appendChild(wrap); td.appendChild(row); tr.appendChild(td);
+  return tr;
+}
+
+async function act(id, kind, body) {
+  try {
+    const r = await post("/api/obligations/" + encodeURIComponent(id) + "/" + kind, body);
+    OPEN_ACT = null;
+    if (r.gated) {
+      toast("warn", "Held at the gate", "Nothing written to the ledger yet. Approve it below.");
+    } else {
+      const e = r.receipt || {};
+      toast("ok", kind === "clear-veto" ? "Veto cleared" : (kind.charAt(0).toUpperCase() + kind.slice(1) + "d"),
+            e.type ? ("chain entry '" + e.type + "'" +
+                      (e.evidence_tier ? (" · evidence " + e.evidence_tier) : "") +
+                      ((e.receipt && e.receipt.receipt_id) ? (" · " + e.receipt.receipt_id) : ""))
+                   : "recorded on the node's ledger");
+    }
+    OBL = r.obligations; renderObligations(); renderGate(r.gate);
+    await refresh();
+  } catch (err) { toast("err", "Refused", err.message); }
+}
+
+$("btnOpenObl").onclick = async () => {
+  const btn = $("btnOpenObl");
+  if (!$("oTitle").value.trim()) { toast("err", "A title is required", "What is being undertaken?"); return; }
+  btn.disabled = true;
+  try {
+    const r = await post("/api/obligations", {
+      title: $("oTitle").value.trim(), intent: $("oIntent").value.trim(),
+      classification: $("oClass").value, ref: $("oRef").value.trim(),
+      material: $("oMaterial").checked, requires_attestation: $("oAttest").value.trim(),
+    });
+    if (r.gated) toast("warn", "Held at the gate", "Nothing written to the ledger yet. Approve it below.");
+    else { toast("ok", "Obligation opened", r.receipt.id); }
+    ["oTitle", "oIntent", "oRef", "oAttest"].forEach(i => $(i).value = "");
+    $("oMaterial").checked = false; $("oblForm").hidden = true;
+    OBL = r.obligations; renderObligations(); renderGate(r.gate);
+    await refresh();
+  } catch (err) { toast("err", "Refused", err.message); }
+  finally { btn.disabled = false; }
+};
 
 /* ---------- package ---------- */
 $("btnPkg").onclick = async () => {

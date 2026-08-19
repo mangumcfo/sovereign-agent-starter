@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Proof tests for the USN ERP Operator Surface — P2, P3, P4, P5, P6.
+"""Proof tests for the USN ERP Operator Surface — P2–P6, P8 and O1–O6.
 
 Run:  ./.venv/bin/python -m pytest apps/usn_erp_surface/tests/ -q
 
@@ -11,6 +11,15 @@ These are not unit tests of the app's internals. Each one asserts a bar row:
   P4  a gated act writes nothing until an explicit human approval; a denial writes nothing at all
   P5  the export is derived from node state and byte-identical on re-run
   P6  the kill-grep actually catches violations — proved by injecting each one and asserting RED
+  P8  the stranger sentence, executed clause by clause
+
+  O1  opening an obligation is held at the gate; nothing reaches the ledger until you approve
+  O2  approving lands on the node's ledger, survives a restart, and the chain still verifies
+  O3  denying writes nothing — not the open, not the approve
+  O4  closing goes only through the ledger's own API, and its guards (AH-1, the evidence floor,
+      attestation and veto) hold and are surfaced verbatim
+  O5  the kill-grep covers the new paths and still bites
+  O6  the read panel and the write path are the same bytes — no app cache as truth
 
 The negative tests matter as much as the positive ones. A gate that only ever says yes is not a
 gate, and a kill-grep that has never gone RED is a rubber stamp.
@@ -460,3 +469,327 @@ def test_p8_the_stranger_sentence_is_true(node):
     # …for my accountant: it files nothing and claims no authority.
     assert pkg["declarations"]["statutory_acts"].startswith("NONE")
     assert "no statutory authority" in pkg["declarations"]["authority"]
+
+
+# ==================================================================================================
+# O1–O6 · The obligations write surface
+# ==================================================================================================
+
+def obligations_ndjson(node) -> str:
+    return os.path.join(node["ledger"], "obligations.ndjson")
+
+
+def open_obligation(nb, **kw):
+    """Open one, approving at the app gate if the posture holds it. Approval is always explicit."""
+    kw.setdefault("title", "Send Q3 books to the accountant")
+    sub = nb.obligation_open(**kw)
+    return approve_all(nb, sub) if sub["gated"] else sub
+
+
+# ---- O1 · Open → held at the gate; nothing on disk until approve ---------------------------------
+
+def test_o1_open_is_held_at_the_gate(node):
+    nb = bind(node, regulated=True)
+    sub = nb.obligation_open(title="Send Q3 books to the accountant", intent="comply",
+                             ref="q3-books", material=True)
+
+    assert sub["gated"] is True and sub["receipt"] is None
+    assert sub["action_class"] == "obligation_open"
+    assert nb.gate_state()["pending_count"] == 1
+    assert not os.path.exists(obligations_ndjson(node)), "a held obligation reached the ledger"
+    assert nb.obligations()["present"] is False
+
+
+def test_o1_every_obligation_act_is_gated(node):
+    """Not just open — approve, close, attest, veto and clear all pass the same gate."""
+    nb = bind(node, regulated=True)
+    opened = open_obligation(nb, material=True, requires_attestation=["cfo"])
+    oid = opened["receipt"]["id"]
+
+    for sub in (nb.obligation_approve(oid),
+                nb.obligation_close(oid, evidence="artifact at /tmp/x.pdf"),
+                nb.obligation_attest(oid, role="cfo"),
+                nb.obligation_veto(oid, role="cfo", reason="hold"),
+                nb.obligation_clear_veto(oid, role="cfo")):
+        assert sub["gated"] is True, sub["action_class"]
+        assert sub["receipt"] is None
+    assert nb.gate_state()["pending_count"] == 5
+
+
+# ---- O2 · Approve → durable, survives restart, chain still verifies ------------------------------
+
+def test_o2_approve_lands_on_the_node_ledger(node):
+    nb = bind(node, regulated=True)
+    opened = open_obligation(nb, material=True, intent="comply", ref="q3-books")
+    entry = opened["receipt"]
+
+    assert entry["type"] == "debit"
+    assert entry["material"] is True and entry["draft"] is True
+    assert entry["owner"] == "kenn"
+
+    with open(obligations_ndjson(node), encoding="utf-8") as fh:
+        rows = [json.loads(x) for x in fh if x.strip()]
+    assert len(rows) == 1 and rows[0]["id"] == entry["id"]
+    assert rows[0]["prev_hash"] == "genesis"
+
+
+def test_o2_survives_restart_and_chain_verifies(node):
+    nb = bind(node, regulated=True)
+    oid = open_obligation(nb, material=True)["receipt"]["id"]
+    approve_all(nb, nb.obligation_approve(oid, rationale="books are ready"))
+    before = nb.obligations()
+
+    del nb
+    nb2 = bind(node, regulated=True)
+    after = nb2.obligations()
+
+    assert after["chain_valid"] is True
+    assert after["by_status"] == before["by_status"] == {"open": 1, "closed": 0, "total": 1}
+    assert [i["id"] for i in after["items"]] == [i["id"] for i in before["items"]]
+    assert after["items"][0]["status"] == "approved"
+
+
+def test_o2_the_recorded_disposition_is_the_operators(node):
+    """The gate verdict on the chain is the one the operator gave — never synthesised."""
+    nb = bind(node, regulated=True)
+    oid = open_obligation(nb, material=True)["receipt"]["id"]
+    entry = approve_all(nb, nb.obligation_approve(oid))["receipt"]
+
+    assert entry["type"] == "approval"
+    assert entry["disposition"] == "approved"
+    assert entry["approved_by"] == "kenn"
+    assert entry["gate"]["real"] is True, "a simulated disposition must never reach the chain"
+    assert entry["gate"]["approver"] == "kenn"
+
+
+def test_o2_ledger_gate_fails_closed_without_a_disposition(node):
+    """The seam's whole point: with no recorded human verdict, the ledger denies. This is stricter
+    than the repo's own `make_gate`, which hardcodes 'approved'."""
+    nb = bind(node, regulated=True)
+    oid = open_obligation(nb, material=True)["receipt"]["id"]
+
+    led = nb._ledger_for_write(None)          # no disposition — the failure case, made explicit
+    with pytest.raises(PermissionError) as exc:
+        led.approve(oid, approved_by="kenn")
+    assert "DENIED" in str(exc.value)
+    assert nb.obligations()["items"][0]["status"] == "draft", "a denied approval must not approve"
+
+
+# ---- O3 · Deny → nothing written ------------------------------------------------------------------
+
+def test_o3_denying_an_open_writes_nothing(node):
+    nb = bind(node, regulated=True)
+    sub = nb.obligation_open(title="Renew insurance", material=True)
+    disposed = nb.dispose(sub["req_id"], approve=False, reason="not this quarter")
+
+    assert disposed["status"] == "denied" and disposed["receipt"] is None
+    assert not os.path.exists(obligations_ndjson(node))
+    assert nb.obligations()["present"] is False
+    assert nb.gate_state()["pending_count"] == 0
+
+
+def test_o3_denying_an_approve_leaves_the_draft_untouched(node):
+    nb = bind(node, regulated=True)
+    oid = open_obligation(nb, material=True)["receipt"]["id"]
+    before = len(open(obligations_ndjson(node), encoding="utf-8").read().splitlines())
+
+    sub = nb.obligation_approve(oid, rationale="on reflection, no")
+    disposed = nb.dispose(sub["req_id"], approve=False, reason="not yet")
+
+    assert disposed["receipt"] is None
+    after = len(open(obligations_ndjson(node), encoding="utf-8").read().splitlines())
+    assert after == before, "a denied approval appended to the chain"
+    assert nb.obligations()["items"][0]["status"] == "draft"
+
+
+# ---- O4 · Close, only through the existing API and its guards -------------------------------------
+
+def test_o4_close_mints_a_receipt_on_the_chain(node):
+    nb = bind(node, regulated=True)
+    oid = open_obligation(nb, material=True)["receipt"]["id"]
+    approve_all(nb, nb.obligation_approve(oid))
+    entry = approve_all(nb, nb.obligation_close(
+        oid, evidence="emailed 2026-08-19 · receipt_id rcpt_9f3a2b1c"))["receipt"]
+
+    assert entry["type"] == "credit"
+    assert entry["evidence_tier"] == "E1"
+    assert entry["closed_by"] == "kenn"
+    assert entry["receipt"]["receipt_id"].startswith("rcpt_")
+    assert entry["receipt"]["payload_hash"]
+
+    panel = nb.obligations()
+    assert panel["by_status"] == {"open": 0, "closed": 1, "total": 1}
+    assert panel["items"][0]["status"] == "closed"
+    assert panel["items"][0]["closure"]["receipt_id"] == entry["receipt"]["receipt_id"]
+    assert panel["chain_valid"] is True
+
+
+def test_o4_material_cannot_close_before_the_breath_gate(node):
+    """The ledger's own rule, surfaced verbatim — not re-implemented here."""
+    nb = bind(node, regulated=True)
+    oid = open_obligation(nb, material=True)["receipt"]["id"]
+    sub = nb.obligation_close(oid, evidence="artifact at /tmp/x.pdf")
+
+    with pytest.raises(SurfaceError) as exc:
+        nb.dispose(sub["req_id"], approve=True)
+    assert "has not cleared the breath-gate" in str(exc.value)
+    assert nb.obligations()["items"][0]["status"] == "draft"
+
+
+def test_o4_claim_only_evidence_will_not_close(node):
+    nb = bind(node, regulated=False)
+    oid = open_obligation(nb)["receipt"]["id"]
+    with pytest.raises(SurfaceError) as exc:
+        nb.obligation_close(oid, evidence="I did it")
+    assert "claim-only" in str(exc.value)
+    assert nb.obligations()["items"][0]["status"] != "closed"
+
+
+def test_o4_a_refusal_needs_no_gate(node):
+    """Saying no is itself the human disposition — the module exempts a rejection, and so do we."""
+    nb = bind(node, regulated=False)
+    oid = open_obligation(nb, material=True)["receipt"]["id"]
+    entry = nb.obligation_close(oid, evidence="declined — client withdrew, see /tmp/note.txt",
+                                rejected=True)["receipt"]
+    assert entry["type"] == "credit"
+    assert nb.obligations()["by_status"]["closed"] == 1
+
+
+def test_o4_cannot_close_twice(node):
+    nb = bind(node, regulated=False)
+    oid = open_obligation(nb)["receipt"]["id"]
+    nb.obligation_close(oid, evidence="done at /tmp/x.pdf")
+    with pytest.raises(SurfaceError) as exc:
+        nb.obligation_close(oid, evidence="done again at /tmp/x.pdf")
+    assert "already closed" in str(exc.value)
+
+
+def test_o4_attestation_and_veto_guards_hold(node):
+    nb = bind(node, regulated=False)
+    oid = open_obligation(nb, material=True, requires_attestation=["cfo", "counsel"])["receipt"]["id"]
+    nb.obligation_approve(oid)
+
+    with pytest.raises(SurfaceError) as exc:                       # partial attestation
+        nb.obligation_close(oid, evidence="done at /tmp/x.pdf")
+    assert "attestation" in str(exc.value).lower()
+
+    nb.obligation_attest(oid, role="cfo")
+    nb.obligation_attest(oid, role="counsel")
+    nb.obligation_veto(oid, role="counsel", reason="needs review")
+    with pytest.raises(SurfaceError) as exc:                       # standing veto, default-deny
+        nb.obligation_close(oid, evidence="done at /tmp/x.pdf")
+    assert "VETOED" in str(exc.value)
+
+    nb.obligation_clear_veto(oid, role="counsel")
+    entry = nb.obligation_close(oid, evidence="done at /tmp/x.pdf hash a1b2c3d4e5f60718")["receipt"]
+    assert entry["type"] == "credit" and entry["evidence_tier"] == "E2"
+    assert nb.obligations()["chain_valid"] is True
+
+
+def test_o4_veto_requires_a_reason(node):
+    nb = bind(node, regulated=False)
+    oid = open_obligation(nb, requires_attestation=["cfo"])["receipt"]["id"]
+    with pytest.raises(SurfaceError):
+        nb.obligation_veto(oid, role="cfo", reason="")
+
+
+def test_o4_unresolvable_path_reference_is_refused(node):
+    """R22-3: a path-like reference must resolve. A citation is never written false."""
+    nb = bind(node, regulated=False)
+    with pytest.raises(SurfaceError) as exc:
+        nb.obligation_open(title="bad ref", ref="invoices/inv-12.pdf")
+    assert "does not resolve" in str(exc.value)
+    assert not os.path.exists(obligations_ndjson(node))
+
+
+def test_o4_unknown_obligation_is_actionable(node):
+    nb = bind(node, regulated=False)
+    open_obligation(nb)
+    with pytest.raises(SurfaceError) as exc:
+        nb.obligation_approve("obl_nope")
+    assert "No obligation" in str(exc.value)
+
+
+# ---- O5 · Kill-grep still GREEN, covering the new paths -------------------------------------------
+
+@pytest.mark.parametrize("label,inject", [
+    ("chain repair", "def _fix(led):\n    return led.repair_chain()\n"),
+    ("out-of-scope reopen", "def _undo(led, oid):\n    return led.reopen(oid, 'because')\n"),
+    ("ledger private append", "def _sneak(led, e):\n    return led._append(e)\n"),
+    ("ledger private replay", "def _peek(led):\n    return led._entries()\n"),
+])
+def test_o5_killgrep_catches_obligation_violations(tmp_path, label, inject):
+    copy = tmp_path / "app"
+    shutil.copytree(APP_DIR, copy, ignore=shutil.ignore_patterns("__pycache__", "tests"))
+    target = copy / "node_binding.py"
+    target.write_text(target.read_text() + "\n\n" + textwrap.dedent(inject), encoding="utf-8")
+
+    proc = _run_killgrep(str(copy))
+    assert proc.returncode == 1, f"kill-grep stayed GREEN with '{label}' injected:\n{proc.stdout}"
+
+
+def test_o5_app_owns_no_obligation_store(node):
+    """Every byte under the ledger root belongs to the node's own ObligationLedger."""
+    nb = bind(node, regulated=False)
+    oid = open_obligation(nb, material=True)["receipt"]["id"]
+    nb.obligation_approve(oid)
+    nb.obligation_close(oid, evidence="done at /tmp/x.pdf")
+    nb.obligations()
+
+    files = sorted(os.listdir(node["ledger"]))
+    assert files in (["obligations.ndjson"], ["obligations.lock", "obligations.ndjson"]), files
+
+
+# ---- O6 · The panel and the write path read the same bytes ----------------------------------------
+
+def test_o6_panel_matches_the_ledger_file(node):
+    nb = bind(node, regulated=False)
+    a = open_obligation(nb, title="One", material=True)["receipt"]["id"]
+    b = open_obligation(nb, title="Two")["receipt"]["id"]
+    nb.obligation_approve(a)
+    nb.obligation_close(a, evidence="done at /tmp/x.pdf")
+
+    panel = nb.obligations()
+    with open(obligations_ndjson(node), encoding="utf-8") as fh:
+        rows = [json.loads(x) for x in fh if x.strip()]
+
+    assert panel["chain_entries"] == len(rows)
+    assert {i["id"] for i in panel["items"]} == {r["id"] for r in rows if r["type"] == "debit"}
+    assert next(i for i in panel["items"] if i["id"] == a)["status"] == "closed"
+    assert next(i for i in panel["items"] if i["id"] == b)["status"] == "draft"
+    assert panel["ledger_file"] == obligations_ndjson(node)
+
+
+def test_o6_panel_reports_a_tampered_chain(node):
+    """`chain_valid` is a real check. Alter one entry and the panel must say so."""
+    nb = bind(node, regulated=False)
+    oid = open_obligation(nb, material=True)["receipt"]["id"]
+    nb.obligation_approve(oid)
+    assert nb.obligations()["chain_valid"] is True
+
+    with open(obligations_ndjson(node), encoding="utf-8") as fh:
+        rows = [json.loads(x) for x in fh if x.strip()]
+    rows[0]["title"] = "Something else entirely"
+    with open(obligations_ndjson(node), "w", encoding="utf-8") as fh:
+        for r in rows:
+            fh.write(json.dumps(r, sort_keys=True) + "\n")
+
+    assert bind(node, regulated=False).obligations()["chain_valid"] is False
+
+
+def test_o6_reads_create_nothing(node):
+    """Opening the ledger to read must not bring a file into being."""
+    nb = bind(node, regulated=False)
+    assert nb.obligations()["present"] is False
+    assert not os.path.exists(node["ledger"]) or os.listdir(node["ledger"]) == []
+
+
+def test_o6_filter_agrees_with_the_full_panel(node):
+    nb = bind(node, regulated=False)
+    a = open_obligation(nb, title="Closed one")["receipt"]["id"]
+    open_obligation(nb, title="Still open")
+    nb.obligation_close(a, evidence="done at /tmp/x.pdf")
+
+    assert nb.obligations(only="open")["total"] == 1
+    assert nb.obligations(only="closed")["total"] == 1
+    assert nb.obligations()["total"] == 2
