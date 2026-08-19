@@ -229,6 +229,7 @@ pre{background:var(--surface-1);border:1px solid var(--ring);border-radius:9px;p
             <button role="tab" aria-selected="true" data-tab="income">Earning</button>
             <button role="tab" aria-selected="false" data-tab="contribution">Contribution</button>
             <button role="tab" aria-selected="false" data-tab="tax">Tax note</button>
+            <button role="tab" aria-selected="false" data-tab="invoice">Invoice</button>
           </div>
 
           <!-- income -->
@@ -308,6 +309,33 @@ pre{background:var(--surface-1);border:1px solid var(--ring);border-radius:9px;p
             </div>
             <div class="actions"><button class="primary" data-submit="tax">Record tax note</button></div>
           </div>
+
+          <!-- invoice -->
+          <div data-panel="invoice" hidden>
+            <div class="card" style="margin:0 0 .8rem;padding:.7rem .85rem">
+              <div style="font-size:.78rem"><b>Invoice record (billing event) — not an AR balance.</b>
+              The node records that a customer was billed. It holds no receivable, moves no money, and
+              this surface has no collect / pay / remit path — collection is your own act, elsewhere.</div>
+            </div>
+            <div class="row">
+              <div class="fld"><label for="nInvId">Invoice id</label><input id="nInvId" placeholder="INV-001"></div>
+              <div class="fld"><label for="nCust">Customer</label><input id="nCust" placeholder="Acme Co"></div>
+            </div>
+            <div class="fld">
+              <label for="nLines">Lines <span class="muted">— JSON array</span></label>
+              <textarea id="nLines" rows="3" placeholder='[{"description":"consulting","quantity":10,"unit_price":150},{"description":"setup","quantity":1,"unit_price":500}]'></textarea>
+              <div class="note">Each line needs a quantity (&gt; 0) and a unit_price (&ge; 0). The total is computed by the node's sealed billing surface — you never type it.</div>
+            </div>
+            <div class="row">
+              <div class="fld"><label for="nTax">Tax <span class="muted">— amount</span></label><input id="nTax" inputmode="decimal" placeholder="0"></div>
+              <div class="fld"><label for="nCur">Currency</label><input id="nCur" value="USD"></div>
+            </div>
+            <div class="row">
+              <div class="fld"><label for="nIssued">Issued day</label><input id="nIssued" inputmode="numeric" placeholder="0"></div>
+              <div class="fld"><label for="nDue">Due day <span class="muted">— optional</span></label><input id="nDue" inputmode="numeric" placeholder="30"></div>
+            </div>
+            <div class="actions"><button class="primary" id="btnInvoice">Record invoice</button></div>
+          </div>
         </div>
 
         <!-- gate -->
@@ -346,6 +374,21 @@ pre{background:var(--surface-1);border:1px solid var(--ring);border-radius:9px;p
             <tbody id="evBody"></tbody>
           </table></div>
           <div class="empty" id="evEmpty" hidden>Nothing recorded yet. Record an earning on the left.</div>
+        </div>
+
+        <div class="card" id="arCard">
+          <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.6rem;flex-wrap:wrap">
+            <h2 style="margin:0">Receivables</h2>
+            <span class="muted" style="font-size:.72rem">billing-event records · no AR balance held</span>
+            <label style="margin-left:auto;font-size:.74rem;display:flex;gap:.3rem;align-items:center">aging as-of day
+              <input id="arAsOf" inputmode="numeric" value="0" style="width:5rem;padding:.24rem .45rem;font-size:.78rem">
+            </label>
+          </div>
+          <div id="arAging" class="sub" style="margin-bottom:.5rem"></div>
+          <table class="tbl"><thead><tr><th>Invoice</th><th>Issued</th><th class="num">Total</th><th>Verify</th></tr></thead>
+            <tbody id="arBody"></tbody></table>
+          <div class="empty" id="arEmpty" hidden>No invoices yet. Record one on the left.</div>
+          <p class="law" style="margin-top:.5rem">Aging is a projection over these records, computed on read by the node's sealed billing surface. Nothing here is a stored balance, and this surface collects nothing.</p>
         </div>
 
         <div class="card" id="oblCard">
@@ -504,7 +547,7 @@ $("btnOpen").onclick = async () => {
     });
     render();
     toast("ok", "Node open", STATUS.governance.posture);
-    await Promise.all([loadEvents(), loadGate(), loadObligations()]);
+    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables()]);
   } catch (err) { toast("err", "Could not open the node", err.message); }
 };
 $("btnClose").onclick = async () => {
@@ -519,7 +562,7 @@ $("btnRefresh").onclick = () => refresh();
 async function refresh() {
   try {
     STATUS = await api("/api/status"); render();
-    await Promise.all([loadEvents(), loadGate(), loadObligations()]);
+    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables()]);
   } catch (err) { toast("err", "Refresh failed", err.message); }
 }
 
@@ -541,7 +584,8 @@ function render() {
     : "No registry file yet — it is created by the node's own store on your first record.";
 
   const t = $("tiles"); t.innerHTML = "";
-  [["Earnings", (reg.income_events || 0) - (reg.tax_events || 0) - (reg.contributions || 0)],
+  [["Earnings", (reg.income_events || 0) - (reg.tax_events || 0) - (reg.contributions || 0) - (reg.invoices || 0)],
+   ["Receivables", reg.invoices || 0],
    ["Contributions", reg.contributions || 0],
    ["Tax notes", reg.tax_events || 0],
    ["Objects", reg.objects || 0]].forEach(([k, v]) => {
@@ -685,6 +729,66 @@ function clearForm(w) {
   if (w === "income") ["iRef", "iAmt", "iPort", "iExtra"].forEach(i => $(i).value = "");
   if (w === "contribution") ["cRef", "cAmt", "cExtra"].forEach(i => $(i).value = "");
   if (w === "tax") ["tRef", "tAmt"].forEach(i => $(i).value = "");
+}
+
+/* ---------- invoice ---------- */
+$("btnInvoice").onclick = async () => {
+  const btn = $("btnInvoice");
+  let lines;
+  try {
+    lines = JSON.parse($("nLines").value.trim() || "[]");
+  } catch (e) { toast("err", "Lines must be JSON", 'Example: [{"description":"consulting","quantity":10,"unit_price":150}]'); return; }
+  if (!Array.isArray(lines) || !lines.length) { toast("err", "At least one line", "An invoice needs a line with a quantity and a unit price."); return; }
+  if (!$("nInvId").value.trim()) { toast("err", "An invoice id is required", "e.g. INV-001."); return; }
+  if (!$("nCust").value.trim()) { toast("err", "A customer is required", "Who was billed."); return; }
+  const body = {
+    invoice_id: $("nInvId").value.trim(), customer: $("nCust").value.trim(), lines,
+    tax: $("nTax").value.trim(), currency: $("nCur").value.trim() || "USD",
+    issued_day: $("nIssued").value.trim() || 0, due_day: $("nDue").value.trim()
+  };
+  btn.disabled = true;
+  try {
+    const r = await post("/api/record/invoice", body);
+    if (r.gated) toast("warn", "Held at the gate", "Nothing written yet. Approve it below to record it.");
+    else {
+      toast("ok", "Invoice recorded", r.receipt.object_id + " · seq " + r.receipt.seq);
+      ["nInvId", "nCust", "nLines", "nTax", "nIssued", "nDue"].forEach(i => $(i).value = "");
+      $("nCur").value = "USD";
+    }
+    renderGate(r.gate);
+    await refresh();
+  } catch (err) { toast("err", "Refused", err.message); }
+  finally { btn.disabled = false; }
+};
+
+$("arAsOf").onchange = () => loadReceivables().catch(e => toast("err", "Load failed", e.message));
+
+async function loadReceivables() {
+  const inv = await api("/api/invoices?limit=200");
+  const aging = await api("/api/ar-aging?as_of_day=" + encodeURIComponent($("arAsOf").value.trim() || 0));
+  const body = $("arBody"); body.innerHTML = "";
+  $("arEmpty").hidden = inv.items.length > 0;
+  const bk = aging.buckets || {};
+  $("arAging").textContent = "as-of day " + aging.as_of_day + " · total receivable " + aging.total_receivable +
+    "  ·  current " + (bk.current || "0") + " · 31-60 " + (bk["31_60"] || "0") +
+    " · 61-90 " + (bk["61_90"] || "0") + " · over 90 " + (bk.over_90 || "0");
+  inv.items.forEach(e => {
+    const tr = el("tr");
+    const c1 = el("td");
+    const head = el("div"); head.style.cssText = "display:flex;gap:.4rem;align-items:center;flex-wrap:wrap";
+    head.appendChild(el("span", "b t-income", "invoice"));
+    head.appendChild(el("span", "ref", e.invoice_id || "—"));
+    c1.appendChild(head);
+    c1.appendChild(el("div", "sub", (e.customer || "—") + "  ·  " + e.object_id));
+    tr.appendChild(c1);
+    tr.appendChild(el("td", "sub", String(e.issued_day)));
+    tr.appendChild(el("td", "num", (e.total != null ? e.total : "—") + " " + (e.currency || "")));
+    const c4 = el("td");
+    const ok = e.check && e.check.verified;
+    c4.appendChild(el("span", "b " + (ok ? "ok" : "no"), ok ? "verified" : "FAILED"));
+    tr.appendChild(c4);
+    body.appendChild(tr);
+  });
 }
 
 /* ---------- gate ---------- */

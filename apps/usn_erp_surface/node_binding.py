@@ -35,7 +35,7 @@ import json
 import os
 from dataclasses import asdict, is_dataclass
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Mapping, Optional, Tuple
+from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 
 # --- the node ------------------------------------------------------------------------------------
 from sovereign_agent.compliance.human_approval_gate import ApprovalRequest, HumanApprovalGate
@@ -62,6 +62,12 @@ from sovereign_agent.objects.registry import ObjectRegistry
 from sovereign_agent.obligations import projection as obligation_projection
 from sovereign_agent.obligations.evidence import EvidenceTier, classify_evidence
 from sovereign_agent.obligations.ledger import AlreadyClosedError, ObligationLedger
+from sovereign_agent.revenue.billing import (
+    BillingError,
+    ar_aging as billing_ar_aging,
+    invoice as billing_invoice,
+)
+from sovereign_agent.revenue.credit import CreditError, check_order as credit_check_order
 
 APP_NAME = "USN ERP Operator Surface"
 APP_VERSION = "0.1.0"
@@ -71,6 +77,11 @@ LEDGER_FILENAME = "obligations.ndjson"
 KEYFILE_SUFFIX = ".nodekey.json"
 RECEIPT_LOG_FILENAME = "onboard_receipts.ndjson"
 INCOME_KIND = "income"
+#: An invoice is persisted through the SAME attribution writer as an income record (KM ruling,
+#: Option A), marked by this key in its payload. It is a RECORD of a billing event — never an AR
+#: balance the node holds, and never a money-path. The marker lets the reads tell an invoice apart
+#: from an earning without a second object kind or a second store.
+INVOICE_DOC_KIND = "invoice"
 
 #: Governance postures, expressed in the gate's own vocabulary. `requires_approval` returns False
 #: for any mode other than "corporate_regulated" — so "sovereign" is genuinely the module's ungated
@@ -80,7 +91,8 @@ MODE_REGULATED = "corporate_regulated"
 
 #: The three action classes this vertical performs. Under the regulated posture every one is
 #: declared high-materiality, so the gate engages on all of them.
-RECORD_ACTION_CLASSES = ("attribute_income", "record_contribution", "record_tax_event")
+RECORD_ACTION_CLASSES = ("attribute_income", "record_contribution", "record_tax_event",
+                         "record_invoice")
 
 #: The obligation lifecycle acts this app drives. Every one is an existing `ObligationLedger`
 #: method — no new engine, no new verb.
@@ -335,10 +347,12 @@ class NodeBinding:
                 "tax_events": sum(1 for e in income if (e.get("payload") or {}).get("tax_event")),
                 "contributions": sum(1 for e in income
                                      if (e.get("payload") or {}).get("contribution_class")),
+                "invoices": sum(1 for e in income
+                                if (e.get("payload") or {}).get("doc_kind") == INVOICE_DOC_KIND),
             }
         else:
             out["registry"] = {"present": False, "log_file": log, "entries": 0, "objects": 0,
-                               "income_events": 0, "tax_events": 0, "contributions": 0,
+                               "income_events": 0, "tax_events": 0, "contributions": 0, "invoices": 0,
                                "note": (f"No {REGISTRY_FILENAME} yet at '{self.registry_root}'. "
                                         f"It is created by the node's own store on your first record.")}
 
@@ -561,8 +575,10 @@ class NodeBinding:
             if e.get("object_id") != oid:
                 continue
             p = dict(e.get("payload") or {})
-            existing = "tax note" if p.get("tax_event") else (
-                "contribution" if p.get("contribution_class") else "earning")
+            existing = ("tax note" if p.get("tax_event") else
+                        "contribution" if p.get("contribution_class") else
+                        "invoice" if p.get("doc_kind") == INVOICE_DOC_KIND else
+                        "earning")
             if existing != wanted:
                 raise SurfaceError(
                     f"A {existing} is already recorded under the reference '{work_ref}'. Recording a "
@@ -668,6 +684,125 @@ class NodeBinding:
                              "source_ref": "usn_erp_surface", "at": at or utc_now(),
                              "amount": amount, "unit": unit,
                              "extra": dict(extra or {}) or None})
+
+    # ============================================================================================
+    # 2c · Invoice / receivable-lite — a governed billing-event record (KM ruling, Option A)
+    # ============================================================================================
+    #
+    # An invoice is SHAPED by the sealed `revenue.billing.invoice` (pure) and PERSISTED through the
+    # exact fence-owning writer an income record uses — no new object kind, no second ledger, no
+    # money-path. It records that a customer was billed; the node holds no receivable and moves no
+    # money. `revenue.credit.check_order` is an optional, pure, fail-closed pre-check. Aging is a
+    # read-only projection (see `ar_aging`). Collection / payment is OUT of scope by construction:
+    # there is no collect/pay/remit/settle path here, and the kill-grep forbids the vocabulary.
+
+    def record_invoice(self, *, invoice_id: str, customer: str,
+                       lines: Sequence[Mapping[str, Any]], tax: float = 0, currency: str = "USD",
+                       issued_day: int = 0, due_day: Optional[int] = None,
+                       credit_limit: Optional[float] = None, outstanding: Optional[float] = None,
+                       extra: Optional[Mapping[str, Any]] = None,
+                       at: Optional[str] = None) -> Dict[str, Any]:
+        """Record an invoice as a governed billing-event object the operator owns.
+
+        The total is computed by the sealed billing surface from the lines, never entered. The
+        record carries the customer, the issue/due day, and the line detail in `extra` under
+        `doc_kind='invoice'`; its `amount` is the invoice total, `unit` the currency. It is a
+        RECORD, not a balance — money-path OFF, exactly as an income attribution.
+        """
+        inv_id = str(invoice_id).strip()
+        if not inv_id:
+            raise SurfaceError("An invoice needs an id — e.g. 'INV-001'. It becomes the record's reference.")
+        cust = str(customer).strip()
+        if not cust:
+            raise SurfaceError("An invoice needs a customer — who was billed.")
+        try:
+            shaped = billing_invoice(list(lines), tax=tax, currency=currency)
+        except (BillingError, KeyError, TypeError) as exc:
+            raise SurfaceError(f"The billing surface refused this invoice: {exc}") from exc
+        total = float(shaped["total"])
+        # Optional governed credit check — pure, fail-closed. An over-limit invoice is refused
+        # before anything is staged. The check holds and moves no value; an override is a governed
+        # act elsewhere, never a flag this app quietly flips.
+        if credit_limit is not None:
+            try:
+                credit_check_order(credit_limit, outstanding or 0, total)
+            except CreditError as exc:
+                raise SurfaceError(f"The credit surface refused this invoice: {exc}") from exc
+        extra = self._fence_extra(extra)
+        work_ref = f"invoice:{inv_id}"
+        self._guard_object_collision(work_ref, "invoice")
+        inv_extra: Dict[str, Any] = {
+            "doc_kind": INVOICE_DOC_KIND, "invoice_id": inv_id, "customer": cust,
+            "issued_day": int(issued_day),
+            "due_day": (int(due_day) if due_day is not None else None),
+            "currency": str(currency), "status": "open",
+            "subtotal": str(shaped["subtotal"]), "tax": str(shaped["tax"]),
+            "lines": [{"description": ln.get("description"),
+                       "quantity": str(ln["quantity"]), "unit_price": str(ln["unit_price"]),
+                       "amount": str(ln["amount"])} for ln in shaped["lines"]],
+        }
+        if extra:
+            inv_extra.update(extra)
+        return self._submit(
+            "income", "record_invoice",
+            f"invoice · {inv_id} · {cust} · {total} {currency}",
+            {"earner": self.operator, "work_ref": work_ref, "mandate": self.mandate,
+             "author": self.operator, "source_ref": "usn_erp_surface", "at": at or utc_now(),
+             "amount": total, "unit": str(currency), "port_ref": None, "extra": inv_extra})
+
+    # -- invoice reads ----------------------------------------------------------------------------
+
+    def _invoice_entries(self) -> List[Dict[str, Any]]:
+        return [e for e in self._income_entries()
+                if (e.get("payload") or {}).get("doc_kind") == INVOICE_DOC_KIND]
+
+    def invoices(self, *, only: str = "all", limit: int = 100, offset: int = 0) -> Dict[str, Any]:
+        """The receivables panel — replayed from the node's registry on every call, each invoice
+        verified against its own receipt. These are billing-event records, not an AR balance the
+        node holds; there is no app-side cache and no stored total."""
+        rows: List[Dict[str, Any]] = []
+        for e in self._invoice_entries():
+            p = dict(e.get("payload") or {})
+            status = str(p.get("status") or "open")
+            if only != "all" and only != status:
+                continue
+            rows.append({
+                "invoice_id": p.get("invoice_id"), "customer": p.get("customer"),
+                "total": p.get("amount"), "currency": p.get("unit"),
+                "subtotal": p.get("subtotal"), "tax": p.get("tax"),
+                "issued_day": p.get("issued_day"), "due_day": p.get("due_day"),
+                "status": status, "lines": p.get("lines"),
+                "object_id": e.get("object_id"), "at": e.get("at"),
+                "approver": e.get("approver"), "approval_ref": e.get("approval_ref"),
+                "version_hash": e.get("version_hash"), "prev_hash": e.get("prev_hash"),
+                "check": self._verify_entry(e),
+            })
+        rows.reverse()
+        window = rows[offset: offset + limit]
+        return {"total": len(rows), "count": len(window), "offset": offset,
+                "has_more": offset + len(window) < len(rows), "items": window,
+                "note": ("Invoice records (billing events), not an AR balance. The node holds no "
+                         "receivable and moves no money; collection is out of scope for this surface.")}
+
+    def ar_aging(self, *, as_of_day: int) -> Dict[str, Any]:
+        """AR aging — a READ-ONLY PROJECTION over the open invoice records, computed each call by
+        the sealed `revenue.billing.ar_aging`. Nothing is stored: no aging table, no balance. The
+        buckets are derived from the records and sum to the total by construction."""
+        invs = [{"amount": (e.get("payload") or {}).get("amount") or 0,
+                 "issued_day": int((e.get("payload") or {}).get("issued_day") or 0),
+                 "paid": str((e.get("payload") or {}).get("status") or "open") != "open"}
+                for e in self._invoice_entries()]
+        aged = billing_ar_aging(invs, int(as_of_day))
+        return {
+            "as_of_day": aged["as_of_day"],
+            "buckets": {k: str(v) for k, v in aged["buckets"].items()},
+            "total_receivable": str(aged["total_receivable"]),
+            "balances": bool(aged["balances"]),
+            "open_invoice_count": sum(1 for i in invs if not i["paid"]),
+            "method": ("sovereign_agent.revenue.billing.ar_aging over the open invoice records — "
+                       "a projection, computed on read, never stored"),
+            "note": "A projection over records, not a stored aging table. The node holds no balance.",
+        }
 
     # ============================================================================================
     # 7 · Obligations — the node's own lifecycle, driven
@@ -899,16 +1034,20 @@ class NodeBinding:
         rows = []
         for e in self._income_entries():
             p = dict(e.get("payload") or {})
+            is_inv = p.get("doc_kind") == INVOICE_DOC_KIND
             is_tax = bool(p.get("tax_event"))
             is_con = bool(p.get("contribution_class"))
-            etype = "tax" if is_tax else ("contribution" if is_con else "income")
+            etype = ("invoice" if is_inv else
+                     "tax" if is_tax else
+                     "contribution" if is_con else
+                     "income")
             if only != "all" and only != etype:
                 continue
             rows.append({
                 "type": etype,
                 "object_id": e.get("object_id"), "seq": e.get("seq"), "at": e.get("at"),
                 "work_ref": p.get("work_ref"), "amount": p.get("amount"), "unit": p.get("unit"),
-                "port_ref": p.get("port_ref"),
+                "port_ref": p.get("port_ref"), "customer": p.get("customer"),
                 "tax_category": p.get("tax_category"),
                 "references_income": p.get("references_income"),
                 "contribution_class": p.get("contribution_class"), "source": p.get("source"),

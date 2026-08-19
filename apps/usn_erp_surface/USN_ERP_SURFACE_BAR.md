@@ -2,19 +2,23 @@
 
 ∞Δ∞ Seal 1176-INFINITY-RHO · Breath only ∞Δ∞
 
-Scored 2026-08-19. **v0 (P1–P8) re-verified, plus the obligations write surface (O1–O6).**
-Every row below was re-run immediately before writing this file.
+Scored 2026-08-19. **v0 (P1–P8) re-verified · obligations write surface (O1–O6) · plus
+invoice / receivable-lite (I1–I6, KM ruling Option A).** Every row below was re-run immediately
+before writing this file.
 
 | | |
 |---|---|
 | **Build** | `apps/usn_erp_surface/` — local web app, Flask on loopback, single self-contained page |
 | **Binding** | library-direct; `node_binding.py` is the only module that touches `sovereign_agent` |
-| **Vertical** | solo/household: open node · record income/contribution · record tax note · **open / approve / close obligations** · gate · export package |
-| **Tests** | **74 passed** (`apps/usn_erp_surface/tests/`) — was 48 at v0 |
-| **Kill-grep** | **GREEN**, 0 findings across **9** checks (`killgrep.py`, exit 0) — was 7 checks |
+| **Vertical** | solo/household: open node · record income/contribution · record tax note · **record invoice + AR aging** · **open / approve / close obligations** · gate · export package |
+| **Invoice-lite** | `revenue.billing.invoice` shapes it (pure) → persisted through the **same fence-owning attribution writer** as income (`work_ref=invoice:<id>`, `doc_kind=invoice`); `revenue.billing.ar_aging` projects aging on read. No new object kind, no second ledger. |
+| **Tests** | **93 passed** (`apps/usn_erp_surface/tests/`) — was 74 at v0.1, 48 at v0 |
+| **Kill-grep** | **GREEN**, 0 findings across **9** checks (`killgrep.py`, exit 0); invoice collection verbs added to check 2's vocabulary and proven to bite (I5) |
 
-**This is not an ERP suite.** It is one operator loop, complete. No AR/AP, no payroll UI, no bank
-feeds, no inventory, no multi-entity, no dashboard chrome beyond what these loops need.
+**This is not an ERP suite.** It is one operator loop, complete. Invoice is a **billing-event
+record, not an AR balance** — the node holds no receivable and moves no money; **collection /
+payment is OUT** (money-path OFF, machine-checked). No AP, no payroll UI, no bank feeds, no
+inventory, no multi-entity, no dashboard chrome beyond what these loops need.
 
 ---
 
@@ -37,6 +41,13 @@ feeds, no inventory, no multi-entity, no dashboard chrome beyond what these loop
 | O4 | Close only through existing APIs + gate as required | **GREEN** |
 | O5 | Kill-grep still GREEN; new paths covered | **GREEN** |
 | O6 | Read panel and write path agree on the same ledger files | **GREEN** |
+| | | |
+| I1 | Invoice-shaped record → gate → disk via module; survives restart | **GREEN** |
+| I2 | Deny → nothing written | **GREEN** |
+| I3 | List / aging reflects node state only (no app cache as truth) | **GREEN** |
+| I4 | No pay / remit / file / crossing callable reachable from the binding | **GREEN** |
+| I5 | Kill-grep GREEN; invoice money-path verbs proven to bite | **GREEN** |
+| I6 | Read panel and write path are one source of truth; P/O rows stay GREEN | **GREEN** |
 
 **RED rows: none.** Nine disclosures are recorded below — five carried from v0, four new to the
 obligations surface. None is a failed row; all are things you should know before you trust a GREEN.
@@ -436,5 +447,36 @@ cd /path/to/sovereign-agent-starter
 No commit and no push was made. I have no standing P-Push instruction in this thread and no remote
 credentials here, so `apps/` is delivered as files for you to land yourself. Say the word and I will
 prepare the commit.
+
+---
+
+## Invoice / receivable-lite, row by row (I1–I6) — GREEN
+
+**Law (KM ruling, Option A).** An invoice is shaped by the sealed `revenue.billing.invoice` (pure)
+and persisted through the exact fence-owning writer an income record uses — `work_ref="invoice:<id>"`,
+`amount=total`, the billing fields (`customer`, `issued_day`, `due_day`, `lines`, `status:open`) in
+`extra` under `doc_kind="invoice"`. No new object kind, no second ledger, no money-path. It is a
+**record of a billing event, not an AR balance.**
+
+- **I1 · create → gate → disk; survives restart — GREEN.** Under the regulated posture the invoice
+  is held at the gate (nothing on disk); on the operator's approval it is written through the module,
+  and a fresh binding replays it from disk and verifies it against its own receipt. The total
+  (`2120.0` = 1500 + 500 + 120) is computed by the billing surface, never typed.
+- **I2 · deny → nothing written — GREEN.** A denial leaves no `objects.ndjson`; the receivables
+  panel stays empty.
+- **I3 · aging reflects node state only — GREEN.** `ar_aging` is a projection computed on read by
+  `revenue.billing.ar_aging` over the invoice records — buckets sum to the total (`balances: true`),
+  and a fresh binding produces them (no app cache). `invoices()` projects the same bytes the write
+  produced (object_id + version_hash match).
+- **I4 · no pay/remit/file/crossing reachable — GREEN.** A money-movement field on an invoice is
+  refused by the module's own money-path fence (`"money-path"` in the refusal); a statutory field is
+  refused by the app's narrowing; and no public binding method name carries a collection verb.
+- **I5 · kill-grep bites the new verbs — GREEN.** `collect_payment`, `apply_payment`,
+  `settle_invoice`, `mark_paid` (and siblings) were added to the forbidden vocabulary; injecting each
+  into a copy of the app drives P6 to RED (exit 1).
+- **I6 · one source of truth — GREEN.** `status()`, `invoices()` and `ar_aging()` all replay the same
+  node and agree; all P1–P8 and O1–O6 rows re-ran GREEN in the same suite (**93 passed**).
+
+**STOP — working UI + BAR GREEN.** Collection remains OUT; the S4/fence re-audit is a later pass.
 
 Breath only. ∞Δ∞

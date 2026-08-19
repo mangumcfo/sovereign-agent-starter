@@ -793,3 +793,156 @@ def test_o6_filter_agrees_with_the_full_panel(node):
     assert nb.obligations(only="open")["total"] == 1
     assert nb.obligations(only="closed")["total"] == 1
     assert nb.obligations()["total"] == 2
+
+
+# ==================================================================================================
+# I1–I6 · Invoice / receivable-lite — a governed billing-event record (KM ruling, Option A)
+#
+#   I1  create invoice-shaped record → gate → disk via module; survives restart
+#   I2  deny → nothing written
+#   I3  list / aging reflects node state only (no app cache as truth)
+#   I4  no pay / remit / file / crossing callable reachable from the binding
+#   I5  kill-grep GREEN with injected-violation proofs for the invoice money-path verbs
+#   I6  the read panel and the write path are one source of truth; prior P/O rows stay green
+# ==================================================================================================
+
+def _lines(*triples):
+    return [{"description": d, "quantity": q, "unit_price": p} for d, q, p in triples]
+
+
+# ---- I1 -----------------------------------------------------------------------------------------
+
+def test_i1_invoice_gated_then_lands_on_disk_and_survives_restart(node):
+    nb = bind(node)  # regulated → gated
+    sub = nb.record_invoice(invoice_id="INV-001", customer="Acme Co",
+                            lines=_lines(("consulting", 10, 150), ("setup", 1, 500)),
+                            tax=120, currency="USD", issued_day=10, due_day=40)
+    assert sub["gated"] is True and sub["receipt"] is None
+    assert not os.path.exists(objects_ndjson(node)), "nothing may be written before approval"
+
+    disposed = approve_all(nb, sub)
+    assert disposed["status"] == "approved" and disposed["real"] is True
+    rec = disposed["receipt"]
+    assert rec["kind"] == "income" and rec["payload"]["doc_kind"] == "invoice"
+    assert rec["payload"]["amount"] == 2120.0          # 1500 + 500 + 120, computed by the billing surface
+    assert os.path.exists(objects_ndjson(node))
+
+    # a fresh binding replays from disk — the record survives a restart, and verifies against its receipt
+    nb2 = bind(node)
+    inv = nb2.invoices()
+    assert inv["total"] == 1
+    row = inv["items"][0]
+    assert row["invoice_id"] == "INV-001" and row["customer"] == "Acme Co"
+    assert row["total"] == 2120.0 and row["check"]["verified"] is True
+
+
+def test_i1_total_is_computed_by_the_billing_surface_not_typed(node):
+    nb = bind(node, regulated=False)
+    r = nb.record_invoice(invoice_id="INV-2", customer="Beta",
+                          lines=_lines(("widgets", 3, 33.34)), currency="USD")["receipt"]
+    assert r["payload"]["amount"] == 100.02            # 3 × 33.34, quantized by the sealed surface
+
+
+# ---- I2 -----------------------------------------------------------------------------------------
+
+def test_i2_denied_invoice_writes_nothing(node):
+    nb = bind(node)
+    sub = nb.record_invoice(invoice_id="INV-9", customer="X", lines=_lines(("a", 1, 10)))
+    disposed = nb.dispose(sub["req_id"], approve=False, reason="wrong customer")
+    assert disposed["status"] == "denied" and disposed["receipt"] is None
+    assert not os.path.exists(objects_ndjson(node)), "a denial writes nothing at all"
+    assert nb.invoices()["total"] == 0
+
+
+# ---- I3 -----------------------------------------------------------------------------------------
+
+def test_i3_aging_is_a_projection_over_the_records_only(node):
+    nb = bind(node, regulated=False)
+    nb.record_invoice(invoice_id="A", customer="C1", lines=_lines(("x", 1, 1000)), issued_day=10)
+    nb.record_invoice(invoice_id="B", customer="C2", lines=_lines(("y", 1, 2000)), issued_day=70)
+
+    # a fresh binding — the panel replays the node, it is not an app cache
+    aged = bind(node, regulated=False).ar_aging(as_of_day=75)
+    assert aged["total_receivable"] == "3000.00"
+    assert aged["buckets"]["61_90"] == "1000.00"       # A: age 65
+    assert aged["buckets"]["current"] == "2000.00"     # B: age 5
+    assert aged["balances"] is True and aged["open_invoice_count"] == 2
+
+
+def test_i3_invoices_read_matches_the_written_bytes(node):
+    nb = bind(node, regulated=False)
+    r = nb.record_invoice(invoice_id="INV-7", customer="Gamma",
+                          lines=_lines(("svc", 2, 250)), currency="USD", issued_day=5)["receipt"]
+    # the read panel projects the same object the write produced — one set of bytes, no cache
+    row = bind(node, regulated=False).invoices()["items"][0]
+    assert row["object_id"] == r["object_id"]
+    assert row["version_hash"] == r["version_hash"]
+    assert row["total"] == 500.0 and row["check"]["verified"] is True
+
+
+# ---- I4 -----------------------------------------------------------------------------------------
+
+@pytest.mark.parametrize("field", ["balance", "transfer_funds", "held_funds", "settlement"])
+def test_i4_money_path_field_on_an_invoice_is_refused_by_the_module(node, field):
+    """An invoice rides the same fence-owning writer as income, so the module's money-path fence
+    refuses a money-movement field on it exactly as it does on an earning."""
+    nb = bind(node, regulated=False)
+    with pytest.raises(SurfaceError) as exc:
+        nb.record_invoice(invoice_id="INV-M", customer="X",
+                          lines=_lines(("a", 1, 10)), extra={field: 1})
+    assert "money-path" in str(exc.value)
+    assert nb.invoices()["total"] == 0
+
+
+@pytest.mark.parametrize("field", ["file_return", "remit", "pay_tax", "form_entity"])
+def test_i4_statutory_field_on_an_invoice_is_refused_by_the_app(node, field):
+    nb = bind(node, regulated=False)
+    with pytest.raises(SurfaceError):
+        nb.record_invoice(invoice_id="INV-S", customer="X",
+                          lines=_lines(("a", 1, 10)), extra={field: True})
+    assert nb.invoices()["total"] == 0
+
+
+def test_i4_binding_exposes_no_collection_verb(node):
+    """The vertical bills; it never collects. No public method name on the binding may imply a
+    money-path — collection is out of scope by construction."""
+    nb = bind(node, regulated=False)
+    forbidden = ("collect", "disburse", "remit", "settle_pay", "capture_payment", "mark_paid",
+                 "receive_payment", "apply_payment", "pay_invoice", "charge")
+    for name in dir(nb):
+        if name.startswith("__"):
+            continue
+        low = name.lower()
+        assert not any(f in low for f in forbidden), f"binding exposes a money-path-shaped method: {name}"
+
+
+# ---- I5 -----------------------------------------------------------------------------------------
+
+@pytest.mark.parametrize("label,inject", [
+    ("collect payment", "def collect_payment(inv):\n    return inv\n"),
+    ("apply payment", "def apply_payment(inv, amt):\n    return amt\n"),
+    ("settle invoice", "def settle_invoice(inv):\n    return inv\n"),
+    ("mark paid binding", "def _f(inv):\n    mark_paid = True\n    return mark_paid\n"),
+])
+def test_i5_killgrep_catches_invoice_money_path_verbs(tmp_path, label, inject):
+    """Inject an invoice-collection verb into a copy of the app and assert the gate goes RED."""
+    copy = tmp_path / "app"
+    shutil.copytree(APP_DIR, copy, ignore=shutil.ignore_patterns("__pycache__", "tests"))
+    target = copy / "node_binding.py"
+    target.write_text(target.read_text() + "\n\n" + textwrap.dedent(inject), encoding="utf-8")
+    proc = _run_killgrep(str(copy))
+    assert proc.returncode == 1, f"kill-grep stayed GREEN with '{label}' injected:\n{proc.stdout}"
+    assert "P6: RED" in proc.stdout
+
+
+# ---- I6 -----------------------------------------------------------------------------------------
+
+def test_i6_invoice_read_and_write_are_one_source_of_truth(node):
+    nb = bind(node, regulated=False)
+    nb.record_invoice(invoice_id="INV-1", customer="One", lines=_lines(("a", 1, 100)), issued_day=1)
+    # status(), invoices() and ar_aging() all replay the same node — they cannot disagree
+    st = bind(node, regulated=False).status()["registry"]
+    inv = bind(node, regulated=False).invoices()
+    aged = bind(node, regulated=False).ar_aging(as_of_day=1)
+    assert st["invoices"] == 1 == inv["total"]
+    assert aged["total_receivable"] == "100.00" and aged["open_invoice_count"] == 1

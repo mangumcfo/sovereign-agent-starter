@@ -68,6 +68,10 @@ FORBIDDEN_NAMES = {
     "form_entity", "register_entity", "power_of_attorney", "authorized_agent",
     # money movement
     "transfer_funds", "move_funds", "hold_funds", "held_funds", "disburse", "settle_payment",
+    # invoice collection / receipt of payment — this vertical bills as a RECORD; collection is OUT.
+    # A money-path would first appear as one of these, so they are machine-checked out.
+    "collect_payment", "collect_receivable", "receive_payment", "apply_payment", "record_payment",
+    "capture_payment", "process_payment", "settle_invoice", "pay_invoice", "mark_paid", "charge_card",
 }
 
 #: Identifiers that would make the app hold value as authority rather than record it as attribution.

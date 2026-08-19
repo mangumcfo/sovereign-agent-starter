@@ -243,6 +243,63 @@ def record_tax() -> Tuple[Response, int]:
     return _record("tax")
 
 
+@app.post("/api/record/invoice")
+def record_invoice() -> Tuple[Response, int]:
+    """Record an invoice as a governed billing-event object. This endpoint bills as a RECORD — it
+    collects nothing, receives nothing, settles nothing: there is no such path in this app. The
+    total is computed by the sealed billing surface from the lines; the operator never types it."""
+    b = _body()
+    try:
+        nb = _bound()
+        lines = b.get("lines")
+        if not isinstance(lines, list) or not lines:
+            raise SurfaceError("An invoice needs at least one line — each with a quantity and a "
+                               "unit price. Example line: {\"description\": \"consulting\", "
+                               "\"quantity\": 10, \"unit_price\": 150}.")
+        with _LOCK:
+            res = nb.record_invoice(
+                invoice_id=str(b.get("invoice_id", "")).strip(),
+                customer=str(b.get("customer", "")).strip(),
+                lines=lines, tax=_num(b.get("tax")) or 0,
+                currency=str(b.get("currency") or "USD"),
+                issued_day=int(b.get("issued_day") or 0),
+                due_day=(int(b["due_day"]) if b.get("due_day") not in (None, "") else None),
+                credit_limit=_num(b.get("credit_limit")), outstanding=_num(b.get("outstanding")),
+                extra=_extra(b.get("extra")))
+        return _ok(dict(res, gate=nb.gate_state()))
+    except SurfaceError as exc:
+        return _fail(exc)
+    except Exception as exc:  # noqa: BLE001
+        return _fail(exc, 500)
+
+
+@app.get("/api/invoices")
+def invoices() -> Tuple[Response, int]:
+    """The receivables panel — replayed from the node's registry every call. Billing-event records,
+    not an AR balance."""
+    try:
+        return _ok(_bound().invoices(
+            only=request.args.get("only", "all"),
+            limit=int(request.args.get("limit", 100)),
+            offset=int(request.args.get("offset", 0))))
+    except SurfaceError as exc:
+        return _fail(exc, 409)
+    except Exception as exc:  # noqa: BLE001
+        return _fail(exc, 500)
+
+
+@app.get("/api/ar-aging")
+def ar_aging() -> Tuple[Response, int]:
+    """AR aging — a read-only projection over the open invoice records, computed on read via the
+    sealed billing surface. Nothing is stored; no balance is held."""
+    try:
+        return _ok(_bound().ar_aging(as_of_day=int(request.args.get("as_of_day", 0))))
+    except SurfaceError as exc:
+        return _fail(exc, 409)
+    except Exception as exc:  # noqa: BLE001
+        return _fail(exc, 500)
+
+
 # ==================================================================================================
 # 4 · The gate
 # ==================================================================================================
