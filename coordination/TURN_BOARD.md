@@ -13,7 +13,7 @@ pushes at turn end. So the notification wire is the repo itself.
    line to the log below and push it with (or immediately after) your work. Newest line last.
 2. **On starting a turn**, `git fetch origin && git log -1 origin/main -- coordination/TURN_BOARD.md`
    (or just read this file at origin/main) before doing anything else. Lines you haven't seen
-   are your inbox.
+   are your inbox. **Exception: Tiger is wake-driven (does not board-poll)** — see LOOP LAW v2.
 3. **Append-only.** Never edit or delete another lane's line. One line per notice — detail
    lives in the commit/BAR the line points to.
 
@@ -26,20 +26,29 @@ Line format:
 - Load-bearing fork mid-rail → `FORK:` prefix, one line, then stop per cadence law.
 - Anything reality-touching stays under the standing HOLD rules; this board is a wire, not a gate.
 
-## Standing LOOP LAW (KM-NO1 2026-08-19 — closes water-carry)
+## Standing LOOP LAW v2 (KM-NO1 2026-08-19 — matches real seats)
 
-Surface / verify cycle **without KM as relay**:
+**Operating loop (KM word):**  
+`No1/G → AA → Tiger/GB → AA → KM → No1 align → next GO`
 
-1. **GO** lands on this board (KM or KM-NO1). Tiger reads board → builds.
-2. **Tiger STOP** = one board line: `STOP | branch @ sha | BAR E1–En claimed GREEN | ready AA verify` + push branch. Optional: GB rings AA if faster wake.
-3. **AA verify** (woken by bell or PR #21 or board pull) → **must** append board line same turn:
-   - `GREEN | tip sha | evidence one-liner | waiting KM merge`
-   - `RED | tip sha | defect one-liner + path | Tiger rework`
-   Chat-only verdicts do **not** count. Board line is the handoff.
-4. **On RED:** Tiger’s next turn-start board read is the work order — no KM paste. Fix → new STOP line.
-5. **On GREEN:** only KM (or KM-NO1 on pre-authorized merge word) posts merge / next GO. Wake ≠ GO.
-6. **PR #21** = doorbell for **AA** (proven). Not required for Tiger/GB; board is their inbox.
-7. **Mesh facts (closed):** Tiger↔GB duplex · anyone→AA wake · AA→out = this board only (cloud by design).
+**Seat facts:**
+- Tiger does **not** board-poll — must be **woken** with the work order.
+- AA cloud can **receive** wakes (bell / PR #21) but **cannot SendMessage** to Tiger or GB (by design).
+- GB local **can** SendMessage Tiger and AnnArbor (proven).
+
+**Therefore the physical path is:**
+
+1. **No1** posts GO or MERGE on this board (+ PR #21 wakes AA).
+2. **AA** reads board/PR → owns the handoff text (what Tiger must do) → posts board line `AA→TIGER | <one-line order> | ref`.
+3. **GB** (or any local seat) **rings Tiger** with that order (SendMessage) — GB is the **AA→Tiger carrier** while AA is cloud. Not a second authority; carrier only.
+4. **Tiger** executes → STOP board line + branch tip → GB rings AnnArbor (or PR comment).
+5. **AA** verifies → GREEN/RED board line same turn.
+6. **On RED:** AA posts `AA→TIGER | fix …` → GB rings Tiger again.
+7. **On GREEN:** KM/No1 merge word on board → AA posts `AA→TIGER | merge …` → GB rings Tiger → Tiger FF → tip line → AA post-merge confirm.
+
+**Board** = durable record of every handoff. **Bells** = wake only. **Wake ≠ GO.** KM only at merge / next GO / align with No1.
+
+**Optional later:** AA local Devin → AA can ring Tiger directly and GB carrier step drops.
 
 ## Log (append below — newest last)
 
@@ -76,3 +85,4 @@ Surface / verify cycle **without KM as relay**:
 | 2026-08-19 17:05Z | KM-NO1 | MERGE — exception-queue @ 3f8fc51 on AA GREEN. Tiger: rebase onto origin/main, re-run gates, FF main, BAR travels, rev-list 0, confirm tip v0.5. Then STOP for post-merge AA confirm. ERP track: ~70% after this merge. Next surface GO follows post-merge GREEN. | 3f8fc51 |
 | 2026-08-19 17:12Z | KM-NO1 | GO — GB confirm corpus posture (tables on board). KM word: S0–S14 corpus COMPLETE in Atlas; book↔code rail COMPLETE; no fenced open series/titles — corpus is the Objective. S10 Livelihood restart is the real S10 (prior off-Atlas path voided). Primary work now = app surface on encoded corpus (SAS / BCK composition for simplified apps). S0–S1 = teaching; S2–S14 = surface the running books; S5+ KDP/aquarium publish = parallel later, does not block app. GB: confirm or correct vs Atlas+roadmap+seal ledger — series counts, any residual not sealed, BCK/SAS home one-liner. No1 will adopt GB tables as track B. High BAR. | Atlas · roadmap · ledger |
 | 2026-08-19 17:18Z | KM-NO1 | CLARIFY roles now: (1) AA GREEN on exception-queue is DONE — AA does not execute merge. (2) TIGER: execute MERGE now (17:05Z word) — rebase 3f8fc51 → FF main → board line tip sha v0.5. (3) AA: after Tiger tip line, post-merge confirm GREEN/RED on board (doorbell this PR). (4) GB: corpus confirm GO still yours (17:12Z). | 3f8fc51 · PR #21 |
+| 2026-08-19 17:22Z | KM-NO1 | LOOP LAW v2 LIVE (section rewritten). Tiger does not board-poll. Path: No1 board+PR → AA owns order on board as AA→TIGER line → GB rings Tiger with that order → Tiger STOP → GB rings AA → AA GREEN/RED board. RIGHT NOW: AA post `AA→TIGER \| MERGE exception-queue @ 3f8fc51 rebase FF tip v0.5` · GB ring Tiger with that line · then AA holds for tip. | this board · PR #21 |
