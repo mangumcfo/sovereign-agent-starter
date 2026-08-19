@@ -1463,6 +1463,99 @@ def test_h5_killgrep_still_bites_silent_clear_on_the_home_build(tmp_path):
     assert proc.returncode == 1 and "P6: RED" in proc.stdout
 
 
+
+# ==================================================================================================
+# M1–M6 · Master data — chart of accounts + party roll-ups, READ-ONLY, derived from records
+# ==================================================================================================
+
+def _seed_master(nb):
+    nb.record_income(work_ref="consult", amount=2400, unit="USD")
+    nb.record_contribution_event(source="skill_service", work_ref="tutoring", amount=300)
+    nb.record_invoice(invoice_id="INV-1", customer="Acme", lines=_lines(("svc", 1, 1000)), issued_day=5)
+    nb.record_invoice(invoice_id="INV-2", customer="Acme", lines=_lines(("svc2", 1, 500)), issued_day=8)
+    nb.record_invoice(invoice_id="INV-3", customer="Beta", lines=_lines(("x", 1, 600)),
+                      issued_day=1, extra={"deferred": True})
+
+
+def test_m1_chart_reflects_node_state_and_survives_restart(node):
+    _seed_master(bind(node, regulated=False))
+    coa = bind(node, regulated=False).chart_of_accounts_view()      # fresh binding = restart
+    by = {a["account"]: a for a in coa["accounts"]}
+    assert by["cash"]["net"] == "2700.0" and by["cash"]["type"] == "asset"
+    assert by["accounts_receivable"]["net"] == "2100.0"
+    assert by["unearned_revenue"]["net"] == "-600.0"               # credit-natural
+    assert by["revenue"]["net"] == "-4200.0"
+    assert by["expense"]["active"] is False and by["expense"]["net"] == "0"
+    assert coa["account_count"] == 6
+
+
+def test_m1_empty_node_shows_the_typed_chart_with_zero_balances(node):
+    coa = bind(node, regulated=False).chart_of_accounts_view()
+    assert coa["account_count"] == 6 and coa["active_count"] == 0
+    assert all(a["net"] == "0" for a in coa["accounts"])
+
+
+def test_m2_party_rollups_tie_to_the_records(node):
+    _seed_master(bind(node, regulated=False))
+    p = bind(node, regulated=False).parties()
+    acme = next(c for c in p["customers"] if c["customer"] == "Acme")
+    assert acme["invoices"] == 2 and acme["total_billed"] == 1500.0
+    assert acme["last_invoice_id"] == "INV-2"                      # newest by timestamp
+    beta = next(c for c in p["customers"] if c["customer"] == "Beta")
+    assert beta["total_billed"] == 600.0
+    srcs = {s["source"]: s for s in p["revenue_sources"]}
+    assert srcs["direct"]["total"] == 2400.0                        # plain income
+    assert srcs["skill_service"]["total"] == 300.0                  # contribution source
+    assert p["vendor_count"] == 0 and "empty by construction" in p["vendor_note"]
+
+
+def test_m2_customer_appears_exactly_when_a_record_names_it(node):
+    nb = bind(node, regulated=False)
+    assert nb.parties()["customer_count"] == 0
+    nb.record_invoice(invoice_id="I1", customer="NewCo", lines=_lines(("a", 1, 10)))
+    assert [c["customer"] for c in nb.parties()["customers"]] == ["NewCo"]
+
+
+def test_m3_master_data_reads_write_nothing(node):
+    nb = bind(node, regulated=False)
+    _seed_master(nb)
+    reg_log = objects_ndjson(node)
+    before = open(reg_log, "rb").read()
+    f = bind(node, regulated=False)
+    f.chart_of_accounts_view(); f.parties()
+    assert open(reg_log, "rb").read() == before
+    assert not os.path.exists(os.path.join(node["ledger"], "obligations.ndjson"))
+
+
+def test_m4_no_master_data_write_verb_exists(node):
+    nb = bind(node, regulated=False)
+    forbidden = ("add_account", "edit_account", "delete_account", "add_customer", "edit_customer",
+                 "add_vendor", "merge_part", "update_master")
+    for name in dir(nb):
+        if not name.startswith("__"):
+            assert not any(f in name.lower() for f in forbidden), name
+
+
+@pytest.mark.parametrize("label,inject", [
+    ("second master store", "import sqlite3\n_md = sqlite3.connect('master.db')\n"),
+    ("silent clear on party", "def dismiss_exception(row):\n    return row\n"),
+])
+def test_m5_killgrep_bites_on_master_data_violations(tmp_path, label, inject):
+    copy = tmp_path / "app"
+    shutil.copytree(APP_DIR, copy, ignore=shutil.ignore_patterns("__pycache__", "tests"))
+    target = copy / "node_binding.py"
+    target.write_text(target.read_text() + "\n\n" + textwrap.dedent(inject), encoding="utf-8")
+    proc = _run_killgrep(str(copy))
+    assert proc.returncode == 1, f"kill-grep stayed GREEN with '{label}' injected:\n{proc.stdout}"
+
+
+def test_m6_chart_ties_to_the_period_view(node):
+    _seed_master(bind(node, regulated=False))
+    nb = bind(node, regulated=False)
+    coa = {a["account"]: a["net"] for a in nb.chart_of_accounts_view()["accounts"] if a["active"]}
+    assert coa == nb.period_view()["trial_balance"]                 # same sealed projection
+
+
 def test_h6_home_reflects_governed_change_only(node):
     vetoed = _seed_exceptions(bind(node, regulated=False))
     nb = bind(node, regulated=True)

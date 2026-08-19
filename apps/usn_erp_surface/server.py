@@ -325,6 +325,29 @@ def status_home() -> Tuple[Response, int]:
         return _fail(exc, 500)
 
 
+@app.get("/api/chart-of-accounts")
+def chart_of_accounts() -> Tuple[Response, int]:
+    """The chart of accounts with live balances — read-only; no account store exists to edit."""
+    try:
+        return _ok(_bound().chart_of_accounts_view())
+    except SurfaceError as exc:
+        return _fail(exc, 409)
+    except Exception as exc:  # noqa: BLE001
+        return _fail(exc, 500)
+
+
+@app.get("/api/parties")
+def parties() -> Tuple[Response, int]:
+    """Party roll-ups (customers · revenue sources) derived from the governed records. No party
+    master file exists; vendors are empty by construction (AP not surfaced)."""
+    try:
+        return _ok(_bound().parties())
+    except SurfaceError as exc:
+        return _fail(exc, 409)
+    except Exception as exc:  # noqa: BLE001
+        return _fail(exc, 500)
+
+
 @app.get("/api/exceptions")
 def exceptions() -> Tuple[Response, int]:
     """The exception queue — pending deviations derived from node state, classified by the sealed

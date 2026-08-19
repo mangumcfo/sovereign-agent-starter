@@ -415,6 +415,24 @@ pre{background:var(--surface-1);border:1px solid var(--ring);border-radius:9px;p
           <div class="sub" id="homeDetail"></div>
         </div>
 
+        <div class="card" id="mdCard">
+          <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.6rem;flex-wrap:wrap">
+            <h2 style="margin:0">Master data</h2>
+            <span class="muted" style="font-size:.72rem">derived from the records · read-only · no lists to maintain</span>
+          </div>
+          <div class="b" style="margin-bottom:.3rem">Chart of accounts</div>
+          <table class="tbl"><thead><tr><th>Account</th><th>Type</th><th class="num">Net (Dr − Cr)</th></tr></thead>
+            <tbody id="coaBody"></tbody></table>
+          <div class="b" style="margin:.6rem 0 .3rem">Customers</div>
+          <table class="tbl"><thead><tr><th>Customer</th><th class="num">Invoices</th><th class="num">Total billed</th><th class="num">Open</th></tr></thead>
+            <tbody id="custBody"></tbody></table>
+          <div class="empty" id="custEmpty" hidden>No customers yet — a customer appears when an invoice names one.</div>
+          <div class="b" style="margin:.6rem 0 .3rem">Revenue sources</div>
+          <table class="tbl"><thead><tr><th>Source</th><th class="num">Records</th><th class="num">Total</th></tr></thead>
+            <tbody id="srcBody"></tbody></table>
+          <p class="law" id="mdNote" style="margin-top:.5rem"></p>
+        </div>
+
         <div class="card" id="excCard">
           <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.6rem;flex-wrap:wrap">
             <h2 style="margin:0">Exception queue</h2>
@@ -597,7 +615,7 @@ $("btnOpen").onclick = async () => {
     });
     render();
     toast("ok", "Node open", STATUS.governance.posture);
-    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables(), loadPeriodView(), loadExceptions(), loadHome()]);
+    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables(), loadPeriodView(), loadExceptions(), loadHome(), loadMasterData()]);
   } catch (err) { toast("err", "Could not open the node", err.message); }
 };
 $("btnClose").onclick = async () => {
@@ -612,7 +630,7 @@ $("btnRefresh").onclick = () => refresh();
 async function refresh() {
   try {
     STATUS = await api("/api/status"); render();
-    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables(), loadPeriodView(), loadExceptions(), loadHome()]);
+    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables(), loadPeriodView(), loadExceptions(), loadHome(), loadMasterData()]);
   } catch (err) { toast("err", "Refresh failed", err.message); }
 }
 
@@ -919,6 +937,39 @@ async function loadHome() {
     " · " + pd.open_postings + " postings this period" +
     (pd.closed_periods.length ? " · closed: " + pd.closed_periods.map(p => p.period).join(", ") : "") +
     " · " + ap.denied_this_session + " denied this session (session-scoped)";
+}
+
+/* ---------- master data ---------- */
+async function loadMasterData() {
+  const coa = await api("/api/chart-of-accounts");
+  const p = await api("/api/parties");
+  const cb = $("coaBody"); cb.innerHTML = "";
+  coa.accounts.forEach(a => {
+    const tr = el("tr");
+    tr.appendChild(el("td", a.active ? "" : "sub", a.label));
+    tr.appendChild(el("td", "sub", a.type));
+    tr.appendChild(el("td", "num", a.net));
+    cb.appendChild(tr);
+  });
+  const cu = $("custBody"); cu.innerHTML = "";
+  $("custEmpty").hidden = p.customers.length > 0;
+  p.customers.forEach(c => {
+    const tr = el("tr");
+    tr.appendChild(el("td", null, c.customer));
+    tr.appendChild(el("td", "num", String(c.invoices)));
+    tr.appendChild(el("td", "num", c.total_billed + " " + (c.currency || "")));
+    tr.appendChild(el("td", "num", String(c.open_billed)));
+    cu.appendChild(tr);
+  });
+  const sb = $("srcBody"); sb.innerHTML = "";
+  p.revenue_sources.forEach(s => {
+    const tr = el("tr");
+    tr.appendChild(el("td", null, s.source));
+    tr.appendChild(el("td", "num", String(s.records)));
+    tr.appendChild(el("td", "num", s.total + " " + (s.unit || "")));
+    sb.appendChild(tr);
+  });
+  $("mdNote").textContent = p.note + " " + p.vendor_note;
 }
 
 /* ---------- exception queue ---------- */

@@ -13,7 +13,8 @@ before writing this file.
 | **Binding** | library-direct; `node_binding.py` is the only module that touches `sovereign_agent` |
 | **Vertical** | solo/household: open node · record income/contribution · record tax note · **record invoice + AR aging** · **trial balance + income statement + balance sheet + period close** · **open / approve / close obligations** · gate · export package |
 | **Invoice-lite** | `revenue.billing.invoice` shapes it (pure) → persisted through the **same fence-owning attribution writer** as income (`work_ref=invoice:<id>`, `doc_kind=invoice`); `revenue.billing.ar_aging` projects aging on read. No new object kind, no second ledger. |
-| **Tests** | **137 passed** (`apps/usn_erp_surface/tests/`) — was 131 at v0.5, 119 at v0.4, 108 at v0.3, 93 at v0.2, 74 at v0.1, 48 at v0 |
+| **Tests** | **146 passed** (`apps/usn_erp_surface/tests/`) — was 137 at v0.6, 131 at v0.5, 119 at v0.4, 108 at v0.3, 93 at v0.2, 74 at v0.1, 48 at v0 |
+| **Master data (v0.7)** | READ-ONLY chart of accounts (typed CoA valued by the sealed trial balance) + party roll-ups (customers from invoice records · revenue sources from contributions · vendors empty by construction, AP not surfaced). No master-data store exists or is created — the QuickBooks-escape wedge: "lists" derived from governed records, never maintained as a second copy |
 | **Status home (v0.6)** | ONE read-only screen composing ONLY existing reads — open exceptions/policy gaps (exception queue) · approvals pending + material awaiting gate (gate/obligations) · period open/closed + in-balance (period view) · audit-ready Y/N (the existing package verdict, same sha, no new build path). Enterprise labels; no write path; tiles move only on governed change |
 | **Exception queue** | read-only projection of pending deviations (integrity breaches · failed verifies · standing vetoes · material-awaiting-gate · out-of-balance books · session pendings · locks), classified by the sealed `governance.exception.route_batch` — material + no covering gate = the router's own REFUSED (policy gap), never auto-resolved; **no dismiss exists**; a row leaves only when the governed state changes through an existing gated verb |
 | **Audit package** | one portable, self-verifying evidence bundle: revenue events · invoices + AR aging · tax records (not filings) · obligations · period closes · statements snapshot — all replayed from node state; compliance core = sealed `audit_checks` (6 receipted checks) → `build_audit_package` (content-hashed) → `verify_audit_package`; stamped `as_of` the newest entry, never the clock — unchanged books re-export byte-identically |
@@ -81,6 +82,13 @@ inventory, no multi-entity, no dashboard chrome beyond what these loops need.
 | H4 | Enterprise labels only; no kernel jargon leaks into the home payload | **GREEN** |
 | H5 | Kill-grep still bites silent-clear on the home build | **GREEN** |
 | H6 | Tiles move only on governed change (denied act changes nothing); prior rows GREEN | **GREEN** |
+| | | |
+| M1 | Chart of accounts reflects node state (sealed trial balance over typed CoA); survives restart | **GREEN** |
+| M2 | Party roll-ups tie to the records; a party appears exactly when a record names it; vendors empty by construction | **GREEN** |
+| M3 | Master-data reads write nothing — registry + ledger bytes unchanged | **GREEN** |
+| M4 | No master-data write verb exists (no add/edit/delete account, customer, or vendor) | **GREEN** |
+| M5 | Kill-grep bites — second master store / silent-clear injections → RED | **GREEN** |
+| M6 | Chart ties to the period view (same sealed projection); prior P/O/I/PV/A/E/H rows GREEN | **GREEN** |
 
 **RED rows: none.** Nine disclosures are recorded below — five carried from v0, four new to the
 obligations surface. None is a failed row; all are things you should know before you trust a GREEN.
@@ -642,6 +650,30 @@ the verb.
 - **H5 — GREEN.** Injected `dismiss_exception` still drives the kill-grep RED.
 - **H6 — GREEN.** A *denied* clear-veto moves no tile; only the approved, gated act does.
   Whole suite **137 passed** (P/O/I/PV/A/E all re-ran green).
+
+**STOP — working UI + BAR GREEN.** Next shot on GO.
+
+---
+
+## Master data, row by row (M1–M6) — GREEN
+
+**Shape.** Two read-only views, both derived from the governed records on every call.
+`chart_of_accounts_view()`: the typed CoA (a pure constant) valued by the sealed
+`posting.trial_balance` over the derived postings — no account store exists to edit, so the chart
+cannot drift from the books. `parties()`: customers rolled up from invoice records (count, total
+billed, open, last invoice), revenue sources from contribution records; **vendors empty by
+construction** (AP is not surfaced) and said so, rather than padded. A party appears exactly when
+a governed record names it — the QuickBooks-escape wedge: lists derived, never maintained.
+
+- **M1 — GREEN.** Seeded book → cash 2,700 · AR 2,100 · unearned −600 (credit-natural) · revenue
+  −4,200, from a fresh binding; the empty node shows the full typed chart at zero.
+- **M2 — GREEN.** Acme = 2 invoices / 1,500 billed / last INV-2; sources split direct 2,400 vs
+  skill_service 300; a customer appears on first naming record and not before.
+- **M3 — GREEN.** Registry + ledger bytes identical across both reads.
+- **M4 — GREEN.** No add/edit/delete verb for accounts, customers, or vendors on the binding.
+- **M5 — GREEN.** Injected sqlite master store and silent-clear verb each drive kill-grep RED.
+- **M6 — GREEN.** Active chart balances equal the period view's trial balance exactly (same
+  sealed projection). Whole suite **146 passed** (P/O/I/PV/A/E/H all re-ran green).
 
 **STOP — working UI + BAR GREEN.** Next shot on GO.
 

@@ -1186,6 +1186,82 @@ class NodeBinding:
         }
 
     # ============================================================================================
+    # 2h · Master data — chart of accounts + party roll-ups (v0.7). READ-ONLY, composed from
+    #      existing records. No master-data store exists or is created: the chart is the app's
+    #      typed CoA valued by the sealed trial balance, and every party row is a roll-up of the
+    #      governed records that name that party. The QuickBooks-escape wedge: what a captured
+    #      operator recognises as "lists", derived — never maintained as a second copy.
+    # ============================================================================================
+
+    def chart_of_accounts_view(self) -> Dict[str, Any]:
+        """The chart of accounts with live balances — the typed CoA (a pure constant) valued by
+        the sealed `trial_balance` over the derived postings. Read-only; no account can be added,
+        renamed, or deleted here, because no account store exists to edit."""
+        nets = gl_trial_balance(self._derive_postings())
+        labels = {"cash": "Cash", "accounts_receivable": "Accounts receivable (AR)",
+                  "unearned_revenue": "Unearned revenue", "equity": "Equity",
+                  "revenue": "Revenue", "expense": "Expense"}
+        accounts = []
+        for acct, meta in CHART_OF_ACCOUNTS.items():
+            net = nets.get(acct)
+            accounts.append({
+                "account": acct, "label": labels.get(acct, acct), "type": meta["type"],
+                "net": (str(net) if net is not None else "0"),
+                "active": net is not None,
+            })
+        return {"accounts": accounts, "account_count": len(accounts),
+                "active_count": sum(1 for a in accounts if a["active"]),
+                "method": ("typed CoA constant valued by sovereign_agent.financials.posting."
+                           "trial_balance over the read-time derived postings"),
+                "note": ("Read-only. The chart is a typed constant; balances are a projection. "
+                         "There is no account store to edit — nothing here can drift from the books.")}
+
+    def parties(self) -> Dict[str, Any]:
+        """Party roll-ups from the governed records: customers (from invoice records) and revenue
+        sources (from contribution records). Every figure is a sum over records replayed from the
+        node — no party master file exists, so a party appears exactly when a governed record
+        names it and never otherwise. Vendors: none by construction — no AP/vendor records exist
+        on this surface (procurement is not surfaced), reported honestly rather than padded."""
+        customers: Dict[str, Dict[str, Any]] = {}
+        for e in self._invoice_entries():
+            p = dict(e.get("payload") or {})
+            name = str(p.get("customer") or "—")
+            c = customers.setdefault(name, {"customer": name, "invoices": 0, "total_billed": 0.0,
+                                            "open_billed": 0.0, "currency": p.get("unit"),
+                                            "last_invoice_id": None, "last_at": None})
+            amt = float(p.get("amount") or 0)
+            c["invoices"] += 1
+            c["total_billed"] = round(c["total_billed"] + amt, 2)
+            if str(p.get("status") or "open") == "open":
+                c["open_billed"] = round(c["open_billed"] + amt, 2)
+            if (e.get("at") or "") >= (c["last_at"] or ""):
+                c["last_at"] = e.get("at")
+                c["last_invoice_id"] = p.get("invoice_id")
+
+        sources: Dict[str, Dict[str, Any]] = {}
+        for e in self._income_entries():
+            p = dict(e.get("payload") or {})
+            if p.get("tax_event") or p.get("doc_kind") == INVOICE_DOC_KIND:
+                continue
+            src = str(p.get("source") or "direct")
+            s = sources.setdefault(src, {"source": src, "records": 0, "total": 0.0,
+                                         "unit": p.get("unit")})
+            s["records"] += 1
+            s["total"] = round(s["total"] + float(p.get("amount") or 0), 2)
+
+        return {
+            "customers": sorted(customers.values(), key=lambda c: -c["total_billed"]),
+            "customer_count": len(customers),
+            "revenue_sources": sorted(sources.values(), key=lambda s: -s["total"]),
+            "source_count": len(sources),
+            "vendors": [], "vendor_count": 0,
+            "vendor_note": ("No vendor records exist on this surface — accounts payable is not "
+                            "surfaced, so the vendor list is empty by construction, not by omission."),
+            "note": ("Roll-ups over the governed records, replayed on every call. No party master "
+                     "file exists: a customer or source appears exactly when a record names it."),
+        }
+
+    # ============================================================================================
     # 2f · Exception queue — pending deviations, read from node state, classified by the sealed
     #      router (E1–E6). READ-ONLY: this panel clears nothing. A row leaves the queue only when
     #      the underlying governed state changes through an EXISTING gated verb (approve a draft,
