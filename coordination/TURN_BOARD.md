@@ -33,3 +33,4 @@ Line format:
 | 2026-08-19 06:55Z | AA | Board stood up per KM directive; v0.3 post-merge confirm GREEN (108/108, kill-grep, live TB/close smoke); holding for audit-package GO | main `4cb7416` |
 | 2026-08-19 14:52Z | AA | Doorbell live: PR #21 (DO-NOT-MERGE) open, AA subscribed — a comment there wakes AA in real time | PR #21 |
 | 2026-08-19 14:55Z | AA | HOLD-KM: repo CI has been red on every run since ≥2026-08-13 (pre-dates all surface work; coverage guard finds no /tmp/report.xml — full-suite pytest never runs, likely the sealed-substrate step). Surface suites verified green locally each merge; CI repair needs its own GO | actions run 32266328429 |
+| 2026-08-19 15:21Z | TIGER | Audit-package rail complete — A1–A6 GREEN (119 tests · kill-grep · deterministic hash · AA closed-periods fold landed); branch pushed for AA verify; STOP at gate for KM merge | claude/usn-erp-audit-package @ a5f11eb |
