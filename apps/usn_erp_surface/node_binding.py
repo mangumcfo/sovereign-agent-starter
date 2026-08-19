@@ -863,11 +863,12 @@ class NodeBinding:
     #   tax note                                    → memo / compliance record — no P&L line
     # AR aging (invoice-lite) stays the receivables detail; collection stays OUT (human + Port).
 
-    def _derive_postings(self) -> List[Dict[str, Any]]:
-        """Map the node's objects to balanced double-entry postings, at read time. Every posting goes
-        through the sealed `posting.post` (debits == credits or it is refused), so the trial balance
-        nets to zero by construction. Persists nothing."""
-        postings: List[Dict[str, Any]] = []
+    def _derived_journal(self) -> List[Dict[str, Any]]:
+        """The journal WITH PROVENANCE: every derived posting paired with the governed source
+        record it came from, so any total can be drilled down to 'which records make this number'.
+        The posting itself still goes through the sealed `posting.post` (debits == credits or
+        refused) — provenance is carried alongside, never a second accounting."""
+        journal: List[Dict[str, Any]] = []
         for e in self._income_entries():
             p = dict(e.get("payload") or {})
             amount = p.get("amount")
@@ -877,13 +878,26 @@ class NodeBinding:
                 continue  # a tax note is a compliance record, not a P&L line
             if p.get("doc_kind") == INVOICE_DOC_KIND:
                 credit_account = "unearned_revenue" if p.get("deferred") else "revenue"
-                postings.append(gl_post([Line.dr("accounts_receivable", amount),
-                                         Line.cr(credit_account, amount)],
-                                        memo=f"invoice {p.get('invoice_id')}"))
+                posting = gl_post([Line.dr("accounts_receivable", amount),
+                                   Line.cr(credit_account, amount)],
+                                  memo=f"invoice {p.get('invoice_id')}")
+                source = {"record_type": "invoice", "object_id": e.get("object_id"),
+                          "ref": p.get("invoice_id"), "party": p.get("customer"),
+                          "at": e.get("at"), "seq": e.get("seq")}
             else:  # income or contribution — a realised earning
-                postings.append(gl_post([Line.dr("cash", amount), Line.cr("revenue", amount)],
-                                        memo=str(p.get("work_ref") or "income")))
-        return postings
+                posting = gl_post([Line.dr("cash", amount), Line.cr("revenue", amount)],
+                                  memo=str(p.get("work_ref") or "income"))
+                source = {"record_type": ("contribution" if p.get("contribution_class") else "income"),
+                          "object_id": e.get("object_id"), "ref": p.get("work_ref"),
+                          "party": p.get("source") or "direct", "at": e.get("at"), "seq": e.get("seq")}
+            journal.append({"posting": posting, "source": source})
+        return journal
+
+    def _derive_postings(self) -> List[Dict[str, Any]]:
+        """Map the node's objects to balanced double-entry postings, at read time. Every posting goes
+        through the sealed `posting.post` (debits == credits or it is refused), so the trial balance
+        nets to zero by construction. Persists nothing."""
+        return [j["posting"] for j in self._derived_journal()]
 
     def _classification(self) -> Dict[str, Any]:
         """How each object class mapped — surfaced so the honesty is visible, not implied. Open
@@ -1260,6 +1274,111 @@ class NodeBinding:
             "note": ("Roll-ups over the governed records, replayed on every call. No party master "
                      "file exists: a customer or source appears exactly when a record names it."),
         }
+
+    # ============================================================================================
+    # 2i · Transaction / journal drill-down (v0.8) — READ-ONLY. Every drill answers "which
+    #      governed records make this number", and CARRIES ITS OWN EQUALITY PROOF: the drilled
+    #      total, the sum of the listed lines, and whether they tie — computed from node state in
+    #      the artifact itself. No new store; provenance rides the same sealed derivation.
+    # ============================================================================================
+
+    def drill(self, *, kind: str, key: Optional[str] = None) -> Dict[str, Any]:
+        """Drill a total down to its source lines.
+
+        kind='account' (or 'tb', same thing): key = a chart account → every journal line touching
+        it, each with its governed source record; total == the trial-balance net.
+        kind='customer': key = customer name → the invoice records billing them; total == the
+        party roll-up's total_billed.
+        kind='source': key = revenue source → its income/contribution records; total == the
+        roll-up total.
+        kind='period': the whole derived journal, every posting with its source; proof = the
+        journal nets to zero (each posting balanced by the sealed `post`).
+        """
+        k = str(kind).strip().lower()
+        if k in ("account", "tb"):
+            acct = str(key or "").strip()
+            if acct not in CHART_OF_ACCOUNTS:
+                raise SurfaceError(f"Unknown account '{key}'. Chart accounts: "
+                                   f"{', '.join(sorted(CHART_OF_ACCOUNTS))}.")
+            lines: List[Dict[str, Any]] = []
+            total = 0.0
+            for j in self._derived_journal():
+                for ln in j["posting"]["lines"]:
+                    if ln["account"] != acct:
+                        continue
+                    net = float(ln["debit"]) - float(ln["credit"])
+                    total = round(total + net, 2)
+                    lines.append({"memo": j["posting"]["memo"], "debit": ln["debit"],
+                                  "credit": ln["credit"], "net": str(net), "source": j["source"]})
+            stated = float(gl_trial_balance(self._derive_postings()).get(acct, 0))
+            return self._drill_result(f"Account · {acct}", lines, total, stated,
+                                      "trial-balance net for this account")
+        if k == "customer":
+            name = str(key or "").strip()
+            lines = []
+            total = 0.0
+            for e in self._invoice_entries():
+                p = dict(e.get("payload") or {})
+                if str(p.get("customer")) != name:
+                    continue
+                amt = float(p.get("amount") or 0)
+                total = round(total + amt, 2)
+                lines.append({"memo": f"invoice {p.get('invoice_id')}", "debit": str(amt),
+                              "credit": "0", "net": str(amt),
+                              "source": {"record_type": "invoice", "object_id": e.get("object_id"),
+                                         "ref": p.get("invoice_id"), "party": name,
+                                         "at": e.get("at"), "seq": e.get("seq")}})
+            stated = next((c["total_billed"] for c in self.parties()["customers"]
+                           if c["customer"] == name), 0.0)
+            if not lines:
+                raise SurfaceError(f"No invoice records name the customer '{key}'.")
+            return self._drill_result(f"Customer · {name}", lines, total, float(stated),
+                                      "party roll-up total billed")
+        if k == "source":
+            src = str(key or "").strip()
+            lines = []
+            total = 0.0
+            for j in self._derived_journal():
+                s = j["source"]
+                if s["record_type"] == "invoice" or str(s.get("party")) != src:
+                    continue
+                amt = float(j["posting"]["amount"])
+                total = round(total + amt, 2)
+                lines.append({"memo": j["posting"]["memo"], "debit": j["posting"]["amount"],
+                              "credit": "0", "net": j["posting"]["amount"], "source": s})
+            stated = next((s["total"] for s in self.parties()["revenue_sources"]
+                           if s["source"] == src), 0.0)
+            if not lines:
+                raise SurfaceError(f"No income or contribution records carry the source '{key}'.")
+            return self._drill_result(f"Revenue source · {src}", lines, total, float(stated),
+                                      "party roll-up total")
+        if k == "period":
+            journal = self._derived_journal()
+            lines = [{"memo": j["posting"]["memo"], "amount": j["posting"]["amount"],
+                      "balanced": j["posting"]["balanced"], "lines": j["posting"]["lines"],
+                      "source": j["source"]} for j in journal]
+            nets = gl_trial_balance([j["posting"] for j in journal])
+            residual = float(sum(nets.values(), 0))
+            return {"drill": "Period · full journal", "line_count": len(lines), "lines": lines,
+                    "sum_of_lines": str(residual), "stated_total": "0",
+                    "ties": residual == 0.0,
+                    "proof": ("every posting balanced by the sealed post(); the journal's trial "
+                              "balance nets to exactly zero"),
+                    "note": self._DRILL_NOTE}
+        raise SurfaceError(f"Unknown drill kind '{kind}'. Use account, tb, customer, source, or period.")
+
+    _DRILL_NOTE = ("Read-only. Each drill lists the governed records composing the total and "
+                   "carries its own equality proof — the total, the sum of its lines, and whether "
+                   "they tie, all derived from node state on this call.")
+
+    @staticmethod
+    def _drill_result(title: str, lines: List[Dict[str, Any]], line_sum: float,
+                      stated: float, stated_desc: str) -> Dict[str, Any]:
+        return {"drill": title, "line_count": len(lines), "lines": lines,
+                "sum_of_lines": str(round(line_sum, 2)), "stated_total": str(round(stated, 2)),
+                "ties": round(line_sum, 2) == round(stated, 2),
+                "proof": f"sum of listed lines vs {stated_desc}",
+                "note": NodeBinding._DRILL_NOTE}
 
     # ============================================================================================
     # 2f · Exception queue — pending deviations, read from node state, classified by the sealed

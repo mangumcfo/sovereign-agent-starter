@@ -13,7 +13,8 @@ before writing this file.
 | **Binding** | library-direct; `node_binding.py` is the only module that touches `sovereign_agent` |
 | **Vertical** | solo/household: open node · record income/contribution · record tax note · **record invoice + AR aging** · **trial balance + income statement + balance sheet + period close** · **open / approve / close obligations** · gate · export package |
 | **Invoice-lite** | `revenue.billing.invoice` shapes it (pure) → persisted through the **same fence-owning attribution writer** as income (`work_ref=invoice:<id>`, `doc_kind=invoice`); `revenue.billing.ar_aging` projects aging on read. No new object kind, no second ledger. |
-| **Tests** | **146 passed** (`apps/usn_erp_surface/tests/`) — was 137 at v0.6, 131 at v0.5, 119 at v0.4, 108 at v0.3, 93 at v0.2, 74 at v0.1, 48 at v0 |
+| **Tests** | **156 passed** (`apps/usn_erp_surface/tests/`) — was 146 at v0.7, 137 at v0.6, 131 at v0.5, 119 at v0.4, 108 at v0.3, 93 at v0.2, 74 at v0.1, 48 at v0 |
+| **Drill-down (v0.8)** | READ-ONLY drill from CoA account · TB line · customer · revenue source · period down to the governed source records composing the total — every drill carries its own EQUALITY PROOF (stated total, sum of listed lines, ties true/false) computed from node state in the artifact itself. Provenance rides the SAME sealed derivation (`_derive_postings` == the journal's postings by identity), so the drill can never fork the books. Closes the tie-out hole from KM's first UI pass |
 | **Master data (v0.7)** | READ-ONLY chart of accounts (typed CoA valued by the sealed trial balance) + party roll-ups (customers from invoice records · revenue sources from contributions · vendors empty by construction, AP not surfaced). No master-data store exists or is created — the QuickBooks-escape wedge: "lists" derived from governed records, never maintained as a second copy |
 | **Status home (v0.6)** | ONE read-only screen composing ONLY existing reads — open exceptions/policy gaps (exception queue) · approvals pending + material awaiting gate (gate/obligations) · period open/closed + in-balance (period view) · audit-ready Y/N (the existing package verdict, same sha, no new build path). Enterprise labels; no write path; tiles move only on governed change |
 | **Exception queue** | read-only projection of pending deviations (integrity breaches · failed verifies · standing vetoes · material-awaiting-gate · out-of-balance books · session pendings · locks), classified by the sealed `governance.exception.route_batch` — material + no covering gate = the router's own REFUSED (policy gap), never auto-resolved; **no dismiss exists**; a row leaves only when the governed state changes through an existing gated verb |
@@ -89,6 +90,13 @@ inventory, no multi-entity, no dashboard chrome beyond what these loops need.
 | M4 | No master-data write verb exists (no add/edit/delete account, customer, or vendor) | **GREEN** |
 | M5 | Kill-grep bites — second master store / silent-clear injections → RED | **GREEN** |
 | M6 | Chart ties to the period view (same sealed projection); prior P/O/I/PV/A/E/H rows GREEN | **GREEN** |
+| | | |
+| D1 | Every active account drill ties EXACTLY to its trial-balance net (equality, not presence) | **GREEN** |
+| D2 | Customer/source drills tie to the roll-ups; period drill nets to zero, every posting balanced | **GREEN** |
+| D3 | Every drilled line names a resolvable governed record (object_id verified against the registry) | **GREEN** |
+| D4 | Drill reads write nothing; unknown account/party/kind refuses loudly | **GREEN** |
+| D5 | Kill-grep bites tie-out tampering (plug_difference / force_balance / adjust_total → RED) | **GREEN** |
+| D6 | Provenance can never fork the books — postings list == journal's postings, by identity | **GREEN** |
 
 **RED rows: none.** Nine disclosures are recorded below — five carried from v0, four new to the
 obligations surface. None is a failed row; all are things you should know before you trust a GREEN.
@@ -674,6 +682,36 @@ a governed record names it — the QuickBooks-escape wedge: lists derived, never
 - **M5 — GREEN.** Injected sqlite master store and silent-clear verb each drive kill-grep RED.
 - **M6 — GREEN.** Active chart balances equal the period view's trial balance exactly (same
   sealed projection). Whole suite **146 passed** (P/O/I/PV/A/E/H all re-ran green).
+
+**STOP — working UI + BAR GREEN.** Next shot on GO.
+
+---
+
+## Transaction / journal drill-down, row by row (D1–D6) — GREEN
+
+**Shape.** `drill(kind, key)` answers *"which governed records make this number"* for four shapes:
+`account`/`tb` (journal lines touching the account, vs the trial-balance net), `customer` (invoice
+records vs the roll-up's total billed), `source` (income/contribution records vs the roll-up
+total), `period` (the full journal, vs zero). Provenance rides the **same** sealed derivation —
+`_derived_journal()` pairs each `posting.post` result with its source record, and
+`_derive_postings()` is defined as that journal's postings by identity, so the drill can never
+fork the books. **Every drill response carries its own equality proof:** `stated_total`,
+`sum_of_lines`, and `ties`, computed from node state on that call. UI: click any active chart
+account, customer, or source row.
+
+- **D1 — GREEN.** All active accounts tie exactly (cash 2,700 · AR 2,100 · unearned −600 ·
+  revenue −4,200 on the seeded book); `tb` is the same drill by equality.
+- **D2 — GREEN.** Acme drill = 2 lines = 1,500 = roll-up; sources tie; period drill nets to
+  exactly zero with every posting individually balanced.
+- **D3 — GREEN.** Every drilled line's `object_id` resolves against the registry's own entries;
+  record types only income/contribution/invoice.
+- **D4 — GREEN.** Zero bytes written by any drill; `slush_fund`, unknown customers, and unknown
+  kinds refuse loudly.
+- **D5 — GREEN.** Injected `plug_difference`, `force_balance`, `adjust_total` each drive
+  kill-grep RED — tie-out tampering vocabulary added to check 2.
+- **D6 — GREEN.** `_derive_postings() == [j["posting"] for j in _derived_journal()]` asserted as
+  identity. Whole suite **156 passed**; live HTTP smoke re-proved the equalities over the wire
+  (revenue −3,400 = 2 lines · period = 0). Prior P/O/I/PV/A/E/H/M rows all re-ran green.
 
 **STOP — working UI + BAR GREEN.** Next shot on GO.
 

@@ -76,6 +76,9 @@ FORBIDDEN_NAMES = {
     # governed act on the panels that own the verbs. A dismiss path is how no-silent-clear dies.
     "dismiss_exception", "clear_exception", "suppress_exception", "ignore_exception", "silent_clear",
     "auto_clear", "bulk_dismiss",
+    # tie-out tampering — a drill-down that "fixes" a number instead of reporting it is how the
+    # equality proof dies. Plugging a difference is the accounting sin these names would commit.
+    "plug_difference", "force_balance", "adjust_total", "override_total", "fudge", "plug_gap",
 }
 
 #: Identifiers that would make the app hold value as authority rather than record it as attribution.

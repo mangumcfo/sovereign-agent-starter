@@ -348,6 +348,19 @@ def parties() -> Tuple[Response, int]:
         return _fail(exc, 500)
 
 
+@app.get("/api/drill")
+def drill() -> Tuple[Response, int]:
+    """Transaction/journal drill-down — READ-ONLY. Answers 'which governed records make this
+    number' and carries its own equality proof (total vs sum of listed lines)."""
+    try:
+        return _ok(_bound().drill(kind=request.args.get("kind", ""),
+                                  key=request.args.get("key") or None))
+    except SurfaceError as exc:
+        return _fail(exc)
+    except Exception as exc:  # noqa: BLE001
+        return _fail(exc, 500)
+
+
 @app.get("/api/exceptions")
 def exceptions() -> Tuple[Response, int]:
     """The exception queue — pending deviations derived from node state, classified by the sealed

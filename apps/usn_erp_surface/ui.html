@@ -431,6 +431,17 @@ pre{background:var(--surface-1);border:1px solid var(--ring);border-radius:9px;p
           <table class="tbl"><thead><tr><th>Source</th><th class="num">Records</th><th class="num">Total</th></tr></thead>
             <tbody id="srcBody"></tbody></table>
           <p class="law" id="mdNote" style="margin-top:.5rem"></p>
+          <div id="drillWrap" hidden style="margin-top:.7rem;border-top:1px solid var(--border);padding-top:.6rem">
+            <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-bottom:.4rem">
+              <h2 style="margin:0;font-size:.9rem" id="drillTitle">Drill-down</h2>
+              <span class="b" id="drillTies" hidden></span>
+              <button class="sm" id="drillClose" style="margin-left:auto">Close</button>
+            </div>
+            <div class="sub" id="drillProof" style="margin-bottom:.4rem"></div>
+            <table class="tbl"><thead><tr><th>Line</th><th>Source record</th><th class="num">Debit</th><th class="num">Credit</th></tr></thead>
+              <tbody id="drillBody"></tbody></table>
+            <p class="law">Every line names the governed record it comes from. The tie is computed from node state on this call — nothing here can adjust, plug, or force a number.</p>
+          </div>
         </div>
 
         <div class="card" id="excCard">
@@ -946,7 +957,9 @@ async function loadMasterData() {
   const cb = $("coaBody"); cb.innerHTML = "";
   coa.accounts.forEach(a => {
     const tr = el("tr");
-    tr.appendChild(el("td", a.active ? "" : "sub", a.label));
+    if (a.active) { tr.style.cursor = "pointer"; tr.title = "Drill down — which records make this number";
+      tr.onclick = () => loadDrill("account", a.account); }
+    tr.appendChild(el("td", a.active ? "" : "sub", a.label + (a.active ? "  ↳" : "")));
     tr.appendChild(el("td", "sub", a.type));
     tr.appendChild(el("td", "num", a.net));
     cb.appendChild(tr);
@@ -955,7 +968,9 @@ async function loadMasterData() {
   $("custEmpty").hidden = p.customers.length > 0;
   p.customers.forEach(c => {
     const tr = el("tr");
-    tr.appendChild(el("td", null, c.customer));
+    tr.style.cursor = "pointer"; tr.title = "Drill down";
+    tr.onclick = () => loadDrill("customer", c.customer);
+    tr.appendChild(el("td", null, c.customer + "  ↳"));
     tr.appendChild(el("td", "num", String(c.invoices)));
     tr.appendChild(el("td", "num", c.total_billed + " " + (c.currency || "")));
     tr.appendChild(el("td", "num", String(c.open_billed)));
@@ -964,13 +979,42 @@ async function loadMasterData() {
   const sb = $("srcBody"); sb.innerHTML = "";
   p.revenue_sources.forEach(s => {
     const tr = el("tr");
-    tr.appendChild(el("td", null, s.source));
+    tr.style.cursor = "pointer"; tr.title = "Drill down";
+    tr.onclick = () => loadDrill("source", s.source);
+    tr.appendChild(el("td", null, s.source + "  ↳"));
     tr.appendChild(el("td", "num", String(s.records)));
     tr.appendChild(el("td", "num", s.total + " " + (s.unit || "")));
     sb.appendChild(tr);
   });
   $("mdNote").textContent = p.note + " " + p.vendor_note;
 }
+
+/* ---------- drill-down ---------- */
+async function loadDrill(kind, key) {
+  try {
+    const d = await api("/api/drill?kind=" + encodeURIComponent(kind) + "&key=" + encodeURIComponent(key || ""));
+    $("drillWrap").hidden = false;
+    $("drillTitle").textContent = d.drill;
+    const t = $("drillTies");
+    t.hidden = false;
+    t.className = "b " + (d.ties ? "ok" : "no");
+    t.textContent = d.ties ? ("ties ✓  " + d.sum_of_lines + " = " + d.stated_total)
+                           : ("DOES NOT TIE — " + d.sum_of_lines + " vs " + d.stated_total);
+    $("drillProof").textContent = d.line_count + " source line(s) · proof: " + d.proof;
+    const b = $("drillBody"); b.innerHTML = "";
+    d.lines.forEach(l => {
+      const tr = el("tr");
+      tr.appendChild(el("td", "sub", l.memo));
+      const s = l.source || {};
+      tr.appendChild(el("td", "sub", (s.record_type || "") + " · " + (s.ref || "") + " · " + (s.object_id || "")));
+      tr.appendChild(el("td", "num", String(l.debit != null ? l.debit : (l.amount || ""))));
+      tr.appendChild(el("td", "num", String(l.credit != null ? l.credit : "")));
+      b.appendChild(tr);
+    });
+    $("drillWrap").scrollIntoView({ behavior: "smooth", block: "nearest" });
+  } catch (err) { toast("err", "Drill refused", err.message); }
+}
+$("drillClose").onclick = () => { $("drillWrap").hidden = true; };
 
 /* ---------- exception queue ---------- */
 const EXC_STATUS = { policy_gap: ["no", "POLICY GAP"], pending_gate: ["wait", "needs approval"], recorded: ["ok", "recorded"] };

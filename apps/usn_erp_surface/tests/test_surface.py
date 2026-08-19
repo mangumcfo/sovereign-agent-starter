@@ -1556,6 +1556,101 @@ def test_m6_chart_ties_to_the_period_view(node):
     assert coa == nb.period_view()["trial_balance"]                 # same sealed projection
 
 
+
+# ==================================================================================================
+# D1–D6 · Transaction / journal drill-down — READ-ONLY, every drill carries its equality proof
+# ==================================================================================================
+
+def test_d1_every_active_account_drill_ties_to_the_trial_balance(node):
+    _seed_master(bind(node, regulated=False))
+    f = bind(node, regulated=False)                                   # fresh binding = restart
+    tb = f.period_view()["trial_balance"]
+    for acct, stated in tb.items():
+        d = f.drill(kind="account", key=acct)
+        assert d["ties"] is True, f"{acct}: {d['sum_of_lines']} != {d['stated_total']}"
+        assert d["sum_of_lines"] == d["stated_total"] == str(round(float(stated), 2)) or \
+               float(d["sum_of_lines"]) == float(stated)              # EQUALITY, not presence
+        assert d["line_count"] >= 1
+
+
+def test_d1_tb_alias_is_the_same_drill(node):
+    _seed_master(bind(node, regulated=False))
+    f = bind(node, regulated=False)
+    assert f.drill(kind="tb", key="cash") == f.drill(kind="account", key="cash")
+
+
+def test_d2_customer_and_source_drills_tie_to_the_rollups(node):
+    _seed_master(bind(node, regulated=False))
+    f = bind(node, regulated=False)
+    p = f.parties()
+    for c in p["customers"]:
+        d = f.drill(kind="customer", key=c["customer"])
+        assert d["ties"] is True and float(d["sum_of_lines"]) == c["total_billed"]
+        assert d["line_count"] == c["invoices"]
+    for s in p["revenue_sources"]:
+        d = f.drill(kind="source", key=s["source"])
+        assert d["ties"] is True and float(d["sum_of_lines"]) == s["total"]
+
+
+def test_d2_period_drill_nets_to_zero_with_every_posting_balanced(node):
+    _seed_master(bind(node, regulated=False))
+    d = bind(node, regulated=False).drill(kind="period")
+    assert d["ties"] is True and float(d["sum_of_lines"]) == 0.0
+    assert d["line_count"] == 5
+    assert all(l["balanced"] for l in d["lines"])
+
+
+def test_d3_every_drilled_line_names_a_resolvable_governed_record(node):
+    _seed_master(bind(node, regulated=False))
+    f = bind(node, regulated=False)
+    known = {e.get("object_id") for e in f._income_entries()}
+    for kind, key in (("account", "revenue"), ("account", "cash"), ("customer", "Acme"),
+                      ("source", "direct"), ("period", None)):
+        d = f.drill(kind=kind, key=key)
+        for l in d["lines"]:
+            src = l["source"]
+            assert src["object_id"] in known, f"{kind}:{key} line names unknown record {src}"
+            assert src["record_type"] in ("income", "contribution", "invoice")
+
+
+def test_d4_drill_reads_write_nothing_and_unknowns_refuse(node):
+    nb = bind(node, regulated=False)
+    _seed_master(nb)
+    reg_log = objects_ndjson(node)
+    before = open(reg_log, "rb").read()
+    f = bind(node, regulated=False)
+    f.drill(kind="account", key="cash"); f.drill(kind="period")
+    assert open(reg_log, "rb").read() == before
+    with pytest.raises(SurfaceError):
+        f.drill(kind="account", key="slush_fund")
+    with pytest.raises(SurfaceError):
+        f.drill(kind="customer", key="Nobody Inc")
+    with pytest.raises(SurfaceError):
+        f.drill(kind="ledger_rewrite", key="x")
+
+
+@pytest.mark.parametrize("label,inject", [
+    ("plug the difference", "def plug_difference(total, lines):\n    return total\n"),
+    ("force balance", "def _fix(tb):\n    force_balance = True\n    return force_balance\n"),
+    ("adjust total", "def adjust_total(d):\n    return d\n"),
+])
+def test_d5_killgrep_bites_tie_out_tampering(tmp_path, label, inject):
+    copy = tmp_path / "app"
+    shutil.copytree(APP_DIR, copy, ignore=shutil.ignore_patterns("__pycache__", "tests"))
+    target = copy / "node_binding.py"
+    target.write_text(target.read_text() + "\n\n" + textwrap.dedent(inject), encoding="utf-8")
+    proc = _run_killgrep(str(copy))
+    assert proc.returncode == 1, f"kill-grep stayed GREEN with '{label}' injected:\n{proc.stdout}"
+
+
+def test_d6_drill_provenance_never_forks_the_derivation(node):
+    """_derive_postings and _derived_journal must be the same accounting — the postings list is
+    exactly the journal's postings, so provenance can never drift from the books."""
+    _seed_master(bind(node, regulated=False))
+    f = bind(node, regulated=False)
+    assert f._derive_postings() == [j["posting"] for j in f._derived_journal()]
+
+
 def test_h6_home_reflects_governed_change_only(node):
     vetoed = _seed_exceptions(bind(node, regulated=False))
     nb = bind(node, regulated=True)
