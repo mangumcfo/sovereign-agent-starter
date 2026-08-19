@@ -1248,3 +1248,154 @@ def test_a6_closed_periods_surface_in_the_period_view(node):
     assert pv["closed_periods"] == [dict(pv["closed_periods"][0])]  # shape sanity
     assert pv["closed_periods"][0]["period"] == "2026-Q3"
     assert pv["closed_periods"][0]["locked"] is True
+
+
+# ==================================================================================================
+# E1–E6 · Exception queue — pending deviations from node state, sealed-router classified
+#
+#   E1  queue lists exceptions/holds/denies/locks from node state only; survives restart
+#   E2  no silent clear — the queue exposes no dismiss; a row leaves only via an existing gated verb
+#   E3  classification is the sealed router's — material+ungated = policy_gap, never auto-resolved
+#   E4  no pay/remit/file/crossing reachable; queue itself writes nothing
+#   E5  kill-grep bites on injected silent-clear verbs
+#   E6  BAR updated; prior P/O/I/PV/A rows stay GREEN
+# ==================================================================================================
+
+def _seed_exceptions(nb):
+    """A material draft (hold), a standing veto, and a locked period."""
+    nb.record_income(work_ref="j", amount=100)
+    nb.obligation_open(title="Material thing", material=True)
+    vetoed = nb.obligation_open(title="Vetoed thing")["receipt"]["id"]
+    nb.obligation_veto(vetoed, role="cfo", reason="numbers off")
+    nb.close_period(period_id="2026-Q3")
+    return vetoed
+
+
+# ---- E1 -----------------------------------------------------------------------------------------
+
+def test_e1_queue_reads_node_state_and_survives_restart(node):
+    _seed_exceptions(bind(node, regulated=False))
+    # a FRESH binding derives the same queue — node state, not app memory
+    q = bind(node, regulated=True).exceptions_queue()
+    kinds = sorted(i["kind"] for i in q["items"])
+    assert kinds == ["hold", "lock", "veto"]
+    assert q["by_status"]["pending_gate"] == 2      # hold + veto, both gated under regulated
+    assert q["by_status"]["recorded"] == 1          # the lock, informational
+    assert all(i["durable"] for i in q["items"])    # nothing session-scoped seeded
+
+
+def test_e1_clean_node_has_an_empty_queue(node):
+    nb = bind(node, regulated=False)
+    nb.record_income(work_ref="clean", amount=10)
+    q = nb.exceptions_queue()
+    assert q["total"] == 0 and q["items"] == []
+
+
+def test_e1_session_pending_is_listed_and_labeled(node):
+    nb = bind(node)  # regulated
+    nb.record_income(work_ref="held", amount=10)   # stages at the gate
+    q = nb.exceptions_queue()
+    pend = [i for i in q["items"] if i["kind"] == "pending-approval"]
+    assert len(pend) == 1 and pend[0]["durable"] is False
+
+
+# ---- E2 -----------------------------------------------------------------------------------------
+
+def test_e2_no_dismiss_exists_and_governed_act_is_the_only_exit(node):
+    vetoed = _seed_exceptions(bind(node, regulated=False))
+    nb = bind(node)  # regulated
+    # (a) the binding exposes no dismiss/clear verb for the queue
+    for name in dir(nb):
+        low = name.lower()
+        assert not any(v in low for v in ("dismiss", "suppress", "ignore_exception",
+                                          "clear_exception", "silent")), name
+    # (b) the veto row leaves ONLY via the existing gated clear_veto
+    assert sum(1 for i in nb.exceptions_queue()["items"] if i["kind"] == "veto") == 1
+    sub = nb.obligation_clear_veto(vetoed, role="cfo")
+    assert sub["gated"] is True
+    nb.dispose(sub["req_id"], approve=False, reason="not yet")     # denial changes nothing
+    assert sum(1 for i in nb.exceptions_queue()["items"] if i["kind"] == "veto") == 1
+    sub2 = nb.obligation_clear_veto(vetoed, role="cfo")
+    nb.dispose(sub2["req_id"], approve=True)                        # the governed act
+    assert sum(1 for i in nb.exceptions_queue()["items"] if i["kind"] == "veto") == 0
+
+
+def test_e2_queue_read_writes_nothing(node):
+    nb = bind(node, regulated=False)
+    nb.record_income(work_ref="j", amount=10)
+    reg_log = objects_ndjson(node)
+    before = open(reg_log, "rb").read()
+    nb.exceptions_queue()
+    assert open(reg_log, "rb").read() == before
+    assert not os.path.exists(os.path.join(node["ledger"], "obligations.ndjson"))
+
+
+# ---- E3 -----------------------------------------------------------------------------------------
+
+def test_e3_sovereign_posture_surfaces_policy_gap_not_auto_resolve(node):
+    """Under the ungated (sovereign) posture no gate covers a material deviation — the sealed
+    router refuses it (default-deny) and the queue shows a POLICY GAP, never a silent pass."""
+    _seed_exceptions(bind(node, regulated=False))
+    q = bind(node, regulated=False).exceptions_queue()
+    assert q["by_status"]["policy_gap"] == 2        # hold + veto: material, no gate stands
+    assert q["by_status"]["pending_gate"] == 0
+    gap = [i for i in q["items"] if i["status"] == "policy_gap"]
+    assert all(i["materiality"] == "high" for i in gap)
+
+
+def test_e3_integrity_breach_is_a_material_row(node):
+    nb = bind(node, regulated=False)
+    nb.record_income(work_ref="j", amount=100)
+    # tamper the registry log — the roots stop matching and every verify goes red
+    log = objects_ndjson(node)
+    raw = open(log, "r", encoding="utf-8").read()
+    open(log, "w", encoding="utf-8").write(raw.replace('"amount": 100', '"amount": 999'))
+    q = bind(node, regulated=False).exceptions_queue()
+    kinds = {i["kind"] for i in q["items"]}
+    assert "integrity" in kinds or "verify-failure" in kinds
+    assert all(i["materiality"] == "high" for i in q["items"] if i["kind"] in ("integrity", "verify-failure"))
+
+
+# ---- E4 -----------------------------------------------------------------------------------------
+
+def test_e4_no_money_path_reachable_from_the_queue_surface(node):
+    nb = bind(node, regulated=False)
+    forbidden = ("pay_", "remit", "disburse", "collect", "wire_", "bank_transfer", "settle_pay")
+    for name in dir(nb):
+        if not name.startswith("__"):
+            assert not any(f in name.lower() for f in forbidden), name
+    proc = _run_killgrep(APP_DIR)
+    assert proc.returncode == 0 and "P6: GREEN" in proc.stdout
+
+
+# ---- E5 -----------------------------------------------------------------------------------------
+
+@pytest.mark.parametrize("label,inject", [
+    ("dismiss verb", "def dismiss_exception(row):\n    return row\n"),
+    ("silent clear", "def _tidy(q):\n    silent_clear = True\n    return silent_clear\n"),
+    ("bulk dismiss", "def bulk_dismiss(rows):\n    return []\n"),
+])
+def test_e5_killgrep_catches_silent_clear_verbs(tmp_path, label, inject):
+    copy = tmp_path / "app"
+    shutil.copytree(APP_DIR, copy, ignore=shutil.ignore_patterns("__pycache__", "tests"))
+    target = copy / "node_binding.py"
+    target.write_text(target.read_text() + "\n\n" + textwrap.dedent(inject), encoding="utf-8")
+    proc = _run_killgrep(str(copy))
+    assert proc.returncode == 1, f"kill-grep stayed GREEN with '{label}' injected:\n{proc.stdout}"
+
+
+# ---- E6 -----------------------------------------------------------------------------------------
+
+def test_e6_queue_agrees_with_the_panels_it_points_at(node):
+    _seed_exceptions(bind(node, regulated=False))
+    nb = bind(node, regulated=True)
+    q = nb.exceptions_queue()
+    obs = nb.obligations()
+    # the hold row's obligation is genuinely open+material+unapproved on the obligations panel
+    hold = next(i for i in q["items"] if i["kind"] == "hold")
+    ob = next(o for o in obs["items"] if o["id"] == hold["ref"])
+    assert ob["material"] is True and ob["status"] == "draft" and not ob["closed"]
+    # the lock row ties to the period view's closed periods
+    lock = next(i for i in q["items"] if i["kind"] == "lock")
+    assert any(c["period"] == "2026-Q3" for c in nb.period_view()["closed_periods"])
+    assert lock["status"] == "recorded"

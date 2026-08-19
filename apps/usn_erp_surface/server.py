@@ -313,6 +313,19 @@ def period_view() -> Tuple[Response, int]:
         return _fail(exc, 500)
 
 
+@app.get("/api/exceptions")
+def exceptions() -> Tuple[Response, int]:
+    """The exception queue — pending deviations derived from node state, classified by the sealed
+    router. READ-ONLY: nothing here clears anything; a row leaves only when the governed state
+    changes through an existing gated verb on the other panels."""
+    try:
+        return _ok(_bound().exceptions_queue())
+    except SurfaceError as exc:
+        return _fail(exc, 409)
+    except Exception as exc:  # noqa: BLE001
+        return _fail(exc, 500)
+
+
 @app.get("/api/audit-package")
 def audit_package() -> Tuple[Response, int]:
     """Preview the audit evidence package plus its hash. Read-only: the package RECORDS — tax memos

@@ -406,6 +406,19 @@ pre{background:var(--surface-1);border:1px solid var(--ring);border-radius:9px;p
           <p class="law" id="pvNote" style="margin-top:.5rem"></p>
         </div>
 
+        <div class="card" id="excCard">
+          <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.6rem;flex-wrap:wrap">
+            <h2 style="margin:0">Exception queue</h2>
+            <span class="b" id="excCount" hidden></span>
+          </div>
+          <p class="hint">Pending deviations, read from the node every call and classified by the
+          sealed router. <b>Nothing here can be dismissed:</b> a row leaves only when the governed
+          state changes through a gated act on the panel named in its "resolve via" column.</p>
+          <table class="tbl"><thead><tr><th>Deviation</th><th>Status</th><th>Resolve via</th></tr></thead>
+            <tbody id="excBody"></tbody></table>
+          <div class="empty" id="excEmpty" hidden>No pending deviations — the queue is clear because the state is clean, not because anything was dismissed.</div>
+        </div>
+
         <div class="card" id="oblCard">
           <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.6rem;flex-wrap:wrap">
             <h2 style="margin:0">Obligations</h2>
@@ -575,7 +588,7 @@ $("btnOpen").onclick = async () => {
     });
     render();
     toast("ok", "Node open", STATUS.governance.posture);
-    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables(), loadPeriodView()]);
+    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables(), loadPeriodView(), loadExceptions()]);
   } catch (err) { toast("err", "Could not open the node", err.message); }
 };
 $("btnClose").onclick = async () => {
@@ -590,7 +603,7 @@ $("btnRefresh").onclick = () => refresh();
 async function refresh() {
   try {
     STATUS = await api("/api/status"); render();
-    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables(), loadPeriodView()]);
+    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables(), loadPeriodView(), loadExceptions()]);
   } catch (err) { toast("err", "Refresh failed", err.message); }
 }
 
@@ -874,6 +887,34 @@ $("btnClosePeriod").onclick = async () => {
   } catch (err) { toast("err", "Refused", err.message); }
   finally { btn.disabled = false; }
 };
+
+/* ---------- exception queue ---------- */
+const EXC_STATUS = { policy_gap: ["no", "POLICY GAP"], pending_gate: ["wait", "needs approval"], recorded: ["ok", "recorded"] };
+
+async function loadExceptions() {
+  const q = await api("/api/exceptions");
+  const body = $("excBody"); body.innerHTML = "";
+  $("excEmpty").hidden = q.items.length > 0;
+  const c = $("excCount");
+  const live = q.by_status.policy_gap + q.by_status.pending_gate;
+  c.hidden = q.total === 0;
+  c.className = "b " + (q.by_status.policy_gap ? "no" : (q.by_status.pending_gate ? "wait" : "ok"));
+  c.textContent = live ? (live + " open") : (q.total + " recorded");
+  q.items.forEach(i => {
+    const tr = el("tr");
+    const c1 = el("td");
+    const head = el("div"); head.style.cssText = "display:flex;gap:.4rem;align-items:center;flex-wrap:wrap";
+    head.appendChild(el("span", "b", i.kind));
+    if (!i.durable) head.appendChild(el("span", "sub", "session-scoped"));
+    c1.appendChild(head);
+    c1.appendChild(el("div", "sub", i.description + (i.ref ? "  ·  " + i.ref : "")));
+    tr.appendChild(c1);
+    const [cls, label] = EXC_STATUS[i.status] || ["", i.status];
+    const c2 = el("td"); c2.appendChild(el("span", "b " + cls, label)); tr.appendChild(c2);
+    tr.appendChild(el("td", "sub", i.resolves_via));
+    body.appendChild(tr);
+  });
+}
 
 /* ---------- gate ---------- */
 async function loadGate() { renderGate(await api("/api/gate")); }

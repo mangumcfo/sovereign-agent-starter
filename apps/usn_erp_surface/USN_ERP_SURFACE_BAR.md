@@ -13,7 +13,8 @@ before writing this file.
 | **Binding** | library-direct; `node_binding.py` is the only module that touches `sovereign_agent` |
 | **Vertical** | solo/household: open node · record income/contribution · record tax note · **record invoice + AR aging** · **trial balance + income statement + balance sheet + period close** · **open / approve / close obligations** · gate · export package |
 | **Invoice-lite** | `revenue.billing.invoice` shapes it (pure) → persisted through the **same fence-owning attribution writer** as income (`work_ref=invoice:<id>`, `doc_kind=invoice`); `revenue.billing.ar_aging` projects aging on read. No new object kind, no second ledger. |
-| **Tests** | **119 passed** (`apps/usn_erp_surface/tests/`) — was 108 at v0.3, 93 at v0.2, 74 at v0.1, 48 at v0 |
+| **Tests** | **131 passed** (`apps/usn_erp_surface/tests/`) — was 119 at v0.4, 108 at v0.3, 93 at v0.2, 74 at v0.1, 48 at v0 |
+| **Exception queue** | read-only projection of pending deviations (integrity breaches · failed verifies · standing vetoes · material-awaiting-gate · out-of-balance books · session pendings · locks), classified by the sealed `governance.exception.route_batch` — material + no covering gate = the router's own REFUSED (policy gap), never auto-resolved; **no dismiss exists**; a row leaves only when the governed state changes through an existing gated verb |
 | **Audit package** | one portable, self-verifying evidence bundle: revenue events · invoices + AR aging · tax records (not filings) · obligations · period closes · statements snapshot — all replayed from node state; compliance core = sealed `audit_checks` (6 receipted checks) → `build_audit_package` (content-hashed) → `verify_audit_package`; stamped `as_of` the newest entry, never the clock — unchanged books re-export byte-identically |
 | **Kill-grep** | **GREEN**, 0 findings across **9** checks (`killgrep.py`, exit 0); invoice-collection verbs in check 2's vocabulary, proven to bite (I5); period-close violations proven to bite (PV5) |
 | **Period view** | read-time derivation: node objects → sealed `posting.post` → `trial_balance` / `income_statement` / `balance_sheet` over a typed CoA (Cash · AR · Unearned · Equity · Revenue · Expense). Close persists via the obligation ledger. No second GL store; objects stay source of truth. Full GAAP-shaped books — money-path OFF ≠ empty GL. |
@@ -65,6 +66,13 @@ inventory, no multi-entity, no dashboard chrome beyond what these loops need.
 | A4 | No money-path verbs; package self-verifies via the sealed verifier (tamper → False) | **GREEN** |
 | A5 | Kill-grep bites on injected filing / remit / egress in the package path | **GREEN** |
 | A6 | BAR updated; prior P/O/I/PV rows GREEN; AA fold: closed periods surface in period view | **GREEN** |
+| | | |
+| E1 | Queue lists exceptions/holds/denies/locks from node state only; survives restart | **GREEN** |
+| E2 | No silent clear — no dismiss exists; a row leaves only via an existing gated verb | **GREEN** |
+| E3 | Sealed-router classification — material + ungated = POLICY GAP, never auto-resolved | **GREEN** |
+| E4 | No pay/remit/file/crossing reachable; the queue read writes nothing | **GREEN** |
+| E5 | Kill-grep bites on injected silent-clear verbs (dismiss/silent_clear/bulk_dismiss) | **GREEN** |
+| E6 | Queue rows tie to the panels that own the verbs; prior P/O/I/PV/A rows GREEN | **GREEN** |
 
 **RED rows: none.** Nine disclosures are recorded below — five carried from v0, four new to the
 obligations surface. None is a failed row; all are things you should know before you trust a GREEN.
@@ -571,5 +579,38 @@ stamped `as_of` the newest recorded entry, never the clock.
   switch needed. Disclosed here per cadence (observation folded on the rail that touched the file).
 
 **STOP — working UI + BAR GREEN.** Exception queue is the next shot, on GO.
+
+---
+
+## Exception queue, row by row (E1–E6) — GREEN
+
+**Shape.** `exceptions_queue()` derives every pending deviation from node state on each call —
+integrity breaches (roots mismatch / chain invalid), failed event verifications, standing vetoes
+(veto minus veto_clear), material obligations awaiting their gate, out-of-balance books,
+session-scoped gate pendings (labeled `durable: false`), and locked periods (informational) — then
+classifies through the sealed `governance.exception.route_batch` (V29): gated material →
+`pending_gate`; **material with no covering gate → the router's own REFUSED, shown as POLICY GAP,
+never auto-resolved** (under the sovereign/ungated posture this is exactly what surfaces — the
+truth that no gate stands); immaterial → `recorded`. The queue is READ-ONLY and carries **no
+dismiss**; each row names the existing panel + gated verb that resolves it.
+
+- **E1 · node state only, survives restart — GREEN.** Seeded hold + veto + lock derive identically
+  from a fresh binding; a clean node shows an empty queue ("clear because the state is clean, not
+  because anything was dismissed"); session pendings are listed and labeled session-scoped.
+- **E2 · no silent clear — GREEN.** No dismiss/suppress/clear verb exists on the binding; the veto
+  row survives a *denied* clear-veto (denial writes nothing) and leaves ONLY on the approved,
+  gated `clear_veto`; the queue read itself changes zero bytes.
+- **E3 · sealed-router classification — GREEN.** Sovereign posture → hold + veto come back
+  POLICY GAP (default-deny, high materiality); a tampered registry log surfaces integrity /
+  verify-failure rows, all material.
+- **E4 · no money-path — GREEN.** No pay/remit/collect verb reachable; kill-grep GREEN on the
+  shipped app.
+- **E5 · kill-grep bites — GREEN.** Injected `dismiss_exception`, `silent_clear`, `bulk_dismiss`
+  each drive P6 to RED (new silent-clear vocabulary in check 2).
+- **E6 · one truth — GREEN.** The hold row's obligation is genuinely draft+material+open on the
+  obligations panel; the lock row ties to the period view's closed periods. Whole suite
+  **131 passed** (P/O/I/PV/A all re-ran green).
+
+**STOP — working UI + BAR GREEN.** Queue clears only through governed acts; next shot on GO.
 
 Breath only. ∞Δ∞

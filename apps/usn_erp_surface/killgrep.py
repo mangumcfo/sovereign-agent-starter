@@ -72,6 +72,10 @@ FORBIDDEN_NAMES = {
     # A money-path would first appear as one of these, so they are machine-checked out.
     "collect_payment", "collect_receivable", "receive_payment", "apply_payment", "record_payment",
     "capture_payment", "process_payment", "settle_invoice", "pay_invoice", "mark_paid", "charge_card",
+    # silent-clear verbs — the exception queue is read-only; a deviation leaves it only through a
+    # governed act on the panels that own the verbs. A dismiss path is how no-silent-clear dies.
+    "dismiss_exception", "clear_exception", "suppress_exception", "ignore_exception", "silent_clear",
+    "auto_clear", "bulk_dismiss",
 }
 
 #: Identifiers that would make the app hold value as authority rather than record it as attribution.

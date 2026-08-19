@@ -89,6 +89,7 @@ from sovereign_agent.compliance.audit_package import (
     compliance_report,
     verify_audit_package,
 )
+from sovereign_agent.governance.exception import open_exception, route_batch
 
 APP_NAME = "USN ERP Operator Surface"
 APP_VERSION = "0.1.0"
@@ -1125,6 +1126,140 @@ class NodeBinding:
         """The audit package exactly as it lands on disk, plus its hash — canonical JSON, sorted keys."""
         pkg, digest = self.audit_package()
         return (json.dumps(pkg, sort_keys=True, indent=2, ensure_ascii=False).encode("utf-8"), digest)
+
+    # ============================================================================================
+    # 2f · Exception queue — pending deviations, read from node state, classified by the sealed
+    #      router (E1–E6). READ-ONLY: this panel clears nothing. A row leaves the queue only when
+    #      the underlying governed state changes through an EXISTING gated verb (approve a draft,
+    #      clear a veto, close with evidence, close the period). No dismiss exists, by law.
+    # ============================================================================================
+
+    def _standing_vetoes(self) -> List[Dict[str, Any]]:
+        """Vetoes still standing: a `veto` with no later `veto_clear` for the same (obligation, role)."""
+        led = self._ledger()
+        if led is None:
+            return []
+        standing: Dict[Tuple[str, str], Dict[str, Any]] = {}
+        for e in led.iter_entries():
+            if e.get("type") == "veto":
+                standing[(str(e.get("vetoes")), str(e.get("role")))] = {
+                    "obligation_id": e.get("vetoes"), "role": e.get("role"),
+                    "reason": e.get("reason"), "at": e.get("timestamp"), "chain_hash": e.get("hash")}
+            elif e.get("type") == "veto_clear":
+                standing.pop((str(e.get("clears_veto")), str(e.get("role"))), None)
+        return list(standing.values())
+
+    def exceptions_queue(self) -> Dict[str, Any]:
+        """Every pending deviation the node's own state shows, classified through the sealed
+        `governance.exception` router (V29): material + gated → `pending_gate` (an existing verb
+        resolves it); material + NO covering gate → the router's own REFUSED (a policy gap,
+        surfaced loudly — never auto-resolved); immaterial → recorded. Derived on every call;
+        nothing here is stored, and nothing here can be cleared from this panel."""
+        rows: List[Dict[str, Any]] = []   # (exception dict for the router, display fields)
+
+        def add(exc_id: str, action_class: str, description: str, materiality: str,
+                kind: str, ref: Optional[str], resolves_via: str, durable: bool = True) -> None:
+            rows.append({
+                "exc": open_exception(exc_id, action_class, self.mandate, description, materiality),
+                "display": {"id": exc_id, "kind": kind, "materiality": materiality,
+                            "description": description, "ref": ref, "resolves_via": resolves_via,
+                            "durable": durable}})
+
+        # -- integrity (always material; no surface verb repairs a store — a policy/KM matter) ----
+        st_reg = self.status()["registry"]
+        if st_reg.get("present") and not st_reg.get("roots_match"):
+            add("integrity:registry-root", "registry_integrity",
+                "registry population root does not equal its replayed root — investigate before "
+                "trusting anything above it", "high", "integrity", st_reg.get("log_file"),
+                "no surface verb — investigate the append-only log (escalate: HOLD-KM)")
+        led = self._ledger()
+        if led is not None and not led.verify_chain():
+            add("integrity:ledger-chain", "ledger_integrity",
+                "obligation ledger hash chain does not verify — the append-only chain was altered",
+                "high", "integrity", self.ledger_root,
+                "no surface verb — investigate the chain (escalate: HOLD-KM)")
+
+        # -- failed event verification (tampered or mis-owned records) ----------------------------
+        for e in self._income_entries():
+            chk = self._verify_entry(e)
+            if not chk.get("verified"):
+                add(f"verify:{e.get('object_id')}", "event_verification",
+                    f"recorded event does not verify against its own receipt — {chk.get('reason')}",
+                    "high", "verify-failure", e.get("object_id"),
+                    "no surface verb — a failed receipt is investigated, never re-signed")
+
+        # -- standing vetoes (default-deny holds) --------------------------------------------------
+        for v in self._standing_vetoes():
+            add(f"veto:{v['obligation_id']}:{v['role']}", "obligation_clear_veto",
+                f"veto standing as {v['role']}: {v['reason']}", "high", "veto",
+                v["obligation_id"], "obligations panel — clear the veto (gated) or close as rejected")
+
+        # -- material obligations awaiting their gate ----------------------------------------------
+        if led is not None:
+            state = led.replay()
+            entries = list(led.iter_entries())
+            for ob in state.get("open", []):
+                if ob.get("material") and not obligation_projection.is_approved(entries, ob.get("id")):
+                    add(f"gate:{ob.get('id')}", "obligation_approve",
+                        f"material obligation awaits the breath-gate: {ob.get('title')}",
+                        "high", "hold", ob.get("id"),
+                        "obligations panel — approve (gated) or close as rejected")
+
+        # -- books out of balance -------------------------------------------------------------------
+        pv_postings = self._derive_postings()
+        if pv_postings and not gl_period_is_balanced(pv_postings):
+            add("books:out-of-balance", "close_period",
+                "derived trial balance does not net to zero — the sealed period-close gate will "
+                "refuse a close until this is resolved", "high", "books", None,
+                "period view — correct the records; close_period stays refused meanwhile")
+
+        # -- session-scoped gate pendings (in-memory, labeled) --------------------------------------
+        for p in self.gate_state()["pending"]:
+            add(f"pending:{p['req_id']}", str(p["action_class"]),
+                f"held at the human gate: {p['summary']}", "high", "pending-approval",
+                p["req_id"], "gate panel — approve or deny (a denial writes nothing)",
+                durable=False)
+
+        # -- locks (informational: a lock is governance working, not a fault) -----------------------
+        for c in self._period_close_records():
+            add(f"lock:{c['period']}", "period_locked",
+                f"period {c['period']} is closed (locked) — posting into it is refused by the "
+                f"sealed guard", "low", "lock", c.get("obligation_id"),
+                "informational — reopening is a governed act this surface does not carry")
+
+        # -- classify through the sealed router (V29) — never re-deciding gate coverage here --------
+        routed = route_batch([r["exc"] for r in rows], REGULATED_POLICY, {}, self.mode)
+        status_by_id: Dict[str, str] = {}
+        for r in routed["pending_gate"]:
+            status_by_id[str(r["exception"])] = "pending_gate"
+        for r in routed["auto_resolved"]:
+            status_by_id[str(r["exception"])] = "recorded"
+        for r in routed["refused"]:
+            status_by_id[str(r["exception"])] = "policy_gap"
+
+        items = []
+        for r in rows:
+            d = dict(r["display"])
+            d["status"] = status_by_id.get(d["id"], "unclassified")
+            items.append(d)
+        order = {"policy_gap": 0, "pending_gate": 1, "recorded": 2}
+        items.sort(key=lambda d: (order.get(d["status"], 9), d["kind"], str(d["id"])))
+
+        return {
+            "total": len(items),
+            "by_status": {"pending_gate": sum(1 for i in items if i["status"] == "pending_gate"),
+                          "policy_gap": sum(1 for i in items if i["status"] == "policy_gap"),
+                          "recorded": sum(1 for i in items if i["status"] == "recorded")},
+            "items": items,
+            "classifier": ("sovereign_agent.governance.exception.route_batch over the node's own "
+                           "policy — material deviations no gate covers come back REFUSED "
+                           "(policy_gap), never silently resolved"),
+            "note": ("Read-only projection of node state. Nothing on this panel can be cleared or "
+                     "dismissed here: a row leaves only when the governed state changes through an "
+                     "existing gated verb (approve, clear veto, close with evidence, close period). "
+                     "Session-scoped rows (durable: false) vanish on restart because the gate's "
+                     "pending list does — nothing durable is lost."),
+        }
 
     # ============================================================================================
     # 7 · Obligations — the node's own lifecycle, driven
