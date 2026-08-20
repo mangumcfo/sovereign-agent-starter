@@ -1913,3 +1913,106 @@ def test_l7_unapplied_cash_gap_is_explained_operator_visibly(node):
     # and the UI genuinely renders it — element bound to the field
     ui = open(os.path.join(APP_DIR, "ui.html"), encoding="utf-8").read()
     assert 'id="cashUnappliedNote"' in ui and "unapplied_cash_note" in ui
+
+
+# ==================================================================================================
+# Q1–Q6 · QuickBooks escape walk — sealed migration composed; the four proofs AA named
+# ==================================================================================================
+
+QB_TB = {"Checking": "5000", "Accounts Receivable": "3200",
+         "Customer Deposits": "-1200", "Opening Equity": "-7000"}
+QB_MAP = {"Checking": "cash", "Accounts Receivable": "accounts_receivable",
+          "Customer Deposits": "unearned_revenue", "Opening Equity": "equity"}
+
+
+def test_q1_map_value_conserves_with_chart_validated_and_refusals_surface(node):
+    nb = bind(node, regulated=False)
+    pv = nb.qb_escape_preview(qb_tb=QB_TB, account_map=QB_MAP)
+    assert pv["value_conserved"] is True
+    assert pv["mapped_balances"]["cash"] == "5000"
+    # sealed refusals surface verbatim: unmapped account · target not in chart
+    with pytest.raises(SurfaceError, match="no mapping"):
+        nb.qb_escape_preview(qb_tb={"Mystery": "10"}, account_map={})
+    with pytest.raises(SurfaceError, match="not in the chart"):
+        nb.qb_escape_preview(qb_tb={"X": "10"}, account_map={"X": "slush_fund"})
+
+
+def test_q2_opening_entry_balances_and_unbalanced_tb_refused_before_staging(node):
+    nb = bind(node, regulated=False)
+    pv = nb.qb_escape_preview(qb_tb=QB_TB, account_map=QB_MAP)
+    assert pv["entry_balances"] is True
+    # a TB that does not net to zero → the sealed posting refuses the cutover, nothing staged
+    bad = dict(QB_TB, Checking="5001")
+    with pytest.raises(SurfaceError, match="refused"):
+        nb.qb_escape_cutover(migration_id="QB-BAD", qb_tb=bad, account_map=QB_MAP)
+    assert not os.path.exists(objects_ndjson(node)), "a refused cutover still touched the store"
+
+
+def test_q3_lineage_stored_copy_equals_pasted_source_and_reproves_on_read(node):
+    nb = bind(node, regulated=False)
+    nb.qb_escape_cutover(migration_id="QB-2026-08", qb_tb=QB_TB, account_map=QB_MAP)
+    f = bind(node, regulated=False)
+    v = f.qb_cutover_view()
+    assert v["present"] is True and v["lineage_intact"] is True
+    assert v["source_root"] == v["source_root_recomputed"]
+    assert v["source_account_count"] == 4
+    # nothing silently re-derived: the stored TB is the pasted TB, value for value
+    rec = next(dict(e.get("payload") or {}) for e in f._income_entries()
+               if (e.get("payload") or {}).get("doc_kind") == "qb_cutover")
+    assert rec["source_tb"] == {k: str(v2) for k, v2 in QB_TB.items()}
+
+
+def test_q4_cutover_gated_deny_writes_nothing_receipt_carries_roots(node):
+    nb = bind(node)  # regulated
+    sub = nb.qb_escape_cutover(migration_id="QB-G", qb_tb=QB_TB, account_map=QB_MAP)
+    assert sub["gated"] is True and sub["receipt"] is None
+    assert not os.path.exists(objects_ndjson(node)), "gated cutover staged bytes before approval"
+    nb.dispose(sub["req_id"], approve=False, reason="not yet")
+    assert not os.path.exists(objects_ndjson(node)), "a denied cutover wrote bytes"
+    sub2 = nb.qb_escape_cutover(migration_id="QB-G", qb_tb=QB_TB, account_map=QB_MAP)
+    res = nb.dispose(sub2["req_id"], approve=True)
+    p = res["receipt"]["payload"]
+    assert p["status"] == "cutover" and p["source_root"] and p["mapped_root"]
+    assert p["opening_posting"]["balanced"] is True
+
+
+def test_q5_opening_balances_land_on_the_books_and_prior_surfaces_hold(node):
+    nb = bind(node, regulated=False)
+    nb.qb_escape_cutover(migration_id="QB-1", qb_tb=QB_TB, account_map=QB_MAP)
+    f = bind(node, regulated=False)
+    tb = f.period_view()["trial_balance"]
+    assert tb["cash"] == "5000" and tb["accounts_receivable"] == "3200"
+    assert tb["unearned_revenue"] == "-1200" and tb["equity"] == "-7000"
+    assert f.period_view()["nets_to_zero"] is True
+    # the chart view and drill still tie (same sealed projection over the new journal)
+    coa = {a["account"]: a["net"] for a in f.chart_of_accounts_view()["accounts"] if a["active"]}
+    assert coa == tb
+    d = f.drill(kind="account", key="cash")
+    assert d["ties"] is True and d["lines"][0]["source"]["record_type"] == "qb_cutover"
+    # second cutover refused — the books cannot be doubled by a repeat click
+    with pytest.raises(SurfaceError, match="already exists"):
+        f.qb_escape_cutover(migration_id="QB-2", qb_tb=QB_TB, account_map=QB_MAP)
+
+
+@pytest.mark.parametrize("label,inject", [
+    ("QBO parser", "def parse_qbo(path):\n    return path\n"),
+    ("QB API client", "def quickbooks_api(token):\n    return token\n"),
+    ("silent re-derive", "def silently_rederive(tb):\n    return tb\n"),
+])
+def test_q6_killgrep_bites_connector_and_rederive_verbs(tmp_path, label, inject):
+    copy = tmp_path / "app"
+    shutil.copytree(APP_DIR, copy, ignore=shutil.ignore_patterns("__pycache__", "tests"))
+    target = copy / "node_binding.py"
+    target.write_text(target.read_text() + "\n\n" + textwrap.dedent(inject), encoding="utf-8")
+    proc = _run_killgrep(str(copy))
+    assert proc.returncode == 1, f"kill-grep stayed GREEN with '{label}' injected:\n{proc.stdout}"
+
+
+def test_q6_no_file_or_connector_path_reachable(node):
+    """The input fence is contractual: the binding takes only Mapping inputs — no path/file/url
+    parameter exists on the escape methods, so a connector cannot be reached even by mistake."""
+    import inspect
+    nb = bind(node, regulated=False)
+    for m in (nb.qb_escape_preview, nb.qb_escape_cutover):
+        params = set(inspect.signature(m).parameters)
+        assert not params & {"path", "file", "filename", "url", "endpoint", "token"}, params

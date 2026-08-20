@@ -348,6 +348,49 @@ def parties() -> Tuple[Response, int]:
         return _fail(exc, 500)
 
 
+@app.post("/api/qb-escape/preview")
+def qb_escape_preview() -> Tuple[Response, int]:
+    """Pure preview of the QuickBooks escape walk — mapping, balanced opening entry, provenance
+    root. Input is the trial balance you PASTE — no connector, no file parsing, no API."""
+    b = _body()
+    try:
+        return _ok(_bound().qb_escape_preview(qb_tb=b.get("qb_tb") or {},
+                                              account_map=b.get("account_map") or {}))
+    except SurfaceError as exc:
+        return _fail(exc)
+    except Exception as exc:  # noqa: BLE001
+        return _fail(exc, 500)
+
+
+@app.post("/api/qb-escape/cutover")
+def qb_escape_cutover() -> Tuple[Response, int]:
+    """The receipted cutover — gated. Fail-closed end to end; a refusal writes nothing."""
+    b = _body()
+    try:
+        nb = _bound()
+        with _LOCK:
+            res = nb.qb_escape_cutover(migration_id=str(b.get("migration_id", "")).strip(),
+                                       qb_tb=b.get("qb_tb") or {},
+                                       account_map=b.get("account_map") or {},
+                                       source_label=str(b.get("source_label") or "QuickBooks"))
+        return _ok(dict(res, gate=nb.gate_state()))
+    except SurfaceError as exc:
+        return _fail(exc)
+    except Exception as exc:  # noqa: BLE001
+        return _fail(exc, 500)
+
+
+@app.get("/api/qb-escape")
+def qb_escape_view() -> Tuple[Response, int]:
+    """The cutover receipt with its lineage, recomputed on every read — or an honest empty state."""
+    try:
+        return _ok(_bound().qb_cutover_view())
+    except SurfaceError as exc:
+        return _fail(exc, 409)
+    except Exception as exc:  # noqa: BLE001
+        return _fail(exc, 500)
+
+
 @app.get("/api/cash-application")
 def cash_application() -> Tuple[Response, int]:
     """The LIVE cash-application panel — receipts · applications · per-invoice applied/remaining,

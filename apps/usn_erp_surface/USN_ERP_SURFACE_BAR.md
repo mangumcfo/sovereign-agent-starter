@@ -122,6 +122,13 @@ inventory, no multi-entity, no dashboard chrome beyond what these loops need.
 | L5 | OUT statement GONE (not hidden); v0.9 by-construction note RETIRED with the reason stated | **GREEN** |
 | L6 | No auto-allocation reachable; kill-grep bites; both suite locations run BY NAME | **GREEN** |
 | L7 | AA-RED fix: the unapplied-cash/TB gap is explained OPERATOR-VISIBLY (panel field + UI render), v0.9 discipline | **GREEN** |
+| | | |
+| Q1 | `map_to_coa` value-conserves vs source TB with chart validated; sealed refusals surface verbatim | **GREEN** |
+| Q2 | Opening entry BALANCES; an unbalanced TB is refused by the sealed posting BEFORE staging — zero bytes | **GREEN** |
+| Q3 | `assert_reconciled(source, stored copy)` passes BEFORE the cutover record lands; lineage re-proves on every read (root recomputed = root stored); stored TB == pasted TB value-for-value | **GREEN** |
+| Q4 | `receipted_cutover` fail-closed end-to-end with `manifest_root` over the records; gated; deny writes nothing | **GREEN** |
+| Q5 | Opening balances land on the books (TB/chart/drill all tie, nets to zero); double-cutover refused; prior rows GREEN | **GREEN** |
+| Q6 | No connector reachable: no path/file/url parameter EXISTS on the escape methods; kill-grep bites parse_qbo / quickbooks_api / silently_rederive | **GREEN** |
 
 **RED rows: none.** Nine disclosures are recorded below — five carried from v0, four new to the
 obligations surface. None is a failed row; all are things you should know before you trust a GREEN.
@@ -845,5 +852,23 @@ right"), the UI renders it beside the receipts table, and L7 locks the phrase se
 explains (unapplied 700 · TB cash = income + applied only), and the UI binding. The accounting
 decision itself was verified correct and is unchanged — the RED was against the gap between what
 the code knew and what the operator could see, exactly the v0.9 discipline.
+
+---
+
+## QuickBooks escape walk, row by row (Q1–Q6) — GREEN · foreign history stays foreign
+
+**v1.2 (KM-NO1 GO 19:58Z, AA order 20:33Z).** Composes SEALED `migration.quickbooks` +
+`migration.reconcile` ONLY. The input is the trial balance the operator PASTES — the sealed
+contract itself begins from an already-ingested TB, so no connector/parser/API is reachable
+(Q6 proves no path/file/url parameter even exists on the methods). **The design line: foreign
+history NEVER becomes replayable truth — the OPENING ENTRY does, and its lineage to source is the
+receipt.** The pasted TB rides inside the cutover record as evidence with its manifest root,
+recomputed on every read; it never posts. The opening entry (sealed `from_entry`, balanced or
+refused) is the one thing these books originate — it posts through the same derived journal as
+every other record, and TB / chart / drill all tie over it. A second cutover is refused: the books
+cannot be doubled by a repeat click. AA's four named proofs are Q1–Q4 verbatim; live HTTP smoke
+green (preview conserves + balances · cutover lineage intact · TB carries the opening balances).
+**225 passed across five suites by name** (kernel cash-app · billing · quickbooks · migration ·
+apps) · kill-grep GREEN with the connector vocabulary proven to bite.
 
 **STOP — working UI + BAR GREEN.** Breath only. ∞Δ∞

@@ -34,6 +34,7 @@ import hashlib
 import json
 import os
 from dataclasses import asdict, is_dataclass
+from decimal import Decimal
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 
@@ -68,6 +69,19 @@ from sovereign_agent.revenue.billing import (
     invoice as billing_invoice,
 )
 from sovereign_agent.revenue.credit import CreditError, check_order as credit_check_order
+from sovereign_agent.financials.posting import UnbalancedPostingError
+from sovereign_agent.migration.quickbooks import (
+    QuickBooksError,
+    map_to_coa as qb_map_to_coa,
+    opening_entry as qb_opening_entry,
+    receipted_cutover as qb_receipted_cutover,
+)
+from sovereign_agent.migration.reconcile import (
+    MigrationError,
+    assert_reconciled as mig_assert_reconciled,
+    manifest_root as mig_manifest_root,
+    reconcile as mig_reconcile,
+)
 from sovereign_agent.revenue.cash_application import (
     APPLICATION_KIND,
     RECEIPT_KIND,
@@ -118,6 +132,11 @@ INVOICE_DOC_KIND = "invoice"
 #: Cash-application record kinds (the sealed floor's own vocabulary) — persisted through the SAME
 #: attribution writer, replayed by the SAME sealed floor. No second store, no stored `paid`.
 CASH_DOC_KINDS = (RECEIPT_KIND, APPLICATION_KIND, REVERSAL_KIND)
+#: The QuickBooks-escape cutover record. Foreign history NEVER becomes replayable truth — the
+#: OPENING ENTRY does, and its lineage to source is the receipt (manifest roots over the pasted
+#: trial balance and the mapped set). The source TB rides inside the record as evidence, not as
+#: postings.
+QB_CUTOVER_KIND = "qb_cutover"
 
 #: Governance postures, expressed in the gate's own vocabulary. `requires_approval` returns False
 #: for any mode other than "corporate_regulated" — so "sovereign" is genuinely the module's ungated
@@ -129,7 +148,8 @@ MODE_REGULATED = "corporate_regulated"
 #: declared high-materiality, so the gate engages on all of them.
 RECORD_ACTION_CLASSES = ("attribute_income", "record_contribution", "record_tax_event",
                          "record_invoice",
-                         "record_cash_receipt", "apply_cash_receipt", "reverse_cash_application")
+                         "record_cash_receipt", "apply_cash_receipt", "reverse_cash_application",
+                         "qb_escape_cutover")
 
 #: The obligation lifecycle acts this app drives. Every one is an existing `ObligationLedger`
 #: method — no new engine, no new verb.
@@ -637,6 +657,7 @@ class NodeBinding:
                         "invoice" if p.get("doc_kind") == INVOICE_DOC_KIND else
                         "cash receipt" if p.get("doc_kind") == RECEIPT_KIND else
                         "cash application" if p.get("doc_kind") in (APPLICATION_KIND, REVERSAL_KIND) else
+                        "QuickBooks cutover" if p.get("doc_kind") == QB_CUTOVER_KIND else
                         "earning")
             if existing != wanted:
                 raise SurfaceError(
@@ -915,6 +936,20 @@ class NodeBinding:
                                            "party": p.get("customer"),
                                            "at": e.get("at"), "seq": e.get("seq")}})
                 continue
+            if p.get("doc_kind") == QB_CUTOVER_KIND:
+                # the opening entry IS the replayable truth this record originates: one balanced
+                # posting already shaped by the sealed from_entry at cutover time. The foreign TB
+                # inside the record is evidence with a manifest root — it never posts.
+                posting = p.get("opening_posting")
+                if not posting:
+                    continue
+                journal.append({"posting": posting,
+                                "source": {"record_type": QB_CUTOVER_KIND,
+                                           "object_id": e.get("object_id"),
+                                           "ref": p.get("migration_id"),
+                                           "party": p.get("source_label"),
+                                           "at": e.get("at"), "seq": e.get("seq")}})
+                continue
             if amount in (None, 0, 0.0):
                 continue
             if p.get("tax_event"):
@@ -953,8 +988,8 @@ class NodeBinding:
         for e in self._income_entries():
             p = dict(e.get("payload") or {})
             amount = float(p.get("amount") or 0)
-            if p.get("doc_kind") in CASH_DOC_KINDS:
-                continue  # cash-application records move/record cash — they are not revenue
+            if p.get("doc_kind") in CASH_DOC_KINDS or p.get("doc_kind") == QB_CUTOVER_KIND:
+                continue  # cash-application/cutover records are not revenue
             if p.get("tax_event"):
                 tax_notes += 1
             elif p.get("doc_kind") == INVOICE_DOC_KIND:
@@ -1726,6 +1761,122 @@ class NodeBinding:
         }
 
     # ============================================================================================
+    # 2l · QuickBooks escape walk (v1.2) — compose sealed migration.quickbooks + migration.reconcile
+    #      ONLY. The INPUT is operator-typed/pasted trial-balance rows through the gate — no
+    #      connector, no file parsing, no API: the sealed contract itself begins from an
+    #      already-ingested TB, so the temptation is unreachable, not merely forbidden.
+    #      Foreign history NEVER becomes replayable truth — the OPENING ENTRY does, and its
+    #      lineage to source is the receipt.
+    # ============================================================================================
+
+    @staticmethod
+    def _qb_records(qb_tb: Mapping[str, Any]) -> List[Dict[str, str]]:
+        return [{"id": str(a), "amount": str(b)} for a, b in qb_tb.items()]
+
+    def qb_escape_preview(self, *, qb_tb: Mapping[str, Any],
+                          account_map: Mapping[str, str]) -> Dict[str, Any]:
+        """Pure preview of the escape walk: the value-conserving mapping onto the typed chart, the
+        balanced opening entry, and the reconcile report — nothing staged, nothing written. Every
+        refusal is the sealed module's own, surfaced verbatim."""
+        try:
+            mapped = qb_map_to_coa(qb_tb, account_map, CHART_OF_ACCOUNTS)
+        except QuickBooksError as exc:
+            raise SurfaceError(f"The QuickBooks-escape module refused this mapping: {exc}") from exc
+        entry = qb_opening_entry(mapped)
+        rep = mig_reconcile(self._qb_records(qb_tb), self._qb_records(qb_tb))
+        return {
+            "mapped_balances": {a: str(b) for a, b in mapped.items()},
+            "value_conserved": True,   # map_to_coa refused otherwise — reaching here IS the proof
+            "opening_entry": entry,
+            "entry_balances": (sum(Decimal(d["amount"]) for d in entry["debits"])
+                               == sum(Decimal(c["amount"]) for c in entry["credits"])),
+            "source_root": rep["source_root"],
+            "source_account_count": len(qb_tb),
+            "note": ("Preview only — nothing written. The trial balance you pasted is the input; "
+                     "this surface has no QuickBooks connector, reads no files, and calls no API. "
+                     "On cutover, the opening entry becomes the books' replayable truth and this "
+                     "source set rides the receipt as evidence with its manifest root."),
+        }
+
+    def qb_escape_cutover(self, *, migration_id: str, qb_tb: Mapping[str, Any],
+                          account_map: Mapping[str, str],
+                          source_label: str = "QuickBooks") -> Dict[str, Any]:
+        """The receipted cutover — gated. The sealed `receipted_cutover` runs the whole fail-closed
+        chain (validated chart → value-conserving map → provenance roots → migration lifecycle →
+        balanced opening posting); `assert_reconciled` then proves the copy this record will carry
+        equals the pasted source EXACTLY — nothing silently re-derived — before anything stages.
+        A refusal at any seam writes nothing."""
+        mid = str(migration_id or "").strip()
+        if not mid:
+            raise SurfaceError("A migration id is required — e.g. 'QB-2026-08'. It names the receipt.")
+        if any((p.get("payload") or {}).get("doc_kind") == QB_CUTOVER_KIND
+               for p in self._income_entries()):
+            raise SurfaceError("A QuickBooks cutover record already exists on this node. A second "
+                               "opening entry would double the books — refused. (Rollback/redo is "
+                               "a governed decision, not a repeat click.)")
+        try:
+            receipt = qb_receipted_cutover(mid, qb_tb, account_map, CHART_OF_ACCOUNTS,
+                                           memo=f"{source_label} opening balances")
+        except (QuickBooksError, MigrationError, UnbalancedPostingError) as exc:
+            raise SurfaceError(f"The escape walk refused this cutover: {exc}") from exc
+        # row ③ — the stored copy must equal the pasted source, proven BEFORE the record lands
+        source_records = self._qb_records(qb_tb)
+        payload_tb = {str(k): str(v) for k, v in qb_tb.items()}
+        try:
+            mig_assert_reconciled(source_records, self._qb_records(payload_tb))
+        except MigrationError as exc:
+            raise SurfaceError(f"Lineage check failed — the copy to be recorded does not equal the "
+                               f"pasted source: {exc}") from exc
+        extra = {
+            "doc_kind": QB_CUTOVER_KIND, "migration_id": mid, "source_label": str(source_label),
+            "status": receipt["status"], "source_root": receipt["source_root"],
+            "mapped_root": receipt["mapped_root"], "opening_posting": receipt["opening_posting"],
+            "mapped_balances": receipt["mapped_balances"], "source_tb": payload_tb,
+            "account_map": {str(k): str(v) for k, v in account_map.items()},
+        }
+        return self._submit(
+            "income", "qb_escape_cutover",
+            f"QuickBooks escape cutover · {mid} · {len(qb_tb)} accounts · opening entry "
+            f"{receipt['opening_posting']['amount']}",
+            {"earner": self.operator, "work_ref": f"qbcutover:{mid}", "mandate": self.mandate,
+             "author": self.operator, "source_ref": "usn_erp_surface", "at": utc_now(),
+             "amount": None, "unit": "USD", "port_ref": None, "extra": extra})
+
+    def qb_cutover_view(self) -> Dict[str, Any]:
+        """The cutover receipt, replayed from the node — or an honest empty state."""
+        rec = None
+        obj_id = None
+        for e in self._income_entries():
+            p = dict(e.get("payload") or {})
+            if p.get("doc_kind") == QB_CUTOVER_KIND:
+                rec, obj_id = p, e.get("object_id")
+                break
+        if rec is None:
+            return {"present": False,
+                    "note": ("No QuickBooks cutover has been recorded. The escape walk starts from "
+                             "a trial balance you paste in — this surface has no connector, reads "
+                             "no files, and calls no API.")}
+        # lineage re-proof on read: the stored source still reconciles with itself + roots recompute
+        stored_records = self._qb_records(rec.get("source_tb") or {})
+        root_now = mig_manifest_root(stored_records)
+        return {
+            "present": True, "object_id": obj_id,
+            "migration_id": rec.get("migration_id"), "status": rec.get("status"),
+            "source_label": rec.get("source_label"),
+            "source_root": rec.get("source_root"),
+            "source_root_recomputed": root_now,
+            "lineage_intact": (root_now == rec.get("source_root")),
+            "mapped_root": rec.get("mapped_root"),
+            "opening_posting": rec.get("opening_posting"),
+            "mapped_balances": rec.get("mapped_balances"),
+            "source_account_count": len(rec.get("source_tb") or {}),
+            "note": ("Foreign history never becomes replayable truth — the opening entry did, and "
+                     "this receipt is its lineage: the manifest root over the pasted source set, "
+                     "recomputed on every read. The source trial balance rides here as evidence "
+                     "only; it never posts."),
+        }
+
+    # ============================================================================================
     # 2f · Exception queue — pending deviations, read from node state, classified by the sealed
     #      router (E1–E6). READ-ONLY: this panel clears nothing. A row leaves the queue only when
     #      the underlying governed state changes through an EXISTING gated verb (approve a draft,
@@ -2091,10 +2242,12 @@ class NodeBinding:
             p = dict(e.get("payload") or {})
             is_inv = p.get("doc_kind") == INVOICE_DOC_KIND
             is_cash = p.get("doc_kind") in CASH_DOC_KINDS
+            is_qb = p.get("doc_kind") == QB_CUTOVER_KIND
             is_tax = bool(p.get("tax_event"))
             is_con = bool(p.get("contribution_class"))
             etype = ("invoice" if is_inv else
                      "cash-application" if is_cash else
+                     "migration" if is_qb else
                      "tax" if is_tax else
                      "contribution" if is_con else
                      "income")

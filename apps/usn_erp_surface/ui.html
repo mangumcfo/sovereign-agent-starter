@@ -419,6 +419,33 @@ pre{background:var(--surface-1);border:1px solid var(--ring);border-radius:9px;p
           <div class="sub" id="homeDetail"></div>
         </div>
 
+        <div class="card" id="qbCard">
+          <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.6rem;flex-wrap:wrap">
+            <h2 style="margin:0">QuickBooks escape</h2>
+            <span class="b" id="qbState">no cutover yet</span>
+          </div>
+          <p class="hint">Paste your QuickBooks trial balance and map each account to this chart —
+          no connector, no file upload, no API. Preview proves the mapping conserves value and the
+          opening entry balances; cutover is gated and receipted. Your QuickBooks history never
+          becomes these books — the opening entry does, and the receipt carries its lineage.</p>
+          <div class="row">
+            <div class="fld"><label for="qbTb">Trial balance <span class="muted">— JSON {account: signed balance}</span></label>
+              <textarea id="qbTb" rows="3" placeholder='{"Checking": 5000, "Accounts Receivable": 3200, "Opening Equity": -8200}'></textarea></div>
+            <div class="fld"><label for="qbMap">Account map <span class="muted">— JSON {QB account: chart account}</span></label>
+              <textarea id="qbMap" rows="3" placeholder='{"Checking": "cash", "Accounts Receivable": "accounts_receivable", "Opening Equity": "equity"}'></textarea></div>
+          </div>
+          <div class="row">
+            <div class="fld"><label for="qbMid">Migration id</label><input id="qbMid" placeholder="QB-2026-08"></div>
+            <div class="fld" style="display:flex;align-items:flex-end;gap:.4rem">
+              <button class="sm" id="btnQbPreview">Preview (writes nothing)</button>
+              <button class="primary" id="btnQbCutover">Cut over (gated)</button>
+            </div>
+          </div>
+          <div class="sub" id="qbPreviewOut" style="margin:.4rem 0"></div>
+          <dl class="kv" id="qbReceipt" hidden></dl>
+          <p class="law" id="qbNote"></p>
+        </div>
+
         <div class="card" id="cashCard">
           <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.6rem;flex-wrap:wrap">
             <h2 style="margin:0">Cash application</h2>
@@ -671,7 +698,7 @@ $("btnOpen").onclick = async () => {
     });
     render();
     toast("ok", "Node open", STATUS.governance.posture);
-    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables(), loadPeriodView(), loadExceptions(), loadHome(), loadMasterData(), loadCashApp()]);
+    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables(), loadPeriodView(), loadExceptions(), loadHome(), loadMasterData(), loadCashApp(), loadQbEscape()]);
   } catch (err) { toast("err", "Could not open the node", err.message); }
 };
 $("btnClose").onclick = async () => {
@@ -686,7 +713,7 @@ $("btnRefresh").onclick = () => refresh();
 async function refresh() {
   try {
     STATUS = await api("/api/status"); render();
-    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables(), loadPeriodView(), loadExceptions(), loadHome(), loadMasterData(), loadCashApp()]);
+    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables(), loadPeriodView(), loadExceptions(), loadHome(), loadMasterData(), loadCashApp(), loadQbEscape()]);
   } catch (err) { toast("err", "Refresh failed", err.message); }
 }
 
@@ -1016,6 +1043,53 @@ async function loadHome() {
     " · " + ap.denied_this_session + " denied this session (session-scoped)";
 }
 
+
+
+/* ---------- QuickBooks escape ---------- */
+async function loadQbEscape() {
+  const v = await api("/api/qb-escape");
+  const st = $("qbState");
+  if (v.present) {
+    st.className = "b " + (v.lineage_intact ? "ok" : "no");
+    st.textContent = v.lineage_intact ? ("cut over ✓ " + v.migration_id + " · lineage intact") : "LINEAGE BROKEN — investigate";
+    const kv = $("qbReceipt"); kv.hidden = false; kv.innerHTML = "";
+    const add = (k, val) => { kv.appendChild(el("dt", null, k)); kv.appendChild(el("dd", null, String(val))); };
+    add("Migration", v.migration_id + " (" + v.status + ")");
+    add("Source root", v.source_root.slice(0, 24) + "… (recomputed: " + (v.lineage_intact ? "matches" : "MISMATCH") + ")");
+    add("Mapped root", v.mapped_root.slice(0, 24) + "…");
+    add("Opening entry", v.opening_posting.amount + " balanced, " + v.opening_posting.lines.length + " lines");
+    add("Source accounts", v.source_account_count + " (evidence only — never post)");
+  } else { st.className = "b"; st.textContent = "no cutover yet"; $("qbReceipt").hidden = true; }
+  $("qbNote").textContent = v.note;
+}
+
+function _qbBodies() {
+  let tb, map;
+  try { tb = JSON.parse($("qbTb").value.trim() || "{}"); map = JSON.parse($("qbMap").value.trim() || "{}"); }
+  catch (e) { toast("err", "Both boxes must be JSON objects", e.message); return null; }
+  return { tb, map };
+}
+
+$("btnQbPreview").onclick = async () => {
+  const b = _qbBodies(); if (!b) return;
+  try {
+    const p = await post("/api/qb-escape/preview", { qb_tb: b.tb, account_map: b.map });
+    $("qbPreviewOut").textContent = "Maps to " + Object.keys(p.mapped_balances).length +
+      " chart accounts · value conserved ✓ · opening entry " + (p.entry_balances ? "balances ✓" : "DOES NOT BALANCE") +
+      " · source root " + p.source_root.slice(0, 16) + "… (" + p.source_account_count + " accounts)";
+  } catch (e) { toast("err", "Refused", e.message); }
+};
+
+$("btnQbCutover").onclick = async () => {
+  const b = _qbBodies(); if (!b) return;
+  const btn = $("btnQbCutover"); btn.disabled = true;
+  try {
+    const r = await post("/api/qb-escape/cutover", { migration_id: $("qbMid").value.trim(), qb_tb: b.tb, account_map: b.map });
+    if (r.gated) toast("warn", "Held at the gate", "Approve it below to record the cutover.");
+    else toast("ok", "Cut over — receipted", "");
+    renderGate(r.gate); await refresh();
+  } catch (e) { toast("err", "Refused", e.message); } finally { btn.disabled = false; }
+};
 
 /* ---------- cash application — LIVE (sealed floor) ---------- */
 async function loadCashApp() {

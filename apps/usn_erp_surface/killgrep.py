@@ -82,6 +82,11 @@ FORBIDDEN_NAMES = {
     # silent AR clearing — writing off or applying cash without a governed surface. Cash
     # application is a future gated surface, never a quiet function on this one.
     "write_off", "auto_write_off", "apply_cash", "clear_receivable",
+    # foreign-system connectors — the QB escape walk begins from an OPERATOR-PASTED trial balance
+    # by sealed contract; a connector, file parser, or API client here breaks the design even if
+    # every equality row passes.
+    "parse_qbo", "parse_qbb", "parse_ofx", "parse_iif", "quickbooks_api", "qb_connect",
+    "read_qb_file", "import_qb", "fetch_quickbooks", "silently_rederive",
     # auto-allocation — the sealed cash-application floor takes OPERATOR-EXPLICIT lines only.
     # The machine may compute; the human must choose. FIFO-by-default is the capture shape.
     "fifo_allocate", "auto_allocate", "auto_apply", "allocate_oldest", "fifo_apply",
