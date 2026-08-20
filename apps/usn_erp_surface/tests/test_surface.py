@@ -1889,3 +1889,27 @@ def test_l6_no_auto_allocation_reachable_and_killgrep_bites(node, tmp_path):
                       encoding="utf-8")
     proc = _run_killgrep(str(copy))
     assert proc.returncode == 1
+
+
+def test_l7_unapplied_cash_gap_is_explained_operator_visibly(node):
+    """AA RED fix (2026-08-20): unapplied cash posting nothing to TB cash is CORRECT design, but
+    the artifact must say so where the OPERATOR can see it — not only in a code comment. The
+    panel carries the gap-explaining note, and the UI renders it."""
+    nb = bind(node, regulated=False)
+    _seed_live(nb)
+    nb.record_customer_receipt(receipt_ref="RCT-1", customer="Acme", amount=1200, day=20)
+    nb.apply_customer_receipt(receipt_ref="RCT-1",
+                              allocations=[{"invoice_id": "INV-1", "amount": 500}])
+    v = nb.cash_application_view()
+    note = v["unapplied_cash_note"]
+    assert "not in trial-balance cash" in note
+    assert "post" in note and "applied" in note
+    assert "future" in note and "not a silent invention" in note
+    assert "both be right" in note                                  # the operator's exact confusion, named
+    # the gap it explains is real on this seeded node: unapplied 700, TB cash = income + applied only
+    assert v["receipts"][0]["unapplied"] == "700.00"
+    tb = nb.period_view()["trial_balance"]
+    assert float(tb["cash"]) == 2400.0 + 500.0                      # no unapplied cash in the books
+    # and the UI genuinely renders it — element bound to the field
+    ui = open(os.path.join(APP_DIR, "ui.html"), encoding="utf-8").read()
+    assert 'id="cashUnappliedNote"' in ui and "unapplied_cash_note" in ui

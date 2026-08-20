@@ -1710,6 +1710,14 @@ class NodeBinding:
                                "unapplied": str(t["unapplied"])},
                 "hold": bool(state["identities_hold"]),
             },
+            "unapplied_cash_note": (
+                "Money received but not yet applied appears HERE and not in trial-balance cash: "
+                "the books post cash only when a receipt is applied to an invoice. Until then the "
+                "unapplied amount is a recorded fact on this panel — and only on this panel. A "
+                "customer-deposit account on the chart is a future decision, not a silent "
+                "invention, so the trial balance and this panel can show different cash figures "
+                "and both be right: the difference is exactly the unapplied amount shown above."
+            ),
             "note": ("Recording a receipt records money YOU already received by your own act; "
                      "applying it names which invoice it belongs to — operator-explicit lines, "
                      "no automatic ordering. The node records application; money moves only by "

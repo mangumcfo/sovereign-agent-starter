@@ -452,6 +452,7 @@ pre{background:var(--surface-1);border:1px solid var(--ring);border-radius:9px;p
           <div class="b" style="margin:.6rem 0 .3rem">Receipts</div>
           <table class="tbl"><thead><tr><th>Receipt</th><th>Customer</th><th class="num">Received</th><th class="num">Applied</th><th class="num">Unapplied</th></tr></thead>
             <tbody id="cashRcptBody"></tbody></table>
+          <p class="law" id="cashUnappliedNote" style="margin:.35rem 0 .2rem"></p>
           <div class="b" style="margin:.6rem 0 .3rem">Invoices — applied / remaining</div>
           <table class="tbl"><thead><tr><th>Invoice</th><th class="num">Billed</th><th class="num">Applied</th><th class="num">Remaining open</th><th>State</th></tr></thead>
             <tbody id="cashInvBody"></tbody></table>
@@ -1059,6 +1060,7 @@ async function loadCashApp() {
     o.value = a.work_ref; va.appendChild(o);
   });
   $("cashNote").textContent = c.note;
+  $("cashUnappliedNote").textContent = c.unapplied_cash_note;
 }
 
 $("btnCashReceipt").onclick = async () => {

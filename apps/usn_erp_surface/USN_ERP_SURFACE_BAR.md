@@ -121,6 +121,7 @@ inventory, no multi-entity, no dashboard chrome beyond what these loops need.
 | L4 | Aging narrows via the sealed hook: paid drops, partial ages at REMAINING; four-way tie holds in the new world; TB moves Dr cash / Cr AR | **GREEN** |
 | L5 | OUT statement GONE (not hidden); v0.9 by-construction note RETIRED with the reason stated | **GREEN** |
 | L6 | No auto-allocation reachable; kill-grep bites; both suite locations run BY NAME | **GREEN** |
+| L7 | AA-RED fix: the unapplied-cash/TB gap is explained OPERATOR-VISIBLY (panel field + UI render), v0.9 discipline | **GREEN** |
 
 **RED rows: none.** Nine disclosures are recorded below — five carried from v0, four new to the
 obligations surface. None is a failed row; all are things you should know before you trust a GREEN.
@@ -834,5 +835,15 @@ interim record of the honest-absence period.
   locations by name** (tests/test_cash_application.py + tests/test_billing.py +
   apps/usn_erp_surface/tests/); kill-grep GREEN. Live HTTP smoke: paid drops aging to zero,
   over-application refused over the wire.
+
+**L7 (AA RED → fixed same law).** AA's verify returned ONE defect, wording-honesty class: unapplied
+cash (700 on the seeded panel) posts nothing to trial-balance cash BY CORRECT DESIGN, but the
+explanation lived only in a code comment — zero operator-visible phrases. Fix: the panel response
+now carries `unapplied_cash_note` ("Money received but not yet applied appears HERE and not in
+trial-balance cash… the difference is exactly the unapplied amount shown above; both figures are
+right"), the UI renders it beside the receipts table, and L7 locks the phrase set, the real gap it
+explains (unapplied 700 · TB cash = income + applied only), and the UI binding. The accounting
+decision itself was verified correct and is unchanged — the RED was against the gap between what
+the code knew and what the operator could see, exactly the v0.9 discipline.
 
 **STOP — working UI + BAR GREEN.** Breath only. ∞Δ∞
