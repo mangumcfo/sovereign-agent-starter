@@ -1651,6 +1651,97 @@ def test_d6_drill_provenance_never_forks_the_derivation(node):
     assert f._derive_postings() == [j["posting"] for j in f._derived_journal()]
 
 
+
+# ==================================================================================================
+# R1–R6 · AR aging by customer — the SEALED aging rule composed per party (basis: KM-NO1 00:58Z)
+# ==================================================================================================
+
+def _seed_aging(nb):
+    nb.record_income(work_ref="c", amount=2400, unit="USD")
+    nb.record_invoice(invoice_id="INV-1", customer="Acme", lines=_lines(("s", 1, 1000)),
+                      issued_day=10, due_day=40)
+    nb.record_invoice(invoice_id="INV-2", customer="Acme", lines=_lines(("s2", 1, 500)), issued_day=70)
+    nb.record_invoice(invoice_id="INV-3", customer="Beta", lines=_lines(("x", 1, 600)),
+                      issued_day=1, extra={"deferred": True})
+
+
+def test_r1_per_customer_buckets_are_the_sealed_rule_and_survive_restart(node):
+    from sovereign_agent.revenue.billing import ar_aging as sealed
+    _seed_aging(bind(node, regulated=False))
+    v = bind(node, regulated=False).ar_aging_view(as_of_day=75)     # fresh binding = restart
+    acme = next(r for r in v["customers"] if r["customer"] == "Acme")
+    # the same sealed function over Acme's invoices produces the same buckets — composition, not re-implementation
+    check = sealed([{"amount": 1000, "issued_day": 10, "paid": False},
+                    {"amount": 500, "issued_day": 70, "paid": False}], 75)
+    assert acme["buckets"] == {k: str(vv) for k, vv in check["buckets"].items()}
+    assert acme["total_open"] == str(check["total_receivable"]) and acme["balances"] is True
+    assert acme["buckets"]["61_90"] == "1000.00" and acme["buckets"]["current"] == "500.00"
+
+
+def test_r1_default_as_of_is_deterministic_from_state(node):
+    _seed_aging(bind(node, regulated=False))
+    f = bind(node, regulated=False)
+    assert f.ar_aging_view()["as_of_day"] == 70                     # max issued_day, never the clock
+    assert f.ar_aging_view() == f.ar_aging_view()                   # same state → same artifact
+
+
+def test_r2_four_way_equality_proof_in_the_artifact(node):
+    _seed_aging(bind(node, regulated=False))
+    f = bind(node, regulated=False)
+    v = f.ar_aging_view(as_of_day=75)
+    p = v["proofs"]
+    assert p["ties"] is True
+    assert float(v["grand_total_open"]) == float(p["sealed_all_invoice_total"]) \
+           == float(p["party_rollup_open_ar"]) == float(p["trial_balance_ar_net"]) == 2100.0
+    # and each customer row ties to its own drill
+    for r in v["customers"]:
+        d = f.drill(kind=r["drill"]["kind"], key=r["drill"]["key"])
+        assert float(d["sum_of_lines"]) == float(r["total_open"]), r["customer"]
+
+
+def test_r3_honesty_line_present_and_due_day_is_fact_not_driver(node):
+    _seed_aging(bind(node, regulated=False))
+    v = bind(node, regulated=False).ar_aging_view(as_of_day=75)
+    assert "by construction" in v["cash_application"]               # says what it cannot see
+    assert "does not drive buckets" in v["basis"]
+    acme = next(r for r in v["customers"] if r["customer"] == "Acme")
+    inv1 = next(i for i in acme["invoices"] if i["invoice_id"] == "INV-1")
+    assert inv1["due_day"] == 40                                     # displayed as a fact
+    # INV-1 (issued 10, due 40): at as_of 75 its age is 65 → 61_90 bucket. Under a due-date basis
+    # its age would be 35 → 31_60. The bucket proves issued_day is the driver.
+    assert acme["buckets"]["31_60"] == "0"
+
+
+def test_r4_aging_view_writes_nothing(node):
+    nb = bind(node, regulated=False)
+    _seed_aging(nb)
+    reg_log = objects_ndjson(node)
+    before = open(reg_log, "rb").read()
+    bind(node, regulated=False).ar_aging_view(as_of_day=75)
+    assert open(reg_log, "rb").read() == before
+    assert not os.path.exists(os.path.join(node["ledger"], "obligations.ndjson"))
+
+
+@pytest.mark.parametrize("label,inject", [
+    ("silent write-off", "def write_off(inv):\n    return inv\n"),
+    ("quiet cash application", "def apply_cash(inv, amt):\n    return amt\n"),
+    ("clear receivable", "def clear_receivable(inv):\n    return None\n"),
+])
+def test_r5_killgrep_bites_silent_ar_clearing(tmp_path, label, inject):
+    copy = tmp_path / "app"
+    shutil.copytree(APP_DIR, copy, ignore=shutil.ignore_patterns("__pycache__", "tests"))
+    target = copy / "node_binding.py"
+    target.write_text(target.read_text() + "\n\n" + textwrap.dedent(inject), encoding="utf-8")
+    proc = _run_killgrep(str(copy))
+    assert proc.returncode == 1, f"kill-grep stayed GREEN with '{label}' injected:\n{proc.stdout}"
+
+
+def test_r6_empty_book_ages_honestly(node):
+    v = bind(node, regulated=False).ar_aging_view()
+    assert v["customer_count"] == 0 and float(v["grand_total_open"]) == 0.0
+    assert v["proofs"]["ties"] is True                               # 0 == 0 == 0 == 0
+
+
 def test_h6_home_reflects_governed_change_only(node):
     vetoed = _seed_exceptions(bind(node, regulated=False))
     nb = bind(node, regulated=True)

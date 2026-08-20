@@ -1381,6 +1381,90 @@ class NodeBinding:
                 "note": NodeBinding._DRILL_NOTE}
 
     # ============================================================================================
+    # 2j · AR aging by customer (v0.9) — READ-ONLY, the SEALED aging rule composed per party.
+    #      Basis (KM-NO1 ruling 00:58Z): age = as_of_day − issued_day via the sealed
+    #      `revenue.billing.ar_aging` — the rule in use since v0.2, composed, not invented.
+    #      open = literal status:"open". due_day may DISPLAY as a fact on the invoice record but
+    #      does not drive buckets. Partial payment / open-balance aging is OUT until a
+    #      cash-application surface exists — and the artifact says so, because the number is only
+    #      meaningful if the surface states what it cannot yet see.
+    # ============================================================================================
+
+    _CASH_APP_NOTE = ("Cash application is ABSENT on this surface — no payment or collection "
+                      "records exist, so 'open' means every invoice, by construction. When a "
+                      "cash-application surface exists, 'open' will narrow to unpaid balances; "
+                      "until then this aging is a billing-age view, honestly labeled.")
+
+    def ar_aging_view(self, *, as_of_day: Optional[int] = None) -> Dict[str, Any]:
+        """AR aging by customer × bucket (current / 31–60 / 61–90 / over 90), each customer's
+        buckets computed by the SAME sealed `revenue.billing.ar_aging` the totals use. Carries its
+        own equality proofs: the bucket grand total vs the sealed all-invoice aging total, vs the
+        party roll-up's open AR, vs the trial balance's accounts-receivable net."""
+        entries = self._invoice_entries()
+        if as_of_day is None:
+            days = [int((e.get("payload") or {}).get("issued_day") or 0) for e in entries] or [0]
+            as_of_day = max(days)   # deterministic default: the newest issued day on the books
+
+        def aging_input(es):
+            return [{"amount": (e.get("payload") or {}).get("amount") or 0,
+                     "issued_day": int((e.get("payload") or {}).get("issued_day") or 0),
+                     "paid": str((e.get("payload") or {}).get("status") or "open") != "open"}
+                    for e in es]
+
+        by_customer: Dict[str, List] = {}
+        for e in entries:
+            p = dict(e.get("payload") or {})
+            if str(p.get("status") or "open") != "open":
+                continue
+            by_customer.setdefault(str(p.get("customer") or "—"), []).append(e)
+
+        rows = []
+        grand = 0.0
+        for name in sorted(by_customer):
+            es = by_customer[name]
+            aged = billing_ar_aging(aging_input(es), int(as_of_day))   # the sealed rule, per party
+            total = float(aged["total_receivable"])
+            grand = round(grand + total, 2)
+            rows.append({
+                "customer": name,
+                "buckets": {k: str(v) for k, v in aged["buckets"].items()},
+                "total_open": str(aged["total_receivable"]),
+                "balances": bool(aged["balances"]),
+                "invoices": [{"invoice_id": (e.get("payload") or {}).get("invoice_id"),
+                              "issued_day": (e.get("payload") or {}).get("issued_day"),
+                              "due_day": (e.get("payload") or {}).get("due_day"),  # displayed fact, not the driver
+                              "amount": (e.get("payload") or {}).get("amount"),
+                              "object_id": e.get("object_id")} for e in es],
+                "drill": {"kind": "customer", "key": name},
+            })
+
+        sealed_total = self.ar_aging(as_of_day=int(as_of_day))          # the v0.2 sealed all-invoice view
+        party_open = round(sum(c["open_billed"] for c in self.parties()["customers"]), 2)
+        tb_ar = float(gl_trial_balance(self._derive_postings()).get("accounts_receivable", 0))
+
+        return {
+            "as_of_day": int(as_of_day),
+            "basis": ("age = as_of_day − issued_day, via the sealed revenue.billing.ar_aging — "
+                      "composed per customer, not re-implemented. due_day is displayed as a fact "
+                      "and does not drive buckets."),
+            "open_means": "status:open (literal)",
+            "cash_application": self._CASH_APP_NOTE,
+            "customers": rows,
+            "customer_count": len(rows),
+            "grand_total_open": str(round(grand, 2)),
+            "proofs": {
+                "sealed_all_invoice_total": sealed_total["total_receivable"],
+                "party_rollup_open_ar": str(party_open),
+                "trial_balance_ar_net": str(round(tb_ar, 2)),
+                "ties": (round(grand, 2) == round(float(sealed_total["total_receivable"]), 2)
+                         == round(party_open, 2) == round(tb_ar, 2)),
+                "statement": ("per-customer bucket grand total == sealed all-invoice aging total "
+                              "== party roll-up open AR == trial-balance AR net — all derived "
+                              "from node state on this call"),
+            },
+        }
+
+    # ============================================================================================
     # 2f · Exception queue — pending deviations, read from node state, classified by the sealed
     #      router (E1–E6). READ-ONLY: this panel clears nothing. A row leaves the queue only when
     #      the underlying governed state changes through an EXISTING gated verb (approve a draft,

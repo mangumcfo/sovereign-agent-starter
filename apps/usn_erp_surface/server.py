@@ -348,6 +348,20 @@ def parties() -> Tuple[Response, int]:
         return _fail(exc, 500)
 
 
+@app.get("/api/ar-aging-by-customer")
+def ar_aging_by_customer() -> Tuple[Response, int]:
+    """AR aging by customer × bucket — the sealed aging rule composed per party, with the
+    four-way equality proof in the artifact. Read-only; open = all invoices by construction
+    until a cash-application surface exists (and the response says so)."""
+    try:
+        raw = request.args.get("as_of_day")
+        return _ok(_bound().ar_aging_view(as_of_day=(int(raw) if raw not in (None, "") else None)))
+    except SurfaceError as exc:
+        return _fail(exc, 409)
+    except Exception as exc:  # noqa: BLE001
+        return _fail(exc, 500)
+
+
 @app.get("/api/drill")
 def drill() -> Tuple[Response, int]:
     """Transaction/journal drill-down — READ-ONLY. Answers 'which governed records make this

@@ -79,6 +79,9 @@ FORBIDDEN_NAMES = {
     # tie-out tampering — a drill-down that "fixes" a number instead of reporting it is how the
     # equality proof dies. Plugging a difference is the accounting sin these names would commit.
     "plug_difference", "force_balance", "adjust_total", "override_total", "fudge", "plug_gap",
+    # silent AR clearing — writing off or applying cash without a governed surface. Cash
+    # application is a future gated surface, never a quiet function on this one.
+    "write_off", "auto_write_off", "apply_cash", "clear_receivable",
 }
 
 #: Identifiers that would make the app hold value as authority rather than record it as attribution.

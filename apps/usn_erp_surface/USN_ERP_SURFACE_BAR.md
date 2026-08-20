@@ -13,7 +13,8 @@ before writing this file.
 | **Binding** | library-direct; `node_binding.py` is the only module that touches `sovereign_agent` |
 | **Vertical** | solo/household: open node · record income/contribution · record tax note · **record invoice + AR aging** · **trial balance + income statement + balance sheet + period close** · **open / approve / close obligations** · gate · export package |
 | **Invoice-lite** | `revenue.billing.invoice` shapes it (pure) → persisted through the **same fence-owning attribution writer** as income (`work_ref=invoice:<id>`, `doc_kind=invoice`); `revenue.billing.ar_aging` projects aging on read. No new object kind, no second ledger. |
-| **Tests** | **156 passed** (`apps/usn_erp_surface/tests/`) — was 146 at v0.7, 137 at v0.6, 131 at v0.5, 119 at v0.4, 108 at v0.3, 93 at v0.2, 74 at v0.1, 48 at v0 |
+| **Tests** | **165 passed** (`apps/usn_erp_surface/tests/`) — was 156 at v0.8, 146 at v0.7, 137 at v0.6, 131 at v0.5, 119 at v0.4, 108 at v0.3, 93 at v0.2, 74 at v0.1, 48 at v0 |
+| **AR aging (v0.9)** | by customer × bucket (current/31–60/61–90/90+), the SEALED `revenue.billing.ar_aging` composed per party — basis per KM-NO1 00:58Z: age = as_of − issued_day; open = literal status:open; due_day displayed as fact, not the driver; partial/open-balance OUT until a cash-application surface exists — and the artifact SAYS so ("open = all invoices by construction"). Four-way equality proof in the response; every row drills |
 | **Drill-down (v0.8)** | READ-ONLY drill from CoA account · TB line · customer · revenue source · period down to the governed source records composing the total — every drill carries its own EQUALITY PROOF (stated total, sum of listed lines, ties true/false) computed from node state in the artifact itself. Provenance rides the SAME sealed derivation (`_derive_postings` == the journal's postings by identity), so the drill can never fork the books. Closes the tie-out hole from KM's first UI pass |
 | **Master data (v0.7)** | READ-ONLY chart of accounts (typed CoA valued by the sealed trial balance) + party roll-ups (customers from invoice records · revenue sources from contributions · vendors empty by construction, AP not surfaced). No master-data store exists or is created — the QuickBooks-escape wedge: "lists" derived from governed records, never maintained as a second copy |
 | **Status home (v0.6)** | ONE read-only screen composing ONLY existing reads — open exceptions/policy gaps (exception queue) · approvals pending + material awaiting gate (gate/obligations) · period open/closed + in-balance (period view) · audit-ready Y/N (the existing package verdict, same sha, no new build path). Enterprise labels; no write path; tiles move only on governed change |
@@ -97,6 +98,13 @@ inventory, no multi-entity, no dashboard chrome beyond what these loops need.
 | D4 | Drill reads write nothing; unknown account/party/kind refuses loudly | **GREEN** |
 | D5 | Kill-grep bites tie-out tampering (plug_difference / force_balance / adjust_total → RED) | **GREEN** |
 | D6 | Provenance can never fork the books — postings list == journal's postings, by identity | **GREEN** |
+| | | |
+| R1 | Per-customer buckets are the SEALED aging rule composed per party; survive restart; deterministic default as-of | **GREEN** |
+| R2 | Four-way equality proof IN the artifact: grand total == sealed all-invoice total == party open AR == TB AR net; each row ties to its drill | **GREEN** |
+| R3 | Honesty line present (cash-app absent → open = all invoices by construction); due_day displayed as fact, proven NOT the bucket driver | **GREEN** |
+| R4 | Aging reads write nothing | **GREEN** |
+| R5 | Kill-grep bites silent AR clearing (write_off / apply_cash / clear_receivable → RED) | **GREEN** |
+| R6 | Empty book ages honestly (0 == 0 == 0 == 0 ties); prior P/O/I/PV/A/E/H/M/D rows GREEN | **GREEN** |
 
 **RED rows: none.** Nine disclosures are recorded below — five carried from v0, four new to the
 obligations surface. None is a failed row; all are things you should know before you trust a GREEN.
@@ -712,6 +720,33 @@ account, customer, or source row.
 - **D6 — GREEN.** `_derive_postings() == [j["posting"] for j in _derived_journal()]` asserted as
   identity. Whole suite **156 passed**; live HTTP smoke re-proved the equalities over the wire
   (revenue −3,400 = 2 lines · period = 0). Prior P/O/I/PV/A/E/H/M rows all re-ran green.
+
+**STOP — working UI + BAR GREEN.** Next shot on GO.
+
+---
+
+## AR aging by customer, row by row (R1–R6) — GREEN
+
+**Shape (basis ruled, KM-NO1 00:58Z).** `ar_aging_view(as_of_day)` composes the **sealed**
+`revenue.billing.ar_aging` per customer — the v0.2 rule, not a re-implementation (R1 proves the
+same sealed call over a customer's invoices reproduces the row exactly). Basis: age = as_of −
+issued_day · open = literal `status:open` · `due_day` displays as a fact and provably does not
+drive buckets (R3: INV-1 issued 10 / due 40 lands in 61–90 at as-of 75, where a due-date basis
+would put it in 31–60) · partial/open-balance is OUT until a cash-application surface exists, and
+**the artifact says so**: *"open means every invoice, by construction."* Default as-of = the
+newest issued day on the books — deterministic, never the clock.
+
+- **R1 — GREEN.** Buckets per party == the sealed function's output; fresh-binding restart; same
+  state → same artifact.
+- **R2 — GREEN.** Four-way tie in the response: grand total (2,100) == sealed all-invoice total ==
+  party roll-up open AR == trial-balance AR net; each customer row ties to its own drill.
+- **R3 — GREEN.** Honesty line present; due-day-as-fact proven not the driver.
+- **R4 — GREEN.** Zero bytes written.
+- **R5 — GREEN.** Injected `write_off` / `apply_cash` / `clear_receivable` each drive kill-grep
+  RED — silent AR clearing is machine-checked out; cash application arrives only as its own
+  gated surface.
+- **R6 — GREEN.** Empty book: 0 == 0 == 0 == 0 ties honestly. Whole suite **165 passed**
+  (P/O/I/PV/A/E/H/M/D all re-ran green); live HTTP smoke ties (1,600 across 2 customers).
 
 **STOP — working UI + BAR GREEN.** Next shot on GO.
 

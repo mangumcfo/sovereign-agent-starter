@@ -385,6 +385,10 @@ pre{background:var(--surface-1);border:1px solid var(--ring);border-radius:9px;p
             </label>
           </div>
           <div id="arAging" class="sub" style="margin-bottom:.5rem"></div>
+          <div class="b" style="margin:.2rem 0 .3rem">Aging by customer <span class="b" id="agingTies" hidden></span></div>
+          <table class="tbl"><thead><tr><th>Customer</th><th class="num">Current</th><th class="num">31–60</th><th class="num">61–90</th><th class="num">90+</th><th class="num">Open</th></tr></thead>
+            <tbody id="agingBody"></tbody></table>
+          <p class="law" id="agingNote" style="margin:.35rem 0 .5rem"></p>
           <table class="tbl"><thead><tr><th>Invoice</th><th>Issued</th><th class="num">Total</th><th>Verify</th></tr></thead>
             <tbody id="arBody"></tbody></table>
           <div class="empty" id="arEmpty" hidden>No invoices yet. Record one on the left.</div>
@@ -844,7 +848,28 @@ $("arAsOf").onchange = () => loadReceivables().catch(e => toast("err", "Load fai
 
 async function loadReceivables() {
   const inv = await api("/api/invoices?limit=200");
-  const aging = await api("/api/ar-aging?as_of_day=" + encodeURIComponent($("arAsOf").value.trim() || 0));
+  const asOf = $("arAsOf").value.trim() || 0;
+  const aging = await api("/api/ar-aging?as_of_day=" + encodeURIComponent(asOf));
+  try {
+    const byc = await api("/api/ar-aging-by-customer?as_of_day=" + encodeURIComponent(asOf));
+    const ab = $("agingBody"); ab.innerHTML = "";
+    byc.customers.forEach(r => {
+      const tr = el("tr");
+      tr.style.cursor = "pointer"; tr.title = "Drill down — the invoice records behind this row";
+      tr.onclick = () => loadDrill(r.drill.kind, r.drill.key);
+      tr.appendChild(el("td", null, r.customer + "  ↳"));
+      ["current", "31_60", "61_90", "over_90"].forEach(k => tr.appendChild(el("td", "num", r.buckets[k])));
+      tr.appendChild(el("td", "num", r.total_open));
+      ab.appendChild(tr);
+    });
+    const t = $("agingTies");
+    t.hidden = false;
+    t.className = "b " + (byc.proofs.ties ? "ok" : "no");
+    t.textContent = byc.proofs.ties
+      ? ("ties ✓  " + byc.grand_total_open + " = sealed total = open AR = TB")
+      : "DOES NOT TIE — investigate";
+    $("agingNote").textContent = byc.cash_application;
+  } catch (e) { /* aging-by-customer needs an open node; the totals line below still renders */ }
   const body = $("arBody"); body.innerHTML = "";
   $("arEmpty").hidden = inv.items.length > 0;
   const bk = aging.buckets || {};
