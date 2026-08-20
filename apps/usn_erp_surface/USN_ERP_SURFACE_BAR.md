@@ -105,6 +105,15 @@ inventory, no multi-entity, no dashboard chrome beyond what these loops need.
 | R4 | Aging reads write nothing | **GREEN** |
 | R5 | Kill-grep bites silent AR clearing (write_off / apply_cash / clear_receivable → RED) | **GREEN** |
 | R6 | Empty book ages honestly (0 == 0 == 0 == 0 ties); prior P/O/I/PV/A/E/H/M/D rows GREEN | **GREEN** |
+| | | |
+| CA1 | Pure shapers: `receipt()`/`apply()` value-conserving; over-application AND over-allocation refused (fresh + net of prior records) | **GREEN** |
+| CA2 | Allocations operator-explicit only — no FIFO/auto verb on the floor; app kill-grep bars + bites the vocabulary | **GREEN** |
+| CA3 | `paid`/`partial` DERIVED BY REPLAY only — inputs never mutated, no stored `paid` anywhere | **GREEN** |
+| CA4 | The dormant `billing` paid-hook engages: fully-applied leaves sealed aging, partial ages at REMAINING | **GREEN** |
+| CA5 | Identities proven: per-invoice billed=applied+remaining · per-receipt received=applied+unapplied · aggregates tie | **GREEN** |
+| CA6 | Persistence via the EXISTING gated writer only; a refusal is BYTE-SILENT; approved write replays from disk | **GREEN** |
+| CA7 | Reversal = counter-record (reason required, chain keeps both, replay nets); replay FAIL-LOUDS on an inconsistent store — never plugs | **GREEN** |
+| CA8 | No bank custody / no statutory act — the floor records application; Port/bank moves money; prior rows GREEN | **GREEN** |
 
 **RED rows: none.** Nine disclosures are recorded below — five carried from v0, four new to the
 obligations surface. None is a failed row; all are things you should know before you trust a GREEN.
@@ -750,4 +759,39 @@ newest issued day on the books — deterministic, never the clock.
 
 **STOP — working UI + BAR GREEN.** Next shot on GO.
 
-Breath only. ∞Δ∞
+---
+
+## Sealed cash-application floor, row by row (CA1–CA8) — GREEN · the extrusion owed
+
+**KERNEL LANE** (KM-NO1 GO 14:21Z item 2 via AA's 14:52Z vehicle; home per
+`V15_CASH_APP_HOME_AUDIT.md`): `src/sovereign_agent/revenue/cash_application.py` +
+`tests/test_cash_application.py` (25 cases). First write-capable floor in this rail — extruded,
+not composed, because the books (V15 Ch5 · V08 Ch2) promised the module the kernel never carried.
+**No surface UI this GO** (floor first); the v1.0 OUT panel remains the surface truth until a
+separate GO composes this floor.
+
+- **CA1 — GREEN.** `receipt` refuses non-positive/empty; `apply` refuses empty lines, unknown
+  invoices, non-positive lines, over-application (fresh AND net of prior records), over-allocation
+  (fresh AND net of prior applications of the same receipt).
+- **CA2 — GREEN.** No fifo/auto/policy name on the module (scanned); `fifo_allocate`/`auto_apply`
+  injected app-side each drive kill-grep RED.
+- **CA3 — GREEN.** Replay adds no key to its inputs (deep-compare); `paid` exists only in replay
+  output — the second-ledger-in-a-different-coat risk is machine-checked out.
+- **CA4 — GREEN.** `aging_rows` + sealed `ar_aging`: INV-1 fully applied vanishes from aging via
+  the hook's own line; INV-2 ages at remaining 300; empty-records case reproduces v0.9's
+  by-construction world exactly (2,100).
+- **CA5 — GREEN.** All three identity families asserted, plus `identities_hold` in the state.
+- **CA6 — GREEN.** Real `HumanApprovalGate` + real `ObjectRegistry`: ungated attempt →
+  `IncomeRefused` with the store **byte-identical** (refusal writes nothing); approved
+  disposition → record lands; replay from DISK payloads reproduces the state. Same registry, same
+  writer — no second store.
+- **CA7 — GREEN.** `reverse` requires a reason; chain keeps application + reversal; replay nets;
+  a forged over-application on the store → `identity violated` refusal — the floor never
+  presents a plugged number (the drill stays the honest reporter; the refusal is the alarm).
+- **CA8 — GREEN.** No custody/settlement/statutory name on the floor; money-path fence fields
+  untouched. **195 passed** across floor + billing + surface suites; kill-grep GREEN.
+
+**When composed (future GO):** the surface gains gated receipt/apply acts, `remaining_open`
+becomes real, and v1.0's OUT panel flips to PRESENT as pure composition.
+
+**STOP — floor + tests GREEN, no UI by order.** Breath only. ∞Δ∞

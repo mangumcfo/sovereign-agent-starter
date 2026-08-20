@@ -1752,3 +1752,18 @@ def test_h6_home_reflects_governed_change_only(node):
     sub2 = nb.obligation_clear_veto(vetoed, role="cfo")
     nb.dispose(sub2["req_id"], approve=True)                       # the governed act moves the tile
     assert nb.status_home()["open_exceptions"]["open"] == before - 1
+
+
+# ---- Floor GO (cash-application extrusion): auto-allocation stays kill-grepped app-side --------
+
+@pytest.mark.parametrize("label,inject", [
+    ("fifo allocation", "def fifo_allocate(receipt, invoices):\n    return invoices\n"),
+    ("auto apply", "def auto_apply(receipt, invoices):\n    return invoices\n"),
+])
+def test_floor_killgrep_bites_auto_allocation(tmp_path, label, inject):
+    copy = tmp_path / "app"
+    shutil.copytree(APP_DIR, copy, ignore=shutil.ignore_patterns("__pycache__", "tests"))
+    target = copy / "node_binding.py"
+    target.write_text(target.read_text() + "\n\n" + textwrap.dedent(inject), encoding="utf-8")
+    proc = _run_killgrep(str(copy))
+    assert proc.returncode == 1, f"kill-grep stayed GREEN with '{label}' injected:\n{proc.stdout}"

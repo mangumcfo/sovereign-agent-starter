@@ -82,6 +82,9 @@ FORBIDDEN_NAMES = {
     # silent AR clearing — writing off or applying cash without a governed surface. Cash
     # application is a future gated surface, never a quiet function on this one.
     "write_off", "auto_write_off", "apply_cash", "clear_receivable",
+    # auto-allocation — the sealed cash-application floor takes OPERATOR-EXPLICIT lines only.
+    # The machine may compute; the human must choose. FIFO-by-default is the capture shape.
+    "fifo_allocate", "auto_allocate", "auto_apply", "allocate_oldest", "fifo_apply",
 }
 
 #: Identifiers that would make the app hold value as authority rather than record it as attribution.
