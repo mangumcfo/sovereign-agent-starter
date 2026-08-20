@@ -13,7 +13,8 @@ before writing this file.
 | **Binding** | library-direct; `node_binding.py` is the only module that touches `sovereign_agent` |
 | **Vertical** | solo/household: open node · record income/contribution · record tax note · **record invoice + AR aging** · **trial balance + income statement + balance sheet + period close** · **open / approve / close obligations** · gate · export package |
 | **Invoice-lite** | `revenue.billing.invoice` shapes it (pure) → persisted through the **same fence-owning attribution writer** as income (`work_ref=invoice:<id>`, `doc_kind=invoice`); `revenue.billing.ar_aging` projects aging on read. No new object kind, no second ledger. |
-| **Tests** | **165 passed** (`apps/usn_erp_surface/tests/`) — was 156 at v0.8, 146 at v0.7, 137 at v0.6, 131 at v0.5, 119 at v0.4, 108 at v0.3, 93 at v0.2, 74 at v0.1, 48 at v0 |
+| **Tests** | **175 passed** (`apps/usn_erp_surface/tests/`) — was 165 at v0.9, 156 at v0.8, 146 at v0.7, 137 at v0.6, 131 at v0.5, 119 at v0.4, 108 at v0.3, 93 at v0.2, 74 at v0.1, 48 at v0 |
+| **Cash application (v1.0)** | an HONEST OUT PANEL — the kernel holds no customer-AR cash-application path (confirmed three ways, two lanes), so this volume ships the absence truthfully: names the missing floor exactly (sealed shaper in revenue/billing — receipt + application record, gated), keeps v0.9's open-AR honesty verbatim, points collection to the human + Port act, and reads ONLY what exists — no phantom receipt lists, no zeroed placeholders (an empty table would imply the floor is built). Kill-grep bars every cash-app verb from app code until the sealed floor arrives |
 | **AR aging (v0.9)** | by customer × bucket (current/31–60/61–90/90+), the SEALED `revenue.billing.ar_aging` composed per party — basis per KM-NO1 00:58Z: age = as_of − issued_day; open = literal status:open; due_day displayed as fact, not the driver; partial/open-balance OUT until a cash-application surface exists — and the artifact SAYS so ("open = all invoices by construction"). Four-way equality proof in the response; every row drills |
 | **Drill-down (v0.8)** | READ-ONLY drill from CoA account · TB line · customer · revenue source · period down to the governed source records composing the total — every drill carries its own EQUALITY PROOF (stated total, sum of listed lines, ties true/false) computed from node state in the artifact itself. Provenance rides the SAME sealed derivation (`_derive_postings` == the journal's postings by identity), so the drill can never fork the books. Closes the tie-out hole from KM's first UI pass |
 | **Master data (v0.7)** | READ-ONLY chart of accounts (typed CoA valued by the sealed trial balance) + party roll-ups (customers from invoice records · revenue sources from contributions · vendors empty by construction, AP not surfaced). No master-data store exists or is created — the QuickBooks-escape wedge: "lists" derived from governed records, never maintained as a second copy |
@@ -105,6 +106,13 @@ inventory, no multi-entity, no dashboard chrome beyond what these loops need.
 | R4 | Aging reads write nothing | **GREEN** |
 | R5 | Kill-grep bites silent AR clearing (write_off / apply_cash / clear_receivable → RED) | **GREEN** |
 | R6 | Empty book ages honestly (0 == 0 == 0 == 0 ties); prior P/O/I/PV/A/E/H/M/D rows GREEN | **GREEN** |
+| | | |
+| C1 | The OUT statement passes a stranger cold-read; the missing floor is NAMED exactly | **GREEN** |
+| C2 | Reads only what exists — no phantom receipt fields, no zeroed placeholders, no list-shaped fields at all | **GREEN** |
+| C3 | v0.9 open-AR honesty rides verbatim; equality unchanged; collection points to human + Port | **GREEN** |
+| C4 | No cash-app verb reachable from the binding | **GREEN** |
+| C5 | Kill-grep bites record_receipt / allocate_payment / remaining_balance / clear_receivable | **GREEN** |
+| C6 | OUT panel works on an empty node and writes nothing; prior rows GREEN | **GREEN** |
 
 **RED rows: none.** Nine disclosures are recorded below — five carried from v0, four new to the
 obligations surface. None is a failed row; all are things you should know before you trust a GREEN.
@@ -747,6 +755,40 @@ newest issued day on the books — deterministic, never the clock.
   gated surface.
 - **R6 — GREEN.** Empty book: 0 == 0 == 0 == 0 ties honestly. Whole suite **165 passed**
   (P/O/I/PV/A/E/H/M/D all re-ran green); live HTTP smoke ties (1,600 across 2 customers).
+
+**STOP — working UI + BAR GREEN.** Next shot on GO.
+
+---
+
+## Cash application, row by row (C1–C6) — GREEN · the honest OUT
+
+**Shape (KM-NO1 ruling 11:40Z; fact confirmed by three methods across two lanes).**
+`cash_application_status()` ships an absence truthfully. The statement, written for a stranger:
+*"Payments received from customers are not recorded on this system yet… every invoice shows as
+open from the day it is billed — the open amounts on the receivables panel are billing totals,
+not unpaid balances."* The missing floor is named exactly (a sealed cash-application shaper in
+revenue/billing: receipt + application record, human-gated) with its consequence (until it
+exists, no surface may compute applied/remaining — such a number would be invented). Collection
+points to the operator's own hands and the governed Port. The response carries **no receipts
+field, no applied/remaining, no list-shaped field at all** — only the open-AR facts the
+receivables surface already proves.
+
+- **C1 — GREEN.** Cold-read phrases asserted; no internal jargon in the statement; floor +
+  consequence + "confirmed absent, not merely unwired" all present.
+- **C2 — GREEN.** Recursive key-scan: no phantom field (receipts/payments/applied/remaining/
+  unapplied); zero list-shaped fields — the no-empty-table law, machine-checked.
+- **C3 — GREEN.** v0.9's `_CASH_APP_NOTE` rides verbatim; open-AR facts equal `ar_aging_view`
+  exactly; the four-way tie unchanged; human + Port + future-gated wording asserted.
+- **C4 — GREEN.** No cash-app-shaped verb on the binding (record/post/allocate/apply/applied/
+  remaining/partial all scanned).
+- **C5 — GREEN.** Injected `record_receipt`, `allocate_payment`, `remaining_balance`,
+  `clear_receivable` each drive kill-grep RED.
+- **C6 — GREEN.** On a bare node the panel reads honestly (0 open AR) and creates nothing.
+  Whole suite **175 passed** (P/O/I/PV/A/E/H/M/D/R all re-ran green); HTTP smoke green.
+
+AA's OPTIMAL (receipt as income-event shape + `references_invoice`, operator-explicit application
+lines) is logged as the FUTURE sealed-floor candidate — kernel lane, on KM's word, not this
+surface. When that floor is sealed, v1.1 cash-app becomes pure composition.
 
 **STOP — working UI + BAR GREEN.** Next shot on GO.
 

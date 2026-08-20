@@ -1742,6 +1742,109 @@ def test_r6_empty_book_ages_honestly(node):
     assert v["proofs"]["ties"] is True                               # 0 == 0 == 0 == 0
 
 
+
+# ==================================================================================================
+# C1–C6 · Cash application — the HONEST OUT PANEL (an absence, shipped truthfully)
+# ==================================================================================================
+
+def test_c1_the_out_statement_passes_a_stranger_cold_read(node):
+    """The writing bar: an outsider with no context must be able to trust the absence. The
+    statement must say, in plain words: payments are not recorded here; nothing can show
+    paid/remaining; open amounts are billing totals, not unpaid balances."""
+    _seed_aging(bind(node, regulated=False))
+    c = bind(node, regulated=False).cash_application_status()
+    s = c["statement"]
+    assert "not recorded on this system" in s
+    assert "how much of an invoice has been paid" in s
+    assert "billing totals, not unpaid balances" in s
+    # no internal jargon a stranger would trip on
+    for jargon in ("kernel", "S5", "doc_kind", "money-path", "seal ", "sovereign_agent"):
+        assert jargon not in s, f"cold-read jargon leaked: {jargon}"
+    # the missing floor is NAMED exactly, and the consequence stated
+    assert "revenue/billing" in c["missing_floor"]["what"]
+    assert "receipt" in c["missing_floor"]["what"] and "application record" in c["missing_floor"]["what"]
+    assert "gate" in c["missing_floor"]["what"]
+    assert "invented" in c["missing_floor"]["consequence"]
+    assert "confirmed absent" in c["missing_floor"]["status"]
+
+
+def test_c2_reads_only_what_exists_no_phantoms_no_placeholders(node):
+    """An empty table implies a table exists. The response may carry NO receipts field, no
+    applied/remaining numbers, no zeroed placeholder — only the open-AR facts that are real."""
+    _seed_aging(bind(node, regulated=False))
+    c = bind(node, regulated=False).cash_application_status()
+
+    def keys_of(o):
+        if isinstance(o, dict):
+            for k, v in o.items():
+                yield str(k).lower()
+                yield from keys_of(v)
+        elif isinstance(o, list):
+            for v in o:
+                yield from keys_of(v)
+    all_keys = set(keys_of(c))
+    for phantom in ("receipts", "receipt_list", "payments", "applied", "applied_amount",
+                    "remaining", "remaining_balance", "unapplied"):
+        assert phantom not in all_keys, f"phantom field shipped: {phantom}"
+    # and no list-shaped field at all — a zeroed/empty table would imply the floor exists
+    assert not any(isinstance(v, list) for v in c.values())
+    facts = c["facts_that_exist"]
+    assert set(facts.keys()) == {"open_ar_total", "customers_with_open_ar", "as_of_day",
+                                 "open_ar_honesty", "detail"}
+    assert c["on_this_system"] is False
+
+
+def test_c3_v09_honesty_and_equality_unchanged(node):
+    _seed_aging(bind(node, regulated=False))
+    f = bind(node, regulated=False)
+    c = f.cash_application_status()
+    # v0.9's honesty line rides verbatim
+    assert c["facts_that_exist"]["open_ar_honesty"] == f._CASH_APP_NOTE
+    # and the facts tie to the v0.9 surface exactly (equality unchanged)
+    aging = f.ar_aging_view()
+    assert c["facts_that_exist"]["open_ar_total"] == aging["grand_total_open"]
+    assert c["facts_that_exist"]["customers_with_open_ar"] == aging["customer_count"]
+    assert aging["proofs"]["ties"] is True
+
+
+def test_c3_collection_points_to_the_human_and_port(node):
+    c = bind(node, regulated=False).cash_application_status()
+    s = c["what_you_do_instead"]
+    assert "your own act" in s and "Port" in s and "human decision" in s
+    assert "gated act" in s                                     # the future floor arrives gated
+
+
+def test_c4_no_cash_app_verb_reachable_from_the_binding(node):
+    nb = bind(node, regulated=False)
+    forbidden = ("record_receipt", "post_receipt", "cash_receipt", "allocate", "apply_receipt",
+                 "apply_payment", "apply_cash", "applied", "remaining_bal", "partial_payment")
+    for name in dir(nb):
+        if not name.startswith("__"):
+            assert not any(f in name.lower() for f in forbidden), \
+                f"cash-app-shaped verb reachable: {name}"
+
+
+@pytest.mark.parametrize("label,inject", [
+    ("record a receipt", "def record_receipt(inv, amt):\n    return amt\n"),
+    ("allocate payment", "def allocate_payment(inv, amt):\n    return amt\n"),
+    ("computed remaining", "def _calc(inv):\n    remaining_balance = 0\n    return remaining_balance\n"),
+    ("silent AR wipe", "def clear_receivable(inv):\n    return None\n"),
+])
+def test_c5_killgrep_bites_cash_app_and_ar_wipe_verbs(tmp_path, label, inject):
+    copy = tmp_path / "app"
+    shutil.copytree(APP_DIR, copy, ignore=shutil.ignore_patterns("__pycache__", "tests"))
+    target = copy / "node_binding.py"
+    target.write_text(target.read_text() + "\n\n" + textwrap.dedent(inject), encoding="utf-8")
+    proc = _run_killgrep(str(copy))
+    assert proc.returncode == 1, f"kill-grep stayed GREEN with '{label}' injected:\n{proc.stdout}"
+
+
+def test_c6_out_panel_reads_write_nothing_and_work_on_an_empty_node(node):
+    c = bind(node, regulated=False).cash_application_status()
+    assert c["on_this_system"] is False and float(c["facts_that_exist"]["open_ar_total"]) == 0.0
+    assert not os.path.exists(objects_ndjson(node))              # even the read created nothing
+
+
 def test_h6_home_reflects_governed_change_only(node):
     vetoed = _seed_exceptions(bind(node, regulated=False))
     nb = bind(node, regulated=True)

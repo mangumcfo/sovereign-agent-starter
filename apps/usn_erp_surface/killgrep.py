@@ -82,6 +82,11 @@ FORBIDDEN_NAMES = {
     # silent AR clearing — writing off or applying cash without a governed surface. Cash
     # application is a future gated surface, never a quiet function on this one.
     "write_off", "auto_write_off", "apply_cash", "clear_receivable",
+    # cash-application verbs — the floor is ABSENT (v1.0 honest OUT). Until a sealed shaper
+    # exists in revenue/billing, none of these may appear in app code: an applied/remaining
+    # number computed here would be invented, and phantom receipt handling is the capture shape.
+    "record_receipt", "post_receipt", "cash_receipt", "allocate_payment", "apply_receipt",
+    "applied_amount", "remaining_balance", "partial_payment",
 }
 
 #: Identifiers that would make the app hold value as authority rather than record it as attribution.

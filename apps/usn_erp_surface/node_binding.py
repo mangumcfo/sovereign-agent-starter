@@ -1465,6 +1465,58 @@ class NodeBinding:
         }
 
     # ============================================================================================
+    # 2k · Cash application (v1.0) — an HONEST OUT PANEL (KM-NO1 ruling 2026-08-20 11:40Z).
+    #      The kernel holds NO customer-AR cash-application path (confirmed three ways, two
+    #      lanes: filename grep, AST walk of every receipt/settle/payment-named function, sealed-
+    #      substrate architecture). This volume therefore ships the ABSENCE, honestly: it names
+    #      the missing floor exactly, keeps the v0.9 open-AR honesty verbatim, points collection
+    #      to the human + Port act, and reads ONLY what exists — no phantom receipt lists, no
+    #      zeroed placeholders. An empty table would imply a table exists; the point is that the
+    #      floor does not.
+    # ============================================================================================
+
+    def cash_application_status(self) -> Dict[str, Any]:
+        """The cash-application panel — which is, today, a truthful statement of absence plus the
+        facts that do exist. No receipts field appears in this response, because no receipt
+        records exist anywhere on the node; the only figures are the open-AR facts the
+        receivables surface already carries."""
+        aging = self.ar_aging_view()
+        return {
+            "label": "Cash application",
+            "on_this_system": False,
+            "statement": (
+                "Payments received from customers are not recorded on this system yet. There is "
+                "no place here that stores a customer payment, and no screen that can say how "
+                "much of an invoice has been paid or what remains. Until that exists, every "
+                "invoice shows as open from the day it is billed — the open amounts on the "
+                "receivables panel are billing totals, not unpaid balances."
+            ),
+            "missing_floor": {
+                "what": ("a sealed cash-application shaper in revenue/billing: a customer receipt "
+                         "record plus an application record linking the receipt to invoices, "
+                         "each written through a human-approved gate"),
+                "consequence": ("until that floor exists, no surface may compute an 'applied' or "
+                                "'remaining' amount — any such number would be invented, and this "
+                                "surface does not invent numbers"),
+                "status": "not built — confirmed absent in the underlying system, not merely unwired",
+            },
+            "what_you_do_instead": (
+                "Collecting a payment is your own act, outside this surface — your bank, your "
+                "hands. When money actually moves, that movement is a human decision carried "
+                "through the governed Port, never an automatic step here. When the sealed floor "
+                "above is built and approved, recording receipts becomes a gated act like every "
+                "other record on this surface."
+            ),
+            "facts_that_exist": {
+                "open_ar_total": aging["grand_total_open"],
+                "customers_with_open_ar": aging["customer_count"],
+                "as_of_day": aging["as_of_day"],
+                "open_ar_honesty": self._CASH_APP_NOTE,   # v0.9's line, verbatim
+                "detail": "receivables panel — aging by customer, every row drills to its invoices",
+            },
+        }
+
+    # ============================================================================================
     # 2f · Exception queue — pending deviations, read from node state, classified by the sealed
     #      router (E1–E6). READ-ONLY: this panel clears nothing. A row leaves the queue only when
     #      the underlying governed state changes through an EXISTING gated verb (approve a draft,

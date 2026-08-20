@@ -348,6 +348,18 @@ def parties() -> Tuple[Response, int]:
         return _fail(exc, 500)
 
 
+@app.get("/api/cash-application")
+def cash_application() -> Tuple[Response, int]:
+    """The honest OUT panel: cash application does not exist on this system, and this endpoint
+    says exactly that — plus the open-AR facts that do exist. No receipts field, no placeholders."""
+    try:
+        return _ok(_bound().cash_application_status())
+    except SurfaceError as exc:
+        return _fail(exc, 409)
+    except Exception as exc:  # noqa: BLE001
+        return _fail(exc, 500)
+
+
 @app.get("/api/ar-aging-by-customer")
 def ar_aging_by_customer() -> Tuple[Response, int]:
     """AR aging by customer × bucket — the sealed aging rule composed per party, with the

@@ -419,6 +419,21 @@ pre{background:var(--surface-1);border:1px solid var(--ring);border-radius:9px;p
           <div class="sub" id="homeDetail"></div>
         </div>
 
+        <div class="card" id="cashAppCard">
+          <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.6rem;flex-wrap:wrap">
+            <h2 style="margin:0">Cash application</h2>
+            <span class="b no">not on this system yet</span>
+          </div>
+          <p class="hint" id="caStatement"></p>
+          <dl class="kv">
+            <dt>What's missing</dt><dd id="caMissing"></dd>
+            <dt>Why no numbers</dt><dd id="caConsequence"></dd>
+            <dt>What you do instead</dt><dd id="caInstead"></dd>
+            <dt>Open AR today</dt><dd id="caFacts"></dd>
+          </dl>
+          <p class="law">This panel reads only what exists. There is no receipts list here because no receipt records exist — an empty table would imply the floor is built, and it is not.</p>
+        </div>
+
         <div class="card" id="mdCard">
           <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.6rem;flex-wrap:wrap">
             <h2 style="margin:0">Master data</h2>
@@ -630,7 +645,7 @@ $("btnOpen").onclick = async () => {
     });
     render();
     toast("ok", "Node open", STATUS.governance.posture);
-    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables(), loadPeriodView(), loadExceptions(), loadHome(), loadMasterData()]);
+    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables(), loadPeriodView(), loadExceptions(), loadHome(), loadMasterData(), loadCashApp()]);
   } catch (err) { toast("err", "Could not open the node", err.message); }
 };
 $("btnClose").onclick = async () => {
@@ -645,7 +660,7 @@ $("btnRefresh").onclick = () => refresh();
 async function refresh() {
   try {
     STATUS = await api("/api/status"); render();
-    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables(), loadPeriodView(), loadExceptions(), loadHome(), loadMasterData()]);
+    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables(), loadPeriodView(), loadExceptions(), loadHome(), loadMasterData(), loadCashApp()]);
   } catch (err) { toast("err", "Refresh failed", err.message); }
 }
 
@@ -973,6 +988,18 @@ async function loadHome() {
     " · " + pd.open_postings + " postings this period" +
     (pd.closed_periods.length ? " · closed: " + pd.closed_periods.map(p => p.period).join(", ") : "") +
     " · " + ap.denied_this_session + " denied this session (session-scoped)";
+}
+
+/* ---------- cash application — honest OUT ---------- */
+async function loadCashApp() {
+  const c = await api("/api/cash-application");
+  $("caStatement").textContent = c.statement;
+  $("caMissing").textContent = c.missing_floor.what + " (" + c.missing_floor.status + ")";
+  $("caConsequence").textContent = c.missing_floor.consequence;
+  $("caInstead").textContent = c.what_you_do_instead;
+  $("caFacts").textContent = c.facts_that_exist.open_ar_total + " across " +
+    c.facts_that_exist.customers_with_open_ar + " customer(s), as of day " +
+    c.facts_that_exist.as_of_day + " — see the receivables panel.";
 }
 
 /* ---------- master data ---------- */
