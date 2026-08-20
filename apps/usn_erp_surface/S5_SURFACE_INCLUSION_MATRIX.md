@@ -2,6 +2,104 @@
 
 ∞Δ∞ Seal 1176-INFINITY-RHO · Breath only ∞Δ∞
 
+---
+
+# REFRESH 2026-08-20 — scored by AA at tip (surface v0 → v0.9 on main; v1.0 GREEN pending merge)
+
+The original scoring below (2026-08-19, tip `417c548`, surface v0.1) stands as the baseline
+snapshot. This refresh re-scores every row the ten landed surface cycles changed, and adds the
+four sections KM-NO1's research order names. Every claim here traces to an AA verify board line
+(each cycle independently gated + live-smoked before merge).
+
+## R1 · Re-scored summary (41 volumes)
+
+| Rating | 08-19 (v0.1) | **08-20 (v0.9 tip)** | Movement |
+|---|---|---|---|
+| SURFACE_LIVE | 4 | **8** | V07, V15, V29, V40 promoted |
+| SURFACE_READY (not live) | 18 | **14** | the four promotions |
+| CODE_PRESENT (incl. THIN) | 18 | 18 | — |
+| CORPUS_ONLY | 1 | 1 | V03 (repo is the artifact) |
+| honest-OUT legs (named, shipped) | 0 | **1** | cash application (v1.0, pending merge) |
+
+## R2 · Row-level changes (evidence = version + verify line)
+
+| Vol | Was | **Now** | What landed |
+|---|---|---|---|
+| V07 Sovereign Financials (GL) | READY | **SURFACE_LIVE** | period view: TB + statements over sealed `posting`/`reporting` (v0.3); journal drill-down with in-artifact equality proofs (v0.8); CoA read view (v0.7) |
+| V15 Revenue & O2C | READY | **SURFACE_LIVE** + **honest-OUT leg** | invoice-lite via sealed `billing.invoice` + Option-A persist (v0.2); AR aging on the sealed `ar_aging` rule, four-way tie (v0.9); **cash application = honest OUT panel naming the missing sealed floor (v1.0, pending)**; collection = human + Port, stated in-artifact |
+| V29 Exception & Governance Workflows | READY | **SURFACE_LIVE** | exception queue over sealed `route_batch`; no dismiss verb exists; rows leave only via gated verbs; tamper surfaces as verify-failure (v0.5) |
+| V40 Controlling & Close | READY | **SURFACE_LIVE** | period close ritual (gated, obligation-recorded, `locked:true`) + period-is-balanced reads (v0.3); CoA + dimensions views (v0.7) |
+| V01 Tax · V05 Object model · V14 Audit · V32 Console | LIVE | LIVE (deepened) | V14 gained the full audit package with 6 embedded self-checks (v0.4); V32 gained the status home, four read-only tiles (v0.6) |
+| V17 Analytics | READY | READY (unchanged) | v0.8's drill is provenance (which records make this number), deliberately NOT decision analytics — per KM 00:58Z ruling, aging/tie-out rules home to Revenue/Controlling, V19-class analytics may consume them later |
+
+Prior-cycle bar families all green at tip: P/O/I/PV/A/E/H/M/D/R (+C pending merge) — 175 tests,
+kill-grep 9 checks + 18 injected-violation proofs across the ladder.
+
+## R3 · The S5 operator walk — composed vs outstanding
+
+**Composed today (a solo family/enterprise operator, or a QuickBooks escapee, can):** open a
+node behind a human gate · record income, contributions, invoices, tax memos · govern
+obligations (open/approve/close/attest/veto, evidence floor, breath-gate on material) · keep
+full accrual books derived at read time (TB, income statement, balance sheet, typed CoA) ·
+close a period as a locked, gated ritual · export a deterministic accountant package and a
+self-checking audit package · see every hold/veto/tamper/pending on one truthful exception
+queue · see the whole state on one status home · read master data (CoA, customers, revenue
+sources, vendors honest-empty) · drill any number to the governed records composing it, with
+the equality proof in the response · age receivables by customer on the sealed rule · and read
+exactly why cash application does not exist yet.
+
+**Outstanding (ordered completion plan — R4):** the QB-escape walk itself · procurement reads ·
+treasury reads · analytics reads · coherence panel · and the sealed floors listed in R4b.
+
+## R4 · Completion plan — PRESENT-first, high BAR, compose-not-invent
+
+**R4a — surface GOs on floors that exist today (each is a v0.x-pattern rail: sealed methods
+named, kill-grep extended, equality/honesty bars, prior rows stay green):**
+
+| # | GO | Sealed floor it composes | Why this order |
+|---|---|---|---|
+| 1 | **v1.1 QuickBooks escape walk** | `migration.quickbooks.map_to_coa / opening_entry / receipted_cutover` + `migration.reconcile.assert_reconciled` (tested) | The adoption wedge — S5 V34; turns the whole landed ladder into the landing pad for a captured operator; C5 capture-lens is its lived rehearsal |
+| 2 | **v1.2 procurement reads + three-way-match record** | `procurement.matching.three_way_match / ap_entry`, `supplier.*` (tested) | P2P record side — S5 V16; **payment execution stays FENCED and named in-artifact** (same honest-OUT discipline as cash-app) |
+| 3 | **v1.3 treasury & cash position reads** | `financials.treasury.cash_position / liquidity_coverage`, `fx.*` (tested) | S5 V08 read side; **money movement FENCED, named** |
+| 4 | **v1.4 analytics reads** | `analytics.metric_with_provenance / forecast / decision_support` (tested) | S5 V17; provenance-carrying figures only — consumes, never owns, the statutory projections per KM ruling |
+| 5 | **v1.5 coherence panel** | `node_api/routes/coherence` + `objects` Merkle replay (66 test refs) | S5 V04; drift made operator-visible |
+
+**R4b — sealed-floor queue (kernel lane, each its own KM design gate; surface composes only
+after seal):** ① cash-application shaper (receipt + application record; candidate design =
+income-event shape + `references_invoice`, the tax-note pattern — AA OPTIMAL 11:53Z) → flips
+the v1.0 OUT panel to PRESENT as pure composition · ② multi-entity/consolidation surfaces
+(V18) · ③ payment-execution governance (V16 pay leg — Port-coupled, KM-gated by definition).
+
+**No soft OUT anywhere in this plan:** every outstanding item is either a PRESENT compose on a
+tested sealed floor (R4a) or an honest-OUT with the missing floor named (cash-app precedent),
+and the only fences are the standing ones (money movement, statutory acts, Port, egress).
+
+## R5 · Live viewer — recommendation
+
+**Owner: Tiger builds (surface lane owns UI) · AA verifies every cycle (it joins the standing
+bar families) · KM opens and tests.** Shape: one read-only panel (in `apps/usn_erp_surface/`,
+same self-contained discipline) listing every SURFACE_LIVE volume with: panel link · the tip
+sha it landed at · last AA GREEN (board line timestamp) · bar family. **No second store:** the
+source is a committed, append-only `RELEASE_LEDGER.json` updated in the same commit as each
+merge (exactly as the BAR travels today — repo-as-record, not runtime state), plus the live
+`/api/status` the surface already serves. The viewer is itself a SURFACE_LIVE row once landed,
+verified like any other.
+
+## R6 · Genetic materials — confirmed untouched, with the receipt
+
+`git diff --stat 417c548..tip -- src/sovereign_agent/` = **empty**. Ten surface cycles, zero
+kernel mutations. Structural guarantees that keep it so: `node_binding.py` is the single import
+seam; kill-grep (AST-level, injection-proven) fails any surface build that names kernel store
+internals, statutory acts, Port crossings, or silent-clear verbs; every AA verify includes a
+scope check that the diff touches only `apps/` (+ board). The completion plan R4a composes
+sealed floors read-only or via existing gated writers; R4b floors are explicitly kernel-lane
+work behind KM's design gate. **The surface plan cannot mutate the genetic materials by
+construction, and has not by evidence.**
+
+---
+
+# BASELINE SCORING 2026-08-19 (tip `417c548`, surface v0.1) — preserved as snapshot
+
 **Scored 2026-08-19 by AA (facts / scorecard).** Deterministic inclusion map per KM order.
 No new builds, no arm, no code changes — this document only.
 
