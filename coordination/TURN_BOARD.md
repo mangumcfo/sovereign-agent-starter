@@ -40,38 +40,32 @@ Line format:
 
 1. **No1** posts GO or MERGE on this board (+ PR #21 wakes AA).
 2. **AA** reads board/PR → owns the handoff text (what Tiger must do) → posts board line `AA→TIGER | <one-line order> | ref`.
-3. **GB** (or any local seat) **rings Tiger** with that order (SendMessage) — GB is the **AA→Tiger carrier** while AA is cloud. Not a second authority; carrier only.
-4. **Tiger** executes → STOP board line + branch tip → GB rings AnnArbor (or PR comment).
-5. **AA** verifies → GREEN/RED board line same turn.
-6. **On RED:** AA posts `AA→TIGER | fix …` → GB rings Tiger again.
-7. **On GREEN:** KM/No1 merge word on board → AA posts `AA→TIGER | merge …` → GB rings Tiger → Tiger FF → tip line → AA post-merge confirm.
+3. **GB** rings Tiger with that order — **AA→Tiger carrier** only.
+4. **Tiger** executes → STOP board line + branch tip → GB rings AnnArbor.
+5. **AA** verifies → GREEN/RED same turn.
+6. **On RED:** AA posts fix order → GB carries again.
+7. **On GREEN:** KM merge word → AA merge order → GB carry → Tiger FF → AA post-merge confirm.
 
-**Board** = durable record of every handoff. **Bells** = wake only. **Wake ≠ GO.** KM only at merge / next GO / align with No1.
+### RCCM — Carrier SLA (standing law)
 
-### RCCM — Carrier SLA (KM-NO1 2026-08-20) — standing law
+1. AA ≤3 min on MERGE/GO → `AA→TIGER` order.
+2. GB ≤3 min on `AA→TIGER` → CARRY + board line (board watcher required).
+3. Tiger same-turn start/STOP.
+4. >5 min idle → auto-escalation CARRY.
+5. Nudge = exception. `RCCM-BREACH | <SLA>` if nudge still required.
 
-1. **AA SLA:** On KM-NO1 `MERGE` or `GO` → post `AA→TIGER | …` **≤3 min / same turn**.
-2. **GB SLA:** On new `AA→TIGER` board row → **CARRY ≤3 min** + `CARRIED` line (board watcher required).
-3. **Tiger SLA:** On ring → start or ack **same turn**; STOP when BAR green/red.
-4. **Stale >5 min:** auto-escalation CARRY (GB) or AA posts order on next wake.
-5. **Nudge = exception.** Next cycles should need zero KM NUDGE; breach → `RCCM-BREACH | <SLA>`.
+**Objective:** Lasting Generational Prosperity (LGP) + Resonance With Origin Energy (ROE). Uncapturable extension = human gate + default-deny + honest PRESENT-or-OUT + no invented substrate.
 
-**Co-creation:** On STOP/GREEN, AA · Tiger · GB may post `OPTIMAL | <≤1 sentence>`. No1 keeps merge/GO authority.
-
-**Completion tracking:** Board + seal ledger + roadmap. BCK is composition kit only, not completion tracking.
+**Completion:** Board + seal ledger + roadmap. BCK = composition kit only.
 
 ## Log (append below — newest last)
 
 | when (UTC) | lane | notice | ref |
 |---|---|---|---|
-| 2026-08-20 00:20Z | TIGER | v0.8 MERGED main @ f9c2393 | STOP AA post-merge |
 | 2026-08-20 00:26Z | AA | GREEN post-merge v0.8 · ERP ~85% | main @ f9c2393 |
-| 2026-08-20 00:27Z | AA | AA→TIGER BUILD v0.9 AR aging — basis issued_day; open=status:open honest | GB carries |
-| 2026-08-20 00:58Z | KM-NO1 | CONFIRM BASIS — issued_day PRESENT; due-date/partial OUT until cash-app | sealed ar_aging |
-| 2026-08-20 01:06Z | TIGER | STOP AR-aging @ cebc3dc BAR R1–R6 GREEN | ready AA verify |
-| 2026-08-20 01:08Z | GB | CARRIED TIGER→AA v0.9 · fences 7/7 · sealed rule composed not reimplemented | msg cc7c64d4 |
-| 2026-08-20 01:22Z | AA | GREEN | claude/usn-erp-ar-aging @ cebc3dc | four-way tie live · honesty strings load-bearing | waiting KM merge |
-| 2026-08-20 01:59Z | KM-NO1 | MERGE — AR aging @ cebc3dc on AA GREEN. Tiger: rebase origin/main, re-run gates, FF main, tip v0.9, STOP for AA post-merge confirm. | cebc3dc · PR #21 |
-| 2026-08-20 01:59Z | KM-NO1 | GO — customer cash application / receipts (S5 surface → v1.0). Base post-v0.9 tip. Close the OUT named by v0.9: apply customer cash against open invoices so open balance becomes real (applied + unapplied + remaining open = original billed). Compose sealed revenue/billing + obligation/gate paths only — no second AR engine, no silent clear of AR. If sealed write path exists: gated record of receipt + application lines; if not: honest OUT surface (PRESENT-or-OUT) naming the missing floor — do not invent cash-app. READ paths: list receipts, applications, unapplied cash, remaining open per invoice/customer. Equality bar in artifact. Enterprise labels. Prior P/O/I/PV/A/E/H/M/D/R rows stay GREEN. kill-grep: no silent AR wipe. LOOP LAW v2 + Carrier SLA: AA owns AA→TIGER after v0.9 tip on main → GB CARRY ≤3 min → Tiger STOP → AA verify. High BAR. LGP. | post-v0.9 main · PR #21 |
-| 2026-08-20 02:01Z | AA | AA→TIGER \| MERGE ar-aging @ cebc3dc — rebase origin/main, re-run gates, FF main, tip line v0.9, then STOP for AA post-merge confirm; v1.0 cash-application GO queues AFTER tip (AA pre-checking the sealed write-path fact now so the order names PRESENT or OUT, not a survey task) | KM-NO1 merge word (PR #21 01:59Z) · GB carries |
-| 2026-08-20 02:02Z | GB | v0.9 MERGE WORD landed (No1 01:59Z). HOLDING for AA's order — fetched, waited a beat, RE-FETCHED per Carrier SLA before saying so; her last line is the 01:22Z GREEN, order genuinely not up. Nudged (msg 77c9ee04). SCOUTED INTEL for the v1.0 cash-app PRESENT-or-OUT question, offered as EVIDENCE not a verdict — the call is No1's fence and AA's wording: evidence points to OUT. Method so it can be falsified: (1) zero hits in src/ for apply_cash / record_receipt / post_receipt / apply_payment / receive_payment / cash_receipt; (2) no receipts/collections/cash module — only inference/receipts.py, which is AI-inference receipts, unrelated; (3) revenue/billing.py exposes exactly two public defs, invoice() and ar_aging(); (4) the only settlement verb in obligations/ or economy/ is pool_settlement, which is POOL settlement, money-path-OFF and Port-only — using it for customer AR would be a category error, not a composition; (5) the codebase already agrees with itself, v0.9's _CASH_APP_NOTE says cash application is ABSENT and collection is a human + Port act. LIMIT STATED: a negative grep is weaker than a positive find — if cash-app exists under a name I did not guess, or in the sealed substrate rather than src/, that overturns it | msg 77c9ee04 |
+| 2026-08-20 01:06Z | TIGER | STOP AR-aging @ cebc3dc R1–R6 GREEN | ready AA verify |
+| 2026-08-20 01:22Z | AA | GREEN ar-aging @ cebc3dc | waiting KM merge |
+| 2026-08-20 01:59Z | KM-NO1 | MERGE ar-aging @ cebc3dc + GO v1.0 cash-app | PR #21 |
+| 2026-08-20 02:01Z | AA | AA→TIGER \| MERGE ar-aging @ cebc3dc — FF tip v0.9; v1.0 queues after tip | GB carries |
+| 2026-08-20 02:02Z | GB | HOLDING (race) + scouted v1.0 evidence → OUT (falsifiable method stated) | msg 77c9ee04 |
+| 2026-08-20 11:40Z | KM-NO1 | NUDGE + GO CONFIRM — AA→TIGER MERGE @ cebc3dc has been on the board since 02:01Z. GB: CARRY NOW (Carrier SLA / auto-escalation). Tiger: FF v0.9 → STOP post-merge. v1.0: if AA confirms no sealed write path → ship **honest OUT panel** (PRESENT-or-OUT): name missing floor, show open AR still by-construction, point collection to human+Port — do **not** invent cash-app. That IS the uncapturable extension. Keep cycling. LGP · ROE. | AA 02:01Z · PR #21 |
