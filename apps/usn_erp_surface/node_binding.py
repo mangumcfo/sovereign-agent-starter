@@ -68,6 +68,17 @@ from sovereign_agent.revenue.billing import (
     invoice as billing_invoice,
 )
 from sovereign_agent.revenue.credit import CreditError, check_order as credit_check_order
+from sovereign_agent.revenue.cash_application import (
+    APPLICATION_KIND,
+    RECEIPT_KIND,
+    REVERSAL_KIND,
+    CashApplicationError,
+    aging_rows as floor_aging_rows,
+    apply as floor_apply,
+    receipt as floor_receipt,
+    replay_state as floor_replay_state,
+    reverse as floor_reverse,
+)
 from sovereign_agent.financials.posting import Line, post as gl_post, trial_balance as gl_trial_balance
 from sovereign_agent.financials.reporting import (
     ReportingError,
@@ -104,6 +115,9 @@ INCOME_KIND = "income"
 #: balance the node holds, and never a money-path. The marker lets the reads tell an invoice apart
 #: from an earning without a second object kind or a second store.
 INVOICE_DOC_KIND = "invoice"
+#: Cash-application record kinds (the sealed floor's own vocabulary) — persisted through the SAME
+#: attribution writer, replayed by the SAME sealed floor. No second store, no stored `paid`.
+CASH_DOC_KINDS = (RECEIPT_KIND, APPLICATION_KIND, REVERSAL_KIND)
 
 #: Governance postures, expressed in the gate's own vocabulary. `requires_approval` returns False
 #: for any mode other than "corporate_regulated" — so "sovereign" is genuinely the module's ungated
@@ -114,7 +128,8 @@ MODE_REGULATED = "corporate_regulated"
 #: The three action classes this vertical performs. Under the regulated posture every one is
 #: declared high-materiality, so the gate engages on all of them.
 RECORD_ACTION_CLASSES = ("attribute_income", "record_contribution", "record_tax_event",
-                         "record_invoice")
+                         "record_invoice",
+                         "record_cash_receipt", "apply_cash_receipt", "reverse_cash_application")
 
 #: The obligation lifecycle acts this app drives. Every one is an existing `ObligationLedger`
 #: method — no new engine, no new verb.
@@ -620,6 +635,8 @@ class NodeBinding:
             existing = ("tax note" if p.get("tax_event") else
                         "contribution" if p.get("contribution_class") else
                         "invoice" if p.get("doc_kind") == INVOICE_DOC_KIND else
+                        "cash receipt" if p.get("doc_kind") == RECEIPT_KIND else
+                        "cash application" if p.get("doc_kind") in (APPLICATION_KIND, REVERSAL_KIND) else
                         "earning")
             if existing != wanted:
                 raise SurfaceError(
@@ -827,13 +844,11 @@ class NodeBinding:
                          "receivable and moves no money; collection is out of scope for this surface.")}
 
     def ar_aging(self, *, as_of_day: int) -> Dict[str, Any]:
-        """AR aging — a READ-ONLY PROJECTION over the open invoice records, computed each call by
-        the sealed `revenue.billing.ar_aging`. Nothing is stored: no aging table, no balance. The
-        buckets are derived from the records and sum to the total by construction."""
-        invs = [{"amount": (e.get("payload") or {}).get("amount") or 0,
-                 "issued_day": int((e.get("payload") or {}).get("issued_day") or 0),
-                 "paid": str((e.get("payload") or {}).get("status") or "open") != "open"}
-                for e in self._invoice_entries()]
+        """AR aging — a READ-ONLY PROJECTION computed each call by the sealed
+        `revenue.billing.ar_aging` over rows the SEALED FLOOR derives: `paid` by replay of the
+        application records (the dormant billing hook, engaged), amounts at REMAINING open.
+        Nothing is stored: no aging table, no balance."""
+        invs = self._floor_aging_rows()
         aged = billing_ar_aging(invs, int(as_of_day))
         return {
             "as_of_day": aged["as_of_day"],
@@ -872,6 +887,34 @@ class NodeBinding:
         for e in self._income_entries():
             p = dict(e.get("payload") or {})
             amount = p.get("amount")
+            if p.get("doc_kind") in CASH_DOC_KINDS:
+                # cash-application records: an APPLICATION moves value between accounts the books
+                # already carry — Dr cash / Cr accounts_receivable for the applied amount (a
+                # reversal posts the inverse). A RECEIPT alone posts nothing until applied: its
+                # unapplied amount is a recorded fact shown on the panel, not a GL position (a
+                # customer-deposit account is a future chart decision, not a silent invention).
+                if p.get("doc_kind") == APPLICATION_KIND:
+                    applied = p.get("amount")
+                    if applied in (None, 0, 0.0):
+                        continue
+                    posting = gl_post([Line.dr("cash", applied),
+                                       Line.cr("accounts_receivable", applied)],
+                                      memo=f"receipt {p.get('receipt_ref')} applied")
+                elif p.get("doc_kind") == REVERSAL_KIND:
+                    amt = p.get("amount")
+                    if amt in (None, 0, 0.0):
+                        continue
+                    posting = gl_post([Line.dr("accounts_receivable", amt), Line.cr("cash", amt)],
+                                      memo=f"receipt {p.get('receipt_ref')} application reversed")
+                else:
+                    continue  # RECEIPT_KIND — no GL posting until applied (disclosed above)
+                journal.append({"posting": posting,
+                                "source": {"record_type": p.get("doc_kind"),
+                                           "object_id": e.get("object_id"),
+                                           "ref": p.get("receipt_ref"),
+                                           "party": p.get("customer"),
+                                           "at": e.get("at"), "seq": e.get("seq")}})
+                continue
             if amount in (None, 0, 0.0):
                 continue
             if p.get("tax_event"):
@@ -910,6 +953,8 @@ class NodeBinding:
         for e in self._income_entries():
             p = dict(e.get("payload") or {})
             amount = float(p.get("amount") or 0)
+            if p.get("doc_kind") in CASH_DOC_KINDS:
+                continue  # cash-application records move/record cash — they are not revenue
             if p.get("tax_event"):
                 tax_notes += 1
             elif p.get("doc_kind") == INVOICE_DOC_KIND:
@@ -1236,6 +1281,7 @@ class NodeBinding:
         node — no party master file exists, so a party appears exactly when a governed record
         names it and never otherwise. Vendors: none by construction — no AP/vendor records exist
         on this surface (procurement is not surfaced), reported honestly rather than padded."""
+        floor_invoices = self._floor_state()["invoices"]   # remaining derived by the sealed floor
         customers: Dict[str, Dict[str, Any]] = {}
         for e in self._invoice_entries():
             p = dict(e.get("payload") or {})
@@ -1247,7 +1293,9 @@ class NodeBinding:
             c["invoices"] += 1
             c["total_billed"] = round(c["total_billed"] + amt, 2)
             if str(p.get("status") or "open") == "open":
-                c["open_billed"] = round(c["open_billed"] + amt, 2)
+                s = floor_invoices.get(str(p.get("invoice_id")))
+                c["open_billed"] = round(c["open_billed"] +
+                                         (float(s["remaining_open"]) if s else amt), 2)
             if (e.get("at") or "") >= (c["last_at"] or ""):
                 c["last_at"] = e.get("at")
                 c["last_invoice_id"] = p.get("invoice_id")
@@ -1390,10 +1438,18 @@ class NodeBinding:
     #      meaningful if the surface states what it cannot yet see.
     # ============================================================================================
 
-    _CASH_APP_NOTE = ("Cash application is ABSENT on this surface — no payment or collection "
-                      "records exist, so 'open' means every invoice, by construction. When a "
-                      "cash-application surface exists, 'open' will narrow to unpaid balances; "
-                      "until then this aging is a billing-age view, honestly labeled.")
+    #: RETIRED 2026-08-20 (v1.x LIVE GO) — kept verbatim as the historical rule, with the reason
+    #: it no longer holds. The old law read: "'open' means every invoice, by construction" — and
+    #: that was true only while cash application was ABSENT. The sealed floor
+    #: (revenue.cash_application, landed main@87bae69) now records receipts and applications, so
+    #: 'open' means REMAINING AFTER APPLIED RECEIPTS, derived by replay — the honesty didn't
+    #: lapse; the world changed, and this note records both.
+    _CASH_APP_NOTE = ("The former rule — 'open means every invoice, by construction' — is RETIRED: "
+                      "it held only while cash application was absent from the system. The sealed "
+                      "cash-application floor now records customer receipts and their applications, "
+                      "so 'open' means the remaining amount after applied receipts, derived by "
+                      "replay of the governed records. A fully applied invoice leaves this aging; "
+                      "a partially applied one ages at its remaining amount.")
 
     def ar_aging_view(self, *, as_of_day: Optional[int] = None) -> Dict[str, Any]:
         """AR aging by customer × bucket (current / 31–60 / 61–90 / over 90), each customer's
@@ -1405,11 +1461,19 @@ class NodeBinding:
             days = [int((e.get("payload") or {}).get("issued_day") or 0) for e in entries] or [0]
             as_of_day = max(days)   # deterministic default: the newest issued day on the books
 
+        # the sealed floor derives paid/remaining by replay — the aging rows are ITS rows
+        state = self._floor_state()
+
         def aging_input(es):
-            return [{"amount": (e.get("payload") or {}).get("amount") or 0,
-                     "issued_day": int((e.get("payload") or {}).get("issued_day") or 0),
-                     "paid": str((e.get("payload") or {}).get("status") or "open") != "open"}
-                    for e in es]
+            rows_ = []
+            for e in es:
+                p = dict(e.get("payload") or {})
+                s = state["invoices"].get(str(p.get("invoice_id")), None)
+                remaining = s["remaining_open"] if s else (p.get("amount") or 0)
+                paid = bool(s["paid"]) if s else False
+                rows_.append({"amount": remaining,
+                              "issued_day": int(p.get("issued_day") or 0), "paid": paid})
+            return rows_
 
         by_customer: Dict[str, List] = {}
         for e in entries:
@@ -1425,16 +1489,24 @@ class NodeBinding:
             aged = billing_ar_aging(aging_input(es), int(as_of_day))   # the sealed rule, per party
             total = float(aged["total_receivable"])
             grand = round(grand + total, 2)
+            inv_rows = []
+            for e in es:
+                p = dict(e.get("payload") or {})
+                s = state["invoices"].get(str(p.get("invoice_id")))
+                inv_rows.append({"invoice_id": p.get("invoice_id"),
+                                 "issued_day": p.get("issued_day"),
+                                 "due_day": p.get("due_day"),  # displayed fact, not the driver
+                                 "amount": p.get("amount"),
+                                 "applied": (str(s["applied"]) if s else "0"),
+                                 "remaining_open": (str(s["remaining_open"]) if s else str(p.get("amount"))),
+                                 "paid": (bool(s["paid"]) if s else False),
+                                 "object_id": e.get("object_id")})
             rows.append({
                 "customer": name,
                 "buckets": {k: str(v) for k, v in aged["buckets"].items()},
                 "total_open": str(aged["total_receivable"]),
                 "balances": bool(aged["balances"]),
-                "invoices": [{"invoice_id": (e.get("payload") or {}).get("invoice_id"),
-                              "issued_day": (e.get("payload") or {}).get("issued_day"),
-                              "due_day": (e.get("payload") or {}).get("due_day"),  # displayed fact, not the driver
-                              "amount": (e.get("payload") or {}).get("amount"),
-                              "object_id": e.get("object_id")} for e in es],
+                "invoices": inv_rows,
                 "drill": {"kind": "customer", "key": name},
             })
 
@@ -1462,6 +1534,187 @@ class NodeBinding:
                               "== party roll-up open AR == trial-balance AR net — all derived "
                               "from node state on this call"),
             },
+        }
+
+    # ============================================================================================
+    # 2k · Cash application LIVE (v1.x) — PRESENT composition of the sealed floor ONLY.
+    #      The honest OUT panel is SUPERSEDED (its branch and BAR kept as the interim record —
+    #      two contradictory truths never ship together, so the absence statement retires the
+    #      moment the capability is real). Writes are gated acts through the same fence-owning
+    #      writer as every record; paid/partial/remaining/unapplied are DERIVED BY REPLAY by the
+    #      sealed floor; allocations are operator-explicit lines — no FIFO exists anywhere.
+    # ============================================================================================
+
+    def _cash_records(self) -> List[Dict[str, Any]]:
+        """Every cash-application record on the node — payloads replayed from the registry."""
+        return [dict(e.get("payload") or {}) for e in self._income_entries()
+                if (e.get("payload") or {}).get("doc_kind") in CASH_DOC_KINDS]
+
+    def _floor_invoice_rows(self) -> List[Dict[str, Any]]:
+        """Invoice rows in the sealed floor's input shape."""
+        return [{"invoice_id": (e.get("payload") or {}).get("invoice_id"),
+                 "amount": (e.get("payload") or {}).get("amount") or 0,
+                 "issued_day": int((e.get("payload") or {}).get("issued_day") or 0),
+                 "customer": (e.get("payload") or {}).get("customer")}
+                for e in self._invoice_entries()]
+
+    def _floor_state(self) -> Dict[str, Any]:
+        """The sealed floor's replayed state over the node's own records — the ONLY source of
+        paid / partial / remaining_open / unapplied."""
+        return floor_replay_state(self._floor_invoice_rows(), self._cash_records())
+
+    def _floor_aging_rows(self) -> List[Dict[str, Any]]:
+        """Aging input rows via the sealed floor: remaining amounts, replay-derived `paid`."""
+        return floor_aging_rows(self._floor_invoice_rows(), self._cash_records())
+
+    @staticmethod
+    def _floor_payload(shaped: Mapping[str, Any]) -> Dict[str, Any]:
+        """A floor-shaped record as a storable payload: Decimals stringified, kind → doc_kind."""
+        p: Dict[str, Any] = {}
+        for k, v in shaped.items():
+            if k == "kind":
+                p["doc_kind"] = v
+            elif isinstance(v, list):
+                p[k] = [{kk: (str(vv) if hasattr(vv, "quantize") else vv) for kk, vv in d.items()}
+                        for d in v]
+            else:
+                p[k] = str(v) if hasattr(v, "quantize") else v
+        return p
+
+    def record_customer_receipt(self, *, receipt_ref: str, customer: str, amount: float,
+                                day: int, currency: str = "USD", memo: str = "") -> Dict[str, Any]:
+        """Record money a customer paid you — BY YOUR OWN HAND, outside this system; this records
+        the fact. Shaped by the sealed floor (refuses non-positive), persisted through the same
+        gated writer as every record. The receipt sits unapplied until you apply it."""
+        try:
+            shaped = floor_receipt(receipt_ref, customer, amount, int(day), currency, memo)
+        except CashApplicationError as exc:
+            raise SurfaceError(f"The cash-application floor refused this receipt: {exc}") from exc
+        work_ref = f"receipt:{shaped['receipt_ref']}"
+        self._guard_object_collision(work_ref, "cash receipt")
+        return self._submit(
+            "income", "record_cash_receipt",
+            f"customer receipt · {shaped['receipt_ref']} · {shaped['customer']} · "
+            f"{shaped['amount']} {currency}",
+            {"earner": self.operator, "work_ref": work_ref, "mandate": self.mandate,
+             "author": self.operator, "source_ref": "usn_erp_surface", "at": utc_now(),
+             "amount": float(shaped["amount"]), "unit": str(currency), "port_ref": None,
+             "extra": self._floor_payload(shaped)})
+
+    def apply_customer_receipt(self, *, receipt_ref: str,
+                               allocations: Sequence[Mapping[str, Any]]) -> Dict[str, Any]:
+        """Apply a recorded receipt to named invoices — OPERATOR-EXPLICIT allocation lines, no
+        automatic ordering. The sealed floor refuses over-application and over-allocation before
+        anything is staged; the gate holds the act until you approve it."""
+        records = self._cash_records()
+        rec = next((r for r in records
+                    if r.get("doc_kind") == RECEIPT_KIND and r.get("receipt_ref") == receipt_ref),
+                   None)
+        if rec is None:
+            raise SurfaceError(f"No recorded receipt '{receipt_ref}'. Record the receipt first — "
+                               f"an application always names money that is already on the record.")
+        shaped_receipt = dict(rec, kind=rec.get("doc_kind"))
+        try:
+            shaped = floor_apply(shaped_receipt, list(allocations),
+                                 self._floor_invoice_rows(), prior_records=records)
+        except CashApplicationError as exc:
+            raise SurfaceError(f"The cash-application floor refused this application: {exc}") from exc
+        seq = sum(1 for r in records
+                  if r.get("doc_kind") in (APPLICATION_KIND, REVERSAL_KIND)
+                  and r.get("receipt_ref") == receipt_ref)
+        work_ref = f"capp:{receipt_ref}:{seq + 1}"
+        lines = " + ".join(f"{a['amount']}→{a['invoice_id']}" for a in shaped["allocations"])
+        return self._submit(
+            "income", "apply_cash_receipt",
+            f"apply receipt · {receipt_ref} · {lines}",
+            {"earner": self.operator, "work_ref": work_ref, "mandate": self.mandate,
+             "author": self.operator, "source_ref": "usn_erp_surface", "at": utc_now(),
+             "amount": float(shaped["amount"]), "unit": rec.get("currency") or "USD",
+             "port_ref": None, "extra": self._floor_payload(shaped)})
+
+    def reverse_customer_application(self, *, application_ref: str, reason: str) -> Dict[str, Any]:
+        """Reverse a prior application with a COUNTER-RECORD — the chain keeps both acts, replay
+        nets them, and a reason is required, loudly."""
+        target = None
+        for e in self._income_entries():
+            p = dict(e.get("payload") or {})
+            if p.get("doc_kind") == APPLICATION_KIND and p.get("work_ref") == application_ref:
+                target = p
+                break
+        if target is None:
+            known = [(e.get("payload") or {}).get("work_ref") for e in self._income_entries()
+                     if (e.get("payload") or {}).get("doc_kind") == APPLICATION_KIND][:5]
+            raise SurfaceError(f"No application record '{application_ref}' on the node. "
+                               f"Applications include: {', '.join(k for k in known if k) or '(none)'}.")
+        shaped_app = dict(target, kind=APPLICATION_KIND)
+        try:
+            shaped = floor_reverse(shaped_app, reason=reason)
+        except CashApplicationError as exc:
+            raise SurfaceError(f"The cash-application floor refused this reversal: {exc}") from exc
+        records = self._cash_records()
+        seq = sum(1 for r in records if r.get("doc_kind") == REVERSAL_KIND
+                  and r.get("receipt_ref") == shaped["receipt_ref"])
+        work_ref = f"caprev:{shaped['receipt_ref']}:{seq + 1}"
+        return self._submit(
+            "income", "reverse_cash_application",
+            f"reverse application · {application_ref} · {reason[:40]}",
+            {"earner": self.operator, "work_ref": work_ref, "mandate": self.mandate,
+             "author": self.operator, "source_ref": "usn_erp_surface", "at": utc_now(),
+             "amount": float(shaped["amount"]), "unit": "USD", "port_ref": None,
+             "extra": self._floor_payload(shaped)})
+
+    def cash_application_view(self) -> Dict[str, Any]:
+        """The LIVE cash-application panel — receipts, applications, and per-invoice state, all
+        replayed by the sealed floor, with the equality identities IN the artifact."""
+        state = self._floor_state()
+        records = self._cash_records()
+        inv_meta = {r["invoice_id"]: r for r in self._floor_invoice_rows()}
+
+        receipts = []
+        for ref, s in sorted(state["receipts"].items()):
+            receipts.append({"receipt_ref": ref, "customer": s["customer"],
+                             "received": str(s["received"]), "applied": str(s["applied"]),
+                             "unapplied": str(s["unapplied"])})
+        applications = []
+        for r in records:
+            if r.get("doc_kind") == APPLICATION_KIND:
+                applications.append({"work_ref": r.get("work_ref"),
+                                     "receipt_ref": r.get("receipt_ref"),
+                                     "allocations": r.get("allocations"),
+                                     "amount": r.get("amount")})
+            elif r.get("doc_kind") == REVERSAL_KIND:
+                applications.append({"reversal_of_receipt": r.get("receipt_ref"),
+                                     "amount": r.get("amount"), "reason": r.get("reason")})
+        invoices_out = []
+        for inv_id, s in sorted(state["invoices"].items()):
+            invoices_out.append({"invoice_id": inv_id,
+                                 "customer": (inv_meta.get(inv_id) or {}).get("customer"),
+                                 "billed": str(s["billed"]), "applied": str(s["applied"]),
+                                 "remaining_open": str(s["remaining_open"]),
+                                 "paid": bool(s["paid"]), "partial": bool(s["partial"])})
+        t = state["totals"]
+        return {
+            "label": "Cash application",
+            "on_this_system": True,
+            "composes": "sealed revenue.cash_application only — paid/remaining derived by replay",
+            "receipts": receipts,
+            "applications": applications,
+            "invoices": invoices_out,
+            "identities": {
+                "per_invoice": "billed = applied + remaining_open",
+                "per_receipt": "received = applied + unapplied",
+                "aggregates": {"billed": str(t["billed"]),
+                               "applied_to_invoices": str(t["applied_to_invoices"]),
+                               "remaining_open": str(t["remaining_open"]),
+                               "received": str(t["received"]),
+                               "unapplied": str(t["unapplied"])},
+                "hold": bool(state["identities_hold"]),
+            },
+            "note": ("Recording a receipt records money YOU already received by your own act; "
+                     "applying it names which invoice it belongs to — operator-explicit lines, "
+                     "no automatic ordering. The node records application; money moves only by "
+                     "your hand through your bank (a Port-governed act when networked). A "
+                     "reversal is a loud counter-record, never an erasure."),
         }
 
     # ============================================================================================
@@ -1829,9 +2082,11 @@ class NodeBinding:
         for e in self._income_entries():
             p = dict(e.get("payload") or {})
             is_inv = p.get("doc_kind") == INVOICE_DOC_KIND
+            is_cash = p.get("doc_kind") in CASH_DOC_KINDS
             is_tax = bool(p.get("tax_event"))
             is_con = bool(p.get("contribution_class"))
             etype = ("invoice" if is_inv else
+                     "cash-application" if is_cash else
                      "tax" if is_tax else
                      "contribution" if is_con else
                      "income")

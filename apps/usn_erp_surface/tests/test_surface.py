@@ -1767,3 +1767,125 @@ def test_floor_killgrep_bites_auto_allocation(tmp_path, label, inject):
     target.write_text(target.read_text() + "\n\n" + textwrap.dedent(inject), encoding="utf-8")
     proc = _run_killgrep(str(copy))
     assert proc.returncode == 1, f"kill-grep stayed GREEN with '{label}' injected:\n{proc.stdout}"
+
+
+# ==================================================================================================
+# L1–L6 · Cash application LIVE — PRESENT composition of the sealed floor (OUT superseded)
+# ==================================================================================================
+
+def _seed_live(nb):
+    nb.record_income(work_ref="c", amount=2400, unit="USD")
+    nb.record_invoice(invoice_id="INV-1", customer="Acme", lines=_lines(("s", 1, 1000)), issued_day=10)
+    nb.record_invoice(invoice_id="INV-2", customer="Beta", lines=_lines(("x", 1, 600)), issued_day=1)
+
+
+def test_l1_gated_receipt_deny_writes_nothing_approve_lands(node):
+    _seed_live(bind(node, regulated=False))
+    nb = bind(node)  # regulated
+    sub = nb.record_customer_receipt(receipt_ref="RCT-1", customer="Acme", amount=1200, day=20)
+    assert sub["gated"] is True and sub["receipt"] is None
+    before = open(objects_ndjson(node), "rb").read()
+    nb.dispose(sub["req_id"], approve=False, reason="not yet")
+    assert open(objects_ndjson(node), "rb").read() == before, "denied receipt left bytes"
+    sub2 = nb.record_customer_receipt(receipt_ref="RCT-1", customer="Acme", amount=1200, day=20)
+    res = nb.dispose(sub2["req_id"], approve=True)
+    assert res["receipt"]["payload"]["doc_kind"] == "cash_receipt"
+    v = bind(node).cash_application_view()                       # fresh binding = replay from disk
+    assert v["receipts"][0]["unapplied"] == "1200.00"
+
+
+def test_l2_apply_gated_floor_refusals_surface_verbatim_reverse_gated(node):
+    nb = bind(node, regulated=False)
+    _seed_live(nb)
+    nb.record_customer_receipt(receipt_ref="RCT-1", customer="Acme", amount=1200, day=20)
+    # floor refusal surfaces before anything stages
+    with pytest.raises(SurfaceError, match="over-application"):
+        nb.apply_customer_receipt(receipt_ref="RCT-1",
+                                  allocations=[{"invoice_id": "INV-1", "amount": 1001}])
+    with pytest.raises(SurfaceError, match="over-allocation"):
+        nb.apply_customer_receipt(receipt_ref="RCT-1",
+                                  allocations=[{"invoice_id": "INV-1", "amount": 1000},
+                                               {"invoice_id": "INV-2", "amount": 201}])
+    nb.apply_customer_receipt(receipt_ref="RCT-1",
+                              allocations=[{"invoice_id": "INV-1", "amount": 1000}])
+    # reversal requires a reason (floor law, surfaced)
+    v = nb.cash_application_view()
+    app_ref = next(a["work_ref"] for a in v["applications"] if a.get("work_ref"))
+    with pytest.raises(SurfaceError, match="reason"):
+        nb.reverse_customer_application(application_ref=app_ref, reason="  ")
+    nb.reverse_customer_application(application_ref=app_ref, reason="wrong invoice")
+    v2 = nb.cash_application_view()
+    inv1 = next(i for i in v2["invoices"] if i["invoice_id"] == "INV-1")
+    assert inv1["paid"] is False and inv1["remaining_open"] == "1000.00"
+    assert v2["identities"]["hold"] is True
+
+
+def test_l3_identities_in_the_artifact(node):
+    nb = bind(node, regulated=False)
+    _seed_live(nb)
+    nb.record_customer_receipt(receipt_ref="RCT-1", customer="Acme", amount=1200, day=20)
+    nb.apply_customer_receipt(receipt_ref="RCT-1",
+                              allocations=[{"invoice_id": "INV-1", "amount": 1000}])
+    v = bind(node, regulated=False).cash_application_view()
+    ag = v["identities"]["aggregates"]
+    assert float(ag["billed"]) == float(ag["applied_to_invoices"]) + float(ag["remaining_open"])
+    assert float(ag["received"]) == float(ag["applied_to_invoices"]) + float(ag["unapplied"])
+    assert v["identities"]["hold"] is True
+    inv1 = next(i for i in v["invoices"] if i["invoice_id"] == "INV-1")
+    assert float(inv1["billed"]) == float(inv1["applied"]) + float(inv1["remaining_open"])
+    assert inv1["paid"] is True
+
+
+def test_l4_aging_narrows_via_the_sealed_hook_and_four_way_tie_holds(node):
+    nb = bind(node, regulated=False)
+    _seed_live(nb)
+    nb.record_customer_receipt(receipt_ref="RCT-1", customer="Acme", amount=1200, day=20)
+    nb.apply_customer_receipt(receipt_ref="RCT-1",
+                              allocations=[{"invoice_id": "INV-1", "amount": 1000}])
+    f = bind(node, regulated=False)
+    ag = f.ar_aging_view(as_of_day=75)
+    # INV-1 fully applied → paid → GONE from aging (the billing hook's own line)
+    assert float(ag["grand_total_open"]) == 600.0
+    assert ag["proofs"]["ties"] is True                              # four-way tie in the NEW world
+    # partial: apply 100 more of the receipt to INV-2 → ages at remaining 500
+    f.apply_customer_receipt(receipt_ref="RCT-1",
+                             allocations=[{"invoice_id": "INV-2", "amount": 100}])
+    ag2 = f.ar_aging_view(as_of_day=75)
+    beta = next(r for r in ag2["customers"] if r["customer"] == "Beta")
+    assert beta["total_open"] == "500.00" and ag2["proofs"]["ties"] is True
+    # and the books moved correctly: TB cash includes applied, AR equals remaining
+    tb = f.period_view()["trial_balance"]
+    assert float(tb["accounts_receivable"]) == 500.0
+    assert float(tb["cash"]) == 2400.0 + 1100.0
+
+
+def test_l5_out_statement_gone_and_v09_note_retired_with_reason(node):
+    nb = bind(node, regulated=False)
+    _seed_live(nb)
+    v = nb.cash_application_view()
+    assert v["on_this_system"] is True
+    text = json.dumps(v)
+    assert "not recorded on this system" not in text                 # the OUT statement is GONE
+    assert "missing_floor" not in text
+    # the v0.9 note retired WITH the reason stated — old rule quoted, why it no longer holds
+    aging = nb.ar_aging_view()
+    note = aging["cash_application"]
+    assert "RETIRED" in note and "by construction" in note
+    assert "remaining amount after applied receipts" in note
+    # and the UI carries no OUT panel copy
+    ui = open(os.path.join(APP_DIR, "ui.html"), encoding="utf-8").read()
+    assert "not on this system yet" not in ui
+
+
+def test_l6_no_auto_allocation_reachable_and_killgrep_bites(node, tmp_path):
+    nb = bind(node, regulated=False)
+    for name in dir(nb):
+        low = name.lower()
+        assert not any(v in low for v in ("fifo", "auto_alloc", "auto_apply")), name
+    copy = tmp_path / "app"
+    shutil.copytree(APP_DIR, copy, ignore=shutil.ignore_patterns("__pycache__", "tests"))
+    target = copy / "node_binding.py"
+    target.write_text(target.read_text() + "\n\ndef fifo_allocate(r, invs):\n    return invs\n",
+                      encoding="utf-8")
+    proc = _run_killgrep(str(copy))
+    assert proc.returncode == 1

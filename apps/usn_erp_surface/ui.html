@@ -419,6 +419,46 @@ pre{background:var(--surface-1);border:1px solid var(--ring);border-radius:9px;p
           <div class="sub" id="homeDetail"></div>
         </div>
 
+        <div class="card" id="cashCard">
+          <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.6rem;flex-wrap:wrap">
+            <h2 style="margin:0">Cash application</h2>
+            <span class="b ok">live · sealed floor</span>
+            <span class="b" id="cashTies" hidden></span>
+          </div>
+          <p class="hint">Record money a customer paid you (by your own hand, outside this system),
+          then apply it to their invoices — you name every allocation line; there is no automatic
+          ordering. A fully applied invoice leaves the aging; a partial one ages at its remaining.
+          Reversal is a loud counter-record, never an erasure.</p>
+          <div class="row">
+            <div class="fld"><label for="crRef">Receipt id</label><input id="crRef" placeholder="RCT-001"></div>
+            <div class="fld"><label for="crCust">Customer</label><input id="crCust" placeholder="Acme Co"></div>
+          </div>
+          <div class="row">
+            <div class="fld"><label for="crAmt">Amount received</label><input id="crAmt" inputmode="decimal" placeholder="1200"></div>
+            <div class="fld"><label for="crDay">Day received</label><input id="crDay" inputmode="numeric" placeholder="20"></div>
+          </div>
+          <div class="actions"><button class="primary" id="btnCashReceipt">Record receipt</button></div>
+          <div class="row" style="margin-top:.5rem">
+            <div class="fld"><label for="caRcpt">Apply receipt</label><select id="caRcpt"></select></div>
+            <div class="fld"><label for="caAllocs">Allocation lines <span class="muted">— JSON</span></label>
+              <textarea id="caAllocs" rows="2" placeholder='[{"invoice_id":"INV-001","amount":1000}]'></textarea></div>
+          </div>
+          <div class="actions"><button class="primary" id="btnCashApply">Apply (you choose the lines)</button></div>
+          <div class="row" style="margin-top:.5rem">
+            <div class="fld"><label for="cvApp">Reverse application</label><select id="cvApp"></select></div>
+            <div class="fld"><label for="cvReason">Reason <span class="muted">— recorded loudly</span></label><input id="cvReason" placeholder="applied to the wrong invoice"></div>
+          </div>
+          <div class="actions"><button class="sm" id="btnCashReverse">Reverse (counter-record)</button></div>
+          <div class="b" style="margin:.6rem 0 .3rem">Receipts</div>
+          <table class="tbl"><thead><tr><th>Receipt</th><th>Customer</th><th class="num">Received</th><th class="num">Applied</th><th class="num">Unapplied</th></tr></thead>
+            <tbody id="cashRcptBody"></tbody></table>
+          <div class="b" style="margin:.6rem 0 .3rem">Invoices — applied / remaining</div>
+          <table class="tbl"><thead><tr><th>Invoice</th><th class="num">Billed</th><th class="num">Applied</th><th class="num">Remaining open</th><th>State</th></tr></thead>
+            <tbody id="cashInvBody"></tbody></table>
+          <div class="empty" id="cashEmpty" hidden>No receipts recorded yet. Record one above when a customer pays you.</div>
+          <p class="law" id="cashNote"></p>
+        </div>
+
         <div class="card" id="mdCard">
           <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.6rem;flex-wrap:wrap">
             <h2 style="margin:0">Master data</h2>
@@ -630,7 +670,7 @@ $("btnOpen").onclick = async () => {
     });
     render();
     toast("ok", "Node open", STATUS.governance.posture);
-    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables(), loadPeriodView(), loadExceptions(), loadHome(), loadMasterData()]);
+    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables(), loadPeriodView(), loadExceptions(), loadHome(), loadMasterData(), loadCashApp()]);
   } catch (err) { toast("err", "Could not open the node", err.message); }
 };
 $("btnClose").onclick = async () => {
@@ -645,7 +685,7 @@ $("btnRefresh").onclick = () => refresh();
 async function refresh() {
   try {
     STATUS = await api("/api/status"); render();
-    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables(), loadPeriodView(), loadExceptions(), loadHome(), loadMasterData()]);
+    await Promise.all([loadEvents(), loadGate(), loadObligations(), loadReceivables(), loadPeriodView(), loadExceptions(), loadHome(), loadMasterData(), loadCashApp()]);
   } catch (err) { toast("err", "Refresh failed", err.message); }
 }
 
@@ -974,6 +1014,87 @@ async function loadHome() {
     (pd.closed_periods.length ? " · closed: " + pd.closed_periods.map(p => p.period).join(", ") : "") +
     " · " + ap.denied_this_session + " denied this session (session-scoped)";
 }
+
+
+/* ---------- cash application — LIVE (sealed floor) ---------- */
+async function loadCashApp() {
+  const c = await api("/api/cash-application");
+  const t = $("cashTies");
+  t.hidden = false;
+  t.className = "b " + (c.identities.hold ? "ok" : "no");
+  const ag = c.identities.aggregates;
+  t.textContent = c.identities.hold
+    ? ("identities hold ✓  billed " + ag.billed + " = applied " + ag.applied_to_invoices + " + open " + ag.remaining_open)
+    : "IDENTITIES DO NOT HOLD — investigate";
+  const rb = $("cashRcptBody"); rb.innerHTML = "";
+  $("cashEmpty").hidden = c.receipts.length > 0;
+  const rs = $("caRcpt"); rs.innerHTML = "";
+  c.receipts.forEach(r => {
+    const tr = el("tr");
+    tr.appendChild(el("td", "sub", r.receipt_ref));
+    tr.appendChild(el("td", null, r.customer || ""));
+    tr.appendChild(el("td", "num", r.received));
+    tr.appendChild(el("td", "num", r.applied));
+    tr.appendChild(el("td", "num", r.unapplied));
+    rb.appendChild(tr);
+    const o = el("option", null, r.receipt_ref + " (" + r.unapplied + " unapplied)");
+    o.value = r.receipt_ref; rs.appendChild(o);
+  });
+  const ib = $("cashInvBody"); ib.innerHTML = "";
+  c.invoices.forEach(i => {
+    const tr = el("tr");
+    tr.appendChild(el("td", "sub", i.invoice_id + (i.customer ? " · " + i.customer : "")));
+    tr.appendChild(el("td", "num", i.billed));
+    tr.appendChild(el("td", "num", i.applied));
+    tr.appendChild(el("td", "num", i.remaining_open));
+    const c5 = el("td");
+    c5.appendChild(el("span", "b " + (i.paid ? "ok" : (i.partial ? "wait" : "")),
+                      i.paid ? "paid" : (i.partial ? "partial" : "open")));
+    tr.appendChild(c5);
+    ib.appendChild(tr);
+  });
+  const va = $("cvApp"); va.innerHTML = "";
+  c.applications.filter(a => a.work_ref).forEach(a => {
+    const o = el("option", null, a.work_ref + " (" + a.amount + ")");
+    o.value = a.work_ref; va.appendChild(o);
+  });
+  $("cashNote").textContent = c.note;
+}
+
+$("btnCashReceipt").onclick = async () => {
+  const btn = $("btnCashReceipt"); btn.disabled = true;
+  try {
+    const r = await post("/api/cash-application/receipt", {
+      receipt_ref: $("crRef").value.trim(), customer: $("crCust").value.trim(),
+      amount: $("crAmt").value.trim(), day: $("crDay").value.trim() || 0 });
+    if (r.gated) toast("warn", "Held at the gate", "Approve it below to record the receipt.");
+    else { toast("ok", "Receipt recorded", ""); ["crRef","crCust","crAmt","crDay"].forEach(i => $(i).value = ""); }
+    renderGate(r.gate); await refresh();
+  } catch (e) { toast("err", "Refused", e.message); } finally { btn.disabled = false; }
+};
+
+$("btnCashApply").onclick = async () => {
+  const btn = $("btnCashApply"); btn.disabled = true;
+  let allocs;
+  try { allocs = JSON.parse($("caAllocs").value.trim() || "[]"); }
+  catch (e) { toast("err", "Allocation lines must be JSON", '[{"invoice_id":"INV-001","amount":1000}]'); btn.disabled = false; return; }
+  try {
+    const r = await post("/api/cash-application/apply", { receipt_ref: $("caRcpt").value, allocations: allocs });
+    if (r.gated) toast("warn", "Held at the gate", "Approve it below to apply the receipt.");
+    else { toast("ok", "Applied", ""); $("caAllocs").value = ""; }
+    renderGate(r.gate); await refresh();
+  } catch (e) { toast("err", "Refused", e.message); } finally { btn.disabled = false; }
+};
+
+$("btnCashReverse").onclick = async () => {
+  const btn = $("btnCashReverse"); btn.disabled = true;
+  try {
+    const r = await post("/api/cash-application/reverse", { application_ref: $("cvApp").value, reason: $("cvReason").value.trim() });
+    if (r.gated) toast("warn", "Held at the gate", "Approve it below to record the counter-record.");
+    else { toast("ok", "Reversed (counter-record kept)", ""); $("cvReason").value = ""; }
+    renderGate(r.gate); await refresh();
+  } catch (e) { toast("err", "Refused", e.message); } finally { btn.disabled = false; }
+};
 
 /* ---------- master data ---------- */
 async function loadMasterData() {

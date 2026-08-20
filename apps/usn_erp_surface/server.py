@@ -348,6 +348,79 @@ def parties() -> Tuple[Response, int]:
         return _fail(exc, 500)
 
 
+@app.get("/api/cash-application")
+def cash_application() -> Tuple[Response, int]:
+    """The LIVE cash-application panel — receipts · applications · per-invoice applied/remaining,
+    replayed by the sealed floor, equality identities in the artifact."""
+    try:
+        return _ok(_bound().cash_application_view())
+    except SurfaceError as exc:
+        return _fail(exc, 409)
+    except Exception as exc:  # noqa: BLE001
+        return _fail(exc, 500)
+
+
+@app.post("/api/cash-application/receipt")
+def cash_receipt_record() -> Tuple[Response, int]:
+    """Record a customer receipt — a gated act. Money moved by YOUR hand outside this system;
+    this records the fact through the same fence-owning writer as every record."""
+    b = _body()
+    try:
+        nb = _bound()
+        with _LOCK:
+            res = nb.record_customer_receipt(
+                receipt_ref=str(b.get("receipt_ref", "")).strip(),
+                customer=str(b.get("customer", "")).strip(),
+                amount=_num(b.get("amount")) or 0,
+                day=int(b.get("day") or 0),
+                currency=str(b.get("currency") or "USD"),
+                memo=str(b.get("memo") or ""))
+        return _ok(dict(res, gate=nb.gate_state()))
+    except SurfaceError as exc:
+        return _fail(exc)
+    except Exception as exc:  # noqa: BLE001
+        return _fail(exc, 500)
+
+
+@app.post("/api/cash-application/apply")
+def cash_apply() -> Tuple[Response, int]:
+    """Apply a recorded receipt to invoices — OPERATOR-EXPLICIT allocation lines, gated. The
+    sealed floor refuses over-application and over-allocation before anything stages."""
+    b = _body()
+    try:
+        nb = _bound()
+        allocs = b.get("allocations")
+        if not isinstance(allocs, list) or not allocs:
+            raise SurfaceError("An application needs allocation lines — you name which invoice "
+                               "each amount belongs to. Example: "
+                               '[{"invoice_id": "INV-1", "amount": 500}].')
+        with _LOCK:
+            res = nb.apply_customer_receipt(
+                receipt_ref=str(b.get("receipt_ref", "")).strip(), allocations=allocs)
+        return _ok(dict(res, gate=nb.gate_state()))
+    except SurfaceError as exc:
+        return _fail(exc)
+    except Exception as exc:  # noqa: BLE001
+        return _fail(exc, 500)
+
+
+@app.post("/api/cash-application/reverse")
+def cash_reverse() -> Tuple[Response, int]:
+    """Reverse a prior application with a loud counter-record — gated, reason required."""
+    b = _body()
+    try:
+        nb = _bound()
+        with _LOCK:
+            res = nb.reverse_customer_application(
+                application_ref=str(b.get("application_ref", "")).strip(),
+                reason=str(b.get("reason") or ""))
+        return _ok(dict(res, gate=nb.gate_state()))
+    except SurfaceError as exc:
+        return _fail(exc)
+    except Exception as exc:  # noqa: BLE001
+        return _fail(exc, 500)
+
+
 @app.get("/api/ar-aging-by-customer")
 def ar_aging_by_customer() -> Tuple[Response, int]:
     """AR aging by customer × bucket — the sealed aging rule composed per party, with the

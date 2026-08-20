@@ -114,6 +114,13 @@ inventory, no multi-entity, no dashboard chrome beyond what these loops need.
 | CA6 | Persistence via the EXISTING gated writer only; a refusal is BYTE-SILENT; approved write replays from disk | **GREEN** |
 | CA7 | Reversal = counter-record (reason required, chain keeps both, replay nets); replay FAIL-LOUDS on an inconsistent store — never plugs | **GREEN** |
 | CA8 | No bank custody / no statutory act — the floor records application; Port/bank moves money; prior rows GREEN | **GREEN** |
+| | | |
+| L1 | Gated receipt: deny is BYTE-SILENT on the store, approve lands, fresh binding replays from disk | **GREEN** |
+| L2 | Apply gated; floor refusals (over-application/over-allocation) surface verbatim BEFORE staging; reverse gated with reason | **GREEN** |
+| L3 | Equality identities IN the artifact — per-invoice, per-receipt, aggregates, hold=true | **GREEN** |
+| L4 | Aging narrows via the sealed hook: paid drops, partial ages at REMAINING; four-way tie holds in the new world; TB moves Dr cash / Cr AR | **GREEN** |
+| L5 | OUT statement GONE (not hidden); v0.9 by-construction note RETIRED with the reason stated | **GREEN** |
+| L6 | No auto-allocation reachable; kill-grep bites; both suite locations run BY NAME | **GREEN** |
 
 **RED rows: none.** Nine disclosures are recorded below — five carried from v0, four new to the
 obligations surface. None is a failed row; all are things you should know before you trust a GREEN.
@@ -794,4 +801,38 @@ separate GO composes this floor.
 **When composed (future GO):** the surface gains gated receipt/apply acts, `remaining_open`
 becomes real, and v1.0's OUT panel flips to PRESENT as pure composition.
 
-**STOP — floor + tests GREEN, no UI by order.** Breath only. ∞Δ∞
+---
+
+## Cash application LIVE, row by row (L1–L6) — GREEN · the OUT retired, the number real
+
+**v1.x (KM-NO1 GO 15:56Z, AA order 16:13Z).** PRESENT composition of sealed
+`revenue.cash_application` ONLY: gated writes (record receipt · apply operator-explicit lines ·
+reverse counter-record) through the same fence-owning writer as every record; reads replayed by
+the sealed floor; the equality identities carried IN the artifact. **Three retirements, done
+cleanly:** (1) the OUT statement is REMOVED — the live panel and the absence statement never
+ship together; (2) the v0.9 note — "open means every invoice, by construction" — is RETIRED
+**with the reason stated**: it held only while cash application was absent; open now means
+remaining after applied receipts, derived by replay; (3) the unmerged v1.0 OUT branch
+(`claude/usn-erp-cash-app-out @ 85c252a`) is SUPERSEDED, kept unmerged with its BAR as the
+interim record of the honest-absence period.
+
+- **L1 — GREEN.** Denied receipt leaves the store byte-identical; approved lands
+  (`doc_kind: cash_receipt`); fresh binding replays 1,200 received / 1,200 unapplied from disk.
+- **L2 — GREEN.** Over-application (1,001 > 1,000) and over-allocation (1,201 > 1,200) refused by
+  the floor and surfaced verbatim before staging; reversal requires a reason; after reversal
+  INV-1 reopens at 1,000 and identities still hold.
+- **L3 — GREEN.** billed = applied + remaining_open · received = applied + unapplied · aggregates
+  tie · `identities.hold: true` — all in the response.
+- **L4 — GREEN.** INV-1 fully applied LEAVES the aging (the `billing` hook's own line, engaged at
+  last); partial application ages Beta at remaining 500; the four-way tie holds in the new world
+  because applications post Dr cash / Cr accounts_receivable through the sealed `posting.post`
+  (a receipt posts nothing until applied — unapplied cash is a recorded fact, not a GL position;
+  a customer-deposit account is a future chart decision, disclosed not invented).
+- **L5 — GREEN.** "not recorded on this system" appears nowhere; `missing_floor` gone; the
+  retirement note quotes the old rule and states why the world changed; the UI carries no OUT copy.
+- **L6 — GREEN.** No fifo/auto verb reachable; injection bites; **201 passed across BOTH suite
+  locations by name** (tests/test_cash_application.py + tests/test_billing.py +
+  apps/usn_erp_surface/tests/); kill-grep GREEN. Live HTTP smoke: paid drops aging to zero,
+  over-application refused over the wire.
+
+**STOP — working UI + BAR GREEN.** Breath only. ∞Δ∞
