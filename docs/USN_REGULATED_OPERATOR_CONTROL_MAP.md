@@ -147,7 +147,7 @@ list above holds in *every* posture, because in those cases there is nothing to 
 |---|---|---|
 | **Money-path** | DESIGNED-OUT | Structural absences above; rails are named-ahead network work (V08 Ch4 + S6-V07 homes per `apps/usn_erp_surface/V15_CASH_APP_HOME_AUDIT.md`): the node governs the decision and the record; Port/bank moves money by human act |
 | **Port execute** | DESIGNED-OUT | `port/crossing.py:65-…` `sanction_crossing` — deny-by-default, in order: real governed object → node-declared boundary rule (`node_gov.authorize_crossing`; undeclared = refused) → **named human** + non-empty approval ref through the sealed gate. The Port returns a receipt that the crossing occurred — the wire/socket/rail is the node's runtime and the outside world, homed OUT |
-| **Statutory filing** | DESIGNED-OUT | No filing engine exists anywhere in `src/` — the node prepares and records; a human files. Filing-class acts classify HIGH risk in regulated mode (`compliance_engine.py:409-411`) and the remittance verb family is kill-grepped at the surface (`killgrep.py:67`). `cash_application.py:24`: "No custody, no settlement, no statutory" |
+| **Statutory filing** | DESIGNED-OUT **and provable by receipt** | No filing engine exists anywhere in `src/` — the node prepares and records; a human files. But the operator does not have to take the absence on trust: the **TAX-FENCE** (`economy/compliance.py:43` `TAX_FENCE_BREACH_FIELDS` — any in-node field that would file, pay, form, or represent is a refused breach; kill-target named at `:16`: "the filing engine you must trust and cannot leave — refused") means the record *structurally cannot carry* a statutory-act field, so per `:99`: **"a green light is also proof the node filed nothing"** — a proof-of-negative readable off the receipt itself, no second device, no tax expertise. Filing-class acts additionally classify HIGH risk in regulated mode (`compliance_engine.py:409-411`) and the remittance verb family is kill-grepped at the surface (`killgrep.py:67`). `cash_application.py:24`: "No custody, no settlement, no statutory" |
 
 ## 9. One asymmetry worth knowing (so nobody invents a subsystem)
 
@@ -168,7 +168,9 @@ gated cutover, lineage re-proven every read), and the posture line that tells yo
 you are in. What the kernel will attest for you but no panel yet shows: SIX lane routing,
 evidence-bundle export, physical lot custody. What no one can do, in any posture: move money,
 route RED outside, file with a government, or write anything material without a named human's
-recorded yes.
+recorded yes — and for filing you don't take that on trust: your receipt structurally cannot
+carry a statutory-act field, so a green receipt is itself proof the node filed nothing
+(`economy/compliance.py:99`).
 
 ---
 
