@@ -14,7 +14,19 @@ const exe = process.env.CHROME_PATH
       .filter(d => /^chromium-\d+$/.test(d))
       .map(d => `/opt/pw-browsers/${d}/chrome-linux/chrome`).find(fs.existsSync));
 
-const ROUTES = ['/', '/engagements/', '/perspectives/', '/principal/', '/ai-assurance/', '/writing/'];
+// Routes are DATA (override: ROUTES="/,/engagements/,..."), because GB's live run proved the
+// hardcoded list rots on rename: /writing/ was the dead old path (404, no in-site links — a
+// 301 decision, KM's lane), and /perspectives/ was its live replacement.
+const ROUTES = (process.env.ROUTES || '/,/engagements/,/perspectives/,/principal/,/ai-assurance/,/contact/')
+  .split(',').map(s => s.trim()).filter(Boolean);
+
+// GB's field find, folded as doctrine (2026-08-23): a page can pass placeholder/presence/contrast
+// probes while ANNOUNCING ITSELF AS A DIFFERENT PAGE — /perspectives/ shipped <title>Writing…>.
+// So title↔route coherence is asserted: absence AND mismatch are both FAIL, never n/a.
+// Expected fragments are data too (override: TITLES="/engagements/=Engagements,...").
+const TITLES = Object.fromEntries(
+  (process.env.TITLES || '/=MangumCFO,/engagements/=Engagements,/perspectives/=Perspectives,/principal/=Principal,/ai-assurance/=AI Assurance,/contact/=Contact')
+    .split(',').map(kv => kv.split('=').map(s => s.trim())));
 const out = []; let failures = 0;
 const note = (ok, msg) => { out.push(`${ok ? 'PASS' : 'FAIL'}  ${msg}`); if (!ok) failures++; };
 
@@ -90,6 +102,15 @@ for (const route of ROUTES) {
     note(n > 0, `${route} required element exists: ${sel} (count ${n}) — absence is FAIL, never n/a`);
   }
 
+  // title↔route coherence (GB's field find): the tab/bookmark/search name must be THIS page's
+  const expected = TITLES[route];
+  if (expected) {
+    const title = (await page.title()) || '';
+    note(title.length > 0, `${route} <title> exists ("${title.slice(0,50)}") — absence is FAIL`);
+    note(title.toLowerCase().includes(expected.toLowerCase()),
+      `${route} title↔route coherent: expects "${expected}" in "${title.slice(0,60)}" — a page must not announce itself as a different page`);
+  }
+
   // measured contrast on every link/button/heading in main — equal-ratio is a hard FAIL
   const els = await page.$$eval('main a, main button, main h1, main h2, .cta, [class*="cta"]',
     new Function('els', `return (${CONTRAST_JS})(els)`) );
@@ -124,6 +145,10 @@ note(ghost[0] && ghost[0].ratio < 1.05, `NEGATIVE: injected white-on-white is ca
 const negBrace = await page.evaluate(() =>
   (document.body.innerText.match(/\{[a-zA-Z_][a-zA-Z0-9_]*(\(\))?\}/g) || []).length);
 note(negBrace > 0, `NEGATIVE: injected {portrait_html()} literal is caught (${negBrace} match)`);
+// negative for the coherence probe: force a wrong title and prove the checker calls it mismatched
+await page.evaluate(() => { document.title = 'Writing | WrongName'; });
+const wrong = (await page.title()).toLowerCase().includes('nonexistent-expected-name');
+note(!wrong, `NEGATIVE: title↔route checker refuses a mismatched title (forced "Writing | WrongName" does not satisfy a different expectation)`);
 
 await browser.close();
 console.log(out.join('\n'));
