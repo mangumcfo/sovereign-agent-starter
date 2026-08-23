@@ -40,6 +40,14 @@ const RENAMES = Object.fromEntries(
 // that bypasses the real path is vacuous (GB proved my first one passed on all inputs).
 const coherent = (title, expected) =>
   !!title && !!expected && title.toLowerCase().includes(expected.toLowerCase());
+// Same law, second probe (GB round 2: my stale negative was literal-vs-literal, blind to
+// both deletion AND polarity inversion of the live line). Polarity decided HERE, once:
+// this returns true when debris IS present; the live probe asserts its negation.
+const carriesDeadName = (title, oldSlug) =>
+  !!title && !!oldSlug && title.toLowerCase().includes(oldSlug.toLowerCase());
+// Same law, third probe (found by GB's "what else is still inline" sweep): the placeholder
+// regex existed as TWO inline copies — live probe and negative could drift apart silently.
+const BRACE_RE_SRC = String.raw`\{[a-zA-Z_][a-zA-Z0-9_]*(\(\))?\}`;
 const out = []; let failures = 0;
 const note = (ok, msg) => { out.push(`${ok ? 'PASS' : 'FAIL'}  ${msg}`); if (!ok) failures++; };
 
@@ -105,8 +113,8 @@ for (const route of ROUTES) {
   await prep(page); await settle(page);
 
   // unrendered-template scan: literal {identifier(...)} or {snake_case} in RENDERED text
-  const braces = await page.evaluate(() =>
-    (document.body.innerText.match(/\{[a-zA-Z_][a-zA-Z0-9_]*(\(\))?\}/g) || []));
+  const braces = await page.evaluate((src) =>
+    (document.body.innerText.match(new RegExp(src, 'g')) || []), BRACE_RE_SRC);
   note(braces.length === 0, `${route} no unrendered {placeholder} literals${braces.length ? ' — FOUND: ' + braces.join(' ') : ''}`);
 
   // required-presence (the n/a killer)
@@ -120,7 +128,7 @@ for (const route of ROUTES) {
   // 1. STALE-IDENTITY (needs no intent data): a renamed page carrying its DEAD name
   for (const [oldSlug, newSlug] of Object.entries(RENAMES)) {
     if (route.includes(newSlug)) {
-      note(!title.toLowerCase().includes(oldSlug.toLowerCase()),
+      note(!carriesDeadName(title, oldSlug),
         `${route} carries no DEAD route name: "${oldSlug}" must not appear in "${title.slice(0,60)}" (rename debris)`);
     }
   }
@@ -168,8 +176,8 @@ await settle(page);
 const ghost = await page.$$eval('body > div:last-child a',
   new Function('els', `return (${CONTRAST_JS})(els)`) );
 note(ghost[0] && ghost[0].ratio < 1.05, `NEGATIVE: injected white-on-white is caught (ratio ${ghost[0] && ghost[0].ratio})`);
-const negBrace = await page.evaluate(() =>
-  (document.body.innerText.match(/\{[a-zA-Z_][a-zA-Z0-9_]*(\(\))?\}/g) || []).length);
+const negBrace = await page.evaluate((src) =>
+  (document.body.innerText.match(new RegExp(src, 'g')) || []).length, BRACE_RE_SRC);
 note(negBrace > 0, `NEGATIVE: injected {portrait_html()} literal is caught (${negBrace} match)`);
 // negatives for the identity probes — through the SAME code path the live assertions use
 // (my first cut compared against an unmatchable sentinel and passed on every input — GB
@@ -180,8 +188,12 @@ note(coherent('', 'Perspectives') === false,
   `NEGATIVE: coherent() refuses an EMPTY title (absence is FAIL, not n/a)`);
 note(coherent('Start a conversation | MangumCFO', 'Start a conversation') === true,
   `NEGATIVE-CONTROL: coherent() accepts authored editorial intent (the false-positive class GB caught)`);
-note('writing | mangumcfo'.includes('writing') === true,
-  `NEGATIVE: stale-identity containment catches the dead name in the /perspectives/ shape`);
+note(carriesDeadName('Writing | MangumCFO', 'writing') === true,
+  `NEGATIVE: carriesDeadName() CATCHES rename debris via the real path (live probe asserts its negation)`);
+note(carriesDeadName('Perspectives | MangumCFO', 'writing') === false,
+  `NEGATIVE-CONTROL: carriesDeadName() does not accuse a clean renamed page`);
+note(carriesDeadName('', 'writing') === false,
+  `NEGATIVE: carriesDeadName() refuses an empty title (absence never reads as debris)`);
 
 await browser.close();
 console.log(out.join('\n'));
