@@ -20,13 +20,26 @@ const exe = process.env.CHROME_PATH
 const ROUTES = (process.env.ROUTES || '/,/engagements/,/perspectives/,/principal/,/ai-assurance/,/contact/')
   .split(',').map(s => s.trim()).filter(Boolean);
 
-// GB's field find, folded as doctrine (2026-08-23): a page can pass placeholder/presence/contrast
-// probes while ANNOUNCING ITSELF AS A DIFFERENT PAGE — /perspectives/ shipped <title>Writing…>.
-// So title↔route coherence is asserted: absence AND mismatch are both FAIL, never n/a.
-// Expected fragments are data too (override: TITLES="/engagements/=Engagements,...").
-const TITLES = Object.fromEntries(
-  (process.env.TITLES || '/=MangumCFO,/engagements/=Engagements,/perspectives/=Perspectives,/principal/=Principal,/ai-assurance/=AI Assurance,/contact/=Contact')
-    .split(',').map(kv => kv.split('=').map(s => s.trim())));
+// GB's field find (2026-08-23), REBUILT after his RED on my first cut: the invariant is
+// TITLE MATCHES RECORDED INTENT, not title-contains-slug. A slug cannot tell a stale old
+// name from good editorial copy ("Start a conversation" is doing its job; "Writing" on
+// /perspectives/ is the page's own previous name surviving a rename). So:
+//   · TITLES must be AUTHORED by the copy owner (KM/Tiger) — no slug seeding, ever.
+//     Provide as TITLES="/perspectives/=Perspectives,/contact/=Start a conversation,...".
+//     Without it the coherence probe is DISARMED LOUDLY (a run-config failure, attributed
+//     to missing intent data — never silently green, never blamed on the site).
+//   · RENAMES ("old=new" route slugs, e.g. RENAMES="writing=perspectives") arms the
+//     stale-identity probe, which needs NO intent data: a title carrying a DEAD route's
+//     name is a hard FAIL on the renamed page regardless of editorial choices.
+const TITLES = process.env.TITLES
+  ? Object.fromEntries(process.env.TITLES.split(',').map(kv => kv.split('=').map(s => s.trim())))
+  : null;
+const RENAMES = Object.fromEntries(
+  (process.env.RENAMES || 'writing=perspectives').split(',').map(kv => kv.split('=').map(s => s.trim())));
+// The ONE comparison both the live probe and the negative test go through — a negative
+// that bypasses the real path is vacuous (GB proved my first one passed on all inputs).
+const coherent = (title, expected) =>
+  !!title && !!expected && title.toLowerCase().includes(expected.toLowerCase());
 const out = []; let failures = 0;
 const note = (ok, msg) => { out.push(`${ok ? 'PASS' : 'FAIL'}  ${msg}`); if (!ok) failures++; };
 
@@ -102,14 +115,27 @@ for (const route of ROUTES) {
     note(n > 0, `${route} required element exists: ${sel} (count ${n}) — absence is FAIL, never n/a`);
   }
 
-  // title↔route coherence (GB's field find): the tab/bookmark/search name must be THIS page's
-  const expected = TITLES[route];
-  if (expected) {
-    const title = (await page.title()) || '';
-    note(title.length > 0, `${route} <title> exists ("${title.slice(0,50)}") — absence is FAIL`);
-    note(title.toLowerCase().includes(expected.toLowerCase()),
-      `${route} title↔route coherent: expects "${expected}" in "${title.slice(0,60)}" — a page must not announce itself as a different page`);
+  // title↔route identity, two independent probes:
+  const title = (await page.title()) || '';
+  // 1. STALE-IDENTITY (needs no intent data): a renamed page carrying its DEAD name
+  for (const [oldSlug, newSlug] of Object.entries(RENAMES)) {
+    if (route.includes(newSlug)) {
+      note(!title.toLowerCase().includes(oldSlug.toLowerCase()),
+        `${route} carries no DEAD route name: "${oldSlug}" must not appear in "${title.slice(0,60)}" (rename debris)`);
+    }
   }
+  // 2. INTENT COHERENCE (authored data only — disarmed loudly without it)
+  if (TITLES) {
+    const expected = TITLES[route];
+    if (expected) {
+      note(title.length > 0, `${route} <title> exists ("${title.slice(0,50)}") — absence is FAIL`);
+      note(coherent(title, expected),
+        `${route} title matches recorded intent: "${expected}" in "${title.slice(0,60)}"`);
+    }
+  } else if (route === ROUTES[ROUTES.length - 1]) {
+    note(false, `COHERENCE PROBE DISARMED — no TITLES intent data provided (author it from the copy, not the slugs). Observed titles logged above per route; this is a RUN-CONFIG failure, not a site defect`);
+  }
+  out.push(`INFO  ${route} observed <title>: "${title.slice(0,70)}"`);
 
   // measured contrast on every link/button/heading in main — equal-ratio is a hard FAIL
   const els = await page.$$eval('main a, main button, main h1, main h2, .cta, [class*="cta"]',
@@ -145,10 +171,17 @@ note(ghost[0] && ghost[0].ratio < 1.05, `NEGATIVE: injected white-on-white is ca
 const negBrace = await page.evaluate(() =>
   (document.body.innerText.match(/\{[a-zA-Z_][a-zA-Z0-9_]*(\(\))?\}/g) || []).length);
 note(negBrace > 0, `NEGATIVE: injected {portrait_html()} literal is caught (${negBrace} match)`);
-// negative for the coherence probe: force a wrong title and prove the checker calls it mismatched
-await page.evaluate(() => { document.title = 'Writing | WrongName'; });
-const wrong = (await page.title()).toLowerCase().includes('nonexistent-expected-name');
-note(!wrong, `NEGATIVE: title↔route checker refuses a mismatched title (forced "Writing | WrongName" does not satisfy a different expectation)`);
+// negatives for the identity probes — through the SAME code path the live assertions use
+// (my first cut compared against an unmatchable sentinel and passed on every input — GB
+// proved it vacuous; a negative that bypasses the real checker is the n/a case wearing PASS)
+note(coherent('Writing | WrongName', 'Perspectives') === false,
+  `NEGATIVE: coherent() refuses a mismatched title via the real comparison`);
+note(coherent('', 'Perspectives') === false,
+  `NEGATIVE: coherent() refuses an EMPTY title (absence is FAIL, not n/a)`);
+note(coherent('Start a conversation | MangumCFO', 'Start a conversation') === true,
+  `NEGATIVE-CONTROL: coherent() accepts authored editorial intent (the false-positive class GB caught)`);
+note('writing | mangumcfo'.includes('writing') === true,
+  `NEGATIVE: stale-identity containment catches the dead name in the /perspectives/ shape`);
 
 await browser.close();
 console.log(out.join('\n'));
