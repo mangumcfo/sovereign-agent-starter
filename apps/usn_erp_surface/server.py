@@ -143,6 +143,10 @@ def vocab() -> Tuple[Response, int]:
                 "SUBSTRATE_STORAGE_ROOT": os.environ.get("SUBSTRATE_STORAGE_ROOT"),
                 "OBLIGATION_LEDGER_ROOT": os.environ.get("OBLIGATION_LEDGER_ROOT"),
                 "USN_OPERATOR": os.environ.get("USN_OPERATOR")},
+        # Enforcement-presence signal (KM-NO1 GO ATTACH 2026-09-02 15:09Z): reports THAT this
+        # running process is configured to enforce an expected fingerprint at /api/open — never
+        # the value. A read-only gate can distinguish "enforcement is live" from "merely merged".
+        "expected_fp_configured": bool(os.environ.get("USN_EXPECTED_FINGERPRINT")),
         "open": _BINDING is not None,
     })
 
@@ -154,15 +158,33 @@ def vocab() -> Tuple[Response, int]:
 @app.post("/api/open")
 def open_node() -> Tuple[Response, int]:
     """Open a node from explicit paths (or the environment). Nothing is persisted — reopening after
-    a restart means entering the paths again, or exporting them in the environment."""
+    a restart means entering the paths again, or exporting them in the environment.
+
+    Fingerprint enforcement (KM-NO1 GO ATTACH 2026-09-02 15:09Z): when USN_EXPECTED_FINGERPRINT is
+    set in the PROCESS environment — never taken from the request body, so a browser cannot override
+    it — the candidate keystore's identity must match it. A missing or mismatched fingerprint is
+    REFUSED (403) BEFORE _BINDING is written, so the wrong iron can never be bound and a refused open
+    leaves _BINDING untouched."""
     global _BINDING
     b = _body()
     try:
         with _LOCK:
-            _BINDING = NodeBinding.from_env(
+            candidate = NodeBinding.from_env(
                 keystore_dir=b.get("keystore_dir"), registry_root=b.get("registry_root"),
                 ledger_root=b.get("ledger_root"), regulated=bool(b.get("regulated", True)),
                 operator=b.get("operator"), mandate=b.get("mandate"))
+            expected = os.environ.get("USN_EXPECTED_FINGERPRINT")   # process-owned, not b.get(...)
+            if expected:
+                fp = candidate.identity_fingerprint()               # pure read; commits no store
+                if fp is None:
+                    return _fail(SurfaceError(
+                        "Refused: an expected node fingerprint is configured, but the keystore at "
+                        f"'{candidate.keystore_dir}' has no readable identity. Nothing was opened."), 403)
+                if fp != expected:
+                    return _fail(SurfaceError(
+                        f"Refused: keystore fingerprint {fp} does not match the expected node "
+                        f"{expected}. Wrong iron — nothing was opened."), 403)
+            _BINDING = candidate    # committed ONLY after enforcement passes
             return _ok(_BINDING.status())
     except SurfaceError as exc:
         return _fail(exc)

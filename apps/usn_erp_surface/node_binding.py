@@ -320,6 +320,23 @@ class NodeBinding:
     # 1 · Open the node — status
     # ============================================================================================
 
+    def identity_fingerprint(self) -> Optional[str]:
+        """Fingerprint of the node identity at this binding's keystore — a PURE READ that creates
+        no store (unlike status(), whose open path can). Returns the fingerprint, or None if no
+        readable identity. Reads the SAME key status() would display (first *KEYFILE_SUFFIX id),
+        so the enforced fp is the one the operator sees. Used to refuse a wrong keystore BEFORE
+        any _BINDING is committed, so a refused open leaves no artifact behind."""
+        if not self.keystore_dir or not os.path.isdir(self.keystore_dir):
+            return None
+        ids = sorted(n[: -len(KEYFILE_SUFFIX)] for n in os.listdir(self.keystore_dir)
+                     if n.endswith(KEYFILE_SUFFIX))
+        if not ids:
+            return None
+        try:
+            return load_node_key(self.keystore_dir, ids[0]).fingerprint
+        except KeystoreError:
+            return None
+
     def status(self) -> Dict[str, Any]:
         """Everything the operator needs to trust what they are looking at, read from disk each
         call. Absent stores are reported with a reason rather than faked."""
