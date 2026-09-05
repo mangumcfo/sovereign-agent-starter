@@ -128,6 +128,46 @@ def favicon() -> Response:
     return Response(b"", status=204)
 
 
+def _expected_fingerprint_check(binding: NodeBinding) -> Tuple[Optional[bool], Optional[str]]:
+    """THE expected-fingerprint comparison. ONE implementation, called by BOTH /api/open (where
+    it refuses) and /api/vocab (where it reports). Never reimplement it for the report: a second
+    copy drifts from the bind exactly as a 12-char prefix once drifted from the 16-char
+    fingerprint and refused the operator's own correct key. The flag is evidence only because it
+    is the same comparison the gate performs.
+
+    Returns (ok, reason):
+      (None, None)  no expectation configured — there is nothing to enforce
+      (True, None)  the binding's identity matches the expected fingerprint
+      (False, why)  missing identity, or mismatch; `why` is operator-facing
+    """
+    expected = os.environ.get("USN_EXPECTED_FINGERPRINT")   # process-owned, never the request body
+    if not expected:
+        return None, None
+    fp = binding.identity_fingerprint()                     # pure read; commits no store
+    if fp is None:
+        return False, ("an expected node fingerprint is configured, but the keystore at "
+                       f"'{binding.keystore_dir}' has no readable identity")
+    if fp != expected:
+        return False, (f"keystore fingerprint {fp} does not match the expected node {expected}. "
+                       f"Wrong iron")
+    return True, None
+
+
+def _identity_fp_matches_expected() -> Optional[bool]:
+    """Does the fingerprint /api/open WOULD bind match the configured expectation? Boolean only —
+    never the value, on the wire or in a log.
+
+    null when it cannot be computed (no expectation configured, or the default binding cannot be
+    constructed). A flag that could not be computed must never read as True: `expected_fp_configured`
+    already reports that *a* value is set; this reports whether it is the *right* one, which is the
+    question a gate actually needs answered."""
+    try:
+        ok, _ = _expected_fingerprint_check(NodeBinding.from_env())
+        return ok
+    except Exception:  # noqa: BLE001 — unconstructible binding is COULD-NOT-CHECK, not a match
+        return None
+
+
 @app.get("/api/vocab")
 def vocab() -> Tuple[Response, int]:
     """The node's own vocabularies, so the UI never invents a category or a proof grade."""
@@ -147,6 +187,10 @@ def vocab() -> Tuple[Response, int]:
         # running process is configured to enforce an expected fingerprint at /api/open — never
         # the value. A read-only gate can distinguish "enforcement is live" from "merely merged".
         "expected_fp_configured": bool(os.environ.get("USN_EXPECTED_FINGERPRINT")),
+        # PRESENCE says a value is set. MATCH says it is the right one — the stronger claim, and
+        # the one a read-only gate must have. true|false|null (null = could not check). Computed by
+        # _expected_fingerprint_check, the same function /api/open enforces with.
+        "identity_fp_matches_expected": _identity_fp_matches_expected(),
         "open": _BINDING is not None,
     })
 
@@ -173,17 +217,9 @@ def open_node() -> Tuple[Response, int]:
                 keystore_dir=b.get("keystore_dir"), registry_root=b.get("registry_root"),
                 ledger_root=b.get("ledger_root"), regulated=bool(b.get("regulated", True)),
                 operator=b.get("operator"), mandate=b.get("mandate"))
-            expected = os.environ.get("USN_EXPECTED_FINGERPRINT")   # process-owned, not b.get(...)
-            if expected:
-                fp = candidate.identity_fingerprint()               # pure read; commits no store
-                if fp is None:
-                    return _fail(SurfaceError(
-                        "Refused: an expected node fingerprint is configured, but the keystore at "
-                        f"'{candidate.keystore_dir}' has no readable identity. Nothing was opened."), 403)
-                if fp != expected:
-                    return _fail(SurfaceError(
-                        f"Refused: keystore fingerprint {fp} does not match the expected node "
-                        f"{expected}. Wrong iron — nothing was opened."), 403)
+            ok, why = _expected_fingerprint_check(candidate)   # the SAME check /api/vocab reports
+            if ok is False:
+                return _fail(SurfaceError(f"Refused: {why} — nothing was opened."), 403)
             _BINDING = candidate    # committed ONLY after enforcement passes
             return _ok(_BINDING.status())
     except SurfaceError as exc:
