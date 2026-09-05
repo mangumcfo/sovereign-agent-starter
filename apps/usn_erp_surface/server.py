@@ -157,6 +157,12 @@ def _identity_fp_matches_expected() -> Optional[bool]:
     """Does the fingerprint /api/open WOULD bind match the configured expectation? Boolean only —
     never the value, on the wire or in a log.
 
+    SCOPE, and read this before treating True as a promise: this evaluates the DEFAULT binding
+    (`NodeBinding.from_env()` with no overrides). /api/open builds its candidate from the REQUEST
+    BODY, so a call supplying its own `keystore_dir` is checked against THAT keystore, not this one,
+    and can be refused while this flag reads True. True means "the default binding matches", never
+    "any open will succeed".
+
     null when it cannot be computed (no expectation configured, or the default binding cannot be
     constructed). A flag that could not be computed must never read as True: `expected_fp_configured`
     already reports that *a* value is set; this reports whether it is the *right* one, which is the
